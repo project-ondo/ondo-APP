@@ -43,3 +43,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# ignore real env files
+.env
+.env.*
+
+# allow example file
+!.env.example

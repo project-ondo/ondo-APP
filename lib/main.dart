@@ -1,7 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:ondo/core/design_system/app_colors.dart';
+import 'package:ondo/core/design_system/app_theme.dart';
+import 'package:ondo/core/design_system/widget/custom_button.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
   runApp(const MyApp());
@@ -15,24 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: AppTheme.appTheme(),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -111,6 +99,33 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+
+            CustomButton.customButton(
+              onPressed: () {
+                log('test0');
+              },
+              buttonName: 'test0',
+              buttonColor: AppColors.primary,
+              textColor: AppColors.white,
+            ),
+            SizedBox(height: 30),
+            CustomButton.customPopupButton(
+              onPressed: () {
+                log('test1');
+              },
+              buttonColor: AppColors.white,
+              buttonName: 'test1',
+              textColor: AppColors.primary,
+            ),
+            SizedBox(height: 30),
+            CustomButton.customSelectButton(
+              onPressed: () {
+                log('test2');
+              },
+              buttonColor: AppColors.white,
+              buttonName: 'test2',
+              textColor: AppColors.primary,
             ),
           ],
         ),

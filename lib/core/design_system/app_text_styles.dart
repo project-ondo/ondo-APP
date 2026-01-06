@@ -3,34 +3,53 @@ import 'package:flutter/material.dart';
 class AppTextStyles {
   AppTextStyles._();
 
-  static const TextStyle titleSm = TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.bold,
-    height: 34,
-  );
+  static TextStyle titleSm({
+    required Color? textColor,
+  }) {
+    return TextStyle(
+      color: textColor,
+      fontSize: 24,
+      fontWeight: FontWeight.w700,
+    );
+  }
 
-  static const TextStyle titleBold16 = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.bold,
-    height: 22,
-  );
+  static TextStyle titleBold16({
+    required Color? textColor,
+  }) {
+    return TextStyle(
+      color: textColor,
+      fontSize: 16,
+      fontWeight: FontWeight.w700,//Bold
+    );
+  }
 
-  static const TextStyle titleBold14 = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w600,
-    height: 20,
-  );
+  static TextStyle titleSm14({
+    required Color? textColor,
+  }) {
+    return TextStyle(
+      color: textColor,
+      fontSize: 14,
+      fontWeight: FontWeight.w600, //smeiBold
+    );
+  }
 
-  static const TextStyle textMedium = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w500,
-    height: 20,
-  );
+  static TextStyle textMedium({
+    required Color? textColor,
+  }) {
+    return TextStyle(
+      color: textColor,
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+    );
+  }
 
-  static const TextStyle cpation = TextStyle(
-    fontSize: 12,
-    fontWeight: FontWeight.w500,
-    height: 17,
-  );
-
+  static TextStyle cpation({
+    required Color? textColor,
+  }) {
+    return TextStyle(
+      color: textColor,
+      fontSize: 12,
+      fontWeight: FontWeight.w500,
+    );
+  }
 }

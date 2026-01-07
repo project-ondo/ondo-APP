@@ -8,7 +8,7 @@ class AppTheme {
     return ThemeData(
       scaffoldBackgroundColor: AppColors.white,
       primaryColor: AppColors.primary,
-      focusColor: AppColors.balck,
+      focusColor: AppColors.black,
     );
   }
 }

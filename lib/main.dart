@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_theme.dart';
-import 'package:ondo/core/design_system/widget/custom_button.dart';
+
+import 'core/design_system/widget/custom_textfield.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: AppTheme.appTheme(),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -60,13 +63,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
+      backgroundColor: AppColors.white,
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
@@ -76,58 +74,32 @@ class _MyHomePageState extends State<MyHomePage> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
-          children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-
-            CustomButton.customButton(
-              onPressed: () {
-                log('test0');
-              },
-              buttonName: 'test0',
-              buttonColor: AppColors.primary,
-              textColor: AppColors.white,
-            ),
-            SizedBox(height: 30),
-            CustomButton.customPopupButton(
-              onPressed: () {
-                log('test1');
-              },
-              buttonColor: AppColors.white,
-              buttonName: 'test1',
-              textColor: AppColors.primary,
-            ),
-            SizedBox(height: 30),
-            CustomButton.customSelectButton(
-              onPressed: () {
-                log('test2');
-              },
-              buttonColor: AppColors.white,
-              buttonName: 'test2',
-              textColor: AppColors.primary,
-            ),
-          ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Center(
+          child: Column(
+            children: [
+              SizedBox(height: 30),
+              CustomTextField.customTextField(
+                labelText: '테스트',
+                hintText: '테스트입니다.',
+                keyboardType: TextInputType.text,
+                errorText: '에러 테스트입니다!!',
+                hasError: false
+              ),
+              SizedBox(
+                height: 30,
+              ),
+              CustomTextField.customTextField(
+                labelText: '비밀번호',
+                hintText: '비밀번호를 입력해주세요.',
+                keyboardType: TextInputType.visiblePassword,
+                errorText: '비밀번호가 달라요. 비밀번호를 다시 한번 확인해주세요!',
+                hasError: true,
+                isPassword: true,
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

@@ -15,12 +15,13 @@ class AppColors {
   static const Color red = Color(0xffFC624A);
 
   //Gray scale color
+  static const Color black = Color(0xff000000);
+  static const Color gray90 = Color(0xff222222); //0xff222222
+  static const Color gray80 = Color(0xff444444); //0xff444444
+  static const Color gray70 = Color(0xff222222); //0xff222222
+  static const Color gray60 = Color(0xffBBBBBB); //0xffBBBBBB
+  static const Color gray50 = Color(0xffC7C7C7); //0xffC7C7C7
+  static const Color gray40 = Color(0xffDDDDDD); //0xffDDDDDD
+  static const Color gray20 = Color(0xfff8f8f8); //0xffF8F8F8
   static const Color white = Color(0xffFFFFFF);
-  static const Color Gray10 = Color(0xffC2C1C1);
-  static const Color Gray30 = Color(0xff999797);
-  static const Color Gray50 = Color(0xff707070);
-  static const Color Gray70 = Color(0xff555555);
-  static const Color Gray80 = Color(0xff2F3233);
-  static const Color Gray90 = Color(0xff2F3233);
-  static const Color balck = Color(0xff000000);
 }

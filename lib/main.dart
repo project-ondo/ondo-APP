@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_theme.dart';
+import 'package:ondo/core/design_system/component_variants.dart';
+import 'package:ondo/core/design_system/components/custom_button.dart';
 
-import 'core/design_system/widget/custom_textfield.dart';
-
+import 'core/design_system/components/custom_textfield.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,29 +18,20 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // This components is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: AppTheme.appTheme(),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -49,14 +41,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  TextEditingController test0 = TextEditingController();
+  TextEditingController test1 = TextEditingController();
 
   void _incrementCounter() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
       _counter++;
     });
   }
@@ -66,12 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
       body: Padding(
@@ -80,23 +64,50 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             children: [
               SizedBox(height: 30),
-              CustomTextField.customTextField(
-                labelText: '테스트',
+              CustomTextField(
+                label: '테스트',
                 hintText: '테스트입니다.',
                 keyboardType: TextInputType.text,
                 errorText: '에러 테스트입니다!!',
-                hasError: false
+                hasError: false,
+                controller: test0,
+                variant: TextFieldVariant.normal,
+              ),
+              CustomButton(
+                text: '테스트',
+                variant: ButtonVariant.primary,
+                onPressed: () {
+                  log(test0.text);
+                },
               ),
               SizedBox(
                 height: 30,
               ),
-              CustomTextField.customTextField(
-                labelText: '비밀번호',
+              CustomTextField(
+                label: '비밀번호',
                 hintText: '비밀번호를 입력해주세요.',
                 keyboardType: TextInputType.visiblePassword,
                 errorText: '비밀번호가 달라요. 비밀번호를 다시 한번 확인해주세요!',
                 hasError: true,
-                isPassword: true,
+                controller: test1,
+                variant: TextFieldVariant.password,
+              ),
+              Row(
+                children: [
+                  CustomButton(
+                    text: '테스트1',
+                    variant: ButtonVariant.outline,
+                    onPressed: () {
+                      log(test1.text);
+                    },
+                  ),CustomButton(
+                    text: '테스트1',
+                    variant: ButtonVariant.select,
+                    onPressed: () {
+                      log(test1.text);
+                    },
+                  ),
+                ],
               ),
             ],
           ),

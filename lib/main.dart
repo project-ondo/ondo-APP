@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
+import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/app_theme.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
@@ -40,22 +41,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  TextEditingController test0 = TextEditingController();
-  TextEditingController test1 = TextEditingController();
-
-  @override
-  void dispose() {
-    test0.dispose();
-    test1.dispose();
-  }
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,7 +52,11 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Center(
-          child: Text('ONDO')
+          child: Column(
+            children: [
+              Text('ONDO'),
+            ],
+          ),
         ),
       ),
     );

@@ -1,0 +1,49 @@
+name: ONDO Flutter CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 저장소 코드 가져오기
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Flutter 설치
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.5'
+
+      # 3. 의존성 설치
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 4. 코드 정적 분석
+      - name: Analyze code
+        run: flutter analyze
+
+      # 5. 테스트 실행
+      - name: Run tests
+        run: flutter test
+
+      # 6. 테스트 + 코드 커버리지 측정
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      # 7. 코드 커버리지 업로드 (Codecov)
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage/lcov.info
+          flags: unittests

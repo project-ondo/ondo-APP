@@ -1,14 +1,7 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
-import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/app_theme.dart';
-import 'package:ondo/core/design_system/component_variants.dart';
-import 'package:ondo/core/design_system/components/custom_button.dart';
-
-import 'core/design_system/components/custom_textfield.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

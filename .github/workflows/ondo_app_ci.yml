@@ -1,0 +1,56 @@
+name: ONDO Flutter CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 저장소 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2. Flutter 설치
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.5'
+
+      # 3. 환경 변수 (.env) 설정
+      - name: Setup environment variables
+        run: |
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          # 필요 시 다른 Secret 추가
+          # echo "OTHER_SECRET=${{ secrets.OTHER_SECRET }}" >> .env
+
+      # 4. 의존성 설치
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 5. 코드 분석
+      - name: Analyze code
+        run: flutter analyze
+
+      # 6. 테스트 실행
+      - name: Run tests
+        run: flutter test
+
+      # 7. 테스트 + 코드 커버리지
+      - name: Run tests with coverage
+        run: flutter test --coverage
+
+      # 8. 코드 커버리지 업로드 (Codecov)
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage/lcov.info
+          flags: unittests

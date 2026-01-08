@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. 저장소 코드 가져오기
+      # 1. 저장소 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -25,23 +25,30 @@ jobs:
         with:
           flutter-version: '3.38.5'
 
-      # 3. 의존성 설치
+      # 3. 환경 변수 (.env) 설정
+      - name: Setup environment variables
+        run: |
+          echo "API_KEY=${{ secrets.API_KEY }}" >> .env
+          # 필요 시 다른 Secret 추가
+          # echo "OTHER_SECRET=${{ secrets.OTHER_SECRET }}" >> .env
+
+      # 4. 의존성 설치
       - name: Install dependencies
         run: flutter pub get
 
-      # 4. 코드 정적 분석
+      # 5. 코드 분석
       - name: Analyze code
         run: flutter analyze
 
-      # 5. 테스트 실행
+      # 6. 테스트 실행
       - name: Run tests
         run: flutter test
 
-      # 6. 테스트 + 코드 커버리지 측정
+      # 7. 테스트 + 코드 커버리지
       - name: Run tests with coverage
         run: flutter test --coverage
 
-      # 7. 코드 커버리지 업로드 (Codecov)
+      # 8. 코드 커버리지 업로드 (Codecov)
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
         with:

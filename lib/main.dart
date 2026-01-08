@@ -44,6 +44,12 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController test0 = TextEditingController();
   TextEditingController test1 = TextEditingController();
 
+  @override
+  void dispose() {
+    test0.dispose();
+    test1.dispose();
+  }
+
   void _incrementCounter() {
     setState(() {
       _counter++;
@@ -61,62 +67,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24),
         child: Center(
-          child: Column(
-            children: [
-              SizedBox(height: 30),
-              CustomTextField(
-                label: '테스트',
-                hintText: '테스트입니다.',
-                keyboardType: TextInputType.text,
-                errorText: '에러 테스트입니다!!',
-                hasError: false,
-                controller: test0,
-                variant: TextFieldVariant.normal,
-              ),
-              CustomButton(
-                text: '테스트',
-                variant: ButtonVariant.primary,
-                onPressed: () {
-                  log(test0.text);
-                },
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              CustomTextField(
-                label: '비밀번호',
-                hintText: '비밀번호를 입력해주세요.',
-                keyboardType: TextInputType.visiblePassword,
-                errorText: '비밀번호가 달라요. 비밀번호를 다시 한번 확인해주세요!',
-                hasError: true,
-                controller: test1,
-                variant: TextFieldVariant.password,
-              ),
-              Row(
-                children: [
-                  CustomButton(
-                    text: '테스트1',
-                    variant: ButtonVariant.outline,
-                    onPressed: () {
-                      log(test1.text);
-                    },
-                  ),CustomButton(
-                    text: '테스트1',
-                    variant: ButtonVariant.select,
-                    onPressed: () {
-                      log(test1.text);
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
+          child: Text('ONDO')
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }

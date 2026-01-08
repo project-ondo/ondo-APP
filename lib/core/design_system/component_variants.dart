@@ -5,6 +5,12 @@ enum ButtonVariant {
   outline,
 }
 
+enum ButtonSize {
+  small,
+  medium,
+  large,
+}
+
 enum TextFieldVariant {
   normal,
   password,

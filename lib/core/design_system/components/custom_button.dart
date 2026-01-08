@@ -7,36 +7,45 @@ class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final ButtonVariant variant;
+  final ButtonSize size;
   final bool enabled;
+  final bool hasBorder;
 
   const CustomButton({
     super.key,
     required this.text,
     required this.variant,
+    this.size = ButtonSize.medium,
     this.onPressed,
     this.enabled = true,
+    this.hasBorder = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: enabled ? onPressed : null,
-      child: Container(
-        width: _width,
-        height: 52,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: _backgroundColor,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: _borderColor,
-            width: 1.5,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(8),
+        onTap: enabled ? onPressed : null,
+        child: Container(
+          padding: _effectivePadding, // 수정: padding 보정 적용
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: _backgroundColor,
+            borderRadius: BorderRadius.circular(8),
+            border: hasBorder
+                ? Border.all(
+              color: _borderColor,
+              width: 1,
+            )
+                : null, // 수정: hasBorder false이면 border 없음
           ),
-        ),
-        child: Text(
-          text,
-          style: AppTextStyles.titleSm14(
-            textColor: _textColor,
+          child: Text(
+            text,
+            style: AppTextStyles.titleSm14(
+              textColor: _textColor,
+            ),
           ),
         ),
       ),
@@ -44,22 +53,22 @@ class CustomButton extends StatelessWidget {
   }
 
   // ======================
-  // Style Resolver
+  // Size Resolver
   // ======================
-
-  double get _width {
-    switch (variant) {
-      case ButtonVariant.primary:
-        return 364;
-      case ButtonVariant.popup:
-        return 356;
-      case ButtonVariant.select:
-        return 168;
-      case ButtonVariant.outline:
-        return 168;
+  EdgeInsets get _paddingBySize {
+    switch (size) {
+      case ButtonSize.small:
+        return const EdgeInsets.symmetric(horizontal: 16, vertical: 16);
+      case ButtonSize.medium:
+        return const EdgeInsets.symmetric(horizontal: 16, vertical: 16);
+      case ButtonSize.large:
+        return const EdgeInsets.symmetric(horizontal: 20, vertical: 16);
     }
   }
 
+  // ======================
+  // Style Resolver
+  // ======================
   Color get _backgroundColor {
     if (!enabled) return AppColors.gray20;
 
@@ -80,6 +89,14 @@ class CustomButton extends StatelessWidget {
       default:
         return AppColors.primary;
     }
+  }
+
+  EdgeInsetsGeometry get _effectivePadding {
+    // border가 있을 때만 padding을 1px 빼서 안쪽 border 느낌 구현
+    if (hasBorder) {
+      return _paddingBySize.subtract(const EdgeInsets.all(1));
+    }
+    return _paddingBySize;
   }
 
   Color get _textColor {

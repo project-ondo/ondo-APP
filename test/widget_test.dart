@@ -1,30 +1,74 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:ondo/main.dart';
+import 'package:ondo/core/design_system/components/custom_button.dart';
+import 'package:ondo/core/design_system/components/custom_textfield.dart';
+import 'package:ondo/core/design_system/component_variants.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('ONDO App Widget Tests', () {
+    testWidgets('CustomButton tap triggers onPressed', (WidgetTester tester) async {
+      bool tapped = false;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CustomButton(
+              text: 'Test Button',
+              variant: ButtonVariant.primary,
+              onPressed: () {
+                tapped = true;
+              },
+            ),
+          ),
+        ),
+      );
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+      // 버튼이 화면에 있는지 확인
+      expect(find.text('Test Button'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      // 버튼 탭
+      await tester.tap(find.byType(CustomButton));
+      await tester.pump();
+
+      // onPressed 실행 확인
+      expect(tapped, true);
+    });
+
+    testWidgets('CustomTextField accepts input', (WidgetTester tester) async {
+      final controller = TextEditingController();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: CustomTextField(
+              label: 'Name',
+              hintText: 'Enter your name',
+              controller: controller,
+            ),
+          ),
+        ),
+      );
+
+      // TextField 찾기
+      final textField = find.byType(TextFormField);
+      expect(textField, findsOneWidget);
+
+      // 입력 테스트
+      await tester.enterText(textField, 'Eunseo');
+      await tester.pump();
+
+      // 입력 값 확인
+      expect(controller.text, 'Eunseo');
+      expect(find.text('Eunseo'), findsOneWidget);
+    });
+
+    testWidgets('Main app renders without crashing', (WidgetTester tester) async {
+      await tester.pumpWidget(const MyApp());
+      await tester.pumpAndSettle();
+
+      // MyApp 내 위젯 존재 여부 간단 체크
+      expect(find.byType(MyApp), findsOneWidget);
+    });
   });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ondo/presentation/home/widgets/home_recent_popular_list.dart';
 import 'package:ondo/presentation/home/widgets/home_top_bar.dart';
 
 
@@ -11,29 +12,8 @@ void main() {
   );
 }
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  late TextEditingController _searchController;
-
-  @override
-  void initState() {
-    _searchController = TextEditingController();
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               HomeTopBar(),
+
+
+              SizedBox(height: 16,),
+
+
             ],
           ),
         ),

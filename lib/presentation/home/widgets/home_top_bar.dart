@@ -8,8 +8,6 @@ class HomeTopBar extends StatelessWidget {
 
   HomeTopBar({super.key});
 
-  final TextEditingController _searchController = TextEditingController();
-
   final double height = 44.0;
 
   @override

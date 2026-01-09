@@ -1,14 +1,8 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
-import 'package:ondo/core/design_system/app_text_styles.dart';
-import 'package:ondo/core/design_system/app_theme.dart';
-import 'package:ondo/core/design_system/component_variants.dart';
-import 'package:ondo/core/design_system/components/custom_button.dart';
+import 'package:ondo/core/router/app_router.dart';
 
-import 'core/design_system/components/custom_textfield.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,14 +13,12 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This components is the root of your application.
+  // This components is theroot of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: AppTheme.appTheme(),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      routerConfig: appRouter,
     );
   }
 }

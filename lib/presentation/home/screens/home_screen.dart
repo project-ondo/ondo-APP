@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ondo/presentation/home/widgets/home_recent_popular_list.dart';
 import 'package:ondo/presentation/home/widgets/home_top_bar.dart';
 
 
@@ -26,9 +25,6 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             children: [
               HomeTopBar(),
-
-
-              SizedBox(height: 16,),
 
 
             ],

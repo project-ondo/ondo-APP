@@ -8,9 +8,9 @@ class HomeTopBar extends StatelessWidget {
 
   HomeTopBar({super.key});
 
-  late TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
-  final height = 44.0;
+  final double height = 44.0;
 
   @override
   Widget build(BuildContext context) {
@@ -54,11 +54,11 @@ class HomeTopBar extends StatelessWidget {
 }
 
 class HomeAlertButton extends StatelessWidget {
-  final _size;
+  final double _size;
 
   HomeAlertButton({super.key, required dynamic size}) : _size = size;
 
-  final alertController = Get.put(HomeAlertController());
+  final HomeAlertController alertController = Get.put(HomeAlertController());
 
   @override
   Widget build(BuildContext context) {

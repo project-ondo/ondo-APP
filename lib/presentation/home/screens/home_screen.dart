@@ -12,29 +12,8 @@ void main() {
   );
 }
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  late TextEditingController _searchController;
-
-  @override
-  void initState() {
-    _searchController = TextEditingController();
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -66,7 +66,7 @@ class HomeRecentPopularList extends StatelessWidget {
                       final item = postList[pageIndex][itemIndex];
                       //게시물 탭
                       return RecentPopularPost(
-                        rank: itemIndex,
+                        rank: ( (pageIndex * 3) + (itemIndex + 1)),
                         title: item.title,
                         postDate: item.postAt,
                         popularity: item.popularity,

@@ -4,9 +4,10 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:get/get.dart';
 import 'package:ondo/presentation/home/controllers/home_alert_controller.dart';
 
+@immutable
 class HomeTopBar extends StatelessWidget {
 
-  HomeTopBar({super.key});
+  const HomeTopBar({super.key});
 
   final double height = 44.0;
 
@@ -51,10 +52,11 @@ class HomeTopBar extends StatelessWidget {
   }
 }
 
+@immutable
 class HomeAlertButton extends StatelessWidget {
   final double _size;
 
-  HomeAlertButton({super.key, required dynamic size}) : _size = size;
+  HomeAlertButton({super.key, required final double size}) : _size = size;
 
   final HomeAlertController alertController = Get.put(HomeAlertController());
 

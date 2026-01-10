@@ -6,9 +6,11 @@ class AppTheme {
 
   static ThemeData appTheme() {
     return ThemeData(
+      fontFamily: 'Pretendard',
       scaffoldBackgroundColor: AppColors.white,
       primaryColor: AppColors.primary,
       focusColor: AppColors.black,
     );
   }
 }
+

@@ -25,7 +25,7 @@ class BaseScaffold extends StatelessWidget {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: appBar,
-      body: body,
+      body: SafeArea(child: body),
       bottomNavigationBar: bottomNavigationBar,
       floatingActionButton: floatingActionButton,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,

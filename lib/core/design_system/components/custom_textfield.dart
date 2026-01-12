@@ -13,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final bool hasError;
   final TextFieldVariant variant;
   final ValueChanged<String>? onChanged;
+  final double radius;
 
   const CustomTextField({
     super.key,
@@ -24,6 +25,7 @@ class CustomTextField extends StatelessWidget {
     this.hasError = false,
     this.variant = TextFieldVariant.normal,
     this.onChanged,
+    this.radius = 0,
   });
 
   @override
@@ -41,25 +43,29 @@ class CustomTextField extends StatelessWidget {
         const SizedBox(height: 4),
 
         /// Input
-        TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          obscureText: variant == TextFieldVariant.password,
-          onChanged: onChanged,
-          style: AppTextStyles.textMedium(
-            textColor: hasError ? AppColors.red : AppColors.gray80,
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.gray20,
+            borderRadius: BorderRadius.circular(radius)
           ),
-          cursorColor: AppColors.black,
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16),
-            hintText: hintText,
-            hintStyle: AppTextStyles.textMedium(
-              textColor: AppColors.gray60,
+          child: TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            obscureText: variant == TextFieldVariant.password,
+            onChanged: onChanged,
+            style: AppTextStyles.textMedium(
+              textColor: hasError ? AppColors.red : AppColors.gray80,
             ),
-            filled: true,
-            fillColor: AppColors.gray20,
-            border: InputBorder.none,
-            focusedBorder: InputBorder.none,
+            cursorColor: AppColors.black,
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              hintText: hintText,
+              hintStyle: AppTextStyles.textMedium(
+                textColor: AppColors.gray60,
+              ),
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+            ),
           ),
         ),
 

@@ -74,7 +74,6 @@ class CustomTextField extends StatelessWidget {
           minWidth: 0,
           minHeight: 0,
         ),
-
       ),
     );
   }
@@ -110,7 +109,7 @@ class LabelTextField extends StatelessWidget {
             textColor: AppColors.gray80,
           ),
         ),
-        const SizedBox(height: 4),
+        AppGap.v4,
 
         /// Input
         CustomTextField(
@@ -120,7 +119,16 @@ class LabelTextField extends StatelessWidget {
           errorText: errorText,
         ),
 
-
+        /// Error Message
+        if (hasError) ...[
+           AppGap.v8,
+          Text(
+            errorText!,
+            style: AppTextStyles.textMedium(
+              textColor: AppColors.red,
+            ),
+          ),
+        ],
       ],
     );
   }

@@ -47,7 +47,7 @@ class CustomTextField extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.gray20,
             borderRadius: BorderRadius.circular(radius)
-          ), // border 추가
+          ),
           child: TextFormField(
             controller: controller,
             keyboardType: keyboardType,

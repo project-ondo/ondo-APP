@@ -11,7 +11,3 @@ enum ButtonSize {
   large,
 }
 
-enum TextFieldVariant {
-  normal,
-  password,
-}

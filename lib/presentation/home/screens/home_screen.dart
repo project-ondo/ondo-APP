@@ -10,21 +10,19 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: true,
-      child: BaseScaffold(
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              HomeTopBar(),
+    return BaseScaffold(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Column(
+          children: [
+            HomeTopBar(),
 
-              SizedBox(height: 16,),
+            SizedBox(
+              height: 16,
+            ),
 
-              HomePopularPostList(),
-
-            ],
-          ),
+            HomePopularPostList(),
+          ],
         ),
       ),
     );
@@ -47,10 +45,12 @@ class HomePopularPostList extends StatelessWidget {
           style: AppTextStyles.titleBold16(textColor: AppColors.gray90),
         ),
 
-        const SizedBox(height: 16,),
+        const SizedBox(
+          height: 16,
+        ),
 
         SizedBox(
-          height: 300,
+          height: 186,
           child: PageView.builder(
             scrollDirection: Axis.horizontal,
             itemBuilder: (context, pageIndex) {
@@ -75,7 +75,32 @@ class HomePopularPostList extends StatelessWidget {
             itemCount: (popularPosts.length ~/ 3) + 1,
           ),
         ),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            circle(true),
+            circle(false),
+            circle(false),
+          ],
+        ),
+
+
       ],
+    );
+  }
+
+  Widget circle(bool isFocus) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      child: Container(
+        width: 4,
+        height: 4,
+        decoration: BoxDecoration(
+          color: isFocus ? AppColors.gray80 : AppColors.gray60,
+          borderRadius: BorderRadius.circular(32),
+        ),
+      ),
     );
   }
 }

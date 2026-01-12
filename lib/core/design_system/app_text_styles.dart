@@ -53,4 +53,18 @@ class AppTextStyles {
       fontWeight: FontWeight.w500,
     );
   }
+
+  static TextStyle subCaption({
+    Color? textColor,
+  }) {
+    return TextStyle(
+      color: textColor ?? AppColors.black,
+      fontSize: 11,
+      fontWeight: FontWeight.w500,
+    );
+  }
+
+
+
+
 }

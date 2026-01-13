@@ -35,7 +35,7 @@ class TermsAgreementScreen extends StatelessWidget {
                     },
                   ),
 
-                  SizedBox(height: 36),
+                  AppGap.v36,
                   TitleText.titleText(
                     '온도에 오신 것을 환영합니다! \n개인정보 수집 및 이용에 동의해주세요',
                   ),

@@ -7,7 +7,7 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/controllers/terms_agreement_controller.dart';
 import 'package:ondo/presentation/auth/signup/widgets/agreement_checkbox.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
-import 'package:ondo/presentation/auth/signup/widgets/next_screen_button.dart';
+import 'package:ondo/presentation/auth/signup/widgets/next_button.dart';
 import 'package:ondo/presentation/auth/signup/widgets/terms_agreement_card.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
@@ -55,7 +55,7 @@ class TermsAgreementScreen extends StatelessWidget {
               ),
 
               Obx(
-                () => NextScreenButton(
+                () => NextButton(
                   isAgreementChecked: termsAgreementController.canProceed,
                 ),
               ),

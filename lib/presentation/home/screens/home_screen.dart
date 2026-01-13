@@ -13,12 +13,12 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseScaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: AppPadding.screenHorizontal,
         child: Column(
           children: [
             HomeTopBar(),
 
-            AppGap.h16,
+            AppGap.v16,
 
             HomePopularPostList(),
           ],
@@ -44,7 +44,7 @@ class HomePopularPostList extends StatelessWidget {
           style: AppTextStyles.titleBold16(textColor: AppColors.gray90),
         ),
 
-        AppGap.h16,
+        AppGap.v16,
     
         SizedBox(
           height: 186,
@@ -58,7 +58,7 @@ class HomePopularPostList extends StatelessWidget {
                     return SizedBox.shrink();
                   }
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
+                    padding: const EdgeInsets.only(bottom: AppSpacing.s16),
                     child: HomePopularPostItem(
                       title: "요즘 공부 어케 하시나요 다들",
                       createAgo: 3,

@@ -7,7 +7,9 @@ import 'package:ondo/core/design_system/component_variants.dart';
 
 void main() {
   group('ONDO App Widget Tests', () {
-    testWidgets('CustomButton tap triggers onPressed', (WidgetTester tester) async {
+    testWidgets('CustomButton tap triggers onPressed', (
+      WidgetTester tester,
+    ) async {
       bool tapped = false;
 
       await tester.pumpWidget(
@@ -42,9 +44,8 @@ void main() {
         MaterialApp(
           home: Scaffold(
             body: CustomTextField(
-              label: 'Name',
-              hintText: 'Enter your name',
               controller: controller,
+              hintText: '테스트',
             ),
           ),
         ),
@@ -63,7 +64,9 @@ void main() {
       expect(find.text('Eunseo'), findsOneWidget);
     });
 
-    testWidgets('Main app renders without crashing', (WidgetTester tester) async {
+    testWidgets('Main app renders without crashing', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(const MyApp());
       await tester.pumpAndSettle();
 

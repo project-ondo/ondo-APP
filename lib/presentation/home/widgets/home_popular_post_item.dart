@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
+import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
 @immutable
@@ -56,9 +57,7 @@ class HomePopularPostItem extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(
-            width: 16,
-          ),
+          AppGap.h16,
 
           Row(
             children: [

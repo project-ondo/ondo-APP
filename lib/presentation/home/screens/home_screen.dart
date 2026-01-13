@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
+import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/home/widgets/home_popular_post_item.dart';
@@ -17,9 +18,7 @@ class HomeScreen extends StatelessWidget {
           children: [
             HomeTopBar(),
 
-            SizedBox(
-              height: 16,
-            ),
+            AppGap.h16,
 
             HomePopularPostList(),
           ],
@@ -45,10 +44,8 @@ class HomePopularPostList extends StatelessWidget {
           style: AppTextStyles.titleBold16(textColor: AppColors.gray90),
         ),
 
-        const SizedBox(
-          height: 16,
-        ),
-
+        AppGap.h16,
+    
         SizedBox(
           height: 186,
           child: PageView.builder(

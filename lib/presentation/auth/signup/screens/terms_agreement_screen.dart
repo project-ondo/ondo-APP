@@ -11,9 +11,6 @@ import 'package:ondo/presentation/auth/signup/widgets/next_screen_button.dart';
 import 'package:ondo/presentation/auth/signup/widgets/terms_agreement_card.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
-void main() {
-  runApp(MaterialApp(home: TermsAgreementScreen()));
-}
 
 class TermsAgreementScreen extends StatelessWidget {
    TermsAgreementScreen({super.key});

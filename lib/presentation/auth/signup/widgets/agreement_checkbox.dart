@@ -30,7 +30,7 @@ class AgreementCheckbox extends StatelessWidget {
           Text(
             AppStrings.privacyAgreementTitle,
             style: AppTextStyles.textMedium(
-              textColor: isChecked ? AppColors.primary : Color(0xffB2B2B2),
+              textColor: isChecked ? AppColors.primary : AppColors.gray50,
             ),
           ),
         ],

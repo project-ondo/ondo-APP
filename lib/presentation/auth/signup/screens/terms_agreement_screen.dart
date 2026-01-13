@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/controllers/terms_agreement_controller.dart';
 import 'package:ondo/presentation/auth/signup/widgets/agreement_checkbox.dart';
@@ -37,7 +38,7 @@ class TermsAgreementScreen extends StatelessWidget {
 
                   AppGap.v36,
                   TitleText.titleText(
-                    '온도에 오신 것을 환영합니다! \n개인정보 수집 및 이용에 동의해주세요',
+                    AppStrings.agreementTitle
                   ),
 
                   AppGap.v24,

@@ -10,7 +10,8 @@ enum AppIcon {
   arrowLeft,
   bookmark,
   camera,
-  checkLogin,
+  check,
+  checkOn,
   defaultProfile,
   heart,
   logo,
@@ -59,8 +60,10 @@ extension AppIconPath on AppIcon {
         return '$_basePath/bookmark.png';
       case AppIcon.camera:
         return '$_basePath/camera.svg';
-      case AppIcon.checkLogin:
-        return '$_basePath/check_login.svg';
+      case AppIcon.check:
+        return '$_basePath/check.svg';
+      case AppIcon.checkOn:
+        return '$_basePath/check_on.svg';
       case AppIcon.defaultProfile:
         return '$_basePath/default_profile.svg';
       case AppIcon.heart:

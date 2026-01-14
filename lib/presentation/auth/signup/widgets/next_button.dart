@@ -8,11 +8,13 @@ import '../../../../core/design_system/components/custom_button.dart';
 class NextButton extends StatelessWidget {
   final bool? isAgreementChecked;
   final String? text;
+  final VoidCallback? onPressed;
 
   const NextButton({
     super.key,
     this.isAgreementChecked,
     this.text,
+    this.onPressed,
   });
 
   @override
@@ -23,7 +25,7 @@ class NextButton extends StatelessWidget {
           text: text ?? '다음',
           variant: ButtonVariant.primary,
           enabled: isAgreementChecked ?? false,
-          onPressed: () {
+          onPressed: onPressed ?? (){
             log('이동');
           },
         ),

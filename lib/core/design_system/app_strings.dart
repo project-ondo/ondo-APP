@@ -1,24 +1,24 @@
 class AppStrings {
   static const agreementTitle = '온도에 오신 것을 환영합니다! \n개인정보 수집 및 이용에 동의해주세요';
 
-  static const emailInputTitle = '계정 인증을 위해 이메일을 입력해주세요';
+  static const emailInputTitle = '계정 인증을 위해 \n이메일을 입력해주세요';
 
-  static const emailCodeInputTitle = '이메일로 발송된 인증번호를 입력해주세요';
+  static const emailCodeInputTitle = '이메일로 발송된 \n인증번호를 입력해주세요';
 
-  static const emailPasswordInputTitle = '온도에 등록될 이메일의 비밀번호를 입력해주세요';
+  static const emailPasswordInputTitle = '온도에 등록될 이메일의 \n비밀번호를 입력해주세요';
 
   static const emailInputHint = 'account@example.com';
 
   static const passwordInputHint = '비밀번호를 입력해주세요';
   static const passwordCheckHint = '비밀번호를 다시 입력해주세요';
 
-  static const nicknameInputTitle = '온도에서 사용할 닉네임을 입력해주세요';
+  static const nicknameInputTitle = '온도에서 사용할 \n닉네임을 입력해주세요';
 
   static const profileRegistrationTitle = '프로필을 등록해주세요';
 
   static const selfIntroductionTitle = '회원님을 소개해주세요';
 
-  static const majorInterestSelectionTitle = '전공과 관심분야를 선택해주세요';
+  static const majorInterestSelectionTitle = '전공과 관심분야를 \n선택해주세요';
 
   static const nicknameInputHint = '닉네임을 입력해주세요';
 

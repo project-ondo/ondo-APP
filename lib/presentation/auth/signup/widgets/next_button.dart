@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import '../../../../core/design_system/app_layout.dart';
 import '../../../../core/design_system/component_variants.dart';
@@ -25,9 +23,7 @@ class NextButton extends StatelessWidget {
           text: text ?? '다음',
           variant: ButtonVariant.primary,
           enabled: isAgreementChecked ?? false,
-          onPressed: onPressed ?? (){
-            log('이동');
-          },
+          onPressed: onPressed,
         ),
         AppGap.v16,
       ],

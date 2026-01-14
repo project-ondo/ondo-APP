@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 enum EmailInputState {
@@ -7,7 +8,28 @@ enum EmailInputState {
 }
 
 class EmailController extends GetxController {
+  late final TextEditingController emailTextController;
+
   EmailInputState emailState = EmailInputState.initial;
+
+  bool get hasEmailInput => emailTextController.text.trim().isNotEmpty;
+
+  @override
+  void onInit() {
+    super.onInit();
+    emailTextController = TextEditingController();
+
+    // 텍스트 변경 시 자동으로 UI 업데이트
+    emailTextController.addListener(() {
+      update();
+    });
+  }
+
+  @override
+  void onClose() {
+    emailTextController.dispose();
+    super.onClose();
+  }
 
   bool validateEmail(String email) {
     if (_isValidEmail(email)) {
@@ -20,7 +42,6 @@ class EmailController extends GetxController {
       return false;
     }
   }
-
 
   bool _isValidEmail(String email) {
     final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');

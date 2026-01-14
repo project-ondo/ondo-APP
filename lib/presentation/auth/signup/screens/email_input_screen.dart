@@ -72,7 +72,7 @@ class _EmailInputScreenState extends State<EmailInputScreen> {
       children: [
         AppGap.v16,
         LoginBackButton(onTap: Get.back),
-        const SizedBox(height: 36),
+        AppGap.v36,
         TitleText.titleText(
           AppStrings.emailInputTitle,
         ),

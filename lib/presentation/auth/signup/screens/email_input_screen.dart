@@ -7,18 +7,18 @@ import '../../../../core/design_system/app_layout.dart';
 import '../../../../core/design_system/components/custom_textfield.dart';
 import '../../../../core/ui/base/base_scaffold.dart';
 
-import '../controllers/email_controller.dart';
+import '../controllers/email_input_controller.dart';
 import '../widgets/login_back_button.dart';
 import '../widgets/next_button.dart';
 import '../widgets/title_text.dart';
 
 
-class EmailInputScreen extends GetView<EmailController> {
+class EmailInputScreen extends GetView<EmailInputController> {
   const EmailInputScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => EmailController());
+    Get.lazyPut(() => EmailInputController());
 
     return SafeArea(
       child: BaseScaffold(
@@ -51,7 +51,7 @@ class EmailInputScreen extends GetView<EmailController> {
   }
 
   Widget _buildEmailField() {
-    return GetBuilder<EmailController>(
+    return GetBuilder<EmailInputController>(
       builder: (controller) {
         return LabelTextField(
           label: '이메일',
@@ -68,7 +68,7 @@ class EmailInputScreen extends GetView<EmailController> {
   }
 
   Widget _buildNextButton() {
-    return GetBuilder<EmailController>(
+    return GetBuilder<EmailInputController>(
       builder: (controller) {
         return NextButton(
           isAgreementChecked: controller.hasEmailInput,

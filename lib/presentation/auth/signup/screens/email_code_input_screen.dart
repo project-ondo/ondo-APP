@@ -1,8 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
@@ -10,31 +9,17 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
-import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/auth/signup/controllers/email_code_input_controller.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
-void main() {
-  runApp(
-    MaterialApp.router(
-      routerConfig: appRouter,
-    ),
-  );
-}
-
-class EmailCodeInputScreen extends StatefulWidget {
+class EmailCodeInputScreen extends GetView<EmailCodeInputController> {
   const EmailCodeInputScreen({super.key});
 
   @override
-  State<EmailCodeInputScreen> createState() => _EmailCodeInputScreenState();
-}
-
-TextEditingController emailCodeController = TextEditingController();
-
-class _EmailCodeInputScreenState extends State<EmailCodeInputScreen> {
-  @override
   Widget build(BuildContext context) {
+    Get.put(EmailCodeInputController());
     return SafeArea(
       child: BaseScaffold(
         body: Padding(
@@ -61,17 +46,25 @@ class _EmailCodeInputScreenState extends State<EmailCodeInputScreen> {
                     padding: AppPadding.textField,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      AppStrings.emailInputHint,
+                      controller.email,
                       style: AppTextStyles.textMedium(
                         textColor: AppColors.gray60,
                       ),
                     ),
                   ),
                   AppGap.v24,
-                  LabelTextField(
-                    label: '인증번호',
-                    controller: emailCodeController,
-                    hintText: '인증번호를 입력해주세요',
+                  GetBuilder<EmailCodeInputController>(
+                    builder: (controller) {
+                      return LabelTextField(
+                        label: '인증번호',
+                        keyboardType: TextInputType.number,
+                        controller: controller.emailCodeTextController,
+                        hintText: AppStrings.emailCodeInputHint,
+                        errorText: controller.hasError
+                            ? controller.errorMessage
+                            : null,
+                      );
+                    },
                   ),
                 ],
               ),
@@ -93,10 +86,21 @@ class _EmailCodeInputScreenState extends State<EmailCodeInputScreen> {
                     ),
                   ),
                   AppGap.v16,
-                  CustomButton(
-                    text: '인증하기',
-                    variant: ButtonVariant.primary,onPressed: () {
-                      log('이메일 인증');
+                  GetBuilder<EmailCodeInputController>(
+                    builder: (controller) {
+                      return CustomButton(
+                        text: '인증하기',
+                        variant: ButtonVariant.primary,
+                        enabled: controller.isButtonEnabled,
+                        onPressed: controller.isButtonEnabled ? () {
+                          controller.verifyEmailCode();
+                          if (controller.codeState.value ==
+                              EmailCodeState.valid){
+                            log('이메인 인증 성공');
+                          }
+                        }
+                        : null,
+                      );
                     },
                   ),
                   AppGap.v16,

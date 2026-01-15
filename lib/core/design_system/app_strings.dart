@@ -62,4 +62,10 @@ class AppStrings {
 
   static const ruleViolationWarning =
       '위 규칙을 상습적으로 지키지 않을 시에 관리자에게 \n제재를 받을 수 있어요!';
+
+  static const emailCodeInputHint = '인증번호를 입력해주세요';
+
+  static const anotherEmailInput = '다른 이메일을 입력하시고 싶나요?';
+
+  static const invalidEmailCode = '인증번호가 달라요. 인증번호를 다시 한번 확인해주세요!';
 }

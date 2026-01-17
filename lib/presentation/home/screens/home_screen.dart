@@ -3,7 +3,7 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/home/widgets/home_popular_post_item.dart';
+import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
 import 'package:ondo/presentation/home/widgets/home_top_bar.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -20,7 +20,7 @@ class HomeScreen extends StatelessWidget {
 
             AppGap.v16,
 
-            HomePopularPostList(),
+            HomePostRankList(),
           ],
         ),
       ),
@@ -29,10 +29,10 @@ class HomeScreen extends StatelessWidget {
 }
 
 @immutable
-class HomePopularPostList extends StatelessWidget {
+class HomePostRankList extends StatelessWidget {
   final List<Map<String, dynamic>> popularPosts;
 
-  HomePopularPostList({super.key}) : popularPosts = [{}, {}, {}, {}, {}];
+  HomePostRankList({super.key}) : popularPosts = [{}, {}, {}, {}, {}];
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class HomePopularPostList extends StatelessWidget {
                   }
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.s16),
-                    child: HomePopularPostItem(
+                    child: HomePostRankItem(
                       title: "요즘 공부 어케 하시나요 다들",
                       createAgo: 3,
                       favorite: 160,

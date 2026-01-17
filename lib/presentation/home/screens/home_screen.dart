@@ -3,8 +3,18 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/home/widgets/base_home_post_list.dart';
+import 'package:ondo/presentation/home/widgets/home_post_item.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
 import 'package:ondo/presentation/home/widgets/home_top_bar.dart';
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: HomeScreen(),
+    ),
+  );
+}
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,14 +24,19 @@ class HomeScreen extends StatelessWidget {
     return BaseScaffold(
       body: Padding(
         padding: AppPadding.screenHorizontal,
-        child: Column(
-          children: [
-            HomeTopBar(),
-
-            AppGap.v16,
-
-            HomePostRankList(),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              HomeTopBar(),
+          
+              AppGap.v16,
+          
+              HomePostRankList(),
+          
+              _BookMarkedPostList(posts: [{}, {}, {}], title: "즐겨찾기한 게시물"),
+              _RecommendPostList(posts: [{}, {}, {}], title: "추천 게시물"),
+            ],
+          ),
         ),
       ),
     );
@@ -100,4 +115,42 @@ class HomePostRankList extends StatelessWidget {
       ),
     );
   }
+}
+
+@immutable
+class _BookMarkedPostList extends BaseHomePostList {
+  final List<Map<String, dynamic>> posts;
+
+  _BookMarkedPostList({required this.posts, required super.title})
+    : super(
+        list: List.generate(posts.length, (index) {
+          return HomePostItem(
+            skills: ["UI/UX", "FrontEnd"],
+            title: "요즘 UI UX",
+            author: "김유찬",
+            bookmarks: 12,
+            favorites: 12,
+            createMinutes: 4,
+          );
+        }),
+      );
+}
+
+@immutable
+class _RecommendPostList extends BaseHomePostList {
+  final List<Map<String, dynamic>> posts;
+
+  _RecommendPostList({required this.posts, required super.title})
+    : super(
+        list: List.generate(posts.length, (index) {
+          return HomePostItem(
+            skills: ["UI/UX", "FrontEnd"],
+            title: "요즘 UI UX",
+            author: "김유찬",
+            bookmarks: 12,
+            favorites: 12,
+            createMinutes: 4,
+          );
+        }),
+      );
 }

@@ -1,74 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
-import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/app_icon.dart';
+import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/presentation/home/controllers/home_alert_controller.dart';
 
 @immutable
 class HomeTopBar extends StatelessWidget {
+  final TextEditingController _searchController = TextEditingController();
+  final HomeAlertController _alertController = Get.put(HomeAlertController());
 
-  const HomeTopBar({super.key});
+  HomeTopBar({super.key});
 
-  final double height = 44.0;
+  final double _alertSize = 44.0;
+  final double _textFieldSize = 320;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Container(
-              height: height,
-              alignment: Alignment.centerLeft,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: AppColors.gray20,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                child: Row(
-                  children: [
-
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: Icon(Icons.search, color: AppColors.gray60, size: 14.2,),
-                    ),
-
-                    Text("게시물 또는 프로필 검색어를 입력해 주세요", style: AppTextStyles.textMedium(textColor: AppColors.gray60),),
-                  ],
-                ),
-              ),
-            ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: _textFieldSize,
+          height: _alertSize,
+          child: CustomTextField(
+            controller: _searchController,
+            hintText: "게시물 또는 프로필 검색어를 입력해 주세요",
+            prefix: SvgPicture.asset(AppIcon.searchFocus.path),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 16),
-            child: HomeAlertButton(size: height,),
-          ),
-        ],
-      ),
+        ),
+
+        Spacer(),
+
+        HomeAlertButton(
+          size: _alertSize,
+          alertController: _alertController,
+        ),
+      ],
     );
   }
 }
 
 @immutable
 class HomeAlertButton extends StatelessWidget {
-  final double _size;
+  final HomeAlertController alertController;
+  final double size;
 
-  HomeAlertButton({super.key, required final double size}) : _size = size;
+  HomeAlertButton({
+    super.key,
+    required this.size,
+    required this.alertController,
+  });
 
-  final HomeAlertController alertController = Get.put(HomeAlertController());
+  final double _iconSize = 16;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: _size,
-      height: _size,
+      width: size,
+      height: size,
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: AppColors.gray20,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: AppRadius.baseRadius,
       ),
       child: SizedBox.expand(
         child: Stack(
@@ -76,21 +72,25 @@ class HomeAlertButton extends StatelessWidget {
             Align(
               alignment: Alignment.center,
               child: Obx(
-                    () => Icon(
-                  Icons.add_alert,
-                  size: 24,
-                  color: alertController.enable.value
-                      ? AppColors.primaryDark
-                      : AppColors.gray40,
-                ),
+                () => alertController.enable.value
+                    ? SvgPicture.asset(
+                        AppIcon.alarmBrown.path,
+                        height: _iconSize,
+                        width: _iconSize,
+                      )
+                    : SvgPicture.asset(
+                        AppIcon.alarmGrey.path,
+                        height: _iconSize,
+                        width: _iconSize,
+                      ),
               ),
             ),
 
             Positioned(
-              top: 9,
-              right: 5,
+              top: 11,
+              right: 7,
               child: Obx(
-                    () => Container(
+                () => Container(
                   padding: EdgeInsets.all(2),
                   alignment: Alignment.center,
                   decoration: BoxDecoration(

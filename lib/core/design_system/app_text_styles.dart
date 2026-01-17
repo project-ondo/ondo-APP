@@ -34,6 +34,16 @@ class AppTextStyles {
     );
   }
 
+  static TextStyle titleSm16({
+    Color? textColor,
+  }) {
+    return TextStyle(
+      color: textColor ?? AppColors.black,
+      fontSize: 16,
+      fontWeight: FontWeight.w600, //smeiBold
+    );
+  }
+
   static TextStyle textMedium({
     Color? textColor,
   }) {

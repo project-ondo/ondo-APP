@@ -78,7 +78,7 @@ class _MainContent extends StatelessWidget {
   final String title;
   final String author;
 
-  const _MainContent({super.key, required this.title, required this.author});
+  const _MainContent({required this.title, required this.author});
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +106,6 @@ class _SubContent extends StatelessWidget {
   final int createMinutes;
 
   const _SubContent({
-    super.key,
     required this.favorites,
     required this.bookmarks,
     required this.createMinutes,
@@ -121,7 +120,7 @@ class _SubContent extends StatelessWidget {
         customIcon(AppIcon.bookmark.path, bookmarks),
         Expanded(
           child: Text(
-            "${createMinutes}분전",
+            "$createMinutes분전",
             style: AppTextStyles.caption(textColor: AppColors.gray50),
           ),
         ),

@@ -48,7 +48,7 @@ class HomeAlertButton extends StatelessWidget {
   final HomeAlertController alertController;
   final double size;
 
-  HomeAlertButton({
+  const HomeAlertButton({
     super.key,
     required this.size,
     required this.alertController,

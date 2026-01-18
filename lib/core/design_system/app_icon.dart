@@ -40,15 +40,15 @@ extension AppIconPath on AppIcon {
   String get path {
     switch (this) {
       case AppIcon.star1:
-        return '$_basePath/star1.svg';
+        return '$_basePath/1star.svg';
       case AppIcon.star2:
-        return '$_basePath/star2.svg';
+        return '$_basePath/2star.svg';
       case AppIcon.star3:
-        return '$_basePath/star3.svg';
+        return '$_basePath/3star.svg';
       case AppIcon.star4:
-        return '$_basePath/star4.svg';
+        return '$_basePath/4star.svg';
       case AppIcon.star5:
-        return '$_basePath/star5.svg';
+        return '$_basePath/5star.svg';
 
       case AppIcon.alarmBrown:
         return '$_basePath/alarm_brown.svg';

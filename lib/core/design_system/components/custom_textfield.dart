@@ -12,6 +12,7 @@ class CustomTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
   final bool enabled;
+  final bool isError;
   final String? errorText;
   final double radius;
   final Widget? prefix;
@@ -25,6 +26,7 @@ class CustomTextField extends StatelessWidget {
     this.onChanged,
     this.onSubmitted,
     this.enabled = true,
+    this.isError = false,
     this.errorText,
     this.radius = 8,
     this.prefix,
@@ -32,7 +34,7 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasError = errorText != null;
+    final hasError = isError || (errorText != null);
 
     return TextFormField(
       controller: controller,
@@ -105,6 +107,7 @@ class LabelTextField extends StatelessWidget {
   final String? errorText;
   final bool obscureText;
   final bool enabled;
+  final bool isError;
   final TextInputType keyboardType;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
@@ -117,6 +120,7 @@ class LabelTextField extends StatelessWidget {
     this.errorText,
     this.obscureText = false,
     this.enabled = true,
+    this.isError = false,
     this.keyboardType = TextInputType.text,
     this.onChanged,
     this.onSubmitted,
@@ -124,7 +128,6 @@ class LabelTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasError = errorText != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,6 +147,7 @@ class LabelTextField extends StatelessWidget {
           hintText: hintText,
           keyboardType: keyboardType,
           obscureText: obscureText,
+          isError: isError,
           enabled: enabled,
           onChanged: onChanged,
           onSubmitted: onSubmitted,
@@ -151,7 +155,7 @@ class LabelTextField extends StatelessWidget {
         ),
 
         /// Error Message
-        if (hasError) ...[
+        if (errorText != null) ...[
           AppGap.v8,
           Text(
             errorText!,

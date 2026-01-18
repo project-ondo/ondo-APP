@@ -31,8 +31,8 @@ class HomeScreen extends StatelessWidget {
 
               HomeRecommendChatList(),
 
-              _BookMarkedPostList(posts: [{}, {}, {}], title: "즐겨찾기한 게시물"),
-              _RecommendPostList(posts: [{}, {}, {}], title: "추천 게시물"),
+              _BookMarkedPostList(posts: [{}, {}, {}]),
+              _RecommendPostList(posts: [{}, {}, {}]),
             ],
           ),
         ),
@@ -58,7 +58,7 @@ class HomePostRankList extends StatelessWidget {
         ),
 
         AppGap.v16,
-    
+
         SizedBox(
           height: 186,
           child: PageView.builder(
@@ -167,8 +167,9 @@ class HomeRecommendChatList extends StatelessWidget {
 class _BookMarkedPostList extends BaseHomePostList {
   final List<Map<String, dynamic>> posts;
 
-  _BookMarkedPostList({required this.posts, required super.title})
+  _BookMarkedPostList({required this.posts})
     : super(
+        title: "즐겨찾기한 게시물",
         list: List.generate(posts.length, (index) {
           return HomePostItem(
             skills: ["UI/UX", "FrontEnd"],
@@ -186,8 +187,9 @@ class _BookMarkedPostList extends BaseHomePostList {
 class _RecommendPostList extends BaseHomePostList {
   final List<Map<String, dynamic>> posts;
 
-  _RecommendPostList({required this.posts, required super.title})
+  _RecommendPostList({required this.posts})
     : super(
+        title: "추천 게시물",
         list: List.generate(posts.length, (index) {
           return HomePostItem(
             skills: ["UI/UX", "FrontEnd"],

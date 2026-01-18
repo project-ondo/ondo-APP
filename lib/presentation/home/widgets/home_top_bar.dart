@@ -4,6 +4,7 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/presentation/home/controllers/home_alert_controller.dart';
 
@@ -87,8 +88,8 @@ class HomeAlertButton extends StatelessWidget {
             ),
 
             Positioned(
-              top: 11,
-              right: 7,
+              top: size * 0.2,
+              right: size * 0.2,
               child: Obx(
                 () => Container(
                   padding: EdgeInsets.all(2),
@@ -99,10 +100,8 @@ class HomeAlertButton extends StatelessWidget {
                   ),
                   child: Text(
                     "${alertController.totals.value}",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 8,
-                      fontWeight: FontWeight.bold,
+                    style: AppTextStyles.captionSmall(
+                      textColor: AppColors.white,
                     ),
                     textAlign: TextAlign.center,
                   ),

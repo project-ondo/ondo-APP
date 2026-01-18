@@ -6,15 +6,9 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/home/widgets/base_home_post_list.dart';
 import 'package:ondo/presentation/home/widgets/home_post_item.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
+import 'package:ondo/presentation/home/widgets/home_recommend_chat.dart';
 import 'package:ondo/presentation/home/widgets/home_top_bar.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: HomeScreen(),
-    ),
-  );
-}
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -28,11 +22,15 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             children: [
               HomeTopBar(),
-          
+
               AppGap.v16,
-          
+
               HomePostRankList(),
-          
+
+              AppGap.v16,
+
+              HomeRecommendChatList(),
+
               _BookMarkedPostList(posts: [{}, {}, {}], title: "즐겨찾기한 게시물"),
               _RecommendPostList(posts: [{}, {}, {}], title: "추천 게시물"),
             ],
@@ -113,6 +111,54 @@ class HomePostRankList extends StatelessWidget {
           borderRadius: BorderRadius.circular(32),
         ),
       ),
+    );
+  }
+}
+
+@immutable
+class HomeRecommendChatList extends StatelessWidget {
+  final List<Map<String, dynamic>> _chatList;
+
+  HomeRecommendChatList({super.key}) : _chatList = [{}, {}, {}, {}];
+
+  final String _titleTest = "커피챗 추천";
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          _titleTest,
+          style: AppTextStyles.titleBold16(),
+        ),
+
+        AppGap.v16,
+
+        SizedBox(
+          height: 160,
+          child: PageView.builder(
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (_, pageIndex) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: List.generate(3, (itemIndex) {
+                  final int currentIndex = (pageIndex * 3) + itemIndex;
+
+                  return currentIndex < _chatList.length
+                      ? HomeRecommendChat(
+                          skill: "UI/UX",
+                          name: "김유찬",
+                          getStar: 4,
+                        )
+                      : SizedBox.shrink();
+                }),
+              );
+            },
+            itemCount: (_chatList.length ~/ 3) + 1,
+          ),
+        ),
+      ],
     );
   }
 }

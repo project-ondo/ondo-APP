@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
-class AuthLink extends StatelessWidget {
+class AuthLink extends StatelessWidget { // 비밀번호 찾기 | 회원가입 텍스트 버튼
   const AuthLink({super.key});
 
   @override

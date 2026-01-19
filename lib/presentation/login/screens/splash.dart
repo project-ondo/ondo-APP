@@ -12,7 +12,7 @@ class Splash extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Image.asset('assets/image/logo.png')], // splash
+          children: [Image.asset('assets/image/logo.png')],
         ),
       ),
     );

@@ -14,7 +14,7 @@ class HomeSearchPopup extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-        bottom: 24,
+        bottom: AppSpacing.s24,
         top: _padding16,
         left: _padding16,
         right: _padding16,

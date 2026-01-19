@@ -11,7 +11,7 @@ import 'package:ondo/presentation/login/widgets/show_password.dart';
 
 
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatelessWidget { // 로그인 화면
   LoginScreen({super.key});
 
   final controller = Get.put(LoginController());

@@ -49,7 +49,7 @@ class LoginController extends GetxController {
 
     if (emailController.text == 'bulgom@gmail.com' && // 임시 이메일, 비밀번호
         passwordController.text == 'bulgomgom*') {
-      print('로그인 완료');
+      debugPrint('로그인 완료');
     } else {
       hasError.value = true;
       errorMsg.value = '이메일 또는 비밀번호가 일치하지 않아요.';

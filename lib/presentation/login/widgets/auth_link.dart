@@ -17,7 +17,7 @@ class AuthLink extends StatelessWidget {
             style: AppTextStyles.textMedium(textColor: AppColors.gray),
           ),
         ),
-        Container(
+        SizedBox(
           height: 16,
           child: VerticalDivider(
             thickness: 1,

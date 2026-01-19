@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-class LoginController extends GetxController {
+class LoginController extends GetxController { // 유효성 검사
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -47,7 +47,7 @@ class LoginController extends GetxController {
       return;
     }
 
-    if (emailController.text == 'bulgom@gmail.com' && // 테스트용
+    if (emailController.text == 'bulgom@gmail.com' && // 임시 이메일, 비밀번호
         passwordController.text == 'bulgomgom*') {
       print('로그인 완료');
     } else {

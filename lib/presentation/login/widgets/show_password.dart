@@ -7,7 +7,7 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/presentation/login/controllers/login_controller.dart';
 
-class ShowPassword extends StatelessWidget { // 비밀번호 표시 버튼
+class ShowPassword extends StatelessWidget {
   ShowPassword({super.key});
 
   final LoginController controller = Get.find<LoginController>();

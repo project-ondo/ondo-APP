@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
-class LoginController extends GetxController { // 유효성 검사
+class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 

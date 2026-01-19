@@ -31,8 +31,8 @@ class HomeScreen extends StatelessWidget {
 
               HomeRecommendChatList(),
 
-              _BookMarkedPostList(posts: [{}, {}, {}]),
-              _RecommendPostList(posts: [{}, {}, {}]),
+              _BookMarkedPostList(),
+              _RecommendPostList(),
             ],
           ),
         ),
@@ -167,38 +167,44 @@ class HomeRecommendChatList extends StatelessWidget {
 class _BookMarkedPostList extends BaseHomePostList {
   final List<Map<String, dynamic>> posts;
 
-  _BookMarkedPostList({required this.posts})
-    : super(
-        title: "즐겨찾기한 게시물",
-        list: List.generate(posts.length, (index) {
-          return HomePostItem(
-            skills: ["UI/UX", "FrontEnd"],
-            title: "요즘 UI UX",
-            author: "김유찬",
-            bookmarks: 12,
-            favorites: 12,
-            createMinutes: 4,
-          );
-        }),
+  _BookMarkedPostList({
+    super.title = "즐겨찾기한 게시물",
+  }) : posts = [{}, {}, {}];
+
+  @override
+  List<Widget> list() {
+    return List.generate(posts.length, (index) {
+      return HomePostItem(
+        skills: ["UI/UX", "FrontEnd"],
+        title: "요즘 UI UX",
+        author: "김유찬",
+        bookmarks: 12,
+        favorites: 12,
+        createMinutes: 4,
       );
+    });
+  }
 }
 
 @immutable
 class _RecommendPostList extends BaseHomePostList {
   final List<Map<String, dynamic>> posts;
 
-  _RecommendPostList({required this.posts})
-    : super(
-        title: "추천 게시물",
-        list: List.generate(posts.length, (index) {
-          return HomePostItem(
-            skills: ["UI/UX", "FrontEnd"],
-            title: "요즘 UI UX",
-            author: "김유찬",
-            bookmarks: 12,
-            favorites: 12,
-            createMinutes: 4,
-          );
-        }),
+  _RecommendPostList({
+    super.title = "추천 게시물",
+  }) : posts = [{}, {}, {}];
+
+  @override
+  List<Widget> list() {
+    return List.generate(posts.length, (index) {
+      return HomePostItem(
+        skills: ["UI/UX", "FrontEnd"],
+        title: "요즘 UI UX",
+        author: "김유찬",
+        bookmarks: 12,
+        favorites: 12,
+        createMinutes: 4,
       );
+    });
+  }
 }

@@ -5,11 +5,12 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/presentation/home/widgets/home_post_item.dart';
 
 @immutable
-class BaseHomePostList extends StatelessWidget {
+abstract class BaseHomePostList extends StatelessWidget {
   final String title;
-  final List<Widget> list;
 
-  const BaseHomePostList({super.key, required this.title, required this.list});
+  const BaseHomePostList({super.key, required this.title});
+
+  List<Widget> list();
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +26,7 @@ class BaseHomePostList extends StatelessWidget {
             maxHeight: 270,
             maxWidth: 380,
           ),
-          child: _PostList(list: list),
+          child: _PostList(list: list()),
         ),
       ],
     );

@@ -63,11 +63,15 @@ class _SkillList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      spacing: AppSpacing.s12,
       children: List.generate(skills.length, (index) {
-        return Text(
-          skills[index],
-          style: AppTextStyles.caption(textColor: AppColors.gray60),
+        return Row(
+          children: [
+            Text(
+              skills[index],
+              style: AppTextStyles.caption(textColor: AppColors.gray60),
+            ),
+            if (index <= skills.length) AppGap.h16,
+          ],
         );
       }),
     );
@@ -114,10 +118,15 @@ class _SubContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      spacing: AppSpacing.s8,
       children: [
         customIcon(AppIcon.heart.path, favorites),
+
+        AppGap.h8,
+
         customIcon(AppIcon.bookmark.path, bookmarks),
+
+        AppGap.h8,
+
         Expanded(
           child: Text(
             "$createMinutes분전",

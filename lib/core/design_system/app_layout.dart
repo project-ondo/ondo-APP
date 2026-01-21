@@ -2,6 +2,7 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 
 class AppSpacing {
+  static const double s2 = 2;
   static const double s4 = 4;
   static const double s6 = 6;
   static const double s8 = 8;
@@ -10,8 +11,11 @@ class AppSpacing {
   static const double s12 = 12;
   static const double s14 = 14;
   static const double s16 = 16;
+  static const double s18 = 18;
   static const double s24 = 24;
   static const double s36 = 36;
+  static const double s40 = 40;
+  static const double s76 = 76;
 }
 
 class AppGap {
@@ -32,6 +36,8 @@ class AppGap {
   static const SizedBox v16 = SizedBox(height: AppSpacing.s16);
   static const SizedBox v24 = SizedBox(height: AppSpacing.s24);
   static const SizedBox v36 = SizedBox(height: AppSpacing.s36);
+  static const SizedBox v40 = SizedBox(height: AppSpacing.s40);
+  static const SizedBox v76 = SizedBox(height: AppSpacing.s76);
 }
 
 class AppPadding {

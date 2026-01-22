@@ -48,7 +48,7 @@ class AppStrings {
 
   static const alreadyRegisteredMickName = '이미 등록된 닉네임이에요!';
 
-  static const nicknameImmutableWarning = '*한번 선택한 닉네임은 변경할 수 없어요! \n신중히 선택해주세요!';
+  static const nicknameImmutableWarning = '*한번 선택한 닉네임은 변경할 수 없어요! \n  신중히 선택해주세요!';
 
   static const signupCompletionTitle = '회원가입이 완료되었어요! \n본격적으로 시작하기 전에..';
 

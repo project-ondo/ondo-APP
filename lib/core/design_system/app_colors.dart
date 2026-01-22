@@ -16,6 +16,7 @@ class AppColors {
 
   //Gray scale color
   static const Color black = Color(0xff000000);
+  static const Color gray =  Color(0xffB2B2B2); //0xffB2B2B2
   static const Color gray90 = Color(0xff222222); //0xff222222
   static const Color gray80 = Color(0xff444444); //0xff444444
   static const Color gray70 = Color(0xff888888); //0xff888888

@@ -1,23 +1,51 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 
+enum IntroductionState {
+  initial,
+  valid,
+  invalid,
+}
+
 class IntroductionInputController extends GetxController {
+  static const int maxLength = 200;
+
   final TextEditingController introductionController = TextEditingController();
 
-  bool get canProceed => introductionController.text.trim().isNotEmpty;
+  IntroductionState state = IntroductionState.initial;
 
+  bool get canProceed => state != IntroductionState.invalid;
 
-  void onIntroductionChanged(String value){
+  @override
+  void onInit() {
+    super.onInit();
+    introductionController.addListener(_validate);
+  }
+
+  void _validate() {
+    final text = introductionController.text;
+
+    if (text.isEmpty) {
+      state = IntroductionState.valid;
+    } else if (text.length > maxLength) {
+      state = IntroductionState.invalid;
+    } else {
+      state = IntroductionState.valid;
+    }
+
     update();
   }
 
-  void submit(){
-    if(!canProceed) return;
+  String? get errorText {
+    if (state == IntroductionState.invalid &&
+        introductionController.text.length > maxLength) {
+      return '자기소개는 $maxLength자 이내로 작성해주세요';
+    }
 
-    log('자기소개 설정: ${introductionController.text}');
+    return null;
   }
+
+  String get sanitizedValue => introductionController.text.trim();
 
   @override
   void onClose() {

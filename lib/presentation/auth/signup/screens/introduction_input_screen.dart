@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
@@ -60,7 +62,7 @@ class IntroductionInputScreen extends GetView<IntroductionInputController> {
               hintText: AppStrings.selfIntroductionHint,
               maxLines: 6,
               minLines: 4,
-              onChanged: (value) => controller.onIntroductionChanged(value),
+              errorText: controller.errorText,
             );
           },
         ),
@@ -77,7 +79,12 @@ class IntroductionInputScreen extends GetView<IntroductionInputController> {
               text: '다음',
               variant: ButtonVariant.primary,
               enabled: controller.canProceed,
-              onPressed: controller.canProceed ? controller.submit : null,
+              onPressed: controller.canProceed
+                  ? () {
+                      final String intro = controller.sanitizedValue;
+                      log('자기소개 저장: $intro');
+                    }
+                  : null,
             ),
             AppGap.v16,
           ],

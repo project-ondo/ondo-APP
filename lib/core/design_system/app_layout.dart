@@ -86,4 +86,8 @@ class AppRadius {
   static const BorderRadius popupRadius = BorderRadius.all(
     Radius.circular(AppSpacing.s12),
   );
+
+  static const BorderRadius circleRadius = BorderRadius.all(
+    Radius.circular(99),
+  );
 }

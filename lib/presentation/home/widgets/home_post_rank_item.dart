@@ -5,13 +5,13 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
 @immutable
-class HomePopularPostItem extends StatelessWidget {
+class HomePostRankItem extends StatelessWidget {
   final int rank;
   final String title;
   final int createAgo;
   final int favorite;
 
-  const HomePopularPostItem({
+  const HomePostRankItem({
     super.key,
     required this.title,
     required this.createAgo,

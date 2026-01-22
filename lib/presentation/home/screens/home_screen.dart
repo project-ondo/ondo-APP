@@ -47,6 +47,9 @@ class HomePostRankList extends StatelessWidget {
 
   HomePostRankList({super.key}) : popularPosts = [{}, {}, {}, {}, {}];
 
+
+  final double _indicatorSize = 4;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -104,11 +107,11 @@ class HomePostRankList extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 3),
       child: Container(
-        width: 4,
-        height: 4,
+        width: _indicatorSize,
+        height: _indicatorSize,
         decoration: BoxDecoration(
           color: isFocus ? AppColors.gray80 : AppColors.gray60,
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: AppRadius.circleRadius,
         ),
       ),
     );

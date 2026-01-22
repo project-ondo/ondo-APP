@@ -74,6 +74,15 @@ class AppTextStyles {
     );
   }
 
+  static TextStyle captionSmall({
+    Color? textColor,
+  }) {
+    return TextStyle(
+      color: textColor ?? AppColors.black,
+      fontSize: 8,
+      fontWeight: FontWeight.w600,
+    );
+  }
 
 
 

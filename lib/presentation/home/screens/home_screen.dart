@@ -3,9 +3,12 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/home/widgets/home_popular_post_item.dart';
+import 'package:ondo/presentation/home/widgets/base_home_post_list.dart';
+import 'package:ondo/presentation/home/widgets/home_post_item.dart';
+import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_chat.dart';
 import 'package:ondo/presentation/home/widgets/home_top_bar.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -15,18 +18,23 @@ class HomeScreen extends StatelessWidget {
     return BaseScaffold(
       body: Padding(
         padding: AppPadding.screenHorizontal,
-        child: Column(
-          children: [
-            HomeTopBar(),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              HomeTopBar(),
 
-            AppGap.v16,
+              AppGap.v16,
 
-            HomePopularPostList(),
+              HomePostRankList(),
 
-            AppGap.v16,
+              AppGap.v16,
 
-            HomeRecommendChatList(),
-          ],
+              HomeRecommendChatList(),
+
+              _BookMarkedPostList(),
+              _RecommendPostList(),
+            ],
+          ),
         ),
       ),
     );
@@ -34,10 +42,10 @@ class HomeScreen extends StatelessWidget {
 }
 
 @immutable
-class HomePopularPostList extends StatelessWidget {
+class HomePostRankList extends StatelessWidget {
   final List<Map<String, dynamic>> popularPosts;
 
-  HomePopularPostList({super.key}) : popularPosts = [{}, {}, {}, {}, {}];
+  HomePostRankList({super.key}) : popularPosts = [{}, {}, {}, {}, {}];
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +58,7 @@ class HomePopularPostList extends StatelessWidget {
         ),
 
         AppGap.v16,
-    
+
         SizedBox(
           height: 186,
           child: PageView.builder(
@@ -64,7 +72,7 @@ class HomePopularPostList extends StatelessWidget {
                   }
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppSpacing.s16),
-                    child: HomePopularPostItem(
+                    child: HomePostRankItem(
                       title: "요즘 공부 어케 하시나요 다들",
                       createAgo: 3,
                       favorite: 160,
@@ -152,5 +160,51 @@ class HomeRecommendChatList extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+@immutable
+class _BookMarkedPostList extends BaseHomePostList {
+  final List<Map<String, dynamic>> posts;
+
+  _BookMarkedPostList({
+    super.title = "즐겨찾기한 게시물",
+  }) : posts = [{}, {}, {}];
+
+  @override
+  List<Widget> list() {
+    return List.generate(posts.length, (index) {
+      return HomePostItem(
+        skills: ["UI/UX", "FrontEnd"],
+        title: "요즘 UI UX",
+        author: "김유찬",
+        bookmarks: 12,
+        favorites: 12,
+        createMinutes: 4,
+      );
+    });
+  }
+}
+
+@immutable
+class _RecommendPostList extends BaseHomePostList {
+  final List<Map<String, dynamic>> posts;
+
+  _RecommendPostList({
+    super.title = "추천 게시물",
+  }) : posts = [{}, {}, {}];
+
+  @override
+  List<Widget> list() {
+    return List.generate(posts.length, (index) {
+      return HomePostItem(
+        skills: ["UI/UX", "FrontEnd"],
+        title: "요즘 UI UX",
+        author: "김유찬",
+        bookmarks: 12,
+        favorites: 12,
+        createMinutes: 4,
+      );
+    });
   }
 }

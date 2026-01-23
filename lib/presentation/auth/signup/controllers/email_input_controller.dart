@@ -7,7 +7,7 @@ enum EmailInputState {
   valid,
 }
 
-class EmailController extends GetxController {
+class EmailInputController extends GetxController {
   late final TextEditingController emailTextController;
 
   EmailInputState emailState = EmailInputState.initial;

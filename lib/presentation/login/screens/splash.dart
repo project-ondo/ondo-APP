@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 
 
@@ -12,7 +13,7 @@ class Splash extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: [Image.asset('assets/image/logo.png')],
+          children: [Image.asset(AppIcon.logo.path)],
         ),
       ),
     );

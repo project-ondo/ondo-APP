@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
@@ -23,12 +24,12 @@ class LoginScreen extends StatelessWidget {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: AppPadding.textField,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 150),
-                Image.asset('assets/image/logo.png'),
+                Image.asset(AppIcon.logo.path),
                 SizedBox(height: 70),
                 Obx(
                       () =>
@@ -39,7 +40,7 @@ class LoginScreen extends StatelessWidget {
                         controller: controller.emailController,
                       ),
                 ),
-                SizedBox(height: AppSpacing.s8),
+                AppGap.v8,
                 Obx(
                       () =>
                       LabelTextField(
@@ -53,14 +54,14 @@ class LoginScreen extends StatelessWidget {
                             : controller.errorMsg.value,
                       ),
                 ),
-                const SizedBox(height: AppSpacing.s8),
+                AppGap.v8,
                 ShowPassword(),
               ],
             ),
           ),
           Spacer(flex: 1),
           AuthLink(),
-          SizedBox(height: AppSpacing.s8),
+          AppGap.v8,
           SizedBox(
             height: 52,
             width: 364,
@@ -70,7 +71,7 @@ class LoginScreen extends StatelessWidget {
               onPressed: controller.login,
             ),
           ),
-          SizedBox(height: AppSpacing.s24),
+          AppGap.v24
         ],
       ),
 

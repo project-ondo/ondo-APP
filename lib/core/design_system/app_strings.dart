@@ -72,6 +72,6 @@ class AppStrings {
   static const passwordLength =
   '비밀번호는 8~15자여야 해요.';
 
-  static const passwardRegex =
+  static const passwordRegex =
   '비밀번호에 특수기호를 포함해주세요.';
 }

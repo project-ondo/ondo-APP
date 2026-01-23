@@ -32,7 +32,7 @@ class LoginController extends GetxController {
 
     final passwordRegex = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
     if (!passwordRegex.hasMatch(password)) {
-      errorMsg.value = AppStrings.passwardRegex;
+      errorMsg.value = AppStrings.passwordRegex;
       return false;
     }
 

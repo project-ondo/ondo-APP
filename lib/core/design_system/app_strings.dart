@@ -62,4 +62,16 @@ class AppStrings {
 
   static const ruleViolationWarning =
       '위 규칙을 상습적으로 지키지 않을 시에 관리자에게 \n제재를 받을 수 있어요!';
+
+  static const inputEmailandPassword =
+  '이메일과 비밀번호를 입력해주세요.';
+
+  static const emailRegex =
+  '이메일 형식이 올바르지 않아요.';
+
+  static const passwordLength =
+  '비밀번호는 8~15자여야 해요.';
+
+  static const passwardRegex =
+  '비밀번호에 특수기호를 포함해주세요.';
 }

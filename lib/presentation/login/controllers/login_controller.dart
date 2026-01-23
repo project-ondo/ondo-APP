@@ -15,7 +15,7 @@ class LoginController extends GetxController {
     final password = passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      errorMsg.value = AppStrings.inputEmailandPassword;
+      errorMsg.value = AppStrings.inputEmailAndPassword;
       return false;
     }
 

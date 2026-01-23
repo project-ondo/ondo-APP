@@ -63,7 +63,7 @@ class AppStrings {
   static const ruleViolationWarning =
       '위 규칙을 상습적으로 지키지 않을 시에 관리자에게 \n제재를 받을 수 있어요!';
 
-  static const inputEmailandPassword =
+  static const inputEmailAndPassword =
   '이메일과 비밀번호를 입력해주세요.';
 
   static const emailRegex =

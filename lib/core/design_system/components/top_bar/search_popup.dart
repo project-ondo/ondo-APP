@@ -5,8 +5,8 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 
 
 @immutable
-class HomeSearchPopup extends StatelessWidget {
-  const HomeSearchPopup({super.key});
+class SearchPopup extends StatelessWidget {
+  const SearchPopup({super.key});
 
   final double _padding16 = AppSpacing.s16;
 

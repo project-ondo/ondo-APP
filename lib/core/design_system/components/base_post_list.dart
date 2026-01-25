@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
-import 'package:ondo/presentation/home/widgets/home_post_item.dart';
+import 'package:ondo/core/design_system/components/post_item.dart';
 
 @immutable
-abstract class BaseHomePostList extends StatelessWidget {
+abstract class BasePostList extends StatelessWidget {
   final String title;
 
-  const BaseHomePostList({super.key, required this.title});
+  const BasePostList({super.key, required this.title});
 
   List<Widget> list();
 
@@ -68,7 +68,7 @@ class _PostList extends StatelessWidget {
       children: List.generate(4, (index) {
         return index > list.length
             ? SizedBox.shrink()
-            : HomePostItem(
+            : PostItem(
                 skills: ['UI/UX', 'FrontEnd'],
                 title: "요즘 UI UX",
                 author: "김유찬",

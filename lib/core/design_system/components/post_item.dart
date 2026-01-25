@@ -4,7 +4,7 @@ import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
-class HomePostItem extends StatelessWidget {
+class PostItem extends StatelessWidget {
   final List<String> skills;
   final String title;
   final String author;
@@ -12,7 +12,7 @@ class HomePostItem extends StatelessWidget {
   final int bookmarks;
   final int createMinutes;
 
-  const HomePostItem({
+  const PostItem({
     super.key,
     required this.skills,
     required this.title,

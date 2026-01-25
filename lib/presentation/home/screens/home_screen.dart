@@ -3,11 +3,12 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/home/widgets/base_home_post_list.dart';
-import 'package:ondo/presentation/home/widgets/home_post_item.dart';
+import 'package:ondo/core/design_system/components/base_post_list.dart';
+import 'package:ondo/core/design_system/components/post_item.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
-import 'package:ondo/presentation/home/widgets/home_recommend_chat.dart';
-import 'package:ondo/presentation/home/widgets/home_top_bar.dart';
+import 'package:ondo/presentation/home/widgets/home_chat_card.dart';
+
+import '../../../core/design_system/components/top_bar/top_bar.dart';
 
 
 class HomeScreen extends StatelessWidget {
@@ -21,7 +22,7 @@ class HomeScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              HomeTopBar(),
+              TopBar(),
 
               AppGap.v16,
 
@@ -149,7 +150,7 @@ class HomeRecommendChatList extends StatelessWidget {
                   final int currentIndex = (pageIndex * 3) + itemIndex;
 
                   return currentIndex < _chatList.length
-                      ? HomeRecommendChat(
+                      ? HomeChatCard(
                           skill: "UI/UX",
                           name: "김유찬",
                           getStar: 4,
@@ -167,7 +168,7 @@ class HomeRecommendChatList extends StatelessWidget {
 }
 
 @immutable
-class _BookMarkedPostList extends BaseHomePostList {
+class _BookMarkedPostList extends BasePostList {
   final List<Map<String, dynamic>> posts;
 
   _BookMarkedPostList({
@@ -177,7 +178,7 @@ class _BookMarkedPostList extends BaseHomePostList {
   @override
   List<Widget> list() {
     return List.generate(posts.length, (index) {
-      return HomePostItem(
+      return PostItem(
         skills: ["UI/UX", "FrontEnd"],
         title: "요즘 UI UX",
         author: "김유찬",
@@ -190,7 +191,7 @@ class _BookMarkedPostList extends BaseHomePostList {
 }
 
 @immutable
-class _RecommendPostList extends BaseHomePostList {
+class _RecommendPostList extends BasePostList {
   final List<Map<String, dynamic>> posts;
 
   _RecommendPostList({
@@ -200,7 +201,7 @@ class _RecommendPostList extends BaseHomePostList {
   @override
   List<Widget> list() {
     return List.generate(posts.length, (index) {
-      return HomePostItem(
+      return PostItem(
         skills: ["UI/UX", "FrontEnd"],
         title: "요즘 UI UX",
         author: "김유찬",

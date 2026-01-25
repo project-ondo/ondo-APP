@@ -6,14 +6,16 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
-import 'package:ondo/presentation/home/controllers/home_alert_controller.dart';
+import 'package:ondo/core/design_system/components/top_bar/controllers/top_bar_alert_controller.dart';
 
 @immutable
-class HomeTopBar extends StatelessWidget {
+class TopBar extends StatelessWidget {
   final TextEditingController _searchController = TextEditingController();
-  final HomeAlertController _alertController = Get.put(HomeAlertController());
+  final TopBarAlertController _alertController = Get.put(
+    TopBarAlertController(),
+  );
 
-  HomeTopBar({super.key});
+  TopBar({super.key});
 
   final double _alertSize = 44.0;
   final double _textFieldSize = 320;
@@ -35,9 +37,8 @@ class HomeTopBar extends StatelessWidget {
 
         Spacer(),
 
-        HomeAlertButton(
+        _AlertButton(
           size: _alertSize,
-          alertController: _alertController,
         ),
       ],
     );
@@ -45,14 +46,14 @@ class HomeTopBar extends StatelessWidget {
 }
 
 @immutable
-class HomeAlertButton extends StatelessWidget {
-  final HomeAlertController alertController;
+class _AlertButton extends StatelessWidget {
+  final TopBarAlertController alertController =
+      Get.find<TopBarAlertController>();
+
   final double size;
 
-  const HomeAlertButton({
-    super.key,
+  _AlertButton({
     required this.size,
-    required this.alertController,
   });
 
   final double _iconSize = 16;

@@ -15,18 +15,18 @@ class AppSpacing {
 }
 
 class AppGap {
-  static const SizedBox h4  = SizedBox(width: AppSpacing.s4);
-  static const SizedBox h6  = SizedBox(width: AppSpacing.s6);
-  static const SizedBox h8  = SizedBox(width: AppSpacing.s8);
+  static const SizedBox h4 = SizedBox(width: AppSpacing.s4);
+  static const SizedBox h6 = SizedBox(width: AppSpacing.s6);
+  static const SizedBox h8 = SizedBox(width: AppSpacing.s8);
   static const SizedBox h10 = SizedBox(width: AppSpacing.s10);
   static const SizedBox h12 = SizedBox(width: AppSpacing.s12);
   static const SizedBox h16 = SizedBox(width: AppSpacing.s16);
   static const SizedBox h24 = SizedBox(width: AppSpacing.s24);
   static const SizedBox h36 = SizedBox(width: AppSpacing.s36);
 
-  static const SizedBox v4  = SizedBox(height: AppSpacing.s4);
-  static const SizedBox v6  = SizedBox(height: AppSpacing.s6);
-  static const SizedBox v8  = SizedBox(height: AppSpacing.s8);
+  static const SizedBox v4 = SizedBox(height: AppSpacing.s4);
+  static const SizedBox v6 = SizedBox(height: AppSpacing.s6);
+  static const SizedBox v8 = SizedBox(height: AppSpacing.s8);
   static const SizedBox v10 = SizedBox(height: AppSpacing.s10);
   static const SizedBox v12 = SizedBox(height: AppSpacing.s12);
   static const SizedBox v16 = SizedBox(height: AppSpacing.s16);
@@ -66,6 +66,11 @@ class AppPadding {
     horizontal: AppSpacing.s12,
     vertical: AppSpacing.s24,
   );
+
+  static const EdgeInsets topBar = EdgeInsets.all(
+    AppSpacing.s16,
+  );
+
 }
 
 class AppRadius {
@@ -83,5 +88,9 @@ class AppRadius {
 
   static const BorderRadius circleRadius = BorderRadius.all(
     Radius.circular(99),
+  );
+
+  static const BorderRadius alertRadius = BorderRadius.all(
+    Radius.circular(AppSpacing.s6),
   );
 }

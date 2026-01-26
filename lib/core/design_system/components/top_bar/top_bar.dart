@@ -7,39 +7,89 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/design_system/components/top_bar/controllers/top_bar_alert_controller.dart';
+import 'package:ondo/core/design_system/components/top_bar/controllers/top_bar_search_controller.dart';
+import 'package:ondo/core/design_system/components/top_bar/search_popup.dart';
 
 @immutable
 class TopBar extends StatelessWidget {
-  final TextEditingController _searchController = TextEditingController();
-  final TopBarAlertController _alertController = Get.put(
-    TopBarAlertController(),
+  final TopBarSearchController _topBarSearchController = Get.put(
+    TopBarSearchController(),
   );
 
-  TopBar({super.key});
+  TopBar({super.key}) {
+    Get.put(TopBarAlertController());
+  }
 
-  final double _alertSize = 44.0;
-  final double _textFieldSize = 320;
+  final double _height = 44.0;
 
   @override
   Widget build(BuildContext context) {
+    return Padding(
+      padding: AppPadding.topBar,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          topBar(),
+
+          Obx(() {
+            if (!_topBarSearchController.isShowPopUp.value) {
+              return SizedBox.shrink();
+            }
+
+            return Positioned(
+              top: _height,
+              left: 0,
+              right: 0,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxHeight: 432),
+                child: Column(
+                  children: [
+                    AppGap.v16,
+                    SearchPopup(),
+                    AppGap.v8,
+                  ],
+                ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget topBar() {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        SizedBox(
-          width: _textFieldSize,
-          height: _alertSize,
-          child: CustomTextField(
-            controller: _searchController,
-            hintText: "게시물 또는 프로필 검색어를 입력해 주세요",
-            prefix: SvgPicture.asset(AppIcon.searchFocus.path),
+        Expanded(
+          child: SizedBox(
+            height: _height,
+            child: CustomTextField(
+              onChanged: _topBarSearchController.onTyping,
+              controller: _topBarSearchController.searchTextController,
+              hintText: "게시물 또는 프로필 검색어를 입력해 주세요",
+              prefix: SvgPicture.asset(AppIcon.searchFocus.path),
+            ),
           ),
         ),
 
-        Spacer(),
-
-        _AlertButton(
-          size: _alertSize,
-        ),
+        Obx(() {
+          if (_topBarSearchController.isShowPopUp.value) {
+            return SizedBox.shrink();
+          }
+          return GestureDetector(
+            onTap: () {
+              _topBarSearchController.onTap();
+            },
+            child: Row(
+              children: [
+                AppGap.h16,
+                _AlertButton(
+                  size: _height,
+                ),
+              ],
+            ),
+          );
+        }),
       ],
     );
   }
@@ -56,8 +106,6 @@ class _AlertButton extends StatelessWidget {
     required this.size,
   });
 
-  final double _iconSize = 16;
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -73,43 +121,53 @@ class _AlertButton extends StatelessWidget {
           children: [
             Align(
               alignment: Alignment.center,
-              child: Obx(
-                () => alertController.enable.value
-                    ? SvgPicture.asset(
-                        AppIcon.alarmBrown.path,
-                        height: _iconSize,
-                        width: _iconSize,
-                      )
-                    : SvgPicture.asset(
-                        AppIcon.alarmGrey.path,
-                        height: _iconSize,
-                        width: _iconSize,
-                      ),
-              ),
+              child: _alertIcon(),
             ),
 
             Positioned(
               top: size * 0.2,
               right: size * 0.2,
-              child: Obx(
-                () => Container(
-                  padding: EdgeInsets.all(2),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    "${alertController.totals.value}",
-                    style: AppTextStyles.captionSmall(
-                      textColor: AppColors.white,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
+              child: _alertCount(),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  final double _iconSize = 16;
+
+  Widget _alertIcon() {
+    return Obx(
+      () => alertController.enable.value
+          ? SvgPicture.asset(
+              AppIcon.alarmBrown.path,
+              height: _iconSize,
+              width: _iconSize,
+            )
+          : SvgPicture.asset(
+              AppIcon.alarmGrey.path,
+              height: _iconSize,
+              width: _iconSize,
+            ),
+    );
+  }
+
+  Widget _alertCount() {
+    return Obx(
+      () => Container(
+        padding: EdgeInsets.all(2),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: AppRadius.alertRadius,
+        ),
+        child: Text(
+          "${alertController.totals.value}",
+          style: AppTextStyles.captionSmall(
+            textColor: AppColors.white,
+          ),
+          textAlign: TextAlign.center,
         ),
       ),
     );

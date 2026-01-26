@@ -1,53 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
-
+import 'package:ondo/core/design_system/components/top_bar/controllers/top_bar_search_controller.dart';
 
 @immutable
 class SearchPopup extends StatelessWidget {
-  const SearchPopup({super.key});
+  final SearchPopupController _controller = Get.find<SearchPopupController>();
 
-  final double _padding16 = AppSpacing.s16;
+  SearchPopup({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: AppSpacing.s24,
-        top: _padding16,
-        left: _padding16,
-        right: _padding16,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _TagSection(),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Obx(() {
+          final tags = _controller.showTags.value;
+          return _Tags(
+            tags: tags,
+          );
+        }),
 
-          AppGap.v16,
+        AppGap.v16,
 
-          _RecentSearchSection(),
-        ],
-      ),
+        Obx(() {
+          final tips = _controller.showSearchTips.value;
+          return _RecentSearchSection(
+            tips: tips,
+          );
+        }),
+      ],
     );
   }
 }
 
 @immutable
-class _TagSection extends StatelessWidget {
+class _Tags extends StatelessWidget {
   final List<String> tags;
 
-  _TagSection() : tags = ["최근검색태그", "UI/UX", "Android", "멘토링", "팁", "공부인증"];
+  const _Tags({required this.tags});
+
+  final double _hSpacing = AppSpacing.s16;
+  final double _vSpacing = AppSpacing.s12;
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: AppSpacing.s16,
-      runSpacing: AppSpacing.s12,
-      children: List.generate(tags.length, (index) {
-        final String tagName = tags[index];
-        return _tagWidget(tagName);
-      }),
+    return SizedBox(
+      width: double.maxFinite,
+      child: Wrap(
+        spacing: _hSpacing,
+        runSpacing: _vSpacing,
+        children: List.generate(tags.length, (index) {
+          final String tagName = tags[index];
+          return _tagWidget(tagName);
+        }),
+      ),
     );
   }
 
@@ -68,27 +77,31 @@ class _TagSection extends StatelessWidget {
 
 @immutable
 class _RecentSearchSection extends StatelessWidget {
-  final List<String> searchTexts;
+  final List<String> tips;
 
-  _RecentSearchSection()
-    : searchTexts = ["UIUX", "공부", "공부방법", "공부인증", "김유찬", "공부", "공부방법", "공부인증"];
+  const _RecentSearchSection({required this.tips});
+
+  final double _vSpacing = AppSpacing.s16;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.s16,
-      children: List.generate(searchTexts.length, (index) {
-        final String text = searchTexts[index];
+      spacing: _vSpacing,
+      children: List.generate(tips.length, (index) {
+        final String text = tips[index];
         return _textWidget(text);
       }),
     );
   }
 
   Widget _textWidget(String text) {
-    return Text(
-      text,
-      style: AppTextStyles.textMedium(textColor: AppColors.gray90),
+    return SizedBox(
+      width: double.maxFinite,
+      child: Text(
+        text,
+        style: AppTextStyles.textMedium(textColor: AppColors.gray90),
+      ),
     );
   }
 }

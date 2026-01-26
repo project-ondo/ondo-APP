@@ -4,22 +4,33 @@ import 'package:get/get.dart';
 
 class TopBarSearchController extends GetxController {
   final TextEditingController searchTextController = TextEditingController();
+  late SearchPopupController _searchPopupController;
 
   Rx<bool> isShowPopUp = false.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
+  void onTap() {
+    if (!isShowPopUp.value) {
+      _searchPopupController = Get.put(SearchPopupController());
+    } else {
+      _searchPopupController.dispose();
+    }
+
+    _isShowPopupToggle();
   }
 
-  void onTap() {
-    Get.put(SearchPopUpController());
-    isShowPopUp.value = true;
+  void _isShowPopupToggle() {
+    isShowPopUp.value = !isShowPopUp.value;
+  }
+
+  void onTyping(String text) {
+    if (isShowPopUp.value) {
+      _searchPopupController.typing(text);
+    }
   }
 }
 
-class SearchPopUpController extends GetxController {
-  final List<String> _tagList = [
+class SearchPopupController extends GetxController {
+  final List<String> loadTags = [
     "최근검색태그",
     "UI/UX",
     "Android",
@@ -28,7 +39,7 @@ class SearchPopUpController extends GetxController {
     "공부인증",
   ];
 
-  final List<String> _searchTipList = [
+  final List<String> loadTips = [
     "UIUX",
     "공부",
     "공부방법",
@@ -44,8 +55,8 @@ class SearchPopUpController extends GetxController {
 
   @override
   void onInit() {
-    showTags.value = _tagList;
-    showSearchTips.value = _searchTipList;
+    showTags.value = loadTags;
+    showSearchTips.value = loadTips;
 
     super.onInit();
   }
@@ -53,20 +64,15 @@ class SearchPopUpController extends GetxController {
   void typing(String text) {
     if (text.isNotEmpty) {
       showTags.value = List.of(
-        _tagList.where((tag) => tag.toLowerCase().contains(text.toLowerCase())),
+        loadTags.where((tag) => tag.toLowerCase().contains(text.toLowerCase())),
       );
 
       showSearchTips.value = List.of(
-        _searchTipList.where(
-          (tip) {
-            print(tip);
-            return tip.toLowerCase().contains(text.toLowerCase());
-          },
-        ),
+        loadTips.where((tip) => tip.toLowerCase().contains(text.toLowerCase())),
       );
     } else {
-      showTags.value = _tagList;
-      showSearchTips.value = _searchTipList;
+      showTags.value = loadTags;
+      showSearchTips.value = loadTips;
     }
   }
 }

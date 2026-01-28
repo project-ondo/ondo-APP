@@ -20,14 +20,20 @@ class HomeChatCard extends StatelessWidget {
   final double _profileImageSize = 48;
   final double _starSize = 16;
 
+
+  final double _cardSpacing = AppSpacing.s8;
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 160,
       width: 120,
-      padding: EdgeInsets.all(10),
+      padding: AppPadding.card,
+      decoration: BoxDecoration(
+        color: AppColors.white
+      ),
       child: Column(
-        spacing: AppSpacing.s8,
+        spacing: _cardSpacing,
         children: [
           Stack(
             children: [
@@ -37,7 +43,7 @@ class HomeChatCard extends StatelessWidget {
                   width: _profileImageSize,
                   height:_profileImageSize,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(36),
+                    borderRadius: AppRadius.circleRadius,
                     border: BoxBorder.all(width: 2, color: Colors.brown),
                   ),
                   child: SvgPicture.asset(AppIcon.defaultProfile.path),

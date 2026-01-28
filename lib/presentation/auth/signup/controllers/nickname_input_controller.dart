@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 
 enum NicknameInputState {
   initial,
@@ -13,6 +13,8 @@ enum NicknameInputState {
 
 class NicknameInputController extends GetxController {
   final TextEditingController nicknameController = TextEditingController();
+
+  final signupFlowController = Get.find<SignupFlowController>();
 
   NicknameInputState state = NicknameInputState.initial;
 
@@ -25,7 +27,7 @@ class NicknameInputController extends GetxController {
     super.onInit();
 
     nicknameController.addListener(
-      () {
+          () {
         update();
       },
     );
@@ -41,9 +43,11 @@ class NicknameInputController extends GetxController {
       return;
     }
 
+    signupFlowController.setNickname(nickname);
+
     state = NicknameInputState.valid;
     update();
-    log('닉네임 설정');
+    log('닉네임 설정: $nickname');
   }
 
   String? get errorText {

@@ -112,7 +112,7 @@ class ProfileImageSetupScreen extends GetView<ProfileImageSetupController> {
         right: AppSpacing.s2,
       ),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(99),
+        borderRadius: AppRadius.circleRadius,,
         color: AppColors.primary,
       ),
       child: PopupMenuButton<String>(

@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
-
-enum PasswordInputState {
-  initial,
-  invalid,
-  valid,
-  mismatch,
-}
+import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
 class PasswordInputController extends GetxController {
   static const int mainPasswordLength = 8;
@@ -18,7 +12,7 @@ class PasswordInputController extends GetxController {
   final confirmPasswordController = TextEditingController();
 
   final RxBool isObscure = true.obs;
-  final Rx<PasswordInputState> state = PasswordInputState.initial.obs;
+  final Rx<InputValidationState> state = InputValidationState.initial.obs;
 
   final RxBool hasInput = false.obs;
 
@@ -56,42 +50,42 @@ class PasswordInputController extends GetxController {
     final confirm = confirmPasswordController.text;
 
     if (password.isEmpty || confirm.isEmpty) {
-      state.value = PasswordInputState.invalid;
+      state.value = InputValidationState.invalid;
       return;
     }
 
     if (!_isValidPassword(password)) {
-      state.value = PasswordInputState.invalid;
+      state.value = InputValidationState.invalid;
       return;
     }
 
     if (password != confirm) {
-      state.value = PasswordInputState.mismatch;
+      state.value = InputValidationState.mismatch;
       return;
     }
 
-    state.value = PasswordInputState.valid;
+    state.value = InputValidationState.valid;
   }
 
   bool _isValidPassword(String password) {
     return RegExp(passwordPattern).hasMatch(password);
   }
 
-  bool get canProceed => state.value == PasswordInputState.valid;
+  bool get canProceed => state.value == InputValidationState.valid;
 
   String? get passwordErrorText {
     if (!_submitted) return null;
 
-    if (state.value == PasswordInputState.invalid) {
+    if (state.value == InputValidationState.invalid) {
       return '$mainPasswordLength자 이상, 영문+숫자 조합이 필요합니다.';
     }
     return null;
   }
 
   String? get confirmPasswordErrorText {
-    if (!_submitted && state.value != PasswordInputState.mismatch) return null;
+    if (!_submitted && state.value != InputValidationState.mismatch) return null;
 
-    if (state.value == PasswordInputState.mismatch) {
+    if (state.value == InputValidationState.mismatch) {
       return AppStrings.invalidPassword;
     }
     return null;

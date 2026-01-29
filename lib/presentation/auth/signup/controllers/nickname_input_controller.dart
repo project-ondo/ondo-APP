@@ -4,17 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
-
-enum NicknameInputState {
-  initial,
-  valid,
-  invalid,
-}
+import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
 class NicknameInputController extends GetxController {
   final TextEditingController nicknameController = TextEditingController();
 
-  NicknameInputState state = NicknameInputState.initial;
+  InputValidationState state = InputValidationState.initial;
 
   bool get hasInput => nicknameController.text.trim().isNotEmpty;
 
@@ -36,18 +31,18 @@ class NicknameInputController extends GetxController {
 
     if(nickname == 'test1')
     {
-      state = NicknameInputState.invalid;
+      state = InputValidationState.invalid;
       update();
       return;
     }
 
-    state = NicknameInputState.valid;
+    state = InputValidationState.valid;
     update();
     log('닉네임 설정');
   }
 
   String? get errorText {
-    if(state == NicknameInputState.invalid){
+    if(state == InputValidationState.invalid){
       return AppStrings.alreadyRegisteredMickName;
     }
     return null;

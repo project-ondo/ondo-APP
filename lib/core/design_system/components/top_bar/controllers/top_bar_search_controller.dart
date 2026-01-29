@@ -4,18 +4,25 @@ import 'package:get/get.dart';
 
 class TopBarSearchController extends GetxController {
   final TextEditingController searchTextController = TextEditingController();
-  late SearchPopupController _searchPopupController;
+  final FocusNode focusNode = FocusNode();
+  final SearchPopupController _searchPopupController = Get.put(SearchPopupController());
 
   Rx<bool> isShowPopUp = false.obs;
 
-  void onTap() {
-    if (!isShowPopUp.value) {
-      _searchPopupController = Get.put(SearchPopupController());
-    } else {
-      _searchPopupController.dispose();
-    }
+  @override
+  void onInit() {
+    focusNode.addListener(
+      _isShowPopupToggle,
+    );
+    super.onInit();
+  }
 
-    _isShowPopupToggle();
+  void onTap() {
+    focusNode.requestFocus();
+  }
+
+  void onOtherTap() {
+    focusNode.unfocus();
   }
 
   void _isShowPopupToggle() {

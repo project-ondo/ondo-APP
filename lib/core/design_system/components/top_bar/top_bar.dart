@@ -30,14 +30,18 @@ class TopBar extends StatelessWidget {
         Column(
           children: [
             topBar(),
-            child,
+            GestureDetector( onTap: _topBarSearchController.onOtherTap,
+              child: child,
+            ),
           ],
         ),
 
         Obx(
           () {
             if (!_topBarSearchController.isShowPopUp.value) return SizedBox.shrink();
-            return Positioned(top: _height + AppPadding.topBar.vertical, child: SearchPopup());
+            return Positioned( top: _height + AppPadding.topBar.vertical,
+              child: SearchPopup(),
+            );
           },
         ),
       ],
@@ -50,6 +54,7 @@ class TopBar extends StatelessWidget {
           Expanded(
             child: SizedBox( height: _height,
               child: CustomTextField(
+                focusNode: _topBarSearchController.focusNode,
                 onChanged: _topBarSearchController.onTyping,
                 controller: _topBarSearchController.searchTextController,
                 hintText: "게시물 또는 프로필 검색어를 입력해 주세요",
@@ -81,7 +86,8 @@ class _AlertButton extends StatelessWidget {
     required this.size,
   });
 
-  final TopBarAlertController alertController = Get.find<TopBarAlertController>();
+  final TopBarAlertController alertController =
+      Get.find<TopBarAlertController>();
 
   @override
   Widget build(BuildContext context) {

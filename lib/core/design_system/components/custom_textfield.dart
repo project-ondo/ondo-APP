@@ -16,6 +16,7 @@ class CustomTextField extends StatelessWidget {
   final String? errorText;
   final double radius;
   final Widget? prefix;
+  final FocusNode? focusNode;
 
   const CustomTextField({
     super.key,
@@ -30,6 +31,7 @@ class CustomTextField extends StatelessWidget {
     this.errorText,
     this.radius = 8,
     this.prefix,
+    this.focusNode
   });
 
   @override
@@ -43,6 +45,7 @@ class CustomTextField extends StatelessWidget {
       enabled: enabled,
       onChanged: onChanged,
       onFieldSubmitted: onSubmitted,
+      focusNode: focusNode,
       style: AppTextStyles.textMedium(
         textColor: enabled
             ? (hasError ? AppColors.red : AppColors.gray80)

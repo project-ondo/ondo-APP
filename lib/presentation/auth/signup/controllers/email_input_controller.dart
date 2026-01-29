@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-enum EmailInputState {
-  initial,
-  invalid,
-  valid,
-}
+import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
 class EmailInputController extends GetxController {
   late final TextEditingController emailTextController;
 
-  EmailInputState emailState = EmailInputState.initial;
+  InputValidationState emailState = InputValidationState.initial;
 
   bool get hasEmailInput => emailTextController.text.trim().isNotEmpty;
 
@@ -33,11 +28,11 @@ class EmailInputController extends GetxController {
 
   bool validateEmail(String email) {
     if (_isValidEmail(email)) {
-      emailState = EmailInputState.valid;
+      emailState = InputValidationState.valid;
       update();
       return true;
     } else {
-      emailState = EmailInputState.invalid;
+      emailState = InputValidationState.invalid;
       update();
       return false;
     }
@@ -49,8 +44,8 @@ class EmailInputController extends GetxController {
   }
 
   void resetState() {
-    if (emailState == EmailInputState.invalid) {
-      emailState = EmailInputState.initial;
+    if (emailState == InputValidationState.invalid) {
+      emailState = InputValidationState.initial;
       update();
     }
   }

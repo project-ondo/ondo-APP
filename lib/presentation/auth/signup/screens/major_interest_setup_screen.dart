@@ -26,20 +26,10 @@ void main() {
 class MajorInterestSetupScreen extends GetView<MajorInterestController> {
   const MajorInterestSetupScreen({super.key});
 
-  static const List<String> categories = [
-    'FrontEnd',
-    'BackEnd',
-    'AI',
-    'devops',
-    '기획',
-    'UI/UX',
-    'Android',
-    'ios',
-    'Cloud',
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final categories = MajorCategory.values;
+
     return SafeArea(
       child: BaseScaffold(
         body: Padding(
@@ -70,7 +60,7 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
   }
 
   Widget _buildInterestSection({
-    required List<String> categories,
+    required List<MajorCategory> categories,
   }) {
     return GetBuilder<MajorInterestController>(
       builder: (controller) {
@@ -88,11 +78,11 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
               spacing: AppSpacing.s16,
               runSpacing: AppSpacing.s12,
               children: categories.map(
-                (label) {
+                (category) {
                   return SelectableTag(
-                    label: label,
-                    isSelected: controller.selectedInterests.contains(label),
-                    onTap: () => controller.toggleInterest(label),
+                    label: category.label,
+                    isSelected: controller.selectedInterests.contains(category),
+                    onTap: () => controller.toggleInterest(category),
                   );
                 },
               ).toList(),
@@ -104,7 +94,7 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
   }
 
   Widget _buildMajorSelectSection({
-    required List<String> categories,
+    required List<MajorCategory> categories,
   }) {
     return GetBuilder<MajorInterestController>(
       builder: (controller) {
@@ -122,11 +112,11 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
               spacing: AppSpacing.s16,
               runSpacing: AppSpacing.s12,
               children: categories.map(
-                (label) {
+                (category) {
                   return SelectableTag(
-                    label: label,
-                    isSelected: controller.selectedMajor == label,
-                    onTap: () => controller.selectMajor(label),
+                    label: category.label,
+                    isSelected: controller.selectedMajor == category,
+                    onTap: () => controller.selectMajor(category),
                   );
                 },
               ).toList(),

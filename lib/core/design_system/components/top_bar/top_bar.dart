@@ -12,99 +12,76 @@ import 'package:ondo/core/design_system/components/top_bar/search_popup.dart';
 
 @immutable
 class TopBar extends StatelessWidget {
-  final TopBarSearchController _topBarSearchController = Get.put(
-    TopBarSearchController(),
-  );
+  final Widget child;
 
-  TopBar({super.key}) {
+  TopBar({super.key, required this.child}) {
     Get.put(TopBarAlertController());
   }
 
+  final TopBarSearchController _topBarSearchController = Get.put(
+    TopBarSearchController(),
+  );
   final double _height = 44.0;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: AppPadding.topBar,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          topBar(),
+    return Stack(
+      children: [
+        Column(
+          children: [
+            topBar(),
+            child,
+          ],
+        ),
 
-          Obx(() {
-            if (!_topBarSearchController.isShowPopUp.value) {
-              return SizedBox.shrink();
-            }
-
-            return Positioned(
-              top: _height,
-              left: 0,
-              right: 0,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxHeight: 432),
-                child: Column(
-                  children: [
-                    AppGap.v16,
-                    SearchPopup(),
-                    AppGap.v8,
-                  ],
-                ),
-              ),
-            );
-          }),
-        ],
-      ),
+        Obx(
+          () {
+            if (!_topBarSearchController.isShowPopUp.value) return SizedBox.shrink();
+            return Positioned(top: _height + AppPadding.topBar.vertical, child: SearchPopup());
+          },
+        ),
+      ],
     );
   }
 
   Widget topBar() {
-    return Row(
-      children: [
-        Expanded(
-          child: SizedBox(
-            height: _height,
-            child: CustomTextField(
-              onChanged: _topBarSearchController.onTyping,
-              controller: _topBarSearchController.searchTextController,
-              hintText: "게시물 또는 프로필 검색어를 입력해 주세요",
-              prefix: SvgPicture.asset(AppIcon.searchFocus.path),
+    return Container( padding: AppPadding.topBar, color: AppColors.white,
+      child: Row( children: [
+          Expanded(
+            child: SizedBox( height: _height,
+              child: CustomTextField(
+                onChanged: _topBarSearchController.onTyping,
+                controller: _topBarSearchController.searchTextController,
+                hintText: "게시물 또는 프로필 검색어를 입력해 주세요",
+                prefix: SvgPicture.asset(AppIcon.searchFocus.path),
+              ),
             ),
           ),
-        ),
 
-        Obx(() {
-          if (_topBarSearchController.isShowPopUp.value) {
-            return SizedBox.shrink();
-          }
-          return GestureDetector(
-            onTap: () {
-              _topBarSearchController.onTap();
-            },
-            child: Row(
-              children: [
+          Obx(() {
+            if (_topBarSearchController.isShowPopUp.value) return SizedBox.shrink();
+            return Row( children: [
                 AppGap.h16,
-                _AlertButton(
-                  size: _height,
-                ),
+                _AlertButton(size: _height),
               ],
-            ),
-          );
-        }),
-      ],
+            );
+          }),
+
+        ],
+      ),
     );
   }
 }
 
 @immutable
 class _AlertButton extends StatelessWidget {
-  final TopBarAlertController alertController =
-      Get.find<TopBarAlertController>();
-
   final double size;
 
   _AlertButton({
     required this.size,
   });
+
+  final TopBarAlertController alertController = Get.find<TopBarAlertController>();
 
   @override
   Widget build(BuildContext context) {

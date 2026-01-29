@@ -13,25 +13,26 @@ class SearchPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Obx(() {
-          final tags = _controller.showTags.value;
-          return _Tags(
-            tags: tags,
-          );
-        }),
+    final double width = MediaQuery.of(context).size.width;
+    return Container( width: width,  padding: AppPadding.popUp, decoration: BoxDecoration(color: AppColors.white),
+      child: Column( mainAxisSize: MainAxisSize.min,  crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Obx(() {
+            final tags = _controller.showTags.value;
+            return _Tags(
+              tags: tags,
+            );
+          }),
 
-        AppGap.v16,
+          AppGap.v16,
 
-        Obx(() {
-          final tips = _controller.showSearchTips.value;
-          return _RecentSearchSection(
-            tips: tips,
-          );
-        }),
-      ],
+          Obx(() {
+            final tips = _controller.showSearchTips.value;
+            return _RecentSearchSection(
+              tips: tips,
+            );
+          }),
+        ],
+      ),
     );
   }
 }
@@ -47,16 +48,11 @@ class _Tags extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.maxFinite,
-      child: Wrap(
-        spacing: _hSpacing,
-        runSpacing: _vSpacing,
-        children: List.generate(tags.length, (index) {
-          final String tagName = tags[index];
-          return _tagWidget(tagName);
-        }),
-      ),
+    return Wrap( spacing: _hSpacing,  runSpacing: _vSpacing,
+      children: List.generate(tags.length, (index) {
+        final String tagName = tags[index];
+        return _tagWidget(tagName);
+      }),
     );
   }
 

@@ -3,7 +3,6 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
-
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType keyboardType;
@@ -16,6 +15,8 @@ class CustomTextField extends StatelessWidget {
   final String? errorText;
   final double radius;
   final Widget? prefix;
+  final int? maxLines;
+  final int? minLines;
 
   const CustomTextField({
     super.key,
@@ -30,6 +31,8 @@ class CustomTextField extends StatelessWidget {
     this.errorText,
     this.radius = 8,
     this.prefix,
+    this.maxLines,
+    this.minLines,
   });
 
   @override
@@ -40,6 +43,8 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
+      maxLines: maxLines ?? 1,
+      minLines: minLines ?? 1,
       enabled: enabled,
       onChanged: onChanged,
       onFieldSubmitted: onSubmitted,
@@ -111,6 +116,8 @@ class LabelTextField extends StatelessWidget {
   final TextInputType keyboardType;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
+  final int? maxLines;
+  final int? minLines;
 
   const LabelTextField({
     super.key,
@@ -124,11 +131,12 @@ class LabelTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.onChanged,
     this.onSubmitted,
+    this.maxLines,
+    this.minLines,
   });
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -152,6 +160,8 @@ class LabelTextField extends StatelessWidget {
           onChanged: onChanged,
           onSubmitted: onSubmitted,
           errorText: errorText,
+          minLines: minLines,
+          maxLines: maxLines,
         ),
 
         /// Error Message

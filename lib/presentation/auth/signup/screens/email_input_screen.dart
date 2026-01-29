@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import 'package:ondo/core/design_system/app_strings.dart';
+import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 import '../../../../core/design_system/app_layout.dart';
 import '../../../../core/design_system/components/custom_textfield.dart';
 import '../../../../core/ui/base/base_scaffold.dart';
@@ -58,7 +59,7 @@ class EmailInputScreen extends GetView<EmailInputController> {
           controller: controller.emailTextController,
           hintText: AppStrings.emailInputHint,
           keyboardType: TextInputType.emailAddress,
-          errorText: controller.emailState == EmailInputState.invalid
+          errorText: controller.emailState == InputValidationState.invalid
               ? AppStrings.invalidEmailFormat
               : null,
           onChanged: (_) => controller.resetState(),

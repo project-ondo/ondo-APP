@@ -5,12 +5,12 @@ import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
-class HomeChatCard extends StatelessWidget {
+class HomeProfileCard extends StatelessWidget {
   final String name;
   final String skill;
   final int getStar;
 
-  const HomeChatCard({
+  const HomeProfileCard({
     super.key,
     required this.skill,
     required this.name,

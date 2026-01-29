@@ -3,10 +3,13 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/core/design_system/components/base_post_list.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
-import 'package:ondo/presentation/home/widgets/home_chat_card.dart';
+import 'package:ondo/presentation/home/widgets/home_profile_card.dart';
 
+
+
+import '../../../core/design_system/components/post/base_post_list.dart';
+import '../../../core/design_system/components/post/post_item.dart';
 import '../../../core/design_system/components/top_bar/main_top_bar.dart';
 
 
@@ -53,7 +56,7 @@ class HomeScreen extends StatelessWidget {
       child: Column( children: [
 
           AppGap.v16,
-          _RecommendChatList(),
+          _RecommendProfileList(),
           AppGap.v16,
           _RecommendPostList(),
           AppGap.v16,
@@ -147,10 +150,10 @@ class _PostRankList extends StatelessWidget {
 }
 
 @immutable
-class _RecommendChatList extends StatelessWidget {
+class _RecommendProfileList extends StatelessWidget {
   final List<Map<String, dynamic>> _chats;
 
-  _RecommendChatList() : _chats = [{}, {}, {}, {}];
+  _RecommendProfileList() : _chats = [{}, {}, {}, {}];
 
   final String _titleTest = "커피챗 추천";
 
@@ -178,7 +181,7 @@ class _RecommendChatList extends StatelessWidget {
             final int currentIndex = (pageIndex * 3) + itemIndex;
 
             return currentIndex < _chats.length
-                ? HomeChatCard(
+                ? HomeProfileCard(
                     skill: "UI/UX",
                     name: "김유찬",
                     getStar: 4,

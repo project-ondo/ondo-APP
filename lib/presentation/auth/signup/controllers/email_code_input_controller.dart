@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
-
-enum EmailCodeState {
-  initial,
-  invalid,
-  valid,
-}
+import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
 class EmailCodeInputController extends GetxController {
   static const String tempEmailCode = '111111';
@@ -15,13 +10,13 @@ class EmailCodeInputController extends GetxController {
 
   late final TextEditingController emailCodeTextController;
 
-  final Rx<EmailCodeState> codeState = EmailCodeState.initial.obs;
+  final Rx<InputValidationState> codeState = InputValidationState.initial.obs;
 
   bool get hasCodeInput => emailCodeTextController.text.trim().isNotEmpty;
 
   bool get isButtonEnabled => hasCodeInput;
 
-  bool get hasError => codeState.value == EmailCodeState.invalid;
+  bool get hasError => codeState.value == InputValidationState.invalid;
 
   String get errorMessage => AppStrings.invalidEmailCode;
 
@@ -37,8 +32,8 @@ class EmailCodeInputController extends GetxController {
   }
 
   void _onCodeChanged() {
-    if (codeState.value == EmailCodeState.invalid) {
-      codeState.value = EmailCodeState.initial;
+    if (codeState.value == InputValidationState.invalid) {
+      codeState.value = InputValidationState.initial;
     }
     update();
   }
@@ -47,9 +42,9 @@ class EmailCodeInputController extends GetxController {
     final inputCode = emailCodeTextController.text.trim();
 
     if (inputCode == tempEmailCode) {
-      codeState.value = EmailCodeState.valid;
+      codeState.value = InputValidationState.valid;
     } else {
-      codeState.value = EmailCodeState.invalid;
+      codeState.value = InputValidationState.invalid;
     }
     update();
   }

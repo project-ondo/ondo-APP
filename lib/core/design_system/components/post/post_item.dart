@@ -69,6 +69,7 @@ class PostItem extends StatelessWidget {
 
   Widget _content() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //제목 영역
         Text(
@@ -79,7 +80,7 @@ class PostItem extends StatelessWidget {
         //작성자 작성자 표시 영역
         Text(
           author,
-          style: AppTextStyles.caption(),
+          style: AppTextStyles.caption(textColor: AppColors.gray60),
         ),
       ],
     );

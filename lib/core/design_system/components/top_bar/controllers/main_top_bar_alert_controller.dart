@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-class TopBarAlertController extends GetxController {
+class MainTopBarAlertController extends GetxController {
   final enable = true.obs;
   final totals = 30.obs;
 

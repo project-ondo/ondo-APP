@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class TopBarSearchController extends GetxController {
+class MainTopBarSearchController extends GetxController {
   final TextEditingController searchTextController = TextEditingController();
   final FocusNode focusNode = FocusNode();
   final SearchPopupController _searchPopupController = Get.put(SearchPopupController());

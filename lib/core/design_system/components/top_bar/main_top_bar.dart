@@ -6,20 +6,20 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
-import 'package:ondo/core/design_system/components/top_bar/controllers/top_bar_alert_controller.dart';
-import 'package:ondo/core/design_system/components/top_bar/controllers/top_bar_search_controller.dart';
+import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_alert_controller.dart';
+import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_search_controller.dart';
 import 'package:ondo/core/design_system/components/top_bar/search_popup.dart';
 
 @immutable
-class TopBar extends StatelessWidget {
+class MainTopBar extends StatelessWidget {
   final Widget child;
 
-  TopBar({super.key, required this.child}) {
-    Get.put(TopBarAlertController());
+  MainTopBar({super.key, required this.child}) {
+    Get.put(MainTopBarAlertController());
   }
 
-  final TopBarSearchController _topBarSearchController = Get.put(
-    TopBarSearchController(),
+  final MainTopBarSearchController _topBarSearchController = Get.put(
+    MainTopBarSearchController(),
   );
   final double _height = 44.0;
 
@@ -86,8 +86,8 @@ class _AlertButton extends StatelessWidget {
     required this.size,
   });
 
-  final TopBarAlertController alertController =
-      Get.find<TopBarAlertController>();
+  final MainTopBarAlertController alertController =
+      Get.find<MainTopBarAlertController>();
 
   @override
   Widget build(BuildContext context) {

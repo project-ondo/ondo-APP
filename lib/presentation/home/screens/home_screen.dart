@@ -7,7 +7,12 @@ import 'package:ondo/core/design_system/components/base_post_list.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
 import 'package:ondo/presentation/home/widgets/home_chat_card.dart';
 
-import '../../../core/design_system/components/top_bar/top_bar.dart';
+import '../../../core/design_system/components/top_bar/main_top_bar.dart';
+
+
+void main () {
+  runApp(MaterialApp(home: HomeScreen(),));
+}
 
 
 class HomeScreen extends StatelessWidget {
@@ -18,7 +23,7 @@ class HomeScreen extends StatelessWidget {
     return BaseScaffold(
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        child: TopBar(
+        child: MainTopBar(
           child: Column(
             children: [
 
@@ -36,7 +41,7 @@ class HomeScreen extends StatelessWidget {
     return Container( decoration: BoxDecoration(color: AppColors.white),
       child: Padding( padding: AppPadding.screenHorizontal,
         child: Column(children: [
-        _HomePostRankList(),
+        _PostRankList(),
         ],),
       ),
     );
@@ -48,7 +53,7 @@ class HomeScreen extends StatelessWidget {
       child: Column( children: [
 
           AppGap.v16,
-          _HomeChatList(),
+          _RecommendChatList(),
           AppGap.v16,
           _RecommendPostList(),
           AppGap.v16,
@@ -60,10 +65,10 @@ class HomeScreen extends StatelessWidget {
 }
 
 @immutable
-class _HomePostRankList extends StatelessWidget {
+class _PostRankList extends StatelessWidget {
   final List<Map<String, dynamic>> popularPosts;
 
-  _HomePostRankList() : popularPosts = [{}, {}, {}, {}, {}];
+  _PostRankList() : popularPosts = [{}, {}, {}, {}, {}];
 
   final double _hList = 143;
 
@@ -142,10 +147,10 @@ class _HomePostRankList extends StatelessWidget {
 }
 
 @immutable
-class _HomeChatList extends StatelessWidget {
+class _RecommendChatList extends StatelessWidget {
   final List<Map<String, dynamic>> _chats;
 
-  _HomeChatList() : _chats = [{}, {}, {}, {}];
+  _RecommendChatList() : _chats = [{}, {}, {}, {}];
 
   final String _titleTest = "커피챗 추천";
 

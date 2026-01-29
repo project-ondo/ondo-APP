@@ -62,7 +62,6 @@ class IntroductionInputScreen extends GetView<IntroductionInputController> {
               errorText: controller.errorText,
               maxLines: 6,
               minLines: 4,
-              onChanged: (value) => controller.onIntroductionChanged(value),
             );
           },
         ),
@@ -78,8 +77,8 @@ class IntroductionInputScreen extends GetView<IntroductionInputController> {
             CustomButton(
               text: '다음',
               variant: ButtonVariant.primary,
-              enabled: controller.isValid,
-              onPressed: controller.isValid ? controller.submit : null,
+              enabled: controller.canProceed,
+              onPressed: controller.canProceed ? controller.submit : null,
             ),
             AppGap.v16,
           ],

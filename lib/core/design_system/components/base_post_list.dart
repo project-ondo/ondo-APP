@@ -47,7 +47,6 @@ abstract class BasePostList extends StatelessWidget {
 
   Widget _postList() {
     final int pageTotal = list().length ~/ (floor * 2);
-    print(pageTotal);
 
     return PageView.builder(
       itemBuilder: (context, pageIndex) {

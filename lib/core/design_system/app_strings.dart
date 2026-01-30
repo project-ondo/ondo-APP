@@ -48,7 +48,7 @@ class AppStrings {
 
   static const alreadyRegisteredMickName = '이미 등록된 닉네임이에요!';
 
-  static const nicknameImmutableWarning = '*한번 선택한 닉네임은 변경할 수 없어요! \n  신중히 선택해주세요!';
+  static const nicknameImmutableWarning = '한번 선택한 닉네임은 변경할 수 없어요! 신중히 선택해주세요!';
 
   static const signupCompletionTitle = '회원가입이 완료되었어요! \n본격적으로 시작하기 전에..';
 
@@ -63,9 +63,21 @@ class AppStrings {
   static const ruleViolationWarning =
       '위 규칙을 상습적으로 지키지 않을 시에 관리자에게 \n제재를 받을 수 있어요!';
 
-  static const emailCodeInputHint = '인증번호를 입력해주세요';
+  static const emailCodeInputHint =
+      '인증번호 6자리를 입력해주세요';
 
-  static const anotherEmailInput = '다른 이메일을 입력하시고 싶나요?';
+  static const invalidEmailCode =
+      '인증번호가 올바르지 않아요. 다시 확인해주세요';
 
-  static const invalidEmailCode = '인증번호가 달라요. 인증번호를 다시 한번 확인해주세요!';
+  static const inputEmailAndPassword =
+  '이메일과 비밀번호를 입력해주세요.';
+
+  static const emailRegex =
+  '이메일 형식이 올바르지 않아요.';
+
+  static const passwordLength =
+  '비밀번호는 8~15자여야 해요.';
+
+  static const passwordRegex =
+  '비밀번호에 특수기호를 포함해주세요.';
 }

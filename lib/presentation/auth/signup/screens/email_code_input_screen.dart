@@ -11,6 +11,7 @@ import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/controllers/email_code_input_controller.dart';
+import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
@@ -95,7 +96,7 @@ class EmailCodeInputScreen extends GetView<EmailCodeInputController> {
                         onPressed: controller.isButtonEnabled ? () {
                           controller.verifyEmailCode();
                           if (controller.codeState.value ==
-                              EmailCodeState.valid){
+                              InputValidationState.valid){
                             log('이메인 인증 성공');
                           }
                         }

@@ -14,23 +14,17 @@ class SearchPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
-    return Container( width: width,  padding: AppPadding.popUp, decoration: BoxDecoration(color: AppColors.white),
-      child: Column( mainAxisSize: MainAxisSize.min,  crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Obx(() {
-            final tags = _controller.showTags.value;
-            return _Tags(
-              tags: tags,
-            );
-          }),
-
+    return Container(
+      width: width,
+      padding: AppPadding.popUp,
+      decoration: BoxDecoration(color: AppColors.white),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Obx(() => _Tags(tags: _controller.showTags.value,),),
           AppGap.v16,
-
-          Obx(() {
-            final tips = _controller.showSearchTips.value;
-            return _RecentSearchSection(
-              tips: tips,
-            );
-          }),
+          Obx(() => _RecentSearchSection(tips: _controller.showSearchTips.value),),
         ],
       ),
     );
@@ -43,16 +37,12 @@ class _Tags extends StatelessWidget {
 
   const _Tags({required this.tags});
 
-  final double _hSpacing = AppSpacing.s16;
-  final double _vSpacing = AppSpacing.s12;
-
   @override
   Widget build(BuildContext context) {
-    return Wrap( spacing: _hSpacing,  runSpacing: _vSpacing,
-      children: List.generate(tags.length, (index) {
-        final String tagName = tags[index];
-        return _tagWidget(tagName);
-      }),
+    return Wrap(
+      spacing: AppSpacing.s16,
+      runSpacing: AppSpacing.s12,
+      children: List.generate(tags.length, (index) => _tagWidget(tags[index])),
     );
   }
 
@@ -63,10 +53,7 @@ class _Tags extends StatelessWidget {
         color: AppColors.gray20,
         borderRadius: AppRadius.baseRadius,
       ),
-      child: Text(
-        tag,
-        style: AppTextStyles.textMedium(),
-      ),
+      child: Text(tag, style: AppTextStyles.textMedium(),),
     );
   }
 }
@@ -77,27 +64,19 @@ class _RecentSearchSection extends StatelessWidget {
 
   const _RecentSearchSection({required this.tips});
 
-  final double _vSpacing = AppSpacing.s16;
-
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: _vSpacing,
-      children: List.generate(tips.length, (index) {
-        final String text = tips[index];
-        return _textWidget(text);
-      }),
+      spacing: AppSpacing.s16,
+      children: List.generate(tips.length, (index) => _textWidget(tips[index])),
     );
   }
 
   Widget _textWidget(String text) {
     return SizedBox(
       width: double.maxFinite,
-      child: Text(
-        text,
-        style: AppTextStyles.textMedium(textColor: AppColors.gray90),
-      ),
+      child: Text(text, style: AppTextStyles.textMedium(textColor: AppColors.gray90)),
     );
   }
 }

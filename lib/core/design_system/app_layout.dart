@@ -85,6 +85,7 @@ class AppPadding {
     right: AppSpacing.s16,
   );
 
+  static const EdgeInsets alertCount = EdgeInsets.all(AppSpacing.s2);
 }
 
 class AppRadius {

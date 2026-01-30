@@ -139,7 +139,7 @@ class _AlertButton extends StatelessWidget {
   Widget _alertCount() {
     return Obx(
       () => Container(
-        padding: EdgeInsets.all(2),
+        padding: AppPadding.alertCount,
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: Colors.red,

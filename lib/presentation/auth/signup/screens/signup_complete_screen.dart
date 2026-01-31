@@ -97,9 +97,7 @@ class SignupCompleteScreen extends GetView<SignupFlowController> {
               text: '시작하기',
               variant: ButtonVariant.primary,
               //enabled: controller.canSubmit,
-              onPressed: controller.canSubmit
-                  ? controller.submitInfo // 테스트용
-                  : null,
+              onPressed: controller.submitInfo
             );
           },
         ),

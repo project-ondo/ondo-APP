@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:ondo/core/design_system/app_colors.dart';
-import 'package:ondo/core/design_system/app_icon.dart';
-import 'package:ondo/core/design_system/app_layout.dart';
-import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:flutter/cupertino.dart';
 
-class HomePostItem extends StatelessWidget {
+import '../../app_colors.dart';
+import '../../app_icon.dart';
+import '../../app_layout.dart';
+import '../../app_text_styles.dart';
+
+class PostItem extends StatelessWidget {
   final List<String> skills;
   final String title;
   final String author;
@@ -12,7 +13,7 @@ class HomePostItem extends StatelessWidget {
   final int bookmarks;
   final int createMinutes;
 
-  const HomePostItem({
+  const PostItem({
     super.key,
     required this.skills,
     required this.title,
@@ -34,35 +35,25 @@ class HomePostItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           //분야 표시 영역
-          _SkillList(skills: skills),
-
+          _skillList(),
           AppGap.v12,
 
           //제목 + 작성자 표시 영역
-          _MainContent(title: title, author: author),
-
+          _content(),
           AppGap.v16,
 
           //하단 북마크, 좋아요 + 생성 시간 표시 영역
-          _SubContent(
-            favorites: favorites,
-            bookmarks: bookmarks,
-            createMinutes: createMinutes,
-          ),
+          _sunContent(),
         ],
       ),
     );
   }
-}
 
-class _SkillList extends StatelessWidget {
-  final List<String> skills;
+  final double _skillSpacing = AppSpacing.s16;
 
-  const _SkillList({required this.skills});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _skillList() {
     return Row(
+      spacing: _skillSpacing,
       children: List.generate(skills.length, (index) {
         return Row(
           children: [
@@ -70,23 +61,15 @@ class _SkillList extends StatelessWidget {
               skills[index],
               style: AppTextStyles.caption(textColor: AppColors.gray60),
             ),
-            if (index <= skills.length) AppGap.h16,
           ],
         );
       }),
     );
   }
-}
 
-class _MainContent extends StatelessWidget {
-  final String title;
-  final String author;
-
-  const _MainContent({required this.title, required this.author});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _content() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         //제목 영역
         Text(
@@ -97,33 +80,20 @@ class _MainContent extends StatelessWidget {
         //작성자 작성자 표시 영역
         Text(
           author,
-          style: AppTextStyles.caption(),
+          style: AppTextStyles.caption(textColor: AppColors.gray60),
         ),
       ],
     );
   }
-}
 
-class _SubContent extends StatelessWidget {
-  final int favorites;
-  final int bookmarks;
-  final int createMinutes;
-
-  const _SubContent({
-    required this.favorites,
-    required this.bookmarks,
-    required this.createMinutes,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _sunContent() {
     return Row(
       children: [
-        customIcon(AppIcon.heart.path, favorites),
+        _customIcon(AppIcon.heart.path, favorites),
 
         AppGap.h8,
 
-        customIcon(AppIcon.bookmark.path, bookmarks),
+        _customIcon(AppIcon.bookmark.path, bookmarks),
 
         AppGap.h8,
 
@@ -137,9 +107,8 @@ class _SubContent extends StatelessWidget {
     );
   }
 
-  Widget customIcon(String iconPath, int total) {
+  Widget _customIcon(String iconPath, int total) {
     final double iconSize = 16;
-
     return Row(
       children: [
         Image.asset(

@@ -17,6 +17,7 @@ class CustomTextField extends StatelessWidget {
   final Widget? prefix;
   final int? maxLines;
   final int? minLines;
+  final FocusNode? focusNode;
 
   const CustomTextField({
     super.key,
@@ -31,8 +32,9 @@ class CustomTextField extends StatelessWidget {
     this.errorText,
     this.radius = 8,
     this.prefix,
+    this.focusNode,
     this.maxLines,
-    this.minLines,
+    this.minLines
   });
 
   @override
@@ -48,6 +50,7 @@ class CustomTextField extends StatelessWidget {
       enabled: enabled,
       onChanged: onChanged,
       onFieldSubmitted: onSubmitted,
+      focusNode: focusNode,
       style: AppTextStyles.textMedium(
         textColor: enabled
             ? (hasError ? AppColors.red : AppColors.gray80)

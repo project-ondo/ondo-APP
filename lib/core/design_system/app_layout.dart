@@ -73,6 +73,19 @@ class AppPadding {
     horizontal: AppSpacing.s12,
     vertical: AppSpacing.s24,
   );
+
+  static const EdgeInsets topBar = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s16,
+    vertical: AppSpacing.s16,
+  );
+
+  static const EdgeInsets popUp = EdgeInsets.only(
+    bottom: AppSpacing.s24,
+    left: AppSpacing.s16,
+    right: AppSpacing.s16,
+  );
+
+  static const EdgeInsets alertCount = EdgeInsets.all(AppSpacing.s2);
 }
 
 class AppRadius {
@@ -90,5 +103,9 @@ class AppRadius {
 
   static const BorderRadius circleRadius = BorderRadius.all(
     Radius.circular(99),
+  );
+
+  static const BorderRadius alertRadius = BorderRadius.all(
+    Radius.circular(AppSpacing.s6),
   );
 }

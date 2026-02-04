@@ -53,12 +53,12 @@ class AppStrings {
   static const signupCompletionTitle = '회원가입이 완료되었어요! \n본격적으로 시작하기 전에..';
 
   static const guidelineAvoidSevereCriticism =
-      '커뮤니티 내에서 타인을 향해 심각한 비난을 삼가해 주세요.';
+      '1. 커뮤니티 내에서 타인을 향해 심각한 비난을 삼가해 주세요.';
 
-  static const guidelineRespectOthers = '상대의 생각을 존중해주세요.';
+  static const guidelineRespectOthers = '2. 상대의 생각을 존중해주세요.';
 
   static const guidelineAvoidProblematicRemarks =
-      '인격적, 사회적으로 문제될 수 있는 발언은 지향해주세요.';
+      '3. 사회적으로 문제될 수 있는 발언은 지향해주세요.';
 
   static const ruleViolationWarning =
       '위 규칙을 상습적으로 지키지 않을 시에 관리자에게 \n제재를 받을 수 있어요!';

@@ -84,6 +84,13 @@ class AppTextStyles {
     );
   }
 
-
-
+  static TextStyle popupTitle({
+    Color? textColor,
+  }) {
+    return TextStyle(
+      color: textColor ?? AppColors.black,
+      fontSize: 20,
+      fontWeight: FontWeight.w600,
+    );
+  }
 }

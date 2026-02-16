@@ -13,25 +13,27 @@ class AppSpacing {
   static const double s16 = 16;
   static const double s18 = 18;
   static const double s24 = 24;
+  static const double s28 = 28;
   static const double s36 = 36;
   static const double s40 = 40;
+  static const double s42 = 42;
   static const double s51 = 51;
   static const double s76 = 76;
 }
 
 class AppGap {
-  static const SizedBox h4  = SizedBox(width: AppSpacing.s4);
-  static const SizedBox h6  = SizedBox(width: AppSpacing.s6);
-  static const SizedBox h8  = SizedBox(width: AppSpacing.s8);
+  static const SizedBox h4 = SizedBox(width: AppSpacing.s4);
+  static const SizedBox h6 = SizedBox(width: AppSpacing.s6);
+  static const SizedBox h8 = SizedBox(width: AppSpacing.s8);
   static const SizedBox h10 = SizedBox(width: AppSpacing.s10);
   static const SizedBox h12 = SizedBox(width: AppSpacing.s12);
   static const SizedBox h16 = SizedBox(width: AppSpacing.s16);
   static const SizedBox h24 = SizedBox(width: AppSpacing.s24);
   static const SizedBox h36 = SizedBox(width: AppSpacing.s36);
 
-  static const SizedBox v4  = SizedBox(height: AppSpacing.s4);
-  static const SizedBox v6  = SizedBox(height: AppSpacing.s6);
-  static const SizedBox v8  = SizedBox(height: AppSpacing.s8);
+  static const SizedBox v4 = SizedBox(height: AppSpacing.s4);
+  static const SizedBox v6 = SizedBox(height: AppSpacing.s6);
+  static const SizedBox v8 = SizedBox(height: AppSpacing.s8);
   static const SizedBox v10 = SizedBox(height: AppSpacing.s10);
   static const SizedBox v12 = SizedBox(height: AppSpacing.s12);
   static const SizedBox v16 = SizedBox(height: AppSpacing.s16);
@@ -40,7 +42,6 @@ class AppGap {
   static const SizedBox v40 = SizedBox(height: AppSpacing.s40);
   static const SizedBox v51 = SizedBox(height: AppSpacing.s51);
   static const SizedBox v76 = SizedBox(height: AppSpacing.s76);
-
 }
 
 class AppPadding {
@@ -76,10 +77,7 @@ class AppPadding {
     vertical: AppSpacing.s24,
   );
 
-  static const EdgeInsets topBar = EdgeInsets.symmetric(
-    horizontal: AppSpacing.s16,
-    vertical: AppSpacing.s16,
-  );
+  static const EdgeInsets topBar = EdgeInsets.all(AppSpacing.s16);
 
   static const EdgeInsets popUp = EdgeInsets.only(
     bottom: AppSpacing.s24,
@@ -88,6 +86,11 @@ class AppPadding {
   );
 
   static const EdgeInsets alertCount = EdgeInsets.all(AppSpacing.s2);
+
+  static const EdgeInsets settingSession = EdgeInsets.symmetric(
+    vertical: AppSpacing.s12,
+    horizontal: AppSpacing.s24,
+  );
 }
 
 class AppRadius {

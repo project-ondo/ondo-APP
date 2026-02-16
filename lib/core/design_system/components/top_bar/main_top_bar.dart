@@ -9,6 +9,7 @@ import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_alert_controller.dart';
 import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_search_controller.dart';
 import 'package:ondo/core/design_system/components/top_bar/search_popup.dart';
+import 'package:ondo/presentation/alert/screens/alert_screen.dart';
 
 @immutable
 class MainTopBar extends StatelessWidget {
@@ -30,7 +31,8 @@ class MainTopBar extends StatelessWidget {
         Column(
           children: [
             topBar(),
-            GestureDetector( onTap: _topBarSearchController.onOtherTap,
+            GestureDetector(
+              onTap: _topBarSearchController.onOtherTap,
               child: child,
             ),
           ],
@@ -38,8 +40,10 @@ class MainTopBar extends StatelessWidget {
 
         Obx(
           () {
-            if (!_topBarSearchController.isShowPopUp.value) return SizedBox.shrink();
-            return Positioned( top: _height + AppPadding.topBar.vertical,
+            if (!_topBarSearchController.isShowPopUp.value)
+              return SizedBox.shrink();
+            return Positioned(
+              top: _height + AppPadding.topBar.vertical,
               child: SearchPopup(),
             );
           },
@@ -49,10 +53,14 @@ class MainTopBar extends StatelessWidget {
   }
 
   Widget topBar() {
-    return Container( padding: AppPadding.topBar, color: AppColors.white,
-      child: Row( children: [
+    return Container(
+      padding: AppPadding.topBar,
+      color: AppColors.white,
+      child: Row(
+        children: [
           Expanded(
-            child: SizedBox( height: _height,
+            child: SizedBox(
+              height: _height,
               child: CustomTextField(
                 focusNode: _topBarSearchController.focusNode,
                 onChanged: _topBarSearchController.onTyping,
@@ -65,13 +73,13 @@ class MainTopBar extends StatelessWidget {
 
           Obx(() {
             if (_topBarSearchController.isShowPopUp.value) return SizedBox.shrink();
-            return Row( children: [
+            return Row(
+              children: [
                 AppGap.h16,
                 _AlertButton(size: _height),
               ],
             );
           }),
-
         ],
       ),
     );
@@ -91,28 +99,36 @@ class _AlertButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: AppColors.gray20,
-        borderRadius: AppRadius.baseRadius,
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AlertScreen(),
+        ),
       ),
-      child: SizedBox.expand(
-        child: Stack(
-          children: [
-            Align(
-              alignment: Alignment.center,
-              child: _alertIcon(),
-            ),
+      child: Container(
+        width: size,
+        height: size,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: AppColors.gray20,
+          borderRadius: AppRadius.baseRadius,
+        ),
+        child: SizedBox.expand(
+          child: Stack(
+            children: [
+              Align(
+                alignment: Alignment.center,
+                child: _alertIcon(),
+              ),
 
-            Positioned(
-              top: size * 0.2,
-              right: size * 0.2,
-              child: _alertCount(),
-            ),
-          ],
+              Positioned(
+                top: size * 0.2,
+                right: size * 0.2,
+                child: _alertCount(),
+              ),
+            ],
+          ),
         ),
       ),
     );

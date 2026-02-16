@@ -40,8 +40,9 @@ class MainTopBar extends StatelessWidget {
 
         Obx(
           () {
-            if (!_topBarSearchController.isShowPopUp.value)
+            if (!_topBarSearchController.isShowPopUp.value) {
               return SizedBox.shrink();
+            }
             return Positioned(
               top: _height + AppPadding.topBar.vertical,
               child: SearchPopup(),

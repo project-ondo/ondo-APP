@@ -88,6 +88,11 @@ class AppPadding {
   );
 
   static const EdgeInsets alertCount = EdgeInsets.all(AppSpacing.s2);
+
+  static const EdgeInsets alertReportItem = EdgeInsets.all(AppSpacing.s12);
+
+  static const EdgeInsets pageIndicator = EdgeInsets.all(AppSpacing.s10);
+
 }
 
 class AppRadius {

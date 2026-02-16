@@ -54,6 +54,18 @@ class AppTextStyles {
     );
   }
 
+  static TextStyle pageIndicator({
+    bool isCurrent = false,
+  }) {
+    return TextStyle(
+      color: isCurrent ? AppColors.primary : AppColors.gray45,
+      fontSize: 14,
+      fontWeight: FontWeight.w500,
+      decoration: isCurrent ? TextDecoration.underline : null,
+      decorationColor: AppColors.primary,
+    );
+  }
+
   static TextStyle caption({
     Color? textColor,
   }) {

@@ -91,6 +91,8 @@ class AppPadding {
     vertical: AppSpacing.s12,
     horizontal: AppSpacing.s24,
   );
+
+  static const EdgeInsets terms = EdgeInsets.symmetric(horizontal: AppSpacing.s24);
 }
 
 class AppRadius {

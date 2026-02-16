@@ -81,6 +81,10 @@ class AppPadding {
     vertical: AppSpacing.s16,
   );
 
+  static const EdgeInsets between = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s12,
+  );
+
   static const EdgeInsets popUp = EdgeInsets.only(
     bottom: AppSpacing.s24,
     left: AppSpacing.s16,

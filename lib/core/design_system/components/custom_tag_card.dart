@@ -6,28 +6,43 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 class CustomTagCard extends StatelessWidget {
   final String tag;
   final Color? color;
-  final bool isSelect;
+  final void Function(String)? onTap;
+  final ValueNotifier<bool> isSelect;
 
-  const CustomTagCard({
+  CustomTagCard({
     super.key,
     required this.tag,
     this.color,
-    this.isSelect = false,
-  });
+    this.onTap,
+    bool isSelect = false,
+  }) : isSelect = ValueNotifier(isSelect);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: AppPadding.chip,
-      decoration: BoxDecoration(
-        color: isSelect ? AppColors.primary : color ?? AppColors.white,
-      ),
-      child: Text(
-        tag,
-        style: AppTextStyles.textMedium(
-          textColor: isSelect ? AppColors.white : AppColors.gray90,
-        ),
-      ),
+    return ValueListenableBuilder(
+      valueListenable: isSelect,
+      builder: (context, value, child) {
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () {
+            isSelect.value = !isSelect.value;
+            onTap?.call(tag);
+          },
+          child: Container(
+            padding: AppPadding.chip,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: isSelect.value ? AppColors.primary : color ?? AppColors.white,
+            ),
+            child: Text(
+              tag,
+              style: AppTextStyles.textMedium(
+                textColor: isSelect.value ? AppColors.white : AppColors.gray90,
+              ),
+            ),
+          ),
+        );
+      }
     );
   }
 }

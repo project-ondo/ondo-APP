@@ -12,6 +12,7 @@ import 'package:ondo/presentation/profile/widget/profile_indicator_post_page_lis
 import 'package:ondo/presentation/profile/widget/profile_interest_section.dart';
 import 'package:ondo/presentation/profile/widget/profile_rating_session.dart';
 import 'package:ondo/presentation/profile/widget/user_introduction_text.dart';
+import 'package:ondo/presentation/profile/widget/user_logout_popup.dart';
 import 'package:ondo/presentation/profile/widget/user_name_and_major.dart';
 import 'package:ondo/presentation/profile/widget/user_profile_image.dart';
 
@@ -279,7 +280,7 @@ class MyProfileScreen extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
-          onTap: () => log("로그아웃"),
+          onTap: () => UserLogoutPopup.userLogoutPopup(context),
           padding: AppPadding.settingSession,
           child: Text(
             "로그아웃",

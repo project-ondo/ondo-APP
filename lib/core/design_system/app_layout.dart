@@ -45,6 +45,7 @@ class AppGap {
   static const SizedBox v40 = SizedBox(height: AppSpacing.s40);
   static const SizedBox v51 = SizedBox(height: AppSpacing.s51);
   static const SizedBox v76 = SizedBox(height: AppSpacing.s76);
+
 }
 
 class AppPadding {

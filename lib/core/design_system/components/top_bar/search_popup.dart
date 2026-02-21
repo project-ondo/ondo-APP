@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/components/custom_tag_card.dart';
 import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_search_controller.dart';
 
 @immutable
@@ -22,9 +23,15 @@ class SearchPopup extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Obx(() => _Tags(tags: _controller.showTags.value,),),
+          Obx(
+            () => _Tags(
+              tags: _controller.showTags.value,
+            ),
+          ),
           AppGap.v16,
-          Obx(() => _RecentSearchSection(tips: _controller.showSearchTips.value),),
+          Obx(
+            () => _RecentSearchSection(tips: _controller.showSearchTips.value),
+          ),
         ],
       ),
     );
@@ -42,18 +49,13 @@ class _Tags extends StatelessWidget {
     return Wrap(
       spacing: AppSpacing.s16,
       runSpacing: AppSpacing.s12,
-      children: List.generate(tags.length, (index) => _tagWidget(tags[index])),
-    );
-  }
-
-  Widget _tagWidget(String tag) {
-    return Container(
-      padding: AppPadding.chip,
-      decoration: BoxDecoration(
-        color: AppColors.gray20,
-        borderRadius: AppRadius.baseRadius,
+      children: List.generate(
+        tags.length,
+        (index) => CustomTagCard(
+          tag: tags[index],
+          color: AppColors.gray20,
+        ),
       ),
-      child: Text(tag, style: AppTextStyles.textMedium(),),
     );
   }
 }
@@ -76,7 +78,10 @@ class _RecentSearchSection extends StatelessWidget {
   Widget _textWidget(String text) {
     return SizedBox(
       width: double.maxFinite,
-      child: Text(text, style: AppTextStyles.textMedium(textColor: AppColors.gray90)),
+      child: Text(
+        text,
+        style: AppTextStyles.textMedium(textColor: AppColors.gray90),
+      ),
     );
   }
 }

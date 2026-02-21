@@ -1,9 +1,39 @@
 import 'package:get/get.dart';
 
 class MainTopBarAlertController extends GetxController {
-  final enable = true.obs;
-  final totals = 30.obs;
+  RxBool enable = true.obs;
+  RxInt totals = 0.obs;
+  final List alerts = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+  ];
 
-  void setEnable (bool value) => enable.value = value;
-  void setTotals (int value) => totals.value = value;
+  MainTopBarAlertController() {
+    setTotal();
+  }
+
+  void setEnable(bool value) => enable.value = value;
+
+  void clearAlerts() {
+    alerts.clear();
+    setTotal();
+  }
+
+  void setTotal () => totals.value = alerts.length;
+
 }

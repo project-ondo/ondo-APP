@@ -98,7 +98,18 @@ class AppPadding {
     horizontal: AppSpacing.s24,
   );
 
-  static const EdgeInsets terms = EdgeInsets.symmetric(horizontal: AppSpacing.s24);
+  static const EdgeInsets popupManuButton = EdgeInsets.symmetric(
+    vertical: AppSpacing.s12,
+    horizontal: AppSpacing.s24,
+  );
+
+  static const EdgeInsets terms = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s24,
+  );
+
+  static const EdgeInsets dialogButton = EdgeInsets.symmetric(
+    vertical: AppSpacing.s16,
+  );
 }
 
 class AppRadius {

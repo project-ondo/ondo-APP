@@ -10,14 +10,17 @@ import '../app_text_styles.dart';
 import 'custom_popup_menu_button.dart';
 
 class CustomBackButton extends StatelessWidget {
-  const CustomBackButton(
-      {
+  const CustomBackButton({
     super.key,
     required this.moreOptions,
+    this.useUserProfile = false,
+    this.userInfo,
     this.itemBuilder,
   });
 
   final bool moreOptions;
+  final bool useUserProfile;
+  final (Widget profile, String name)? userInfo;
   final PopupMenuItemBuilder<String>? itemBuilder;
 
   @override
@@ -45,13 +48,7 @@ class CustomBackButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SvgPicture.asset(AppIcon.arrowLeft.path),
-                AppGap.v4,
-                Text(
-                  "이전으로",
-                  style: AppTextStyles.textMedium(
-                    textColor: AppColors.gray60,
-                  ),
-                ),
+                if (!useUserProfile) _text() else _profile(),
               ],
             ),
           ),
@@ -63,4 +60,31 @@ class CustomBackButton extends StatelessWidget {
       ),
     );
   }
+
+  Widget _text() => Row(
+    children: [
+      AppGap.v4,
+      Text(
+        "이전으로",
+        style: AppTextStyles.textMedium(
+          textColor: AppColors.gray60,
+        ),
+      ),
+    ],
+  );
+
+  Widget _profile() => Row(
+    children: [
+      AppGap.h12,
+      SizedBox.square(
+        dimension: 24,
+        child: userInfo!.$1,
+      ),
+      AppGap.h12,
+      Text(
+        userInfo!.$2,
+        style: AppTextStyles.textMedium(textColor: AppColors.gray90),
+      ),
+    ],
+  );
 }

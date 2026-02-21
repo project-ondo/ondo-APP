@@ -50,7 +50,7 @@ class AppGap {
 
 class AppPadding {
   static const EdgeInsets screenHorizontal = EdgeInsets.symmetric(
-    horizontal: AppSpacing.s16,
+    horizontal: AppSpacing.s24,
   );
 
   static const EdgeInsets button = EdgeInsets.symmetric(

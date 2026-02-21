@@ -5,7 +5,7 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
-import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
+import 'package:ondo/presentation/chat/controllers/chat_controller.dart';
 
 class ChatInputField extends StatelessWidget {
   ChatInputField({super.key});

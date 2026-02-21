@@ -60,6 +60,11 @@ class AppPadding {
 
   static const EdgeInsets card = EdgeInsets.all(AppSpacing.s12);
 
+  static const EdgeInsets chatCard = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s16,
+    vertical: AppSpacing.s12,
+  );
+
   static const EdgeInsets userCard = EdgeInsets.all(AppSpacing.s10);
 
   static const EdgeInsets chip = EdgeInsets.symmetric(
@@ -96,7 +101,9 @@ class AppPadding {
     horizontal: AppSpacing.s24,
   );
 
-  static const EdgeInsets terms = EdgeInsets.symmetric(horizontal: AppSpacing.s24);
+  static const EdgeInsets terms = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s24,
+  );
 }
 
 class AppRadius {

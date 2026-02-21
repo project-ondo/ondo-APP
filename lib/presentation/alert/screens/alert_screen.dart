@@ -11,12 +11,6 @@ import '../widgets/alert_card.dart';
 import '../widgets/report_alert_card.dart';
 
 
-void main () {
-  runApp(MaterialApp(home: AlertScreen(),));
-}
-
-
-
 @immutable
 class AlertScreen extends StatefulWidget {
   const AlertScreen({super.key});

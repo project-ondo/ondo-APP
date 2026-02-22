@@ -203,7 +203,7 @@ class _AlertPageListState extends State<_AlertPageList> {
         children: List.generate(
           (_controller.alerts.length / 11).ceil(),
           (index) => Padding(
-            padding: AppPadding.pageIndicator,
+            padding: AppPadding.userCard,
             child: Text(
               "${index + 1}",
               style: AppTextStyles.pageIndicator(

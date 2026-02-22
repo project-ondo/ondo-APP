@@ -90,8 +90,6 @@ class AppPadding {
 
   static const EdgeInsets alertReportItem = EdgeInsets.all(AppSpacing.s12);
 
-  static const EdgeInsets pageIndicator = EdgeInsets.all(AppSpacing.s10);
-
 
   static const EdgeInsets settingSession = EdgeInsets.symmetric(
     vertical: AppSpacing.s12,

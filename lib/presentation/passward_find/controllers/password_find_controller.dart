@@ -36,7 +36,6 @@ class ForgotPasswordController extends GetxController {
     return true;
   }
 
-  /// 인증번호 발송 및 다음 화면으로 이동
   void sendVerificationCode() {
     if (validateEmail()) {
       final email = emailController.text.trim();

@@ -53,7 +53,7 @@ class _PasswordFindEmailScreenState extends State<PasswordFindEmailScreen> {
               LoginBackButton(onTap: () => Get.back()),
               AppGap.v36,
               Text(
-                AppStrings.PasswardResetEmail,
+                AppStrings.passwordResetEmail,
                 style: AppTextStyles.titleSm(),
               ),
               AppGap.v36,

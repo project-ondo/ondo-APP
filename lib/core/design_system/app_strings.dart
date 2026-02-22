@@ -75,5 +75,5 @@ class AppStrings {
 
   static const passwordRegex = '비밀번호에 특수기호를 포함해주세요.';
 
-  static const PasswardResetEmail = '계정에 등록된\n이메일을 입력해주세요';
+  static const passwordResetEmail = '계정에 등록된\n이메일을 입력해주세요';
 }

@@ -51,48 +51,9 @@ class PostListIndicator extends StatelessWidget {
         ),
       );
     }
-
-    void addEllipsis() {
-      indicatorSetup.add(
-        Padding(
-          padding: AppPadding.indicatorSpacing,
-          child: Row(
-            spacing: AppSpacing.s6,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: AppSpacing.s4,
-                height: AppSpacing.s4,
-                decoration: ShapeDecoration(
-                  color: AppColors.gray40,
-                  shape: OvalBorder(),
-                ),
-              ),
-              Container(
-                width: AppSpacing.s4,
-                height: AppSpacing.s4,
-                decoration: ShapeDecoration(
-                  color: AppColors.gray40,
-                  shape: OvalBorder(),
-                ),
-              ),
-              Container(
-                width: AppSpacing.s4,
-                height: AppSpacing.s4,
-                decoration: ShapeDecoration(
-                  color: AppColors.gray40,
-                  shape: OvalBorder(),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     addPage(1);
 
-    if (currentIndicatorIndex > 3) addEllipsis();
+    if (currentIndicatorIndex > 3) addEllipsis(indicatorSetup);
 
     for (
       int i = currentIndicatorIndex - 1;
@@ -102,13 +63,51 @@ class PostListIndicator extends StatelessWidget {
       if (i > 1 && i < totalPage) addPage(i);
     }
 
-    if (currentIndicatorIndex < totalPage - 2) addEllipsis();
+    if (currentIndicatorIndex < totalPage - 2) addEllipsis(indicatorSetup);
 
     if (totalPage > 1) addPage(totalPage);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: indicatorSetup,
+    );
+  }
+
+  void addEllipsis(List<Widget> indicatorSetup) {
+    return indicatorSetup.add(
+      Padding(
+        padding: AppPadding.indicatorSpacing,
+        child: Row(
+          spacing: AppSpacing.s6,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: AppSpacing.s4,
+              height: AppSpacing.s4,
+              decoration: ShapeDecoration(
+                color: AppColors.gray40,
+                shape: OvalBorder(),
+              ),
+            ),
+            Container(
+              width: AppSpacing.s4,
+              height: AppSpacing.s4,
+              decoration: ShapeDecoration(
+                color: AppColors.gray40,
+                shape: OvalBorder(),
+              ),
+            ),
+            Container(
+              width: AppSpacing.s4,
+              height: AppSpacing.s4,
+              decoration: ShapeDecoration(
+                color: AppColors.gray40,
+                shape: OvalBorder(),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

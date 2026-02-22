@@ -10,34 +10,14 @@ import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
 import 'package:ondo/presentation/passward_find/controllers/password_find_controller.dart';
 import 'package:get/get.dart';
 
-void main() async {
-  runApp(
-    MaterialApp(
-      home: PasswordFindEmailScreen(),
-    ),
-  );
-}
 
-class PasswordFindEmailScreen extends StatefulWidget {
+class PasswordFindEmailScreen extends GetView<ForgotPasswordController> {
   final bool isError;
 
   const PasswordFindEmailScreen({
     super.key,
     this.isError = false,
   });
-
-  @override
-  State<PasswordFindEmailScreen> createState() =>
-      _PasswordFindEmailScreenState();
-}
-
-class _PasswordFindEmailScreenState extends State<PasswordFindEmailScreen> {
-  final controller = Get.put(ForgotPasswordController());
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {

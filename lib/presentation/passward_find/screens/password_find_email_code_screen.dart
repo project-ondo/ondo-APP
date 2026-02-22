@@ -14,13 +14,6 @@ import 'package:ondo/presentation/passward_find/controllers/password_find_email_
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
-void main() async {
-  runApp(
-    MaterialApp(
-      home: PasswordFindEmailCodeInputScreen(),
-    ),
-  );
-}
 
 class PasswordFindEmailCodeInputScreen
     extends GetView<PasswordFindEmailCodeInputController> {
@@ -28,7 +21,6 @@ class PasswordFindEmailCodeInputScreen
 
   @override
   Widget build(BuildContext context) {
-    Get.put(PasswordFindEmailCodeInputController());
     return SafeArea(
       child: BaseScaffold(
         body: Padding(

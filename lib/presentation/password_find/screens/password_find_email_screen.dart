@@ -7,8 +7,10 @@ import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
+import 'package:ondo/presentation/password_find/controllers/password_find_binding.dart';
 import 'package:ondo/presentation/password_find/controllers/password_find_controller.dart';
 import 'package:get/get.dart';
+
 
 
 class PasswordFindEmailScreen extends GetView<ForgotPasswordController> {
@@ -24,7 +26,7 @@ class PasswordFindEmailScreen extends GetView<ForgotPasswordController> {
     return SafeArea(
       child: BaseScaffold(
         body: Padding(
-          padding: AppPadding.screenHorizontal,
+          padding: AppPadding.titleTextHorizontal,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,9 +61,7 @@ class PasswordFindEmailScreen extends GetView<ForgotPasswordController> {
                       : null,
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 16),
-              ),
+              AppGap.v16
             ],
           ),
         ),

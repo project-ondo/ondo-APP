@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
+import 'package:ondo/presentation/passward_find/controllers/PasswordFindBinding.dart';
 import 'package:ondo/presentation/passward_find/screens/password_find_email_code_screen.dart';
 
 class ForgotPasswordController extends GetxController {
+  static final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
   final emailController = TextEditingController();
 
   var isEmailValid = false.obs;
@@ -15,7 +17,6 @@ class ForgotPasswordController extends GetxController {
 
     emailController.addListener(() {
       final email = emailController.text.trim();
-      final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
       isEmailValid.value = emailRegex.hasMatch(email);
 
       errorMsg.value =
@@ -46,6 +47,7 @@ class ForgotPasswordController extends GetxController {
       Get.to(
             () => PasswordFindEmailCodeInputScreen(),
         arguments: {'email': email},
+        binding: PasswordFindBinding(),
       );
     }
   }

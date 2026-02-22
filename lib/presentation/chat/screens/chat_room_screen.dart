@@ -9,14 +9,8 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/chat/controllers/chat_controller.dart';
 import 'package:ondo/presentation/chat/widgets/chat_card.dart';
 import 'package:ondo/presentation/chat/widgets/chat_input_field.dart';
+import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: ChatRoomScreen(),
-    ),
-  );
-}
 
 class ChatRoomScreen extends StatefulWidget {
   const ChatRoomScreen({super.key});
@@ -28,7 +22,12 @@ class ChatRoomScreen extends StatefulWidget {
 class _ChatRoomScreenState extends State<ChatRoomScreen> {
   final ChatController _controller = Get.put(ChatController());
 
-  void _showQuitAlertDialog() {}
+  void _showReviewDialog() => showDialog(
+    context: context,
+    builder: (context) => ChatReviewDialog(),
+  );
+
+  //void _showQuitAlertDialog () {} TODO: 이전의 pr에 정의된 CustomAlertDialog가 develop에 merge 되면 이후 추가하도록 하겠습니다.
 
   void _report() {}
 
@@ -39,7 +38,6 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
         children: [
           _topBar(),
           Expanded(child: _body()),
-          ChatCard(isMe: true, text: "agfsdfg"),
           ChatInputField(),
         ],
       ),
@@ -49,11 +47,40 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
   Widget _body() => Container(
     width: double.maxFinite,
     color: AppColors.background,
-    child: Column(
-      children: [
-        Expanded(child: _noChatIcon()),
-      ],
+    child: Obx(
+      () => !_controller.isNewChat.value ? _chatList() : _noChatIcon(),
     ),
+  );
+
+  Widget _chatList() => ListView.builder(
+    itemBuilder: (context, index) {
+      final chat = _controller.chats[index];
+      if (chat.isMe) {
+        return _myChat(chat.comment);
+      }
+      return _otherChat(chat.comment);
+    },
+    itemCount: _controller.chats.length,
+  );
+
+  Widget _myChat(String text) => Row(
+    mainAxisAlignment: MainAxisAlignment.end,
+    children: [
+      ChatCard(isMe: true, text: text),
+    ],
+  );
+
+  Widget _otherChat(String text) => Row(
+    mainAxisAlignment: MainAxisAlignment.start,
+    children: [
+      ChatCard(
+        isMe: false,
+        text: text,
+        otherName: "김유찬",
+        otherProfile: SvgPicture.asset(AppIcon.defaultProfile.path),
+        sendAt: Duration(hours: 3),
+      ),
+    ],
   );
 
   Widget _noChatIcon() => Column(
@@ -85,7 +112,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     itemBuilder: (context) => [
       _customPopupMenu(
         "커피챗 종료하기",
-        _showQuitAlertDialog,
+        _showReviewDialog,
       ),
       _customPopupMenu(
         "신고하기",
@@ -94,14 +121,16 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     ],
   );
 
-  PopupMenuEntry<String> _customPopupMenu(String text, VoidCallback action) =>
-      PopupMenuItem(
-        height: double.minPositive,
-        //padding: AppPadding., TODO: 이전의 pr이 merge 되면 적용되는 다자인 시스템을 적용할 예정
-        onTap: action,
-        child: Text(
-          text,
-          style: AppTextStyles.caption(textColor: AppColors.gray90),
-        ),
-      );
+  PopupMenuEntry<String> _customPopupMenu(
+    String text,
+    VoidCallback action,
+  ) => PopupMenuItem(
+    height: double.minPositive,
+    //padding: AppPadding., TODO: 이전의 pr에 정의된 popupManu (AppPadding)가 develop에 merge 되면 이후 추가하도록 하겠습니다.
+    onTap: action,
+    child: Text(
+      text,
+      style: AppTextStyles.caption(textColor: AppColors.gray90),
+    ),
+  );
 }

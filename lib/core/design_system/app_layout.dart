@@ -2,6 +2,7 @@ import 'dart:core';
 import 'package:flutter/material.dart';
 
 class AppSpacing {
+  static const double s1 = 1;
   static const double s2 = 2;
   static const double s4 = 4;
   static const double s6 = 6;
@@ -17,8 +18,10 @@ class AppSpacing {
   static const double s36 = 36;
   static const double s40 = 40;
   static const double s42 = 42;
+  static const double s48 = 48;
   static const double s51 = 51;
   static const double s76 = 76;
+  static const double s80 = 80;
 }
 
 class AppGap {
@@ -42,6 +45,7 @@ class AppGap {
   static const SizedBox v40 = SizedBox(height: AppSpacing.s40);
   static const SizedBox v51 = SizedBox(height: AppSpacing.s51);
   static const SizedBox v76 = SizedBox(height: AppSpacing.s76);
+
 }
 
 class AppPadding {
@@ -79,6 +83,10 @@ class AppPadding {
 
   static const EdgeInsets topBar = EdgeInsets.all(AppSpacing.s16);
 
+  static const EdgeInsets between = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s12,
+  );
+
   static const EdgeInsets popUp = EdgeInsets.only(
     bottom: AppSpacing.s24,
     left: AppSpacing.s16,
@@ -91,7 +99,7 @@ class AppPadding {
     vertical: AppSpacing.s12,
     horizontal: AppSpacing.s24,
   );
-
+  
   static const EdgeInsets terms = EdgeInsets.symmetric(
     horizontal: AppSpacing.s24,
   );
@@ -100,6 +108,9 @@ class AppPadding {
     right: AppSpacing.s2,
     bottom: AppSpacing.s18,
   );
+
+  static const EdgeInsets indicatorSpacing = EdgeInsets.symmetric(horizontal: AppSpacing.s6);
+  static const EdgeInsets currentIndicatorUnderline = EdgeInsets.only(top: AppSpacing.s2);
 }
 
 class AppRadius {

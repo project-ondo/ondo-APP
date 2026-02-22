@@ -10,13 +10,9 @@ import 'package:ondo/presentation/chat/controllers/chat_controller.dart';
 class ChatInputField extends StatelessWidget {
   ChatInputField({super.key});
 
-  //final ChatRoomController _controller = Get.find<ChatRoomController>();
+  final ChatController _controller = Get.find<ChatController>();
 
-  final TextEditingController _textEditingController = TextEditingController();
-
-
-  void _send () {}
-
+  void _send() {}
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +23,7 @@ class ChatInputField extends StatelessWidget {
         children: [
           Expanded(
             child: CustomTextField(
-              controller: _textEditingController,
+              controller: _controller.textEditingController,
               hintText: "메세지 내용을 입력해 주세요",
               maxLines: 2,
             ),

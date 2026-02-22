@@ -104,6 +104,11 @@ class AppPadding {
   static const EdgeInsets terms = EdgeInsets.symmetric(
     horizontal: AppSpacing.s24,
   );
+
+  static const EdgeInsets chat = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s16,
+    vertical: AppSpacing.s8,
+  );
 }
 
 class AppRadius {

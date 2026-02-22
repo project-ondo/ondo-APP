@@ -7,7 +7,7 @@ import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
-import 'package:ondo/presentation/passward_find/controllers/password_find_controller.dart';
+import 'package:ondo/presentation/password_find/controllers/password_find_controller.dart';
 import 'package:get/get.dart';
 
 

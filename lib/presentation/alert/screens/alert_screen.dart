@@ -4,10 +4,10 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_alert_controller.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/alert/widgets/alert_delete_dialog.dart';
 
 import '../widgets/alert_card.dart';
 import '../widgets/report_alert_card.dart';
@@ -21,21 +21,25 @@ class AlertScreen extends StatefulWidget {
 }
 
 class _AlertScreenState extends State<AlertScreen> {
-  final MainTopBarAlertController _controller =
-      Get.find<MainTopBarAlertController>();
+  final MainTopBarAlertController _controller = Get.put(
+    MainTopBarAlertController(),
+  );
 
   void _showAlertDeleteDialog() => showDialog(
     context: context,
-    builder: (context) => AlertDeleteDialog(
-      close: () {
+    builder: (context) => CustomAlertDialog(
+      title: "알림",
+      comment: "정말 모든 알림을 삭제하시겠어요?",
+      actionLeft: () {
         Navigator.pop(context);
       },
-      delete: () {
+      actionRight: () {
         setState(() {
           _controller.clearAlerts();
         });
         Navigator.pop(context);
       },
+      rightActionText: "삭제",
     ),
   );
 

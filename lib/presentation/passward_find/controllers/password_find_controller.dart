@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
-import 'package:ondo/presentation/passward_find/controllers/PasswordFindBinding.dart';
+import 'package:ondo/presentation/passward_find/controllers/password_find_binding.dart';
 import 'package:ondo/presentation/passward_find/screens/password_find_email_code_screen.dart';
 
 class ForgotPasswordController extends GetxController {

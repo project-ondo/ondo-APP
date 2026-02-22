@@ -22,7 +22,8 @@ void main() async {
   );
 }
 
-class PasswordFindEmailCodeInputScreen extends GetView<PasswordFindEmailCodeInputController> {
+class PasswordFindEmailCodeInputScreen
+    extends GetView<PasswordFindEmailCodeInputController> {
   const PasswordFindEmailCodeInputScreen({super.key});
 
   @override
@@ -100,13 +101,7 @@ class PasswordFindEmailCodeInputScreen extends GetView<PasswordFindEmailCodeInpu
                         variant: ButtonVariant.primary,
                         enabled: controller.passwordFindIsButtonEnabled,
                         onPressed: controller.passwordFindIsButtonEnabled
-                            ? () {
-                          controller.passwordFindVerifyEmailCode();
-                          if (controller.passwordFindCodeState.value ==
-                              PasswordFindEmailCodeState.valid) {
-                            log('이메일 인증 성공');
-                          }
-                        }
+                            ? controller.passwordFindVerifyEmailCode
                             : null,
                       );
                     },

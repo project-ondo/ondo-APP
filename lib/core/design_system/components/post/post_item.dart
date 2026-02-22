@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import '../../app_colors.dart';
 import '../../app_icon.dart';
@@ -52,18 +53,23 @@ class PostItem extends StatelessWidget {
   final double _skillSpacing = AppSpacing.s16;
 
   Widget _skillList() {
+    final visibleSkills = skills.take(2).toList();
+    final remainCount = skills.length - 2;
+
     return Row(
       spacing: _skillSpacing,
-      children: List.generate(skills.length, (index) {
-        return Row(
-          children: [
-            Text(
-              skills[index],
-              style: AppTextStyles.caption(textColor: AppColors.gray60),
-            ),
-          ],
-        );
-      }),
+      children: [
+        Expanded(
+          child: Text(
+            remainCount > 0
+                ? "${visibleSkills.join(" ")} +$remainCount"
+                : visibleSkills.join(" "),
+            style: AppTextStyles.caption(textColor: AppColors.gray60),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 
@@ -75,6 +81,8 @@ class PostItem extends StatelessWidget {
         Text(
           title,
           style: AppTextStyles.titleSm14(),
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
         ),
 
         //작성자 작성자 표시 영역
@@ -88,20 +96,23 @@ class PostItem extends StatelessWidget {
 
   Widget _sunContent() {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _customIcon(AppIcon.heart.path, favorites),
+        Row(
+          children: [
+            _customIcon(AppIcon.heart.path, favorites),
 
-        AppGap.h8,
+            AppGap.h8,
 
-        _customIcon(AppIcon.bookmark.path, bookmarks),
+            _customIcon(AppIcon.bookmark.path, bookmarks),
 
-        AppGap.h8,
+            AppGap.h8,
+          ],
+        ),
 
-        Expanded(
-          child: Text(
-            "$createMinutes분전",
-            style: AppTextStyles.caption(textColor: AppColors.gray50),
-          ),
+        Text(
+          "$createMinutes분전",
+          style: AppTextStyles.caption(textColor: AppColors.gray50),
         ),
       ],
     );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/presentation/passward_find/screens/password_find_email_code_screen.dart';
 
 class ForgotPasswordController extends GetxController {
@@ -18,7 +19,7 @@ class ForgotPasswordController extends GetxController {
       isEmailValid.value = emailRegex.hasMatch(email);
 
       errorMsg.value =
-      isEmailValid.value || email.isEmpty ? '' : '올바른 이메일 형식이 아닙니다.';
+      isEmailValid.value || email.isEmpty ? '' : AppStrings.invalidEmailFormat ;
     });
   }
 
@@ -30,7 +31,7 @@ class ForgotPasswordController extends GetxController {
       return false;
     }
     if (!isEmailValid.value) {
-      errorMsg.value = '올바른 이메일 형식이 아닙니다.';
+      errorMsg.value = AppStrings.invalidEmailFormat;
       return false;
     }
     return true;

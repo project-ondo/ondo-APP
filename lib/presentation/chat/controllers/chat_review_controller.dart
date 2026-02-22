@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 class ChatReviewController extends GetxController {
   RxBool enableSubmit = false.obs;
   RxList<String> checkCategories = <String>[].obs;
-  Rx<String?> detailReview = null.obs;
+  Rx<String> detailReview = "".obs;
   RxInt star = 5.obs;
 
   void addCategory(String category) {

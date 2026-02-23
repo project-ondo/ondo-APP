@@ -10,15 +10,15 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 void main() {
   runApp(
     MaterialApp(
-      home: PasswordSetupScreen(email: 'bulgom.com'),
+      home: PasswordResetCompletedScreen(email: 'bulgom.com'),
     ),
   );
 }
 
-class PasswordSetupScreen extends StatelessWidget {
+class PasswordResetCompletedScreen extends StatelessWidget {
   final String email;
 
-  const PasswordSetupScreen({super.key, required this.email});
+  const PasswordResetCompletedScreen({super.key, required this.email});
 
   @override
   Widget build(BuildContext context) {

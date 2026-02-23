@@ -1,9 +1,5 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
-import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
-import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
@@ -11,14 +7,6 @@ import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/profile/widget/edit_profile/profile_image_section.dart';
 import 'package:ondo/presentation/profile/widget/edit_profile/profile_tag_section.dart';
-
-void main() {
-  runApp(
-    MaterialApp(
-      home: EditProfileScreen(),
-    ),
-  );
-}
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -61,6 +49,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final Set<String> selectedMajors = {"UI/UX"};
   final Set<String> selectedInterests = {"AI"};
 
+  void toggleTag(Set<String> targetSet, String tag) {
+    setState(() {
+      if (targetSet.contains(tag)) {
+        targetSet.remove(tag);
+      } else {
+        targetSet.add(tag);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    nickNameController.dispose();
+    introductionController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -75,24 +80,42 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 child: Padding(
                   padding: AppPadding.screenHorizontal,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      ProfileImageSection(),
+                      const ProfileImageSection(),
                       AppGap.v24,
-                      nickNameTextField(),
+
+                      LabelTextField(
+                        label: '닉네임',
+                        controller: nickNameController,
+                        hintText: '닉네임을 입력해주세요',
+                      ),
                       AppGap.v24,
-                      introductionTextField(),
+
+                      LabelTextField(
+                        label: '닉네임',
+                        controller: introductionController,
+                        hintText: '닉네임을 입력해주세요',
+                        minLines: 4,
+                        maxLines: 4,
+                      ),
                       AppGap.v24,
+
                       ProfileTagSection(
                         title: "전공",
                         tags: majorTags,
                         selectedTags: selectedMajors,
+                        onTagToggle: (tag) => toggleTag(selectedMajors, tag),
                       ),
                       AppGap.v24,
+
                       ProfileTagSection(
                         title: "관심분야",
                         tags: interestTags,
                         selectedTags: selectedInterests,
+                        onTagToggle: (tag) => toggleTag(selectedInterests, tag),
                       ),
+
                       AppGap.v24,
                     ],
                   ),
@@ -105,8 +128,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 text: "변경 완료",
                 variant: ButtonVariant.primary,
                 onPressed: () {
-                  log(nickNameController.text);
-                  log(introductionController.text);
+                  //context.push(RoutePaths.myProfile);
                 },
               ),
             ),
@@ -115,41 +137,4 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
     );
   }
-
-  Widget nickNameTextField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "닉네임",
-          style: AppTextStyles.textMedium(textColor: AppColors.gray80),
-        ),
-        AppGap.v4,
-        CustomTextField(
-          controller: nickNameController,
-          hintText: "닉네임을 입력해주세요",
-        ),
-      ],
-    );
-  }
-
-  Widget introductionTextField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "소개글",
-          style: AppTextStyles.textMedium(textColor: AppColors.gray80),
-        ),
-        AppGap.v4,
-        CustomTextField(
-          controller: introductionController,
-          hintText: "간단히 소개글을 입력해주세요",
-          minLines: 4,
-          maxLines: 4,
-        ),
-      ],
-    );
-  }
-
 }

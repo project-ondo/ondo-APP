@@ -70,7 +70,7 @@ class CustomButton extends StatelessWidget {
   // Style Resolver
   // ======================
   Color get _backgroundColor {
-    if (!enabled) return AppColors.gray20;
+    if (!enabled) return AppColors.lightButton;
 
     switch (variant) {
       case ButtonVariant.outline:
@@ -81,7 +81,7 @@ class CustomButton extends StatelessWidget {
   }
 
   Color get _borderColor {
-    if (!enabled) return AppColors.gray40;
+    if (!enabled) return AppColors.lightButton;
 
     switch (variant) {
       case ButtonVariant.outline:
@@ -100,7 +100,7 @@ class CustomButton extends StatelessWidget {
   }
 
   Color get _textColor {
-    if (!enabled) return AppColors.gray60;
+    if (!enabled) return AppColors.white;
 
     switch (variant) {
       case ButtonVariant.outline:

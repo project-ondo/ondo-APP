@@ -11,18 +11,22 @@ import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/auth/signup/controllers/password_input_controller.dart';
-
+import 'package:ondo/presentation/password_find/controllers/password_find_password_controller.dart';
 import '../../../../core/design_system/app_icon.dart';
 
-class PasswordSetupScreen extends GetView<PasswordInputController> {
-  const PasswordSetupScreen({super.key});
+class PasswordReset extends StatelessWidget {
+  final PasswordResetController controller;
+
+  const PasswordReset({
+    super.key,
+    required this.controller,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
       body: Padding(
-        padding: AppPadding.screenHorizontal,
+        padding: AppPadding.titleTextHorizontal,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -46,7 +50,7 @@ class PasswordSetupScreen extends GetView<PasswordInputController> {
         children: [
           AppGap.v76,
           Text(
-            AppStrings.emailPasswordInputTitle,
+            AppStrings.passwordResetPassword,
             style: AppTextStyles.titleSm(),
           ),
           AppGap.v36,

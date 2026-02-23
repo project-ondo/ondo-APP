@@ -24,7 +24,7 @@ class ChatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: AppPadding.chat,
+      padding: AppPadding.chatMargin,
       child: isMe ? _card() : _otherCard(),
     );
   }
@@ -67,7 +67,7 @@ class ChatCard extends StatelessWidget {
         borderRadius: isMe ? AppRadius.myChat : AppRadius.otherChat,
       ),
       child: Padding(
-        padding: AppPadding.chatCard,
+        padding: AppPadding.chatPadding,
         child: Text(
           text,
           softWrap: true,

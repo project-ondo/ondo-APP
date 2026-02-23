@@ -45,11 +45,16 @@ class AppGap {
   static const SizedBox v40 = SizedBox(height: AppSpacing.s40);
   static const SizedBox v51 = SizedBox(height: AppSpacing.s51);
   static const SizedBox v76 = SizedBox(height: AppSpacing.s76);
+
 }
 
 class AppPadding {
   static const EdgeInsets screenHorizontal = EdgeInsets.symmetric(
     horizontal: AppSpacing.s16,
+  );
+
+  static const EdgeInsets titleTextHorizontal = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s24,
   );
 
   static const EdgeInsets button = EdgeInsets.symmetric(
@@ -63,10 +68,6 @@ class AppPadding {
 
   static const EdgeInsets card = EdgeInsets.all(AppSpacing.s12);
 
-  static const EdgeInsets chatCard = EdgeInsets.symmetric(
-    horizontal: AppSpacing.s16,
-    vertical: AppSpacing.s12,
-  );
 
   static const EdgeInsets userCard = EdgeInsets.all(AppSpacing.s10);
 
@@ -99,25 +100,35 @@ class AppPadding {
 
   static const EdgeInsets alertCount = EdgeInsets.all(AppSpacing.s2);
 
+  static const EdgeInsets alertReportItem = EdgeInsets.all(AppSpacing.s12);
+
+
   static const EdgeInsets settingSession = EdgeInsets.symmetric(
     vertical: AppSpacing.s12,
     horizontal: AppSpacing.s24,
   );
 
-  static const EdgeInsets terms = EdgeInsets.symmetric(
+  static const EdgeInsets terms = EdgeInsets.symmetric(horizontal: AppSpacing.s24);
+
+  static const EdgeInsets indicatorSpacing = EdgeInsets.symmetric(horizontal: AppSpacing.s6);
+  static const EdgeInsets currentIndicatorUnderline = EdgeInsets.only(top: AppSpacing.s2);
+  static const EdgeInsets popupManuButton = EdgeInsets.symmetric(
+    vertical: AppSpacing.s12,
     horizontal: AppSpacing.s24,
   );
 
-  static const EdgeInsets indicatorSpacing = EdgeInsets.symmetric(
-    horizontal: AppSpacing.s6,
-  );
-  static const EdgeInsets currentIndicatorUnderline = EdgeInsets.only(
-    top: AppSpacing.s2,
+  static const EdgeInsets dialogButton = EdgeInsets.symmetric(
+    vertical: AppSpacing.s16,
   );
 
-  static const EdgeInsets chat = EdgeInsets.symmetric(
+  static const EdgeInsets chatMargin = EdgeInsets.symmetric(
     horizontal: AppSpacing.s16,
     vertical: AppSpacing.s8,
+  );
+
+  static const EdgeInsets chatPadding = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s16,
+    vertical: AppSpacing.s12,
   );
 }
 

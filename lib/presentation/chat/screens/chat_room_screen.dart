@@ -11,6 +11,10 @@ import 'package:ondo/presentation/chat/widgets/chat_card.dart';
 import 'package:ondo/presentation/chat/widgets/chat_input_field.dart';
 import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
 
+void main () {
+  runApp(MaterialApp(home: ChatRoomScreen(),));
+}
+
 
 class ChatRoomScreen extends StatefulWidget {
   const ChatRoomScreen({super.key});

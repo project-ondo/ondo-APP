@@ -40,7 +40,7 @@ class RoutePaths {
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: RoutePaths.signupTerms,
+  initialLocation: RoutePaths.home,
   routes: [
     GoRoute(
       path: RoutePaths.home,
@@ -65,9 +65,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RoutePaths.signup,
       name: 'signup',
-      builder: (context, state) {
-        Get.put(SignupFlowController(), permanent: true);
-        return const SizedBox();
+      redirect: (context, state) {
+        Get.lazyPut(() => SignupFlowController());
+        if(state.matchedLocation == RoutePaths.signup){
+          return RoutePaths.signupTerms;
+        }return null;
       },
       routes: [
         GoRoute(

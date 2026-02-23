@@ -4,7 +4,7 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_tag_card.dart';
 import 'package:ondo/core/design_system/components/top_bar/main_top_bar.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/chat/widgets/chat_card.dart';
+import 'package:ondo/presentation/chat/widgets/chat_room_card.dart';
 
 void main () {
   runApp(MaterialApp(home: ChatMainScreen(),));
@@ -77,7 +77,7 @@ class _ChatListState extends State<_ChatList> {
       constraints: BoxConstraints(maxHeight: 516),
       child: ListView.separated(
         itemBuilder: (context, index) =>
-            ChatCard(
+            ChatRoomCard(
               bookmark: index % 2 == 0,
               name: "김유찬",
               lastChatAt: Duration(hours: 3),

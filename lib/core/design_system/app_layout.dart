@@ -68,6 +68,7 @@ class AppPadding {
 
   static const EdgeInsets card = EdgeInsets.all(AppSpacing.s12);
 
+
   static const EdgeInsets userCard = EdgeInsets.all(AppSpacing.s10);
 
   static const EdgeInsets chip = EdgeInsets.symmetric(
@@ -126,6 +127,16 @@ class AppPadding {
   static const EdgeInsets dialogButton = EdgeInsets.symmetric(
     vertical: AppSpacing.s16,
   );
+
+  static const EdgeInsets chatMargin = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s16,
+    vertical: AppSpacing.s8,
+  );
+
+  static const EdgeInsets chatPadding = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s16,
+    vertical: AppSpacing.s12,
+  );
 }
 
 class AppRadius {
@@ -147,5 +158,17 @@ class AppRadius {
 
   static const BorderRadius alertRadius = BorderRadius.all(
     Radius.circular(AppSpacing.s6),
+  );
+
+  static const BorderRadius myChat = BorderRadius.only(
+    topLeft: Radius.circular(8),
+    topRight: Radius.circular(8),
+    bottomLeft: Radius.circular(8),
+  );
+
+  static const BorderRadius otherChat = BorderRadius.only(
+    topLeft: Radius.circular(8),
+    topRight: Radius.circular(8),
+    bottomRight: Radius.circular(8),
   );
 }

@@ -8,10 +8,6 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/profile/widget/edit_profile/profile_image_section.dart';
 import 'package:ondo/presentation/profile/widget/edit_profile/profile_tag_section.dart';
 
-void main(){
-  runApp(MaterialApp(home: EditProfileScreen(),));
-}
-
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 

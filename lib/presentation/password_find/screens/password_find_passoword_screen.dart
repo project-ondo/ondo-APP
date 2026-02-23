@@ -14,10 +14,10 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/password_find/controllers/password_find_password_controller.dart';
 import '../../../../core/design_system/app_icon.dart';
 
-class PasswordResetCompleted extends StatelessWidget {
+class PasswordReset extends StatelessWidget {
   final PasswordResetController controller;
 
-  const PasswordResetCompleted({
+  const PasswordReset({
     super.key,
     required this.controller,
   });

@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -41,16 +39,13 @@ class CustomBackButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          GestureDetector(
-            onTap: () => log("프로필 이동"),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SvgPicture.asset(AppIcon.arrowLeft.path),
-                if (!useUserProfile) _text() else _profile(),
-              ],
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SvgPicture.asset(AppIcon.arrowLeft.path),
+              if (!useUserProfile) _text() else _profile(),
+            ],
           ),
           if (moreOptions)
             CustomPopupMenuButton(itemBuilder: itemBuilder!)

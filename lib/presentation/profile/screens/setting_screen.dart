@@ -1,21 +1,13 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
+import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/profile/widget/build_app_version_session.dart';
 import 'package:ondo/presentation/profile/widget/build_custom_switch.dart';
 import 'package:ondo/presentation/profile/widget/custom_setting_item.dart';
 import 'package:ondo/presentation/profile/widget/user_delete_popup.dart';
-
-void main() {
-  runApp(
-    MaterialApp(
-      home: SettingScreen(),
-    ),
-  );
-}
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -38,7 +30,10 @@ class _SettingScreenState extends State<SettingScreen> {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomBackButton(moreOptions: false),
+            GestureDetector(
+              onTap: () => context.pushReplacement(RoutePaths.profile),
+              child: CustomBackButton(moreOptions: false),
+            ),
             AppGap.v16,
             Container(
               width: MediaQuery.of(context).size.width,
@@ -92,7 +87,7 @@ class _SettingScreenState extends State<SettingScreen> {
                 children: [
                   CustomSettingItem(
                     name: "이용약관",
-                    onTap: () => log('이용약관'),
+                    onTap: () => context.push(RoutePaths.profileTerms),
                   ),
                   AppGap.v24,
                   CustomSettingItem(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
@@ -7,6 +9,10 @@ import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/profile/widget/edit_profile/profile_image_section.dart';
 import 'package:ondo/presentation/profile/widget/edit_profile/profile_tag_section.dart';
+
+void main(){
+  runApp(MaterialApp(home: EditProfileScreen(),));
+}
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -87,6 +93,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       const ProfileImageSection(),
                       AppGap.v24,
 
+                      //닉네임 수정 텍스트필드
                       LabelTextField(
                         label: '닉네임',
                         controller: nickNameController,
@@ -94,10 +101,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       AppGap.v24,
 
+                      //자기소개 수정 텍스트필드
                       LabelTextField(
-                        label: '닉네임',
+                        label: '소개글',
                         controller: introductionController,
-                        hintText: '닉네임을 입력해주세요',
+                        hintText: '간단히 소개글을 입력해주세요',
                         minLines: 4,
                         maxLines: 4,
                       ),

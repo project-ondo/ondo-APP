@@ -44,7 +44,7 @@ class AlertCard extends StatelessWidget {
     );
   }
 
-  final double _profileSize = 24;
+  final double _profileSize = AppSpacing.s24;
 
   Widget _profile() => Container(
     height: _profileSize,

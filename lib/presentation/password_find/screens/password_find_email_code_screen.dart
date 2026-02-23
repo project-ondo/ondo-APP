@@ -24,7 +24,7 @@ class PasswordFindEmailCodeInputScreen
     return SafeArea(
       child: BaseScaffold(
         body: Padding(
-          padding: AppPadding.screenHorizontal,
+          padding: AppPadding.titleTextHorizontal,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [

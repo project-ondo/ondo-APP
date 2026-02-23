@@ -76,4 +76,9 @@ class AppStrings {
   static const passwordRegex = '비밀번호에 특수기호를 포함해주세요.';
 
   static const passwordResetEmail = '계정에 등록된\n이메일을 입력해주세요';
+
+  static const passwordResetPassword = '계정의 비밀번호를\n다시 설정해주세요';
+
+  static const passwordResetCompleted = '비밀번호 재설정이 완료되었어요!\n메인 화면에서 로그인해주세요!';
+  
 }

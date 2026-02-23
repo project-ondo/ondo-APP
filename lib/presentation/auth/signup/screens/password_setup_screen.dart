@@ -15,21 +15,8 @@ import 'package:ondo/presentation/auth/signup/controllers/password_input_control
 
 import '../../../../core/design_system/app_icon.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: PasswordSetupScreen(controller: Get.put(PasswordInputController())),
-    ),
-  );
-}
-
-class PasswordSetupScreen extends StatelessWidget {
-  final PasswordInputController controller;
-
-  const PasswordSetupScreen({
-    super.key,
-    required this.controller,
-  });
+class PasswordSetupScreen extends GetView<PasswordInputController> {
+  const PasswordSetupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

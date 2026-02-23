@@ -45,7 +45,6 @@ class AppGap {
   static const SizedBox v40 = SizedBox(height: AppSpacing.s40);
   static const SizedBox v51 = SizedBox(height: AppSpacing.s51);
   static const SizedBox v76 = SizedBox(height: AppSpacing.s76);
-
 }
 
 class AppPadding {
@@ -105,10 +104,16 @@ class AppPadding {
     horizontal: AppSpacing.s24,
   );
 
-  static const EdgeInsets terms = EdgeInsets.symmetric(horizontal: AppSpacing.s24);
+  static const EdgeInsets terms = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s24,
+  );
 
-  static const EdgeInsets indicatorSpacing = EdgeInsets.symmetric(horizontal: AppSpacing.s6);
-  static const EdgeInsets currentIndicatorUnderline = EdgeInsets.only(top: AppSpacing.s2);
+  static const EdgeInsets indicatorSpacing = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s6,
+  );
+  static const EdgeInsets currentIndicatorUnderline = EdgeInsets.only(
+    top: AppSpacing.s2,
+  );
 
   static const EdgeInsets chat = EdgeInsets.symmetric(
     horizontal: AppSpacing.s16,
@@ -135,5 +140,17 @@ class AppRadius {
 
   static const BorderRadius alertRadius = BorderRadius.all(
     Radius.circular(AppSpacing.s6),
+  );
+
+  static const BorderRadius myChat = BorderRadius.only(
+    topLeft: Radius.circular(8),
+    topRight: Radius.circular(8),
+    bottomLeft: Radius.circular(8),
+  );
+
+  static const BorderRadius otherChat = BorderRadius.only(
+    topLeft: Radius.circular(8),
+    topRight: Radius.circular(8),
+    bottomRight: Radius.circular(8),
   );
 }

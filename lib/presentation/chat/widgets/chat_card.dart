@@ -19,18 +19,7 @@ class ChatCard extends StatelessWidget {
   final String? otherName;
   final Duration? sendAt;
 
-  static final Radius round = Radius.circular(8);
 
-  static final BorderRadius meBorder = BorderRadius.only(
-    topLeft: round,
-    topRight: round,
-    bottomLeft: round,
-  );
-  static final BorderRadius otherBorder = BorderRadius.only(
-    topLeft: round,
-    topRight: round,
-    bottomRight: round,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +64,7 @@ class ChatCard extends StatelessWidget {
     child: Card(
       color: isMe ? AppColors.primary : AppColors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: isMe ? meBorder : otherBorder,
+        borderRadius: isMe ? AppRadius.myChat : AppRadius.otherChat,
       ),
       child: Padding(
         padding: AppPadding.chatCard,

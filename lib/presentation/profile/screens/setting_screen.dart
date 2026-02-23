@@ -31,7 +31,7 @@ class _SettingScreenState extends State<SettingScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: () => context.pushReplacement(RoutePaths.profile),
+              onTap: () => context.pop(),
               child: CustomBackButton(moreOptions: false),
             ),
             AppGap.v16,

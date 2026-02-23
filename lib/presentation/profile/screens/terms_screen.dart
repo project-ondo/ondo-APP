@@ -5,7 +5,6 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
-import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 
 class TermsScreen extends StatelessWidget {

@@ -18,14 +18,6 @@ import 'package:ondo/presentation/profile/widget/user_name_and_major.dart';
 import 'package:ondo/presentation/profile/widget/user_profile_image.dart';
 import 'package:ondo/presentation/profile/widget/user_report_popup.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: OtherProfileScreen(),
-    ),
-  );
-}
-
 final List<Map<String, dynamic>> mockPostData = [
   {
     "skills": ["Flutter", "Firebase"],

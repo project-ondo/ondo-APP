@@ -8,6 +8,7 @@ class AppColors {
   static const Color primaryLight = Color(0xffDBCDBF);
   static const Color primaryDark = Color(0xff482506);
   static const Color background = Color(0xffFFFBF6);
+  static Color lightButton = Color(0xff6F3700).withValues(alpha:0.25); //조건 안 맞을 때 버튼 색
 
   //Action color
   static const Color yellow = Color(0xffFFCE3D);

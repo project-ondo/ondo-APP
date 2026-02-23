@@ -20,7 +20,7 @@ class TermsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: () => context.pushReplacement(RoutePaths.profileSetting),
+              onTap: () => context.pop(),
               child: CustomBackButton(moreOptions: false),
             ),
             AppGap.v16,

@@ -1,53 +1,147 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ondo/presentation/auth/signup/controllers/email_code_input_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/email_input_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/introduction_input_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/major_interest_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/nickname_input_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/password_input_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/profile_image_setup_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/terms_agreement_controller.dart';
+import 'package:ondo/presentation/auth/signup/screens/email_code_input_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/email_input_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/introduction_input_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/major_interest_setup_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/nickname_setup_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/password_setup_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/profile_image_setup_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/signup_complete_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/terms_agreement_screen.dart';
+import 'package:ondo/presentation/home/screens/home_screen.dart';
 
 class RoutePaths {
   static const String home = '/';
   static const String login = '/login';
-  static const String signup = '/signup';
   static const String profile = '/profile';
+
+  static const String signup = '/signup';
+  static const String signupTerms = '/signup/terms';
+  static const String signupEmail = '/signup/email';
+  static const String signupEmailCode = '/signup/email-code';
+  static const String signupPassword = '/signup/password';
+  static const String signupNickname = '/signup/nickname';
+  static const String signupProfileImage = '/signup/profile-image';
+  static const String signupIntroduction = '/signup/introduction';
+  static const String signupMajorInterest = '/signup/major-interest';
+  static const String signupComplete = '/signup/complete';
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: RoutePaths.home,
+  initialLocation: RoutePaths.signupTerms,
   routes: [
     GoRoute(
       path: RoutePaths.home,
       name: 'home',
-      builder: (context, state) => Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text('홈페이지'),
-            ElevatedButton(
-              onPressed: () => context.goNamed('login'),
-              child: Text('로그인'),
-            ),
-          ],
-        ),
-      ),
-    ),
+      builder: (context, state) => HomeScreen(),
+    ), //home
     GoRoute(
       path: RoutePaths.login,
       name: 'login',
       builder: (context, state) => Scaffold(
         body: Text('로그인페이지'),
       ),
-    ),
+    ), //login
     GoRoute(
       path: RoutePaths.profile,
       name: 'profile',
       builder: (context, state) => Scaffold(
         body: Text('프로필'),
       ),
-    ),
+    ), //profile
+
     GoRoute(
       path: RoutePaths.signup,
       name: 'signup',
-      builder: (context, state) => Scaffold(
-        body: Text('회원가입페이지'),
-      ),
+      builder: (context, state) {
+        Get.put(SignupFlowController(), permanent: true);
+        return const SizedBox();
+      },
+      routes: [
+        GoRoute(
+          path: 'terms',
+          name: "signupTerms",
+          builder: (context, state) {
+            Get.put(TermsAgreementController());
+            return TermsAgreementScreen();
+          },
+        ),
+        GoRoute(
+          path: 'email',
+          name: "signupEmail",
+          builder: (context, state) {
+            Get.put(EmailInputController());
+            return EmailInputScreen();
+          },
+        ),
+        GoRoute(
+          path: 'email-code',
+          name: "signupEmailCode",
+          builder: (context, state) {
+            Get.put(EmailCodeInputController());
+            return EmailCodeInputScreen();
+          },
+        ),
+        GoRoute(
+          path: 'password',
+          name: "signupPassword",
+          builder: (context, state) {
+            Get.put(PasswordInputController());
+            return PasswordSetupScreen();
+          },
+        ),
+        GoRoute(
+          path: 'nickname',
+          name: "signupNickname",
+          builder: (context, state) {
+            Get.put(NicknameInputController());
+            return NicknameSetupScreen();
+          },
+        ),
+        GoRoute(
+          path: 'profile-image',
+          name: "signupProfileImage",
+          builder: (context, state) {
+            Get.put(ProfileImageSetupController());
+            return ProfileImageSetupScreen();
+          },
+        ),
+        GoRoute(
+          path: 'introduction',
+          name: "signupIntroduction",
+          builder: (context, state) {
+            Get.put(IntroductionInputController());
+            return IntroductionInputScreen();
+          },
+        ),
+        GoRoute(
+          path: 'major-interest',
+          name: "signupMajorInterest",
+          builder: (context, state) {
+            Get.put(MajorInterestController());
+            return MajorInterestSetupScreen();
+          },
+        ),
+        GoRoute(
+          path: 'complete',
+          name: "signupComplete",
+          builder: (context, state) {
+            return SignupCompleteScreen();
+          },
+        ),
+      ],
     ),
   ],
   errorBuilder: (context, state) => Scaffold(

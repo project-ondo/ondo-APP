@@ -7,13 +7,6 @@ import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: PasswordResetCompletedScreen(email: 'bulgom.com'),
-    ),
-  );
-}
 
 class PasswordResetCompletedScreen extends StatelessWidget {
   final String email;

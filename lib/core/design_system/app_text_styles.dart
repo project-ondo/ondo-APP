@@ -93,4 +93,14 @@ class AppTextStyles {
       fontWeight: FontWeight.w600,
     );
   }
+
+  static TextStyle profileIntroduction({
+    Color? textColor,
+  }) {
+    return TextStyle(
+      color: textColor ?? AppColors.black,
+      fontSize: 16,
+      fontWeight: FontWeight.w500,
+    );
+  }
 }

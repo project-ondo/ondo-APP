@@ -19,6 +19,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final TextEditingController nickNameController = TextEditingController(
     text: "기존 닉네임",
   );
+
   final TextEditingController introductionController = TextEditingController(
     text: "기존 소개글",
   );
@@ -34,6 +35,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     "ios",
     "Cloud",
   ];
+
   final List<String> interestTags = [
     "FrontEnd",
     "BackEnd",

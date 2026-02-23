@@ -53,6 +53,10 @@ class AppPadding {
     horizontal: AppSpacing.s16,
   );
 
+  static const EdgeInsets titleTextHorizontal = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s24,
+  );
+
   static const EdgeInsets button = EdgeInsets.symmetric(
     horizontal: AppSpacing.s16,
   );

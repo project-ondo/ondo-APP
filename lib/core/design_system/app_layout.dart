@@ -99,6 +99,9 @@ class AppPadding {
 
   static const EdgeInsets alertCount = EdgeInsets.all(AppSpacing.s2);
 
+  static const EdgeInsets alertReportItem = EdgeInsets.all(AppSpacing.s12);
+
+
   static const EdgeInsets settingSession = EdgeInsets.symmetric(
     vertical: AppSpacing.s12,
     horizontal: AppSpacing.s24,
@@ -108,6 +111,14 @@ class AppPadding {
 
   static const EdgeInsets indicatorSpacing = EdgeInsets.symmetric(horizontal: AppSpacing.s6);
   static const EdgeInsets currentIndicatorUnderline = EdgeInsets.only(top: AppSpacing.s2);
+  static const EdgeInsets popupManuButton = EdgeInsets.symmetric(
+    vertical: AppSpacing.s12,
+    horizontal: AppSpacing.s24,
+  );
+
+  static const EdgeInsets dialogButton = EdgeInsets.symmetric(
+    vertical: AppSpacing.s16,
+  );
 }
 
 class AppRadius {

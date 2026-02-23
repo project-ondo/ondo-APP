@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
@@ -9,20 +10,6 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/controllers/introduction_input_controller.dart';
 
 import '../widgets/title_text.dart';
-
-// 테스트용 코드 route작업시 제거
-//------------------------------
-void main() {
-  runApp(
-    GetMaterialApp(
-      home: IntroductionInputScreen(),
-      initialBinding: BindingsBuilder(() {
-        Get.put(IntroductionInputController());
-      }),
-    ),
-  );
-}
-//------------------------------
 
 class IntroductionInputScreen extends GetView<IntroductionInputController> {
   const IntroductionInputScreen({super.key});
@@ -37,7 +24,7 @@ class IntroductionInputScreen extends GetView<IntroductionInputController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildInputIntroductionSection(),
-              _buildNextButton(),
+              _buildNextButton(context),
             ],
           ),
         ),
@@ -69,7 +56,7 @@ class IntroductionInputScreen extends GetView<IntroductionInputController> {
     );
   }
 
-  Widget _buildNextButton() {
+  Widget _buildNextButton(BuildContext context) {
     return GetBuilder<IntroductionInputController>(
       builder: (controller) {
         return Column(
@@ -78,7 +65,12 @@ class IntroductionInputScreen extends GetView<IntroductionInputController> {
               text: '다음',
               variant: ButtonVariant.primary,
               enabled: controller.canProceed,
-              onPressed: controller.canProceed ? controller.submit : null,
+              onPressed: controller.canProceed
+                  ? () {
+                      controller.submit;
+                      context.pushNamed('signupMajorInterest');
+                    }
+                  : null,
             ),
             AppGap.v16,
           ],

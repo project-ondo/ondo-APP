@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
@@ -9,20 +10,6 @@ import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
-
-
-//테스트용 코드, 라우팅 작업 시 삭제 예정
-//=========================================
-void main() {
-  Get.put(SignupFlowController());
-  runApp(
-    MaterialApp(
-      home: SignupCompleteScreen(),
-    ),
-  );
-}
-//=========================================
-
 
 class SignupCompleteScreen extends GetView<SignupFlowController> {
   const SignupCompleteScreen({super.key});
@@ -37,7 +24,7 @@ class SignupCompleteScreen extends GetView<SignupFlowController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildContent(),
-              _buildStartButton(),
+              _buildStartButton(context),
             ],
           ),
         ),
@@ -88,7 +75,7 @@ class SignupCompleteScreen extends GetView<SignupFlowController> {
     );
   }
 
-  Widget _buildStartButton() {
+  Widget _buildStartButton(BuildContext context) {
     return Column(
       children: [
         GetBuilder<SignupFlowController>(
@@ -97,7 +84,10 @@ class SignupCompleteScreen extends GetView<SignupFlowController> {
               text: '시작하기',
               variant: ButtonVariant.primary,
               //enabled: controller.canSubmit,
-              onPressed: controller.submitInfo
+              onPressed: () {
+                context.goNamed('home');
+                controller.submitInfo;
+              },
             );
           },
         ),

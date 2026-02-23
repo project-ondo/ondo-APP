@@ -1,6 +1,6 @@
-import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
@@ -19,8 +19,6 @@ class EmailInputScreen extends GetView<EmailInputController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => EmailInputController());
-
     return SafeArea(
       child: BaseScaffold(
         body: Padding(
@@ -28,8 +26,8 @@ class EmailInputScreen extends GetView<EmailInputController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _buildTopSection(),
-              _buildNextButton(),
+              _buildTopSection(context),
+              _buildNextButton(context),
             ],
           ),
         ),
@@ -37,13 +35,13 @@ class EmailInputScreen extends GetView<EmailInputController> {
     );
   }
 
-  Widget _buildTopSection() {
+  Widget _buildTopSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppGap.v16,
-        LoginBackButton(onTap: Get.back),
-        const SizedBox(height: 36),
+        LoginBackButton(onTap: () => context.pop()),
+        AppGap.v36,
         TitleText.titleText(AppStrings.emailInputTitle),
         AppGap.v24,
         _buildEmailField(),
@@ -68,23 +66,22 @@ class EmailInputScreen extends GetView<EmailInputController> {
     );
   }
 
-  Widget _buildNextButton() {
+  Widget _buildNextButton(BuildContext context) {
     return GetBuilder<EmailInputController>(
       builder: (controller) {
         return NextButton(
           isAgreementChecked: controller.hasEmailInput,
-          onPressed: _onNextPressed,
+          onPressed: () =>  _onNextPressed(context),
         );
       },
     );
   }
 
-  void _onNextPressed() {
+  void _onNextPressed(BuildContext context) {
     final email = controller.emailTextController.text.trim();
 
     if (controller.validateEmail(email)) {
-      log('이메일 통과: $email');
-      // Get.to(() => const NextSignupScreen());
+      context.pushNamed('signupEmailCode');
     }
   }
 }

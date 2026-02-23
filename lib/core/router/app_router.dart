@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/bindings_interface.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/presentation/auth/signup/controllers/email_code_input_controller.dart';
@@ -65,76 +66,52 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RoutePaths.signup,
       name: 'signup',
-      redirect: (context, state) {
-        Get.lazyPut(() => SignupFlowController());
-        if(state.matchedLocation == RoutePaths.signup){
-          return RoutePaths.signupTerms;
-        }return null;
+      builder: (context, state) {
+        if (!Get.isRegistered<SignupFlowController>()) {
+          SignupBinding().dependencies();
+        }
+        return SizedBox();
       },
       routes: [
         GoRoute(
           path: 'terms',
           name: "signupTerms",
-          builder: (context, state) {
-            Get.put(TermsAgreementController());
-            return TermsAgreementScreen();
-          },
+          builder: (context, state) => TermsAgreementScreen(),
         ),
         GoRoute(
           path: 'email',
           name: "signupEmail",
-          builder: (context, state) {
-            Get.put(EmailInputController());
-            return EmailInputScreen();
-          },
+          builder: (context, state) => EmailInputScreen(),
         ),
         GoRoute(
           path: 'email-code',
           name: "signupEmailCode",
-          builder: (context, state) {
-            Get.put(EmailCodeInputController());
-            return EmailCodeInputScreen();
-          },
+          builder: (context, state) => EmailCodeInputScreen(),
         ),
         GoRoute(
           path: 'password',
           name: "signupPassword",
-          builder: (context, state) {
-            Get.put(PasswordInputController());
-            return PasswordSetupScreen();
-          },
+          builder: (context, state) => PasswordSetupScreen(),
         ),
         GoRoute(
           path: 'nickname',
           name: "signupNickname",
-          builder: (context, state) {
-            Get.put(NicknameInputController());
-            return NicknameSetupScreen();
-          },
+          builder: (context, state) => NicknameSetupScreen(),
         ),
         GoRoute(
           path: 'profile-image',
           name: "signupProfileImage",
-          builder: (context, state) {
-            Get.put(ProfileImageSetupController());
-            return ProfileImageSetupScreen();
-          },
+          builder: (context, state) => ProfileImageSetupScreen(),
         ),
         GoRoute(
           path: 'introduction',
           name: "signupIntroduction",
-          builder: (context, state) {
-            Get.put(IntroductionInputController());
-            return IntroductionInputScreen();
-          },
+          builder: (context, state) => IntroductionInputScreen(),
         ),
         GoRoute(
           path: 'major-interest',
           name: "signupMajorInterest",
-          builder: (context, state) {
-            Get.put(MajorInterestController());
-            return MajorInterestSetupScreen();
-          },
+          builder: (context, state) => MajorInterestSetupScreen(),
         ),
         GoRoute(
           path: 'complete',
@@ -146,9 +123,30 @@ final GoRouter appRouter = GoRouter(
       ],
     ),
   ],
-  errorBuilder: (context, state) => Scaffold(
-    body: Center(
-      child: Text('페이지르 찾을 수 없습니다.'),
-    ),
-  ),
+  errorBuilder: (context, state) =>
+      Scaffold(
+        body: Center(
+          child: Text('페이지르 찾을 수 없습니다.'),
+        ),
+      ),
 );
+
+class SignupBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<SignupFlowController>(() => SignupFlowController());
+
+    Get.lazyPut<TermsAgreementController>(() => TermsAgreementController());
+    Get.lazyPut<EmailInputController>(() => (EmailInputController()));
+    Get.lazyPut<EmailCodeInputController>(() => (EmailCodeInputController()));
+    Get.lazyPut<PasswordInputController>(() => (PasswordInputController()));
+    Get.lazyPut<NicknameInputController>(() => (NicknameInputController()));
+    Get.lazyPut<ProfileImageSetupController>(
+          () => (ProfileImageSetupController()),
+    );
+    Get.lazyPut<IntroductionInputController>(
+          () => (IntroductionInputController()),
+    );
+    Get.lazyPut<MajorInterestController>(() => (MajorInterestController()));
+  }
+}

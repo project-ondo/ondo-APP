@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
@@ -12,17 +10,6 @@ import 'package:ondo/presentation/auth/signup/controllers/nickname_input_control
 import '../../../../core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-
-void main() {
-  Get.put(NicknameInputController());
-
-  runApp(
-    GetMaterialApp(
-      home: NicknameSetupScreen(),
-    ),
-  );
-}
-
 
 class NicknameSetupScreen extends StatefulWidget {
   const NicknameSetupScreen({super.key});
@@ -92,7 +79,10 @@ class _NicknameSetupScreenState extends State<NicknameSetupScreen> {
               variant: ButtonVariant.primary,
               enabled: controller.conSubmit,
               onPressed: controller.conSubmit
-                  ? controller.validateNickname
+                  ? (){
+                controller.validateNickname;
+                context.pushNamed('signupProfileImage');
+              }
                   : null,
             ),
             AppGap.v16,

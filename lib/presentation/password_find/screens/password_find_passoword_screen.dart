@@ -14,14 +14,6 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/password_find/controllers/password_find_password_controller.dart';
 import '../../../../core/design_system/app_icon.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: PasswordResetCompleted(controller: Get.put(PasswordResetController())),
-    ),
-  );
-}
-
 class PasswordResetCompleted extends StatelessWidget {
   final PasswordResetController controller;
 

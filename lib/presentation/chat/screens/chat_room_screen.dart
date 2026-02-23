@@ -3,7 +3,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
+import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/chat/controllers/chat_controller.dart';
@@ -11,10 +13,13 @@ import 'package:ondo/presentation/chat/widgets/chat_card.dart';
 import 'package:ondo/presentation/chat/widgets/chat_input_field.dart';
 import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
 
-void main () {
-  runApp(MaterialApp(home: ChatRoomScreen(),));
+void main() {
+  runApp(
+    MaterialApp(
+      home: ChatRoomScreen(),
+    ),
+  );
 }
-
 
 class ChatRoomScreen extends StatefulWidget {
   const ChatRoomScreen({super.key});
@@ -31,7 +36,19 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     builder: (context) => ChatReviewDialog(),
   );
 
-  //void _showQuitAlertDialog () {} TODO: 이전의 pr에 정의된 CustomAlertDialog가 develop에 merge 되면 이후 추가하도록 하겠습니다.
+  void _showQuitAlertDialog() => showDialog(
+    context: context,
+    builder: (context) => CustomAlertDialog(
+      title: "커피챗 종료",
+      comment: "정말 커피챗을 종료하시겠어요?",
+      actionLeft: () => Navigator.pop(context),
+      actionRight: () {
+        Navigator.pop(context);
+        _showReviewDialog();
+      },
+      rightActionText: "다음",
+    ),
+  );
 
   void _report() {}
 
@@ -116,7 +133,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     itemBuilder: (context) => [
       _customPopupMenu(
         "커피챗 종료하기",
-        _showReviewDialog,
+        _showQuitAlertDialog,
       ),
       _customPopupMenu(
         "신고하기",
@@ -130,7 +147,7 @@ class _ChatRoomScreenState extends State<ChatRoomScreen> {
     VoidCallback action,
   ) => PopupMenuItem(
     height: double.minPositive,
-    //padding: AppPadding., TODO: 이전의 pr에 정의된 popupManu (AppPadding)가 develop에 merge 되면 이후 추가하도록 하겠습니다.
+    padding: AppPadding.popupManuButton,
     onTap: action,
     child: Text(
       text,

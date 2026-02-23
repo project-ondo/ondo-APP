@@ -26,7 +26,7 @@ class PasswordReset extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseScaffold(
       body: Padding(
-        padding: AppPadding.screenHorizontal,
+        padding: AppPadding.titleTextHorizontal,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

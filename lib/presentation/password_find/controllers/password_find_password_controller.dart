@@ -75,9 +75,14 @@ class PasswordResetController extends GetxController {
 
   String? get passwordErrorText {
     if (!_submitted) return null;
+    final password = passwordController.text;
+    
+    if(password.length < mainPasswordLength) {
+      return AppStrings.passwordLength;
+    }
 
-    if (state.value == InputValidationState.invalid) {
-      return '$mainPasswordLength자 이상, 영문+숫자 조합이 필요합니다.';
+    if (!_isValidPassword(password)) {
+      return AppStrings.passwordRegex;
     }
     return null;
   }

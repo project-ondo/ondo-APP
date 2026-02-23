@@ -106,8 +106,15 @@ class AppPadding {
     vertical: AppSpacing.s12,
     horizontal: AppSpacing.s24,
   );
+  
+  static const EdgeInsets terms = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s24,
+  );
 
-  static const EdgeInsets terms = EdgeInsets.symmetric(horizontal: AppSpacing.s24);
+  static const EdgeInsets camera = EdgeInsets.only(
+    right: AppSpacing.s2,
+    bottom: AppSpacing.s18,
+  );
 
   static const EdgeInsets indicatorSpacing = EdgeInsets.symmetric(horizontal: AppSpacing.s6);
   static const EdgeInsets currentIndicatorUnderline = EdgeInsets.only(top: AppSpacing.s2);

@@ -80,5 +80,4 @@ class AppStrings {
   static const passwordResetPassword = '계정의 비밀번호를\n다시 설정해주세요';
 
   static const passwordResetCompleted = '비밀번호 재설정이 완료되었어요!\n메인 화면에서 로그인해주세요!';
-  
 }

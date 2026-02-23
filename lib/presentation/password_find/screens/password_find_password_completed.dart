@@ -17,7 +17,7 @@ class PasswordResetCompletedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseScaffold(
       body: Padding(
-        padding: AppPadding.screenHorizontal,
+        padding: AppPadding.titleTextHorizontal,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

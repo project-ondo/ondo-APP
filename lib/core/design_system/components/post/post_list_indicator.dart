@@ -51,7 +51,6 @@ class PostListIndicator extends StatelessWidget {
         ),
       );
     }
-
     addPage(1);
 
     if (currentIndicatorIndex > 3) addEllipsis(indicatorSetup);

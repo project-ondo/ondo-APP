@@ -80,7 +80,7 @@ class _NicknameSetupScreenState extends State<NicknameSetupScreen> {
               enabled: controller.conSubmit,
               onPressed: controller.conSubmit
                   ? (){
-                controller.validateNickname;
+                controller.validateNickname();
                 context.pushNamed('signupProfileImage');
               }
                   : null,

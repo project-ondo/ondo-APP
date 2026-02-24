@@ -85,8 +85,8 @@ class SignupCompleteScreen extends GetView<SignupFlowController> {
               variant: ButtonVariant.primary,
               //enabled: controller.canSubmit,
               onPressed: () {
+                controller.submitInfo();
                 context.goNamed('home');
-                controller.submitInfo;
               },
             );
           },

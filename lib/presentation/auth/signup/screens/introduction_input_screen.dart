@@ -67,7 +67,7 @@ class IntroductionInputScreen extends GetView<IntroductionInputController> {
               enabled: controller.canProceed,
               onPressed: controller.canProceed
                   ? () {
-                      controller.submit;
+                      controller.submit();
                       context.pushNamed('signupMajorInterest');
                     }
                   : null,

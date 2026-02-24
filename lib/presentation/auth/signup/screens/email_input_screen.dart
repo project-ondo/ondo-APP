@@ -40,7 +40,7 @@ class EmailInputScreen extends GetView<EmailInputController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppGap.v16,
-        LoginBackButton(onTap: () => context.pop()),
+        LoginBackButton(onTap: () => context.goNamed('login')),
         AppGap.v36,
         TitleText.titleText(AppStrings.emailInputTitle),
         AppGap.v24,

@@ -126,7 +126,7 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
               variant: ButtonVariant.primary,
               enabled: controller.canProceed,
               onPressed: controller.canProceed ? (){
-                controller.submit;
+                controller.submit();
                 context.goNamed('signupComplete');
               } :null,
             ),

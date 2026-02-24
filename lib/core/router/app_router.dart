@@ -66,17 +66,22 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RoutePaths.signup,
       name: 'signup',
-      builder: (context, state) {
-        if (!Get.isRegistered<SignupFlowController>()) {
-          SignupBinding().dependencies();
+      redirect: (context, state) {
+        if (state.uri.toString() == RoutePaths.signup) {
+          return RoutePaths.signupTerms;
         }
-        return SizedBox();
+        return null;
       },
       routes: [
         GoRoute(
           path: 'terms',
           name: "signupTerms",
-          builder: (context, state) => TermsAgreementScreen(),
+          builder: (context, state) {
+            if (!Get.isRegistered<SignupFlowController>()) {
+              SignupBinding().dependencies();
+            }
+            return TermsAgreementScreen();
+          },
         ),
         GoRoute(
           path: 'email',
@@ -137,16 +142,16 @@ class SignupBinding extends Bindings {
     Get.lazyPut<SignupFlowController>(() => SignupFlowController());
 
     Get.lazyPut<TermsAgreementController>(() => TermsAgreementController());
-    Get.lazyPut<EmailInputController>(() => (EmailInputController()));
-    Get.lazyPut<EmailCodeInputController>(() => (EmailCodeInputController()));
-    Get.lazyPut<PasswordInputController>(() => (PasswordInputController()));
-    Get.lazyPut<NicknameInputController>(() => (NicknameInputController()));
+    Get.lazyPut<EmailInputController>(() => EmailInputController());
+    Get.lazyPut<EmailCodeInputController>(() => EmailCodeInputController());
+    Get.lazyPut<PasswordInputController>(() => PasswordInputController());
+    Get.lazyPut<NicknameInputController>(() => NicknameInputController());
     Get.lazyPut<ProfileImageSetupController>(
-          () => (ProfileImageSetupController()),
+      () => ProfileImageSetupController(),
     );
     Get.lazyPut<IntroductionInputController>(
-          () => (IntroductionInputController()),
+      () => IntroductionInputController(),
     );
-    Get.lazyPut<MajorInterestController>(() => (MajorInterestController()));
+    Get.lazyPut<MajorInterestController>(() => MajorInterestController());
   }
 }

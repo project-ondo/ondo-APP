@@ -166,7 +166,7 @@ class ProfileImageSetupScreen extends GetView<ProfileImageSetupController> {
           text: '다음',
           variant: ButtonVariant.primary,
           onPressed: () {
-          controller.submitProfileImage;
+          controller.submitProfileImage();
           context.pushNamed('signupIntroduction');
           }
         ),

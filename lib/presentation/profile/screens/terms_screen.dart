@@ -1,18 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-
-void main() {
-  runApp(
-    MaterialApp(
-      home: TermsScreen(),
-    ),
-  );
-}
 
 class TermsScreen extends StatelessWidget {
   const TermsScreen({super.key});
@@ -25,7 +18,10 @@ class TermsScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CustomBackButton(moreOptions: false),
+            GestureDetector(
+              onTap: () => context.pop(),
+              child: CustomBackButton(moreOptions: false),
+            ),
             AppGap.v16,
             Container(
               margin: AppPadding.terms,

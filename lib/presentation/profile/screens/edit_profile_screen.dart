@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
+import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/profile/widget/edit_profile/profile_image_section.dart';
 import 'package:ondo/presentation/profile/widget/edit_profile/profile_tag_section.dart';
@@ -76,7 +78,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            CustomBackButton(moreOptions: false),
+            GestureDetector(
+              onTap: () => context.pop(),
+              child: CustomBackButton(
+                moreOptions: false,
+              ),
+            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -132,7 +139,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 text: "변경 완료",
                 variant: ButtonVariant.primary,
                 onPressed: () {
-                  //context.push(RoutePaths.myProfile);
+                  context.push(RoutePaths.profile);
                 },
               ),
             ),

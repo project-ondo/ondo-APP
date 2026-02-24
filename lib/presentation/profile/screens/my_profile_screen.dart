@@ -1,11 +1,13 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_popup_menu_button.dart';
 import 'package:ondo/core/design_system/components/post/post_item.dart';
+import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/profile/widget/profile_activity_section.dart';
 import 'package:ondo/presentation/profile/widget/profile_indicator_post_page_list.dart';
@@ -15,15 +17,6 @@ import 'package:ondo/presentation/profile/widget/user_introduction_text.dart';
 import 'package:ondo/presentation/profile/widget/user_logout_popup.dart';
 import 'package:ondo/presentation/profile/widget/user_name_and_major.dart';
 import 'package:ondo/presentation/profile/widget/user_profile_image.dart';
-
-void main() {
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MyProfileScreen(),
-    ),
-  );
-}
 
 final List<Map<String, dynamic>> mockPostData = [
   {
@@ -272,7 +265,10 @@ class MyProfileScreen extends StatelessWidget {
     return CustomPopupMenuButton(
       itemBuilder: (context) => [
         PopupMenuItem(
-          onTap: () => log("정보 수정하기"),
+          onTap: () {
+            log("정보 수정하기");
+            context.push(RoutePaths.editProfile);
+          },
           padding: AppPadding.settingSession,
           child: Text(
             "정보 수정하기",
@@ -288,7 +284,10 @@ class MyProfileScreen extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
-          onTap: () => log("설정"),
+          onTap: () {
+            log("설정");
+            context.push(RoutePaths.profileSetting);
+            },
           padding: AppPadding.settingSession,
           child: Text(
             "설정",
@@ -298,5 +297,4 @@ class MyProfileScreen extends StatelessWidget {
       ],
     );
   }
-
 }

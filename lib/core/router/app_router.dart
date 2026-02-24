@@ -22,11 +22,21 @@ import 'package:ondo/presentation/auth/signup/screens/profile_image_setup_screen
 import 'package:ondo/presentation/auth/signup/screens/signup_complete_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/terms_agreement_screen.dart';
 import 'package:ondo/presentation/home/screens/home_screen.dart';
+import 'package:ondo/presentation/profile/screens/edit_profile_screen.dart';
+import 'package:ondo/presentation/profile/screens/my_profile_screen.dart';
+import 'package:ondo/presentation/profile/screens/other_profile_screen.dart';
+import 'package:ondo/presentation/profile/screens/setting_screen.dart';
+import 'package:ondo/presentation/profile/screens/terms_screen.dart';
 
 class RoutePaths {
   static const String home = '/';
   static const String login = '/login';
+
   static const String profile = '/profile';
+  static const String editProfile = '/profile/edit';
+  static const String profileSetting = '/profile/setting';
+  static const String profileTerms = '/profile/setting/terms';
+  static const String userProfile = 'user/profile';
 
   static const String signup = '/signup';
   static const String signupTerms = '/signup/terms';
@@ -41,7 +51,7 @@ class RoutePaths {
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: RoutePaths.home,
+  initialLocation: RoutePaths.profile,
   routes: [
     GoRoute(
       path: RoutePaths.home,
@@ -58,15 +68,38 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RoutePaths.profile,
       name: 'profile',
-      builder: (context, state) => Scaffold(
-        body: Text('프로필'),
-      ),
+      builder: (context, state) => MyProfileScreen(),
+      routes: [
+        GoRoute(
+          path: 'edit',
+          name: 'editProfile',
+          builder: (context, state) => EditProfileScreen(),
+        ),
+        GoRoute(
+          path: 'setting',
+          name: 'profileSetting',
+          builder: (context, state) => SettingScreen(),
+          routes: [
+            GoRoute(
+              path: 'terms',
+              name: 'profileTerms',
+              builder: (context, state) => TermsScreen(),
+            ),
+          ],
+        ),
+        GoRoute(
+          path: RoutePaths.userProfile,
+          name: 'userProfile',
+          builder: (context, state) => OtherProfileScreen(),
+        ),
+      ],
     ), //profile
 
     GoRoute(
       path: RoutePaths.signup,
       name: 'signup',
       redirect: (context, state) {
+        Get.lazyPut(() => SignupFlowController());
         if (state.uri.toString() == RoutePaths.signup) {
           return RoutePaths.signupTerms;
         }

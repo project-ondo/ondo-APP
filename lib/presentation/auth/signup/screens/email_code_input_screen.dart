@@ -1,7 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
@@ -20,7 +19,6 @@ class EmailCodeInputScreen extends GetView<EmailCodeInputController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(EmailCodeInputController());
     return SafeArea(
       child: BaseScaffold(
         body: Padding(
@@ -28,46 +26,52 @@ class EmailCodeInputScreen extends GetView<EmailCodeInputController> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AppGap.v16,
-                  LoginBackButton(onTap: Get.back),
-                  AppGap.v36,
-                  TitleText.titleText(AppStrings.emailInputTitle),
-                  AppGap.v24,
-                  Text('이메일', style: AppTextStyles.textMedium()),
-                  AppGap.v4,
-                  Container(
-                    height: 44,
-                    decoration: BoxDecoration(
-                      color: AppColors.gray20,
-                      borderRadius: AppRadius.baseRadius,
-                    ),
-                    padding: AppPadding.textField,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      controller.email,
-                      style: AppTextStyles.textMedium(
-                        textColor: AppColors.gray60,
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      AppGap.v16,
+                      LoginBackButton(
+                        onTap: () => context.pushReplacementNamed('login'),
                       ),
-                    ),
+                      AppGap.v36,
+                      TitleText.titleText(AppStrings.emailInputTitle),
+                      AppGap.v24,
+                      Text('이메일', style: AppTextStyles.textMedium()),
+                      AppGap.v4,
+                      Container(
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: AppColors.gray20,
+                          borderRadius: AppRadius.baseRadius,
+                        ),
+                        padding: AppPadding.textField,
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          controller.email,
+                          style: AppTextStyles.textMedium(
+                            textColor: AppColors.gray60,
+                          ),
+                        ),
+                      ),
+                      AppGap.v24,
+                      GetBuilder<EmailCodeInputController>(
+                        builder: (controller) {
+                          return LabelTextField(
+                            label: '인증번호',
+                            keyboardType: TextInputType.number,
+                            controller: controller.emailCodeTextController,
+                            hintText: AppStrings.emailCodeInputHint,
+                            errorText: controller.hasError
+                                ? controller.errorMessage
+                                : null,
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                  AppGap.v24,
-                  GetBuilder<EmailCodeInputController>(
-                    builder: (controller) {
-                      return LabelTextField(
-                        label: '인증번호',
-                        keyboardType: TextInputType.number,
-                        controller: controller.emailCodeTextController,
-                        hintText: AppStrings.emailCodeInputHint,
-                        errorText: controller.hasError
-                            ? controller.errorMessage
-                            : null,
-                      );
-                    },
-                  ),
-                ],
+                ),
               ),
 
               Column(
@@ -75,9 +79,7 @@ class EmailCodeInputScreen extends GetView<EmailCodeInputController> {
                 children: [
                   Center(
                     child: GestureDetector(
-                      onTap: () {
-                        log('이메일 입력 페이지로 이동');
-                      },
+                      onTap: () => context.pop(),
                       child: Text(
                         '다른 이메일을 입력하시고 싶나요?',
                         style: AppTextStyles.textMedium(
@@ -93,14 +95,15 @@ class EmailCodeInputScreen extends GetView<EmailCodeInputController> {
                         text: '인증하기',
                         variant: ButtonVariant.primary,
                         enabled: controller.isButtonEnabled,
-                        onPressed: controller.isButtonEnabled ? () {
-                          controller.verifyEmailCode();
-                          if (controller.codeState.value ==
-                              InputValidationState.valid){
-                            log('이메인 인증 성공');
-                          }
-                        }
-                        : null,
+                        onPressed: controller.isButtonEnabled
+                            ? () {
+                                controller.verifyEmailCode();
+                                if (controller.codeState.value ==
+                                    InputValidationState.valid) {
+                                  context.pushNamed('signupPassword');
+                                }
+                              }
+                            : null,
                       );
                     },
                   ),

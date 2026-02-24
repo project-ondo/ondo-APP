@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
@@ -12,18 +13,6 @@ import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/controllers/profile_image_setup_controller.dart';
-
-//테스프용 코드 route 작엽 시 삭제 예정
-//------------------------------------
-void main() {
-  Get.put(ProfileImageSetupController());
-  runApp(
-    MaterialApp(
-      home: ProfileImageSetupScreen(),
-    ),
-  );
-}
-//------------------------------------
 
 class ProfileImageSetupScreen extends GetView<ProfileImageSetupController> {
   const ProfileImageSetupScreen({super.key});
@@ -38,7 +27,7 @@ class ProfileImageSetupScreen extends GetView<ProfileImageSetupController> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildProfileSection(),
-              _buildNextButton(),
+              _buildNextButton(context),
             ],
           ),
         ),
@@ -170,13 +159,16 @@ class ProfileImageSetupScreen extends GetView<ProfileImageSetupController> {
     );
   }
 
-  Widget _buildNextButton() {
+  Widget _buildNextButton(BuildContext context) {
     return Column(
       children: [
         CustomButton(
           text: '다음',
           variant: ButtonVariant.primary,
-          onPressed: controller.submitProfileImage,
+          onPressed: () {
+          controller.submitProfileImage();
+          context.pushNamed('signupIntroduction');
+          }
         ),
         AppGap.v16,
       ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
@@ -10,18 +11,6 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/controllers/major_interest_controller.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
-
-//테스트용 코드 route작업시 삭제
-//---------------------------------------
-void main() {
-    Get.put(MajorInterestController());
-  runApp(
-    GetMaterialApp(
-      home: MajorInterestSetupScreen(),
-    ),
-  );
-}
-//---------------------------------------
 
 class MajorInterestSetupScreen extends GetView<MajorInterestController> {
   const MajorInterestSetupScreen({super.key});
@@ -51,7 +40,7 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
                   _buildInterestSection(categories: categories),
                 ],
               ),
-              _buildNextButton(),
+              _buildNextButton(context),
             ],
           ),
         ),
@@ -127,7 +116,7 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
     );
   }
 
-  Widget _buildNextButton() {
+  Widget _buildNextButton(BuildContext context) {
     return GetBuilder<MajorInterestController>(
       builder: (controller) {
         return Column(
@@ -136,7 +125,10 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
               text: '다음',
               variant: ButtonVariant.primary,
               enabled: controller.canProceed,
-              onPressed: controller.canProceed ? controller.submit : null,
+              onPressed: controller.canProceed ? (){
+                controller.submit();
+                context.goNamed('signupComplete');
+              } :null,
             ),
             AppGap.v16,
           ],

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
@@ -32,7 +33,7 @@ class PasswordSetupScreen extends GetView<PasswordInputController> {
                 child: _buildForm(),
               ),
             ),
-            _buildNextButton(),
+            _buildNextButton(context),
           ],
         ),
       ),
@@ -103,7 +104,7 @@ class PasswordSetupScreen extends GetView<PasswordInputController> {
     });
   }
 
-  Widget _buildNextButton() {
+  Widget _buildNextButton(BuildContext context) {
     return Obx(() {
       return Column(
         children: [
@@ -114,7 +115,7 @@ class PasswordSetupScreen extends GetView<PasswordInputController> {
             onPressed: () {
               controller.submit();
               if (controller.canProceed) {
-                _handleNext();
+                _handleNext(context);
               }
             },
           ),
@@ -124,12 +125,11 @@ class PasswordSetupScreen extends GetView<PasswordInputController> {
     });
   }
 
-  void _handleNext() {
+  void _handleNext(BuildContext context) {
     assert(() {
       log('비밀번호 설정 완료');
       return true;
     }());
-
-    // context.push('/next');
+    context.pushNamed('signupNickname');
   }
 }

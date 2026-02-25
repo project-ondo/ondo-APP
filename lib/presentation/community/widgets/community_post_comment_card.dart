@@ -34,7 +34,9 @@ class CommunityPostCommentCard extends StatelessWidget {
             imagePath: AppIcon.heart.path,
             total: heartTotal,
             activeColor: AppColors.red,
-            action: (isSelect, total) {},
+            action: (isSelect, total) {
+              //TODO: Comment 모델과 컨드롤러가 정의되면 추가
+            },
           ),
         ],
       ),

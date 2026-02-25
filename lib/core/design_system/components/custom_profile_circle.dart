@@ -18,16 +18,19 @@ class CustomProfileCircle extends StatelessWidget {
       height: radius,
       decoration: BoxDecoration(
         borderRadius: AppRadius.circleRadius,
-        image: hasImage
-            ? DecorationImage(image: NetworkImage(imageUrl!), fit: BoxFit.cover)
-            : null,
       ),
-      child: !hasImage
-          ? SvgPicture.asset(
-              AppIcon.defaultProfile.path,
+      child: hasImage
+          ? Image.network(
+              imageUrl!,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => _defaultImage(),
             )
-          : null,
+          : _defaultImage(),
     );
   }
+
+  Widget _defaultImage() => SvgPicture.asset(
+    AppIcon.defaultProfile.path,
+    fit: BoxFit.cover,
+  );
 }

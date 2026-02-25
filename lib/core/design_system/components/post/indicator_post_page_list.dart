@@ -56,63 +56,60 @@ class _IndicatorPostPageListState extends State<IndicatorPostPageList> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: AppPadding.topBar,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //게시물 리스트 제목(ex 작성한 게시물 목록
-          Text(
-            widget.title,
-            style: AppTextStyles.titleSm16(textColor: AppColors.gray90),
-          ),
-          AppGap.v16,
-          //게시물 리스트
-          SizedBox(
-            height: _pageHeight,
-            child: PageView.builder(
-              controller: _controller,
-              itemCount: _pageTotal(),
-              onPageChanged: (value) => setState(() => _currentPage = value),
-              itemBuilder: (context, int pageIndex) {
-                final slice = list().sublist(
-                  _startIndex(pageIndex),
-                  _endIndex(pageIndex),
-                );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        //게시물 리스트 제목(ex 작성한 게시물 목록
+        Text(
+          widget.title,
+          style: AppTextStyles.titleSm16(textColor: AppColors.gray90),
+        ),
+        AppGap.v16,
+        //게시물 리스트
+        SizedBox(
+          height: _pageHeight,
+          child: PageView.builder(
+            controller: _controller,
+            itemCount: _pageTotal(),
+            onPageChanged: (value) => setState(() => _currentPage = value),
+            itemBuilder: (context, int pageIndex) {
+              final slice = list().sublist(
+                _startIndex(pageIndex),
+                _endIndex(pageIndex),
+              );
 
-                return GridView(
-                  physics: widget.scrollable
-                      ? null
-                      : NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: AppSpacing.s16,
-                    crossAxisSpacing: AppSpacing.s16,
-                    childAspectRatio: 1.37,
-                  ),
-                  children: List.generate(
-                    slice.length,
-                        (index) => slice[index],
-                  ),
-                );
-              },
-            ),
-          ),
-          AppGap.v16,
-          //게시물 인디케이터
-          PostListIndicator(
-            currentPage: _currentPage,
-            totalPage: _pageTotal(),
-            onTap: (value) {
-              _controller.animateToPage(
-                value,
-                duration: Duration(milliseconds: 300),
-                curve: Curves.ease,
+              return GridView(
+                physics: widget.scrollable
+                    ? null
+                    : NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: AppSpacing.s16,
+                  crossAxisSpacing: AppSpacing.s16,
+                  childAspectRatio: 1.37,
+                ),
+                children: List.generate(
+                  slice.length,
+                      (index) => slice[index],
+                ),
               );
             },
           ),
-        ],
-      ),
+        ),
+        AppGap.v16,
+        //게시물 인디케이터
+        PostListIndicator(
+          currentPage: _currentPage,
+          totalPage: _pageTotal(),
+          onTap: (value) {
+            _controller.animateToPage(
+              value,
+              duration: Duration(milliseconds: 300),
+              curve: Curves.ease,
+            );
+          },
+        ),
+      ],
     );
   }
 }

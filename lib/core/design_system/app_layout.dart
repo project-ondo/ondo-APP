@@ -137,6 +137,15 @@ class AppPadding {
     horizontal: AppSpacing.s16,
     vertical: AppSpacing.s12,
   );
+  static const EdgeInsets floatingButtonFloatOffset = EdgeInsets.only(
+    bottom: AppSpacing.s51,
+    right: AppSpacing.s16,
+  );
+
+  static const EdgeInsets floatingButtonDockOffset = EdgeInsets.only(
+    bottom: AppSpacing.s16,
+    right: AppSpacing.s16,
+  );
 }
 
 class AppRadius {

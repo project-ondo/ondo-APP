@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/bindings_interface.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/presentation/auth/signup/controllers/email_code_input_controller.dart';
 import 'package:ondo/presentation/auth/signup/controllers/email_input_controller.dart';
@@ -22,6 +20,8 @@ import 'package:ondo/presentation/auth/signup/screens/profile_image_setup_screen
 import 'package:ondo/presentation/auth/signup/screens/signup_complete_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/terms_agreement_screen.dart';
 import 'package:ondo/presentation/home/screens/home_screen.dart';
+import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
+import 'package:ondo/presentation/navigation/screens/navigation_screen.dart';
 import 'package:ondo/presentation/profile/screens/edit_profile_screen.dart';
 import 'package:ondo/presentation/profile/screens/my_profile_screen.dart';
 import 'package:ondo/presentation/profile/screens/other_profile_screen.dart';
@@ -29,7 +29,9 @@ import 'package:ondo/presentation/profile/screens/setting_screen.dart';
 import 'package:ondo/presentation/profile/screens/terms_screen.dart';
 
 class RoutePaths {
-  static const String home = '/';
+  static const String navigation = '/';
+
+  static const String home = '/home';
   static const String login = '/login';
 
   static const String profile = '/profile';
@@ -51,8 +53,17 @@ class RoutePaths {
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: RoutePaths.profile,
+  initialLocation: RoutePaths.navigation,
   routes: [
+    GoRoute(
+      path: RoutePaths.navigation,
+      name: 'navigation',
+      builder: (context, state) {
+        Get.put(NavigationController());
+        return NavigationScreen();
+      },
+    ),
+
     GoRoute(
       path: RoutePaths.home,
       name: 'home',

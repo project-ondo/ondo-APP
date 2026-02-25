@@ -67,7 +67,7 @@ class _UserReportPopupState extends State<UserReportPopup> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Center(child: Text("유저 신고", style: AppTextStyles.popupTitle())),
+              Center(child: Text("유저 신고", style: AppTextStyles.titleBold20())),
               AppGap.v16,
               SizedBox(
                 width: MediaQuery.of(context).size.width,

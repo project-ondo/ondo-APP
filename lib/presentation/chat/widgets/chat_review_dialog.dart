@@ -77,7 +77,7 @@ class _ChatReviewDialogState extends State<ChatReviewDialog> {
           children: [
             Text(
               "리뷰 남기기",
-              style: AppTextStyles.popupTitle(),
+              style: AppTextStyles.titleBold20(),
             ),
             AppGap.v16,
             _starIconList(),

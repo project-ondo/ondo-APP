@@ -39,7 +39,7 @@ class CustomConfirmPopup extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Center(child: Text(title, style: AppTextStyles.popupTitle())),
+            Center(child: Text(title, style: AppTextStyles.titleBold20())),
             AppGap.v24,
             Center(
               child: Text(

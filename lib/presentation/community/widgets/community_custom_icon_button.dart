@@ -51,16 +51,14 @@ class _CommunityCustomIconButtonState extends State<CommunityCustomIconButton> {
           },
           child: Image.asset(
             widget.imagePath,
-            color: isSelect
-                ? widget.activeColor
-                : AppColors.gray50,
+            color: isSelect ? widget.activeColor : AppColors.gray50,
             height: AppSpacing.s32,
             width: AppSpacing.s32,
           ),
         ),
         AppGap.h4,
         Text(
-          "${total}",
+          "$total",
           style: AppTextStyles.textMedium(textColor: AppColors.gray50),
         ),
       ],

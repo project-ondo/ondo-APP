@@ -75,12 +75,3 @@ class NavigationScreen extends GetView<NavigationController> {
     );
   }
 }
-
-class TestCommunity extends StatelessWidget {
-  const TestCommunity({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text("community")));
-  }
-}

@@ -96,7 +96,7 @@ class AppTextStyles {
     );
   }
 
-  static TextStyle popupTitle({
+  static TextStyle titleBold20({
     Color? textColor,
   }) {
     return TextStyle(

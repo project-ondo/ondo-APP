@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
@@ -7,16 +8,16 @@ import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/presentation/profile/widget/report_reason_chip.dart';
 
-class UserReportPopup extends StatefulWidget {
-  const UserReportPopup({
+class CommunityPostReportDialog extends StatefulWidget {
+  const CommunityPostReportDialog({
     super.key,
   });
 
   @override
-  State<UserReportPopup> createState() => _UserReportPopupState();
+  State<CommunityPostReportDialog> createState() => _CommunityPostReportDialogState();
 }
 
-class _UserReportPopupState extends State<UserReportPopup> {
+class _CommunityPostReportDialogState extends State<CommunityPostReportDialog> {
   final TextEditingController controller = TextEditingController();
 
   final List<String> _reasons = [
@@ -67,7 +68,7 @@ class _UserReportPopupState extends State<UserReportPopup> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Center(child: Text("유저 신고", style: AppTextStyles.titleBold20())),
+              Center(child: Text("게시물 신고", style: AppTextStyles.titleBold20())),
               AppGap.v16,
               SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -76,7 +77,7 @@ class _UserReportPopupState extends State<UserReportPopup> {
                   spacing: AppSpacing.s12,
                   runSpacing: AppSpacing.s12,
                   children: _reasons.map(
-                    (e) {
+                        (e) {
                       return ReportReasonChip(
                         label: e,
                         isSelected: _selectedReasons.contains(e),

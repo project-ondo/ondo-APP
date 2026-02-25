@@ -17,8 +17,10 @@ class CommunityMainScreen extends StatefulWidget {
 }
 
 class _CommunityMainScreenState extends State<CommunityMainScreen> {
-  _CommunityMainScreenState() {
+  @override
+  void initState() {
     Get.put(CommunityFilterController());
+    super.initState();
   }
 
   @override

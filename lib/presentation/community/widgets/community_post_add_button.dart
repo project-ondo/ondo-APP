@@ -6,10 +6,10 @@ import 'package:ondo/core/design_system/app_layout.dart';
 
 class CommunityPostAddButton extends StatelessWidget {
   const CommunityPostAddButton.float({super.key})
-    : offset = AppPadding.floatingButtonFloatOffest;
+    : offset = AppPadding.floatingButtonFloatOffset;
 
   const CommunityPostAddButton.dock({super.key})
-    : offset = AppPadding.floatingButtonDockOffest;
+    : offset = AppPadding.floatingButtonDockOffset;
 
   final EdgeInsets offset;
 

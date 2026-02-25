@@ -2,15 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/components/post/indicator_post_page_list.dart';
 import 'package:ondo/core/design_system/components/post/post_item.dart';
 
-class CommunityPostList extends StatefulWidget {
-  const CommunityPostList({super.key});
+class CommunityPostList extends StatelessWidget {
+  CommunityPostList({super.key});
 
-  @override
-  State<CommunityPostList> createState() => _CommunityPostListState();
-}
-
-class _CommunityPostListState extends State<CommunityPostList> {
-  List<PostItem> posts = List.generate(
+  final List<PostItem> posts = List.generate(
     38,
     (index) => PostItem(
       skills: ["UI/UX", "FrontEnd"],

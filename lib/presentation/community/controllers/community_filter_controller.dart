@@ -10,16 +10,15 @@ class CommunityFilterController extends GetxController {
   ];
   RxList<String> filterTags = <String>[].obs;
 
+
   @override
   void onInit() {
     loadFilterTagList();
     super.onInit();
   }
 
-  void filterPosts (String filterString) {}
+  void filterPosts(String filterString) {}
 
-  void loadFilterTagList() {
-    Set<String> temp = Set.from(filterTags);
-    filterTags.value = (temp..addAll(tempTagListModel)).toList();
-  }
+  void loadFilterTagList() =>
+      filterTags.assignAll({...filterTags, ...tempTagListModel});
 }

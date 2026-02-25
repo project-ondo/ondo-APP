@@ -6,6 +6,7 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
 import 'package:ondo/core/design_system/components/post/indicator_post_page_list.dart';
@@ -15,6 +16,7 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/community/controllers/post_view_controller.dart';
 import 'package:ondo/presentation/community/widgets/community_custom_icon_button.dart';
 import 'package:ondo/presentation/community/widgets/community_post_comment_card.dart';
+import 'package:ondo/presentation/community/widgets/community_post_report_dialog.dart';
 
 
 class CommunityPostDetailScreen extends StatefulWidget {
@@ -30,10 +32,41 @@ class CommunityPostDetailScreen extends StatefulWidget {
 }
 
 class _CommunityPostDetailScreenState extends State<CommunityPostDetailScreen> {
+  late final PostViewController _controller;
+
   @override
   void initState() {
-    Get.put(PostViewController());
+    _controller = Get.put(PostViewController());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _showPostReportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => CommunityPostReportDialog(),
+    );
+  }
+
+  void _showDeletePostAlertDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => CustomAlertDialog(
+        title: "알림",
+        comment: "정말 게시물 삭제하시겠어요?",
+        actionLeft: () => Navigator.pop(context),
+        actionRight: () {
+          _controller.deletePostRequest();
+          Navigator.pop(context);
+        },
+        rightActionText: "삭제",
+      ),
+    );
   }
 
   @override
@@ -57,10 +90,10 @@ class _CommunityPostDetailScreenState extends State<CommunityPostDetailScreen> {
       moreOptions: true,
       itemBuilder: (context) => [
         if (!widget.isMy)
-          _topPopupItem("게시물 신고하기")
+          _topPopupItem("게시물 신고하기", _showPostReportDialog)
         else ...[
-          _topPopupItem("게시물 수정하기"),
-          _topPopupItem("게시물 삭제하기"),
+          _topPopupItem("게시물 수정하기", () {}),
+          _topPopupItem("게시물 삭제하기", _showDeletePostAlertDialog),
         ],
       ],
     ),
@@ -89,10 +122,12 @@ class _CommunityPostDetailScreenState extends State<CommunityPostDetailScreen> {
     ),
   );
 
-  PopupMenuEntry<String> _topPopupItem(String title) => PopupMenuItem(
-    padding: AppPadding.popupManuButton,
-    child: Center(child: Text(title)),
-  );
+  PopupMenuEntry<String> _topPopupItem(String title, VoidCallback onTap) =>
+      PopupMenuItem(
+        padding: AppPadding.popupManuButton,
+        onTap: onTap,
+        child: Center(child: Text(title)),
+      );
 }
 
 class _Title extends GetView<PostViewController> {

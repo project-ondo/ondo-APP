@@ -27,6 +27,10 @@ class PostViewController extends GetxController {
 
     super.onInit();
   }
+
+  void deletePostRequest () {}
+
+
 }
 
 extension DummyData on PostViewController {

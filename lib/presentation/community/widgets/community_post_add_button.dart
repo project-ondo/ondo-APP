@@ -5,14 +5,20 @@ import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 
 class CommunityPostAddButton extends StatelessWidget {
-  const CommunityPostAddButton({super.key});
+  const CommunityPostAddButton.float({super.key})
+    : offset = AppPadding.floatingButtonFloatOffest;
+
+  const CommunityPostAddButton.dock({super.key})
+    : offset = AppPadding.floatingButtonDockOffest;
+
+  final EdgeInsets offset;
 
   void createPost() {}
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: AppPadding.floatingButtonOffset,
+      padding: offset,
       child: FloatingActionButton(
         onPressed: createPost,
         foregroundColor: AppColors.white,

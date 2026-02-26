@@ -23,7 +23,6 @@ class CustomTextField extends StatelessWidget {
   final int? maxLength;
   final MaxLengthEnforcement? maxLengthEnforcement;
 
-
   const CustomTextField({
     super.key,
     required this.controller,
@@ -42,7 +41,7 @@ class CustomTextField extends StatelessWidget {
     this.minLines,
     this.chips,
     this.maxLength,
-    this.maxLengthEnforcement
+    this.maxLengthEnforcement,
   });
 
   @override
@@ -63,7 +62,6 @@ class CustomTextField extends StatelessWidget {
         textColor: enabled
             ? (hasError ? AppColors.red : AppColors.gray80)
             : AppColors.gray60,
-
       ),
       cursorColor: AppColors.black,
       inputFormatters: maxLength != null
@@ -76,7 +74,6 @@ class CustomTextField extends StatelessWidget {
         hintStyle: AppTextStyles.textMedium(
           textColor: AppColors.gray60,
         ),
-
 
         // prefix 유무에 따른 패딩 분기
         contentPadding: prefix == null
@@ -158,7 +155,7 @@ class LabelTextField extends StatelessWidget {
     this.chips,
     this.height,
     this.maxLength,
-    this.maxLengthEnforcement
+    this.maxLengthEnforcement,
   });
 
   @override
@@ -191,8 +188,8 @@ class LabelTextField extends StatelessWidget {
             minLines: minLines ?? 1,
             maxLines: height != null ? null : maxLines,
             maxLength: maxLength,
-            maxLengthEnforcement: maxLengthEnforcement                    // 추가
-            ?? MaxLengthEnforcement.enforced,
+            maxLengthEnforcement:
+                maxLengthEnforcement ?? MaxLengthEnforcement.enforced,
           ),
         ),
 

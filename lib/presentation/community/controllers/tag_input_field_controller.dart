@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class TagInputController extends GetxController {
-  final TextEditingController textController = TextEditingController();
-  final RxList<String> tags = <String>[].obs;
+  final textController = TextEditingController();
+
+  final tags = <String>{}.obs;
 
   void addTag(String value) {
     final tag = value.trim();
-    if (tag.isNotEmpty && !tags.contains(tag)) {
+    if (tag.isNotEmpty) {
       tags.add(tag);
       textController.clear();
     }
   }
-
   void removeTag(String tag) {
     tags.remove(tag);
   }

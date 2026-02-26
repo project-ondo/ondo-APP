@@ -9,8 +9,9 @@ import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/community/controllers/tag_input_field_controller.dart';
 import 'package:ondo/presentation/community/widgets/tag_input_field.dart';
-import 'package:ondo/presentation/community/controllers/community_post_creat_screen_controller.dart';
+import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
 
 
 class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
@@ -21,6 +22,8 @@ class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
 
   @override
   Widget build(BuildContext context) {
+    final tagController = Get.put(TagInputController());
+
     return BaseScaffold(
       body: Column(
         children: [

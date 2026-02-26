@@ -34,8 +34,7 @@ class CommunityPostCreateScreen extends StatelessWidget {
                       label: '글 제목',
                       controller:controller.titleController,
                       hintText: '제목을 입력해주세요',
-                      maxLines: null,
-                      height: 44,
+                      maxLines: 3,
                     ),
                   ),
                   Padding(

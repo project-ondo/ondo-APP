@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:ondo/core/design_system/app_colors.dart';
+import 'package:ondo/core/design_system/app_icon.dart';
+import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/core/design_system/app_text_styles.dart';
 
 class TagChip extends StatelessWidget {
   final String tag;
@@ -13,19 +17,27 @@ class TagChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: AppPadding.tagChip,
       decoration: BoxDecoration(
-        color: const Color(0xFF5C3317),
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.primary,
+        borderRadius: BorderRadius.circular(AppSpacing.s8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(tag, style: const TextStyle(color: Colors.white)),
-          const SizedBox(width: 8),
+          Text(
+            tag,
+            style: AppTextStyles.textMedium(textColor: AppColors.white),
+          ),
+          AppGap.h8,
           GestureDetector(
             onTap: onRemove,
-            child: const Icon(Icons.close, color: Colors.white, size: 16),
+            child: Image.asset(
+              AppIcon.close.path,
+              color: AppColors.white,
+              width: 14,
+              height: 14,
+            ),
           ),
         ],
       ),

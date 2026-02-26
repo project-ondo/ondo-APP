@@ -101,7 +101,6 @@ class AppPadding {
 
   static const EdgeInsets alertCount = EdgeInsets.all(AppSpacing.s2);
 
-  static const EdgeInsets alertReportItem = EdgeInsets.all(AppSpacing.s12);
 
 
   static const EdgeInsets settingSession = EdgeInsets.symmetric(

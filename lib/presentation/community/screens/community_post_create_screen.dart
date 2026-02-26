@@ -13,14 +13,14 @@ import 'package:ondo/presentation/community/widgets/tag_input_field.dart';
 import 'package:ondo/presentation/community/controllers/community_post_creat_screen_controller.dart';
 
 
-class CommunityPostCreateScreen extends StatelessWidget {
+class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
   static const _contentMinLength = 10;
   static const _contentMaxLength = 3000;
+
   const CommunityPostCreateScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(CommunityPostCreateController(), permanent: false);
     return BaseScaffold(
       body: Column(
         children: [
@@ -78,7 +78,7 @@ class CommunityPostCreateScreen extends StatelessWidget {
           Padding(
             padding: AppPadding.textField,
             child: SizedBox(
-              height: 52,
+              height:AppSpacing.s52,
               width: double.infinity,
               child: Obx(() => CustomButton(
                 text: '커뮤니티에 게시',

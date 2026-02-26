@@ -12,21 +12,15 @@ void main() {
   tearDown(() => Get.reset());
 
   group('ONDO App Widget Tests', () {
-    testWidgets('CustomButton tap triggers onPressed', (
-      WidgetTester tester,
-    ) async {
+    // 1. CustomButton 테스트
+    testWidgets('CustomButton tap triggers onPressed', (WidgetTester tester) async {
       bool tapped = false;
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: CustomButton(
-              text: 'Test Button',
-              variant: ButtonVariant.primary,
-              onPressed: () {
-                tapped = true;
-              },
-            ),
+      await tester.pumpWidget(MaterialApp(
+        home: Scaffold(
+          body: CustomButton(
+            text: 'Test Button',
+            variant: ButtonVariant.primary,
+            onPressed: () => tapped = true,
           ),
         ),
       ));
@@ -48,9 +42,9 @@ void main() {
       expect(controller.text, 'Eunseo');
     });
 
-    testWidgets('Main app renders without crashing', (
-      WidgetTester tester,
-    ) async {
+    // 3. 메인 앱 렌더링 테스트
+    testWidgets('Main app renders without crashing', (WidgetTester tester) async {
+      // 앱을 빌드합니다.
       await tester.pumpWidget(const MyApp());
 
       // [핵심 수정] runAsync 대신 가상 시간을 직접 2초 흐르게 합니다.

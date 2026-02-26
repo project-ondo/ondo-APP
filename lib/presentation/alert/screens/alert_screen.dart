@@ -185,7 +185,7 @@ class _AlertPageList extends GetView<AlertController> {
         return AlertCard(
           profileImg: alert.profileImg,
           alertType: alert.type.title,
-          sendAt: alert.sendAt!,
+          sendAt: alert.sendAt ?? Duration.zero,
           comment: alert.comment,
         );
       },

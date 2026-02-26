@@ -4,12 +4,10 @@ import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 
 class CustomProfileCircle extends StatelessWidget {
-  const CustomProfileCircle({super.key, required this.radius, this.imageUrl})
-    : hasImage = imageUrl != null;
+  const CustomProfileCircle({super.key, required this.radius, this.imageUrl});
 
   final double radius;
   final String? imageUrl;
-  final bool hasImage;
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +17,7 @@ class CustomProfileCircle extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: AppRadius.circleRadius,
       ),
-      child: hasImage
+      child: imageUrl != null
           ? Image.network(
               imageUrl!,
               fit: BoxFit.cover,

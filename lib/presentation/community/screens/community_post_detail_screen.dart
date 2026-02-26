@@ -241,6 +241,12 @@ class _CommentListState extends State<_CommentList> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
   int _getStartIndex(int index) => index * 4;
 
   int _getLastIndex(int index) =>

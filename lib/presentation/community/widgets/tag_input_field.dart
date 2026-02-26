@@ -11,7 +11,7 @@ class TagInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(TagInputController());
+    final controller = Get.find<TagInputController>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

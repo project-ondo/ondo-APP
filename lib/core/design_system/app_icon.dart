@@ -22,6 +22,7 @@ enum AppIcon {
   send,
   star,
   menu,
+  close,
 
   chatSelect,
   chatUnSelect,
@@ -85,6 +86,8 @@ extension AppIconPath on AppIcon {
         return '$_basePath/star.png';
       case AppIcon.menu:
         return'$_basePath/menu.svg';
+      case AppIcon.close:
+        return '$_basePath/close.png';
 
       case AppIcon.chatSelect:
         return '$_basePath/bottombar/chat_select.svg';

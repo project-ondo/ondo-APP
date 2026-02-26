@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/design_system/components/top_bar/main_top_search_bar.dart';
 
 class MainTopBarSearchController extends GetxController {
   final TextEditingController textController = TextEditingController();
@@ -22,17 +23,27 @@ class MainTopBarSearchController extends GetxController {
 
   @override
   void onReady() {
-    focusNode.addListener(_isShowPopupToggle);
+    focusNode.addListener(_showPopupToggle);
+    textController.addListener(_onChange);
     super.onReady();
+  }
+
+  @override
+  void onClose() {
+    textController.removeListener(_onChange);
+    textController.dispose();
+    focusNode.removeListener(_showPopupToggle);
+    focusNode.dispose();
+    super.onClose();
   }
 
   void onTap() => focusNode.requestFocus();
 
   void onOtherTap() => focusNode.unfocus();
 
-  void onChange(String text) {
+  void _onChange() {
     _ensureIsRegisterPopController(() {
-      _popupController.searchFitsKeywords(text);
+      _popupController.searchFitsKeywords(textController.text);
     });
   }
 
@@ -40,11 +51,12 @@ class MainTopBarSearchController extends GetxController {
     _ensureIsRegisterPopController(() {
       if (textController.text.isNotEmpty) {
         showResult.value = true;
+        focusNode.unfocus();
       }
     });
   }
 
-  void _isShowPopupToggle() {
+  void _showPopupToggle() {
     if (focusNode.hasFocus) {
       if (!Get.isRegistered<SearchPopupController>()) {
         _popupController = Get.put(SearchPopupController());
@@ -63,54 +75,14 @@ class MainTopBarSearchController extends GetxController {
     }
   }
 
-  T? checkResultDataType<T>() {
-    if (T == HomeSearchModel) {
-      return _loadHomeResultData() as T;
-    }
-    if (T == CommunitySearchModel) {
-      return _loadCommunityResultData() as T;
-    }
-    return null;
+  dynamic checkResultDataType(Type type) {
+    return switch (type) {
+      const (HomeSearchModel) => loadHomeResultData(),
+      const (CommunitySearchModel) => loadCommunityResultData(),
+      (_) => null,
+    };
   }
-
-  HomeSearchModel _loadHomeResultData() => (
-    chats: [
-      {"": ""},
-      {"": ""},
-      {"": ""},
-      {"": ""},
-      {"": ""},
-    ],
-    posts: [
-      {"": ""},
-      {"": ""},
-      {"": ""},
-      {"": ""},
-      {"": ""},
-    ],
-  );
-
-  CommunitySearchModel? _loadCommunityResultData() => (
-    posts: [
-      {},
-      {},
-      {},
-      {},
-      {},
-    ],
-  );
 }
-
-typedef HomeSearchModel = ({
-  List<Map<String, dynamic>> chats,
-  List<Map<String, dynamic>> posts,
-});
-typedef CommunitySearchModel = ({
-  List<Map<String, dynamic>> posts,
-});
-typedef ChatSearchModel = ({
-  List<Map<String, dynamic>> chats,
-});
 
 class SearchPopupController extends GetxController {
   RxList<String> tempSearchTags = <String>[].obs;
@@ -133,12 +105,12 @@ class SearchPopupController extends GetxController {
     if (text.isNotEmpty) {
       tempSearchTags.value = List.of(
         _controller.searchTags.where(
-          (tag) => tag.toLowerCase().contains(text.toLowerCase()),
+          (tag) => tag.trim().toLowerCase().contains(text.trim().toLowerCase()),
         ),
       );
       tempSearchTips.value = List.of(
         _controller.searchTips.where(
-          (tip) => tip.toLowerCase().contains(text.toLowerCase()),
+          (tip) => tip.trim().toLowerCase().contains(text.trim().toLowerCase()),
         ),
       );
     } else {
@@ -154,6 +126,11 @@ class SearchPopupController extends GetxController {
   void selectTip(int index, bool isSelect) => isSelect
       ? selectTips.add(tempSearchTips[index])
       : selectTips.remove(tempSearchTips[index]);
+
+  void resetSelectKeyword() {
+    selectTags.clear();
+    selectTips.clear();
+  }
 }
 
 extension DummyMoel on MainTopBarSearchController {
@@ -176,4 +153,31 @@ extension DummyMoel on MainTopBarSearchController {
     "공부방법",
     "공부인증",
   ];
+
+  HomeSearchModel loadHomeResultData() => (
+    chats: [
+      {"": ""},
+      {"": ""},
+      {"": ""},
+      {"": ""},
+      {"": ""},
+    ],
+    posts: [
+      {"": ""},
+      {"": ""},
+      {"": ""},
+      {"": ""},
+      {"": ""},
+    ],
+  );
+
+  CommunitySearchModel? loadCommunityResultData() => (
+    posts: [
+      {},
+      {},
+      {},
+      {},
+      {},
+    ],
+  );
 }

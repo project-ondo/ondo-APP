@@ -6,7 +6,7 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
-import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_alert_controller.dart';
+import 'package:ondo/presentation/alert/controllers/alert_controller.dart';
 import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_search_controller.dart';
 import 'package:ondo/core/design_system/components/top_bar/search_popup.dart';
 import 'package:ondo/presentation/alert/screens/alert_screen.dart';
@@ -16,7 +16,7 @@ class MainTopBar extends StatelessWidget {
   final Widget child;
 
   MainTopBar({super.key, required this.child}) {
-    Get.put(MainTopBarAlertController());
+    Get.put(AlertController());
   }
 
   final MainTopBarSearchController _topBarSearchController = Get.put(
@@ -95,8 +95,8 @@ class _AlertButton extends StatelessWidget {
     required this.size,
   });
 
-  final MainTopBarAlertController alertController =
-      Get.find<MainTopBarAlertController>();
+  final AlertController alertController =
+      Get.find<AlertController>();
 
   @override
   Widget build(BuildContext context) {
@@ -163,7 +163,7 @@ class _AlertButton extends StatelessWidget {
           borderRadius: AppRadius.alertRadius,
         ),
         child: Text(
-          "${alertController.totals.value}",
+          "${alertController.total.value}",
           style: AppTextStyles.captionSmall(
             textColor: AppColors.white,
           ),

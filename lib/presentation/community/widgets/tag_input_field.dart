@@ -22,10 +22,10 @@ class TagInputField extends StatelessWidget {
         ),
         AppGap.v4,
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          padding: AppPadding.chatPadding,
           decoration: BoxDecoration(
             color: AppColors.gray20,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: AppRadius.baseRadius,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -35,8 +35,8 @@ class TagInputField extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                    spacing: AppSpacing.s8,
+                    runSpacing: AppSpacing.s8,
                     children: controller.tags
                         .map((tag) => TagChip(
                       tag: tag,

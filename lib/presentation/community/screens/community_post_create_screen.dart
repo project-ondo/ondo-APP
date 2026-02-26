@@ -14,6 +14,8 @@ import 'package:ondo/presentation/community/controllers/community_post_creat_scr
 
 
 class CommunityPostCreateScreen extends StatelessWidget {
+  static const _contentMinLength = 10;
+  static const _contentMaxLength = 3000;
   const CommunityPostCreateScreen({super.key});
 
   @override
@@ -50,9 +52,9 @@ class CommunityPostCreateScreen extends StatelessWidget {
                           label: '게시물 내용',
                           controller: controller.contentController,
                           hintText: '게시물 내용을 입력해주세요',
-                          minLines: 10,
+                          minLines:  _contentMinLength,
                           maxLines: null,
-                          maxLength: 3000,
+                          maxLength: _contentMaxLength,
                           maxLengthEnforcement: MaxLengthEnforcement.enforced
                         ),
                         AppGap.v4,

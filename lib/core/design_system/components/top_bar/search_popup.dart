@@ -8,30 +8,21 @@ import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_
 
 @immutable
 class SearchPopup extends StatelessWidget {
-  final SearchPopupController _controller = Get.find<SearchPopupController>();
-
-  SearchPopup({super.key});
+  const SearchPopup({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
     return Container(
-      width: width,
-      padding: AppPadding.popUp,
+      width: double.infinity,
+      padding: AppPadding.popup,
       decoration: BoxDecoration(color: AppColors.white),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Obx(
-            () => _Tags(
-              tags: _controller.showTags.value,
-            ),
-          ),
+          _Tags(),
           AppGap.v16,
-          Obx(
-            () => _RecentSearchSection(tips: _controller.showSearchTips.value),
-          ),
+          _Tips(),
         ],
       ),
     );
@@ -39,21 +30,19 @@ class SearchPopup extends StatelessWidget {
 }
 
 @immutable
-class _Tags extends StatelessWidget {
-  final List<String> tags;
-
-  const _Tags({required this.tags});
-
+class _Tags extends GetView<SearchPopupController> {
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: AppSpacing.s16,
-      runSpacing: AppSpacing.s12,
-      children: List.generate(
-        tags.length,
-        (index) => CustomTagCard(
-          tag: tags[index],
-          color: AppColors.gray20,
+    return Obx(
+      () => Wrap(
+        spacing: AppSpacing.s16,
+        runSpacing: AppSpacing.s12,
+        children: List.generate(
+          controller.tempSearchTags.length,
+          (index) => CustomTagCard(
+            tag: controller.tempSearchTags[index],
+            color: AppColors.gray20,
+          ),
         ),
       ),
     );
@@ -61,17 +50,16 @@ class _Tags extends StatelessWidget {
 }
 
 @immutable
-class _RecentSearchSection extends StatelessWidget {
-  final List<String> tips;
-
-  const _RecentSearchSection({required this.tips});
-
+class _Tips extends GetView<SearchPopupController> {
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: AppSpacing.s16,
-      children: List.generate(tips.length, (index) => _textWidget(tips[index])),
+      children: List.generate(
+        controller.tempSearchTips.length,
+        (index) => _textWidget(controller.tempSearchTips[index]),
+      ),
     );
   }
 

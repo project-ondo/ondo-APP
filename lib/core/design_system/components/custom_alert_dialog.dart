@@ -36,7 +36,7 @@ class CustomAlertDialog extends StatelessWidget {
           children: [
             Text(
               title,
-              style: AppTextStyles.popupTitle(),
+              style: AppTextStyles.titleBold20(),
             ),
             AppGap.v24,
             Text(

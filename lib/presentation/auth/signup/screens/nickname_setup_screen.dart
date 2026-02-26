@@ -18,9 +18,10 @@ class NicknameSetupScreen extends StatefulWidget {
   State<NicknameSetupScreen> createState() => _NicknameSetupScreenState();
 }
 
-TextEditingController controller = TextEditingController();
-
 class _NicknameSetupScreenState extends State<NicknameSetupScreen> {
+
+  TextEditingController controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(

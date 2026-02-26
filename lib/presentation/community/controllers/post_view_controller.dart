@@ -64,21 +64,21 @@ extension DummyData on PostViewController {
       (
         author: "김유찬",
         heartTotal: 12,
-        conment: "ㄹㅇ 다크 패턴은 진짜 법으로 좀 쳐야 함… 탈퇴 버튼 숨겨놓는 거 볼 때마다 정 떨어짐.",
+        comment: "ㄹㅇ 다크 패턴은 진짜 법으로 좀 쳐야 함… 탈퇴 버튼 숨겨놓는 거 볼 때마다 정 떨어짐.",
       ),
-      (author: "김유찬", heartTotal: 12, conment: "UI 피로도가 ㄹㅈㄷ 도대체 왜 숨기는겨"),
+      (author: "김유찬", heartTotal: 12, comment: "UI 피로도가 ㄹㅈㄷ 도대체 왜 숨기는겨"),
       (
         author: "김유찬",
         heartTotal: 16,
-        conment: "ㄹㅇ 다크 패턴은 진짜 법으로 좀 쳐야 함… 탈퇴 버튼 숨겨놓는 거 볼 때마다 정 떨어짐.",
+        comment: "ㄹㅇ 다크 패턴은 진짜 법으로 좀 쳐야 함… 탈퇴 버튼 숨겨놓는 거 볼 때마다 정 떨어짐.",
       ),
       (
         author: "김유찬",
         heartTotal: 12,
-        conment: "진짜 ㄹㅇ 계정 탈퇴 한번 하려면 이거하고 저거하고 귀찮아 죽겠음 진짜",
+        comment: "진짜 ㄹㅇ 계정 탈퇴 한번 하려면 이거하고 저거하고 귀찮아 죽겠음 진짜",
       ),
     },
   ];
 }
 
-typedef Comment = ({String author, String conment, int heartTotal});
+typedef Comment = ({String author, String comment, int heartTotal});

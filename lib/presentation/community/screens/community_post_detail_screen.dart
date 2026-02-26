@@ -40,12 +40,6 @@ class _CommunityPostDetailScreenState extends State<CommunityPostDetailScreen> {
     super.initState();
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   void _showPostReportDialog() {
     showDialog(
       context: context,
@@ -78,7 +72,7 @@ class _CommunityPostDetailScreenState extends State<CommunityPostDetailScreen> {
             ..._top(),
             AppGap.v16,
             _body(),
-            footer(),
+            _footer(),
           ],
         ),
       ),
@@ -111,7 +105,7 @@ class _CommunityPostDetailScreenState extends State<CommunityPostDetailScreen> {
     ),
   );
 
-  Widget footer() => Container(
+  Widget _footer() => Container(
     color: AppColors.background,
     padding: AppPadding.screenHorizontal,
     child: Column(
@@ -263,6 +257,7 @@ class _CommentListState extends State<_CommentList> {
           Expanded(
             child: Obx(
               () => PageView.builder(
+                controller: _pageController,
                 onPageChanged: (value) {
                   curIndex.value = value;
                 },
@@ -283,7 +278,11 @@ class _CommentListState extends State<_CommentList> {
               currentPage: value,
               totalPage: _getTotalPage(),
               onTap: (value) {
-                _pageController.jumpToPage(value);
+                _pageController.animateToPage(
+                  value,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.ease,
+                );
               },
             ),
           ),
@@ -312,7 +311,7 @@ class _CommentListState extends State<_CommentList> {
         ...subComments.map(
           (comment) => CommunityPostCommentCard(
             author: comment.author,
-            commentText: comment.conment,
+            commentText: comment.comment,
             heartTotal: comment.heartTotal,
           ),
         ),

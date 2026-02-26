@@ -47,7 +47,7 @@ class _CommunityCustomIconButtonState extends State<CommunityCustomIconButton> {
               isSelect = !isSelect;
               isSelect ? total += 1 : total -= 1;
             });
-            widget.action.call(widget.initialIsSelected, total);
+            widget.action.call(isSelect, total);
           },
           child: Image.asset(
             widget.imagePath,

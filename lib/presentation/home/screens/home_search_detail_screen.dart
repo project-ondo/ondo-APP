@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/components/post/base_post_list.dart';
-import 'package:ondo/core/design_system/components/top_bar/main_top_bar.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/home/widgets/home_profile_card.dart';
 
@@ -9,27 +8,35 @@ import '../../../core/design_system/app_layout.dart';
 import '../../../core/design_system/app_text_styles.dart';
 import '../../../core/design_system/components/post/post_item.dart';
 
+class HomeSearchDetailPage extends StatelessWidget {
+  const HomeSearchDetailPage({
+    super.key,
+    required this.chats,
+    required this.posts,
+  });
 
-class HomeSearchDetailScreen extends StatelessWidget {
-  const HomeSearchDetailScreen({super.key});
+  final List<Map<String, dynamic>> chats;
+  final List<Map<String, dynamic>> posts;
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        child: MainTopBar(
-          child: Padding(
-            padding: AppPadding.screenHorizontal,
-            child: Column(
-              children: [
-                AppGap.v16,
-                _ProfileResults(),
-                AppGap.v16,
-                _PostResults(),
-                AppGap.v16,
-              ],
-            ),
+        child: Padding(
+          padding: AppPadding.screenHorizontal,
+          child: Column(
+            children: [
+              AppGap.v16,
+              _ProfileResults(
+                chats: [],
+              ),
+              AppGap.v16,
+              _PostResults(
+                posts: [],
+              ),
+              AppGap.v16,
+            ],
           ),
         ),
       ),
@@ -39,31 +46,25 @@ class HomeSearchDetailScreen extends StatelessWidget {
 
 @immutable
 class _ProfileResults extends StatelessWidget {
-  final List<Map<String, dynamic>> _chats;
+  final List<Map<String, dynamic>> chats;
 
-  _ProfileResults() : _chats = [{}, {}, {}, {}];
-
-  final String _titleTest = "프로필 검색 결과";
+  const _ProfileResults({required this.chats});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _title(),
+        Text(
+          "프로필 검색 결과",
+          style: AppTextStyles.titleBold16(),
+        ),
         AppGap.v16,
         ConstrainedBox(
           constraints: BoxConstraints(maxHeight: 160),
           child: _chatList(),
         ),
       ],
-    );
-  }
-
-  Widget _title() {
-    return Text(
-      _titleTest,
-      style: AppTextStyles.titleBold16(),
     );
   }
 
@@ -76,7 +77,7 @@ class _ProfileResults extends StatelessWidget {
           children: List.generate(3, (itemIndex) {
             final int currentIndex = (pageIndex * 3) + itemIndex;
 
-            return currentIndex < _chats.length
+            return currentIndex < chats.length
                 ? HomeProfileCard(
                     skill: "UI/UX",
                     name: "김유찬",
@@ -86,7 +87,7 @@ class _ProfileResults extends StatelessWidget {
           }),
         );
       },
-      itemCount: (_chats.length ~/ 3) + 1,
+      itemCount: (chats.length ~/ 3) + 1,
     );
   }
 }
@@ -95,9 +96,10 @@ class _ProfileResults extends StatelessWidget {
 class _PostResults extends BasePostList {
   final List<Map<String, dynamic>> posts;
 
-  _PostResults({
+  const _PostResults({
     super.title = "게시물 검색 결과",
-  }) : posts = [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}];
+    required this.posts,
+  });
 
   @override
   List<Widget> list() {

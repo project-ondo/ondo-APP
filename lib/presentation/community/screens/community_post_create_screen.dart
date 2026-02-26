@@ -12,9 +12,6 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/community/widgets/tag_input_field.dart';
 import 'package:ondo/presentation/community/controllers/community_post_creat_screen_controller.dart';
 
-void main() async {
-  runApp(MaterialApp(home: CommunityPostCreateScreen(),));
-}
 
 class CommunityPostCreateScreen extends StatelessWidget {
   const CommunityPostCreateScreen({super.key});

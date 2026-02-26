@@ -41,7 +41,7 @@ class HomeScreen extends StatelessWidget {
 
           return HomeSearchDetailPage(
             posts: record!.posts,
-            chats: record!.chats,
+            chats: record.chats,
           );
         },
       ),

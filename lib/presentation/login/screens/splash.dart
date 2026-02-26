@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -13,28 +11,22 @@ class SplashScreen extends GetView<SplashController> {
 
   @override
   Widget build(BuildContext context) {
+    once(
+      controller.isReady,
+      (callback) {
+        if (callback && context.mounted) {
+          context.go(
+            controller.isLogin.value ? RoutePaths.navigation : RoutePaths.login,
+          );
+        }
+      },
+    );
+
     return BaseScaffold(
       body: Center(
-        child: Obx(
-          () {
-            if (controller.isReady.value) {
-              log("${controller.isReady.value}");
-              WidgetsBinding.instance.addPostFrameCallback(
-                (timeStamp) => context.go(
-                  controller.isLogin.value
-                      ? RoutePaths.navigation
-                      : RoutePaths.login,
-                ),
-              );
-            }
-
-            if (controller.opacity == null) SizedBox();
-
-            return FadeTransition(
-              opacity: controller.opacity!,
-              child: Image.asset(AppIcon.logo.path),
-            );
-          },
+        child: FadeTransition(
+          opacity: controller.opacity,
+          child: Image.asset(AppIcon.logo.path),
         ),
       ),
     );

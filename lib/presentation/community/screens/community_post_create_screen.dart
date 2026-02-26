@@ -22,7 +22,7 @@ class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
 
   @override
   Widget build(BuildContext context) {
-    final tagController = Get.put(TagInputController());
+    Get.put(TagInputController());
 
     return BaseScaffold(
       body: Column(

@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
-import 'package:ondo/core/design_system/components/top_bar/main_top_bar.dart';
+import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_search_controller.dart';
+import 'package:ondo/core/design_system/components/top_bar/main_top_search_bar.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/community/controllers/community_filter_controller.dart';
+import 'package:ondo/presentation/community/screens/community_search_detail_screen.dart';
 import 'package:ondo/presentation/community/widgets/community_filter_tag_list.dart';
 import 'package:ondo/presentation/community/widgets/community_post_add_button.dart';
 import 'package:ondo/presentation/community/widgets/community_post_list.dart';
@@ -29,8 +31,8 @@ class _CommunityMainScreenState extends State<CommunityMainScreen> {
       floatingActionButton: CommunityPostAddButton.float(),
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        child: MainTopBar(
-          child: Padding(
+        child: MainTopSearchBar(
+          mainPage: Padding(
             padding: AppPadding.screenHorizontal,
             child: Column(
               children: [
@@ -42,6 +44,9 @@ class _CommunityMainScreenState extends State<CommunityMainScreen> {
               ],
             ),
           ),
+          resultPageBuilder: (CommunitySearchModel resultModel) {
+            return CommunitySearchDetailPage(posts: resultModel.posts);
+          },
         ),
       ),
     );

@@ -2,20 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_search_controller.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/home/screens/home_search_detail_screen.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
 import 'package:ondo/presentation/home/widgets/home_profile_card.dart';
 
-
-
 import '../../../core/design_system/components/post/base_post_list.dart';
 import '../../../core/design_system/components/post/post_item.dart';
-import '../../../core/design_system/components/top_bar/main_top_bar.dart';
+import '../../../core/design_system/components/top_bar/main_top_search_bar.dart';
 
-
-void main () {
-  runApp(MaterialApp(home: HomeScreen(),));
-}
 
 
 class HomeScreen extends StatelessWidget {
@@ -25,27 +21,43 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseScaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: MainTopBar(
+      body: MainTopSearchBar<HomeSearchModel>(
+        mainPage: SingleChildScrollView(
           child: Column(
             children: [
-
               _highSection(),
 
               _lowSection(),
             ],
           ),
         ),
+        resultPageBuilder: (resultModel) {
+          final record =
+              resultModel
+                  as ({
+                    List<Map<String, dynamic>> chats,
+                    List<Map<String, dynamic>> posts,
+                  })?;
+
+          return HomeSearchDetailPage(
+            posts: record!.posts,
+            chats: record!.chats,
+          );
+        },
       ),
     );
   }
 
   Widget _highSection() {
-    return Container( decoration: BoxDecoration(color: AppColors.white),
-      child: Padding( padding: AppPadding.screenHorizontal,
-        child: Column(children: [
-        _PostRankList(),
-        ],),
+    return Container(
+      decoration: BoxDecoration(color: AppColors.white),
+      child: Padding(
+        padding: AppPadding.screenHorizontal,
+        child: Column(
+          children: [
+            _PostRankList(),
+          ],
+        ),
       ),
     );
   }
@@ -53,14 +65,13 @@ class HomeScreen extends StatelessWidget {
   Widget _lowSection() {
     return Padding(
       padding: AppPadding.screenHorizontal,
-      child: Column( children: [
-
+      child: Column(
+        children: [
           AppGap.v16,
           _RecommendProfileList(),
           AppGap.v16,
           _RecommendPostList(),
           AppGap.v16,
-
         ],
       ),
     );
@@ -77,11 +88,15 @@ class _PostRankList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container( decoration: BoxDecoration(color: AppColors.white),
-      child: Column( crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return Container(
+      decoration: BoxDecoration(color: AppColors.white),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           _title(),
           AppGap.v16,
-          ConstrainedBox( constraints: BoxConstraints(maxHeight: _hList),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: _hList),
             child: _postList(),
           ),
           AppGap.v16,
@@ -105,12 +120,14 @@ class _PostRankList extends StatelessWidget {
     return PageView.builder(
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, pageIndex) {
-        return Column( spacing: _hPostSpacing,
+        return Column(
+          spacing: _hPostSpacing,
           children: List.generate(3, (itemIndex) {
-
             final currentItemIndex = (pageIndex * 3) + itemIndex;
 
-            if (currentItemIndex >= popularPosts.length) return SizedBox.shrink();
+            if (currentItemIndex >= popularPosts.length) {
+              return SizedBox.shrink();
+            }
 
             return HomePostRankItem(
               title: "요즘 공부 어케 하시나요 다들",
@@ -125,10 +142,12 @@ class _PostRankList extends StatelessWidget {
     );
   }
 
-  final double _indigatorSpacing = AppSpacing.s6;
+  final double _indicatorSpacing = AppSpacing.s6;
 
   Widget _indicator() {
-    return Row( mainAxisAlignment: MainAxisAlignment.center, spacing: _indigatorSpacing,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      spacing: _indicatorSpacing,
       children: [
         _circle(true),
         _circle(false),
@@ -140,7 +159,9 @@ class _PostRankList extends StatelessWidget {
   final double _indicatorSize = 4;
 
   Widget _circle(bool isFocus) {
-    return Container( width: _indicatorSize, height: _indicatorSize,
+    return Container(
+      width: _indicatorSize,
+      height: _indicatorSize,
       decoration: BoxDecoration(
         color: isFocus ? AppColors.gray80 : AppColors.gray60,
         borderRadius: AppRadius.circleRadius,
@@ -159,10 +180,13 @@ class _RecommendProfileList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column( crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
         _title(),
         AppGap.v16,
-        ConstrainedBox( constraints: BoxConstraints(maxHeight: 160),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 160),
           child: _chatList(),
         ),
       ],
@@ -170,13 +194,18 @@ class _RecommendProfileList extends StatelessWidget {
   }
 
   Widget _title() {
-    return Text(_titleTest, style: AppTextStyles.titleBold16(),);
+    return Text(
+      _titleTest,
+      style: AppTextStyles.titleBold16(),
+    );
   }
 
   Widget _chatList() {
-    return PageView.builder( scrollDirection: Axis.horizontal,
+    return PageView.builder(
+      scrollDirection: Axis.horizontal,
       itemBuilder: (_, pageIndex) {
-        return Row( mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(3, (itemIndex) {
             final int currentIndex = (pageIndex * 3) + itemIndex;
 

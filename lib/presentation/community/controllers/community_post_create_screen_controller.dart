@@ -14,7 +14,7 @@ class CommunityPostCreateController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _tagController = Get.put(TagInputController());
+    _tagController = Get.find<TagInputController>();
 
     titleController.addListener(_validateForm);
     contentController.addListener(() {

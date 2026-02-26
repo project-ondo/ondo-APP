@@ -30,9 +30,9 @@ class _CommunityMainScreenState extends State<CommunityMainScreen> {
     return BaseScaffold(
       floatingActionButton: CommunityPostAddButton.float(),
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: MainTopSearchBar(
-          mainPage: Padding(
+      body: MainTopSearchBar.community(
+        mainPage: SingleChildScrollView(
+          child: Padding(
             padding: AppPadding.screenHorizontal,
             child: Column(
               children: [
@@ -44,10 +44,11 @@ class _CommunityMainScreenState extends State<CommunityMainScreen> {
               ],
             ),
           ),
-          resultPageBuilder: (CommunitySearchModel resultModel) {
-            return CommunitySearchDetailPage(posts: resultModel.posts);
-          },
         ),
+        resultPageBuilder: (resultModel) {
+          final data = resultModel as CommunitySearchModel;
+          return CommunitySearchDetailPage(posts: data.posts);
+        },
       ),
     );
   }

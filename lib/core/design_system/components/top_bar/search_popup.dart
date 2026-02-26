@@ -53,12 +53,14 @@ class _Tags extends GetView<SearchPopupController> {
 class _Tips extends GetView<SearchPopupController> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: AppSpacing.s16,
-      children: List.generate(
-        controller.tempSearchTips.length,
-        (index) => _textWidget(controller.tempSearchTips[index]),
+    return Obx(
+      () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: AppSpacing.s16,
+        children: List.generate(
+          controller.tempSearchTips.length,
+          (index) => _textWidget(controller.tempSearchTips[index]),
+        ),
       ),
     );
   }

@@ -10,15 +10,42 @@ import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_
 import 'package:ondo/core/design_system/components/top_bar/search_popup.dart';
 import 'package:ondo/presentation/alert/screens/alert_screen.dart';
 
-@immutable
-class MainTopSearchBar<T> extends StatefulWidget {
-  final Widget mainPage;
-  final Widget Function(T resultModel) resultPageBuilder;
+typedef HomeSearchModel = ({
+  List<Map<String, dynamic>> chats,
+  List<Map<String, dynamic>> posts,
+});
+typedef CommunitySearchModel = ({
+  List<Map<String, dynamic>> posts,
+});
+typedef ChatSearchModel = ({
+  List<Map<String, dynamic>> chats,
+});
 
-  const MainTopSearchBar({
+@immutable
+class MainTopSearchBar extends StatefulWidget {
+  final Widget mainPage;
+  final Widget Function(dynamic resultModel) resultPageBuilder;
+  final Type resultModelType;
+
+  const MainTopSearchBar.home({
     super.key,
     required this.mainPage,
     required this.resultPageBuilder,
+    this.resultModelType = HomeSearchModel,
+  });
+
+  const MainTopSearchBar.community({
+    super.key,
+    required this.mainPage,
+    required this.resultPageBuilder,
+    this.resultModelType = CommunitySearchModel,
+  });
+
+  const MainTopSearchBar.chat({
+    super.key,
+    required this.mainPage,
+    required this.resultPageBuilder,
+    this.resultModelType = ChatSearchModel,
   });
 
   @override
@@ -45,11 +72,16 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
             children: [
               GestureDetector(
                 onTap: _controller.onOtherTap,
-                child: Obx(
-                  () => !_controller.showResult.value
-                      ? widget.mainPage
-                      : widget.resultPageBuilder(_controller.checkResultDataType),
-                ),
+                child: Obx(() {
+                  if (!_controller.showResult.value) {
+                    return widget.mainPage;
+                  }
+                  final data = _controller.checkResultDataType(
+                    widget.resultModelType,
+                  );
+                  if (data == null) return SizedBox.shrink();
+                  return widget.resultPageBuilder(data);
+                }),
               ),
               Obx(() {
                 if (!_controller.showSearchPopup.value) {
@@ -72,7 +104,6 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
         children: [
           Expanded(
             child: CustomTextField(
-              onChanged: _controller.onChange,
               onSubmitted: _controller.onSubmit,
               focusNode: _controller.focusNode,
               controller: _controller.textController,

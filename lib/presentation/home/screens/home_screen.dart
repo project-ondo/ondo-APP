@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
-import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_search_controller.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/home/screens/home_search_detail_screen.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
@@ -21,7 +21,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BaseScaffold(
       backgroundColor: AppColors.background,
-      body: MainTopSearchBar<HomeSearchModel>(
+      body: MainTopSearchBar.home(
         mainPage: SingleChildScrollView(
           child: Column(
             children: [
@@ -32,17 +32,8 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         resultPageBuilder: (resultModel) {
-          final record =
-              resultModel
-                  as ({
-                    List<Map<String, dynamic>> chats,
-                    List<Map<String, dynamic>> posts,
-                  })?;
-
-          return HomeSearchDetailPage(
-            posts: record!.posts,
-            chats: record.chats,
-          );
+          final data = resultModel as HomeSearchModel;
+          return HomeSearchDetailPage(chats: data.chats, posts: data.posts);
         },
       ),
     );

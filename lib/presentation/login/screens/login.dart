@@ -10,17 +10,13 @@ import 'package:ondo/presentation/login/controllers/login_controller.dart';
 import 'package:ondo/presentation/login/widgets/auth_link.dart';
 import 'package:ondo/presentation/login/widgets/show_password.dart';
 
-
-
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
-
-  final controller = Get.put(LoginController());
+class LoginScreen extends GetView<LoginController> {
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           Padding(
@@ -32,30 +28,28 @@ class LoginScreen extends StatelessWidget {
                 Image.asset(AppIcon.logo.path),
                 SizedBox(height: 70),
                 Obx(
-                      () =>
-                      LabelTextField(
-                        label: '이메일',
-                        hintText: '이메일을 입력해주세요.',
-                        isError: controller.hasError.value,
-                        controller: controller.emailController,
-                      ),
+                  () => LabelTextField(
+                    label: '이메일',
+                    hintText: '이메일을 입력해주세요.',
+                    isError: controller.emailError.value != null,
+                    errorText: controller.emailError.value,
+                    controller: controller.emailController,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
                 ),
                 AppGap.v8,
                 Obx(
-                      () =>
-                      LabelTextField(
-                        label: '비밀번호',
-                        hintText: '비밀번호를 입력해주세요',
-                        controller: controller.passwordController,
-                        obscureText: !controller.showPassword.value,
-                        isError: controller.hasError.value,
-                        errorText: controller.errorMsg.value.isEmpty
-                            ? null
-                            : controller.errorMsg.value,
-                      ),
+                  () => LabelTextField(
+                    label: '비밀번호',
+                    hintText: '비밀번호를 입력해주세요',
+                    controller: controller.passwordController,
+                    obscureText: !controller.showPassword.value,
+                    isError: controller.passwordError.value != null,
+                    errorText: controller.passwordError.value,
+                  ),
                 ),
                 AppGap.v8,
-                ShowPassword(),
+                ShowPassword(controller: controller),
               ],
             ),
           ),
@@ -68,23 +62,12 @@ class LoginScreen extends StatelessWidget {
             child: CustomButton(
               text: '로그인',
               variant: ButtonVariant.primary,
-              onPressed: controller.login,
+              onPressed: () => controller.login(context),
             ),
           ),
-          AppGap.v24
+          AppGap.v24,
         ],
       ),
-
-
     );
   }
 }
-  void main() {
-    runApp(
-      GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: LoginScreen(),
-      ),
-    );
-}
-

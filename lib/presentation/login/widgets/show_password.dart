@@ -8,9 +8,9 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/presentation/login/controllers/login_controller.dart';
 
 class ShowPassword extends StatelessWidget {
-  ShowPassword({super.key});
+  const ShowPassword({super.key, required this.controller});
 
-  final LoginController controller = Get.find<LoginController>();
+  final LoginController controller;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class ShowPassword extends StatelessWidget {
               height: 20,
               width: 20,
             ),
-          AppGap.h8,
+            AppGap.h8,
             Text(
               '비밀번호 표시',
               style: AppTextStyles.textMedium(

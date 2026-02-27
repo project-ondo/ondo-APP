@@ -35,7 +35,7 @@ class CommunitySearchDetailPage extends StatelessWidget {
 }
 
 @immutable
-class _PostResults extends BasePostList {
+class _PostResults extends BasePostGrid {
   final List<Map<String, dynamic>> posts;
 
   const _PostResults({
@@ -44,7 +44,7 @@ class _PostResults extends BasePostList {
   });
 
   @override
-  List<Widget> list() {
+  List<Widget> listBuilder() {
     return List.generate(posts.length, (index) {
       return PostItem(
         skills: ["UI/UX", "FrontEnd"],

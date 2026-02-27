@@ -5,15 +5,15 @@ import 'package:get/get.dart';
 class HomeController extends GetxController {
   final RxList<HomeRecentPopularPostInfo> ranks =
       <HomeRecentPopularPostInfo>[].obs;
-  final RxList<HomeRecommendProfileInfo> chats =
-      <HomeRecommendProfileInfo>[].obs;
-  final RxList<HomeRecommendPostInfo> posts = <HomeRecommendPostInfo>[].obs;
+  final RxList<HomeProfileInfo> chats =
+      <HomeProfileInfo>[].obs;
+  final RxList<HomePostInfo> posts = <HomePostInfo>[].obs;
 
   @override
   void onInit() {
-    _sortRating(ranks..addAll(getRanks()));
-    chats.addAll(getChats());
-    posts.addAll(getPosts());
+    _sortRating(ranks..addAll(_getRanks()));
+    chats.addAll(_getChats());
+    posts.addAll(_getPosts());
     super.onInit();
   }
 
@@ -22,50 +22,17 @@ class HomeController extends GetxController {
       : list.sort((a, b) => b.favorites - a.favorites);
 }
 
-extension DummyData on HomeController {
-  List<HomeRecentPopularPostInfo> getRanks() => [
-    for (int i = 1; i < 5; i++) ...{
-      (
-        title: "요즘 공부 어케 하시나요 다들",
-        creatAt: Duration(days: 3),
-        favorites: 160 * Random().nextInt(i),
-        isFavorite: i % 2 == 0,
-      ),
-      (
-        title: "10년차 개발자는 무슨 공부할까",
-        creatAt: Duration(days: 5),
-        favorites: 121 * Random().nextInt(i),
-        isFavorite: i % 2 == 0,
-      ),
-      (
-        title: "팀장 퇴사해서 디자인빵꾸남",
-        creatAt: Duration(days: 2),
-        favorites: 73 * Random().nextInt(i),
-        isFavorite: i % 2 == 0,
-      ),
-    },
-  ];
+class HomeSearchResultController extends GetxController {
+  final RxList<HomeProfileInfo> chats =
+      <HomeProfileInfo>[].obs;
+  final RxList<HomePostInfo> posts = <HomePostInfo>[].obs;
 
-  List<HomeRecommendProfileInfo> getChats() => [
-    for (int i = 1; i < 6; i++) ...{
-      (name: "김유찬", skill: " UI/UX", rating: i),
-    },
-  ];
-
-  List<HomeRecommendPostInfo> getPosts() => [
-    for (int i = 0; i < 4; i++) ...{
-      (
-        name: "김유찬",
-        title: "요즘 UI UX",
-        skills: ["UI/UX", "FrontEnd"],
-        bookmarks: 12,
-        favoites: 12,
-        createAt: Duration(minutes: i),
-        isFavorite: i % 2 == 0,
-        isBookmark: i % 3 == 0,
-      ),
-    },
-  ];
+  @override
+  void onInit() {
+    chats.addAll(_getChats());
+    posts.addAll(_getPosts());
+    super.onInit();
+  }
 }
 
 typedef HomeRecentPopularPostInfo = ({
@@ -74,8 +41,8 @@ typedef HomeRecentPopularPostInfo = ({
   int favorites,
   bool isFavorite,
 });
-typedef HomeRecommendProfileInfo = ({String name, String skill, int rating});
-typedef HomeRecommendPostInfo = ({
+typedef HomeProfileInfo = ({String name, String skill, int rating});
+typedef HomePostInfo = ({
   List<String> skills,
   String title,
   String name,
@@ -85,3 +52,47 @@ typedef HomeRecommendPostInfo = ({
   bool isBookmark,
   bool isFavorite,
 });
+
+List<HomeRecentPopularPostInfo> _getRanks() => [
+  for (int i = 1; i < 5; i++) ...{
+    (
+      title: "요즘 공부 어케 하시나요 다들",
+      creatAt: Duration(days: 3),
+      favorites: 160 * Random().nextInt(i),
+      isFavorite: i % 2 == 0,
+    ),
+    (
+      title: "10년차 개발자는 무슨 공부할까",
+      creatAt: Duration(days: 5),
+      favorites: 121 * Random().nextInt(i),
+      isFavorite: i % 2 == 0,
+    ),
+    (
+      title: "팀장 퇴사해서 디자인빵꾸남",
+      creatAt: Duration(days: 2),
+      favorites: 73 * Random().nextInt(i),
+      isFavorite: i % 2 == 0,
+    ),
+  },
+];
+
+List<HomeProfileInfo> _getChats() => [
+  for (int i = 1; i < 6; i++) ...{
+    (name: "김유찬", skill: " UI/UX", rating: i),
+  },
+];
+
+List<HomePostInfo> _getPosts() => [
+  for (int i = 0; i < 4; i++) ...{
+    (
+      name: "김유찬",
+      title: "요즘 UI UX",
+      skills: ["UI/UX", "FrontEnd"],
+      bookmarks: 12,
+      favoites: 12,
+      createAt: Duration(minutes: i),
+      isFavorite: i % 2 == 0,
+      isBookmark: i % 3 == 0,
+    ),
+  },
+];

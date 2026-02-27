@@ -4,12 +4,12 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
-import 'package:ondo/presentation/home/screens/home_search_detail_screen.dart';
+import 'package:ondo/presentation/home/screens/home_search_page.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_list.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_chat_list.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_post_list.dart';
 
-import '../../../core/design_system/components/top_bar/main_top_search_bar.dart';
+import '../../search/widgets/main_top_search_bar.dart';
 
 
 
@@ -32,8 +32,8 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         resultPageBuilder: (resultModel) {
-          final data = resultModel as HomeSearchModel;
-          return HomeSearchDetailPage(chats: data.chats, posts: data.posts);
+          Get.put(HomeSearchResultController());
+          return HomeSearchDetailPage();
         },
       ),
     );

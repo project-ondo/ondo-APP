@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
-import 'package:ondo/core/design_system/app_text_styles.dart';
 
-class CommunityCustomIconButton extends StatefulWidget {
-  const CommunityCustomIconButton({
+class CustomIconButton extends StatefulWidget {
+  const CustomIconButton({
     super.key,
     required this.imagePath,
     required this.total,
     required this.activeColor,
     required this.action,
     this.initialIsSelected = false,
+    required this.iconSize,
+    required this.totalStyle,
   });
 
   final String imagePath;
+  final double iconSize;
+  final TextStyle totalStyle;
   final int total;
   final bool initialIsSelected;
   final Color activeColor;
   final void Function(bool isSelect, int total) action;
 
   @override
-  State<CommunityCustomIconButton> createState() =>
-      _CommunityCustomIconButtonState();
+  State<CustomIconButton> createState() => _CustomIconButtonState();
 }
 
-class _CommunityCustomIconButtonState extends State<CommunityCustomIconButton> {
+class _CustomIconButtonState extends State<CustomIconButton> {
   late int total;
   late bool isSelect;
 
@@ -52,14 +54,18 @@ class _CommunityCustomIconButtonState extends State<CommunityCustomIconButton> {
           child: Image.asset(
             widget.imagePath,
             color: isSelect ? widget.activeColor : AppColors.gray50,
-            height: AppSpacing.s32,
-            width: AppSpacing.s32,
+            height: widget.iconSize,
+            width: widget.iconSize,
           ),
         ),
         AppGap.h4,
         Text(
           "$total",
-          style: AppTextStyles.textMedium(textColor: AppColors.gray50),
+          style: TextStyle(
+            fontSize: widget.totalStyle.fontSize,
+            fontWeight: widget.totalStyle.fontWeight,
+            color: AppColors.gray60,
+          ),
         ),
       ],
     );

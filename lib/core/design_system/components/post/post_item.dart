@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ondo/core/design_system/components/custom_icon_button.dart';
 
 import '../../app_colors.dart';
 import '../../app_icon.dart';
@@ -91,32 +92,28 @@ class PostItem extends StatelessWidget {
   Widget _bottomContent() {
     return Row(
       children: [
-        _customIcon(AppIcon.heart.path, favorites),
+        CustomIconButton(
+          imagePath: AppIcon.heart.path,
+          total: favorites,
+          activeColor: AppColors.red,
+          action: (isSelect, total) {},
+          iconSize: AppSpacing.s16,
+          totalStyle: AppTextStyles.caption(),
+        ),
         AppGap.h8,
-        _customIcon(AppIcon.bookmark.path, bookmarks),
-
+        CustomIconButton(
+          imagePath: AppIcon.heart.path,
+          total: bookmarks,
+          activeColor: AppColors.yellow,
+          action: (isSelect, total) {},
+          iconSize: AppSpacing.s16,
+          totalStyle: AppTextStyles.caption(),
+        ),
         Spacer(),
 
         Text(
           "$createMinutes분전",
           style: AppTextStyles.caption(textColor: AppColors.gray50),
-        ),
-      ],
-    );
-  }
-
-  Widget _customIcon(String iconPath, int total) {
-    final double iconSize = 16;
-    return Row(
-      children: [
-        Image.asset(
-          iconPath,
-          height: iconSize,
-          width: iconSize,
-        ),
-        Text(
-          "$total",
-          style: AppTextStyles.caption(textColor: AppColors.gray60),
         ),
       ],
     );

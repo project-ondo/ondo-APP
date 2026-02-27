@@ -21,30 +21,20 @@ class HomePostRankItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 43,
-      width: double.maxFinite,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _rank(),
-
-          Expanded(
-            child: _content(),
-          ),
-
-          AppGap.h16,
-
-          _heart(),
-        ],
-      ),
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        _rank(),
+        Expanded(child: _content()),
+        AppGap.h16,
+        _heart(),
+      ],
     );
   }
 
   Widget _rank() {
-    return SizedBox(
-      width: 42,
-      height: double.maxFinite,
+    return SizedBox.square(
+      dimension: AppSpacing.s42,
       child: Align(
         alignment: Alignment.center,
         child: Text(
@@ -57,14 +47,14 @@ class HomePostRankItem extends StatelessWidget {
 
   Widget _content() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           title,
           style: AppTextStyles.textMedium(textColor: AppColors.gray90),
         ),
-
+        AppGap.v4,
         Text(
           "$createAgo일 전",
           style: AppTextStyles.subCaption(textColor: AppColors.gray60),
@@ -75,12 +65,13 @@ class HomePostRankItem extends StatelessWidget {
 
   Widget _heart() {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Image.asset(
           AppIcon.heart.path,
           color: AppColors.gray40,
-          width: 16,
-          height: 16,
+          width: AppSpacing.s16,
+          height: AppSpacing.s16,
         ),
         Text(
           "$favorite",

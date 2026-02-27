@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
@@ -245,9 +244,9 @@ class _RecommendChatList extends StatelessWidget {
 class _RecommendPostList extends BasePostGrid {
   final List<Map<String, dynamic>> posts;
 
-  _RecommendPostList({super.title = "추천 게시물", super.gridHeight = 320})
+  _RecommendPostList({super.title = "추천 게시물"})
     : posts = [
-        for (int i = 0; i < 5; i++) ...{{}, {}, {}, {}},
+        for (int i = 0; i < 5; i++) ...{{}, {}, {}},
       ];
 
   @override

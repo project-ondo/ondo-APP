@@ -33,31 +33,26 @@ class PostItem extends StatelessWidget {
         color: AppColors.white,
       ),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //분야 표시 영역
           _skillList(),
-          AppGap.v12,
+          Spacer(flex: AppSpacing.s12.toInt()),
 
-          //제목 + 작성자 표시 영역
           _content(),
-          AppGap.v16,
+          Spacer(flex: AppSpacing.s16.toInt()),
 
-          //하단 북마크, 좋아요 + 생성 시간 표시 영역
-          _sunContent(),
+          _bottomContent(),
         ],
       ),
     );
   }
-
-  final double _skillSpacing = AppSpacing.s16;
 
   Widget _skillList() {
     final visibleSkills = skills.take(2).toList();
     final remainCount = skills.length - 2;
 
     return Row(
-      spacing: _skillSpacing,
       children: [
         Expanded(
           child: Text(
@@ -75,17 +70,16 @@ class PostItem extends StatelessWidget {
 
   Widget _content() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        //제목 영역
         Text(
           title,
           style: AppTextStyles.titleSm14(),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         ),
-
-        //작성자 작성자 표시 영역
+        AppGap.v4,
         Text(
           author,
           style: AppTextStyles.caption(textColor: AppColors.gray60),
@@ -94,21 +88,14 @@ class PostItem extends StatelessWidget {
     );
   }
 
-  Widget _sunContent() {
+  Widget _bottomContent() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            _customIcon(AppIcon.heart.path, favorites),
+        _customIcon(AppIcon.heart.path, favorites),
+        AppGap.h8,
+        _customIcon(AppIcon.bookmark.path, bookmarks),
 
-            AppGap.h8,
-
-            _customIcon(AppIcon.bookmark.path, bookmarks),
-
-            AppGap.h8,
-          ],
-        ),
+        Spacer(),
 
         Text(
           "$createMinutes분전",

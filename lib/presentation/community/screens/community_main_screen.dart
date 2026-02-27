@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
-import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
 import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/community/controllers/community_filter_controller.dart';

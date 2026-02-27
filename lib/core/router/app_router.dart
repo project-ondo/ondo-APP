@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ondo/core/router/bindings/login_binding.dart';
+import 'package:ondo/core/router/bindings/navigation_binding.dart';
 import 'package:ondo/core/router/bindings/signup_binding.dart';
+import 'package:ondo/core/router/bindings/splash_binding.dart';
 import 'package:ondo/presentation/auth/signup/screens/email_code_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/email_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/introduction_input_screen.dart';
@@ -12,11 +14,8 @@ import 'package:ondo/presentation/auth/signup/screens/profile_image_setup_screen
 import 'package:ondo/presentation/auth/signup/screens/signup_complete_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/terms_agreement_screen.dart';
 import 'package:ondo/presentation/home/screens/home_screen.dart';
-import 'package:ondo/presentation/auth/login/controllers/login_controller.dart';
-import 'package:ondo/presentation/auth/login/controllers/splash_controller.dart';
 import 'package:ondo/presentation/auth/login/screens/login.dart';
 import 'package:ondo/presentation/auth/login/screens/splash.dart';
-import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
 import 'package:ondo/presentation/navigation/screens/navigation_screen.dart';
 import 'package:ondo/presentation/profile/screens/edit_profile_screen.dart';
 import 'package:ondo/presentation/profile/screens/my_profile_screen.dart';
@@ -58,30 +57,31 @@ final GoRouter appRouter = GoRouter(
       path: RoutePaths.splash,
       name: 'splash',
       builder: (context, state) {
-        Get.put(SplashController());
+        SplashBinding().dependencies();
         return SplashScreen();
       },
-    ),
+    ), //splash
 
     GoRoute(
       path: RoutePaths.navigation,
       name: 'navigation',
       builder: (context, state) {
-        Get.put(NavigationController());
+        NavigationBinding().dependencies();
         return NavigationScreen();
       },
-    ),
+    ), //navigation
 
     GoRoute(
       path: RoutePaths.home,
       name: 'home',
       builder: (context, state) => HomeScreen(),
     ), //home
+
     GoRoute(
       path: RoutePaths.login,
       name: 'login',
       builder: (context, state) {
-        Get.put(LoginController());
+        LoginBinding().dependencies();
         return LoginScreen();
       },
     ), //login
@@ -132,7 +132,6 @@ final GoRouter appRouter = GoRouter(
         return child;
       },
       redirect: (context, state) {
-
         if (state.uri.toString() == RoutePaths.signup) {
           return RoutePaths.signupTerms;
         }
@@ -142,7 +141,7 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: RoutePaths.signupTerms,
           name: "signupTerms",
-          builder: (context, state) =>TermsAgreementScreen(),
+          builder: (context, state) => TermsAgreementScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupEmail,
@@ -182,12 +181,10 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: RoutePaths.signupComplete,
           name: "signupComplete",
-          builder: (context, state) {
-            return SignupCompleteScreen();
-          },
+          builder: (context, state) => SignupCompleteScreen(),
         ),
       ],
-    ),
+    ), //signup
   ],
   errorBuilder: (context, state) => Scaffold(
     body: Center(

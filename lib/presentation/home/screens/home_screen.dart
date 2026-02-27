@@ -12,7 +12,13 @@ import '../../../core/design_system/components/post/base_post_list.dart';
 import '../../../core/design_system/components/post/post_item.dart';
 import '../../../core/design_system/components/top_bar/main_top_search_bar.dart';
 
-
+void main() {
+  runApp(
+    MaterialApp(
+      home: HomeScreen(),
+    ),
+  );
+}
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -47,6 +53,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           children: [
             _PostRankList(),
+            AppGap.v16,
           ],
         ),
       ),
@@ -59,7 +66,7 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         children: [
           AppGap.v16,
-          _RecommendProfileList(),
+          _RecommendChatList(),
           AppGap.v16,
           _RecommendPostList(),
           AppGap.v16,
@@ -70,89 +77,107 @@ class HomeScreen extends StatelessWidget {
 }
 
 @immutable
-class _PostRankList extends StatelessWidget {
-  final List<Map<String, dynamic>> popularPosts;
+class _PostRankList extends StatefulWidget {
+  final List<Map<String, dynamic>> posts;
 
-  _PostRankList() : popularPosts = [{}, {}, {}, {}, {}];
+  _PostRankList()
+    : posts = [
+        for (int i = 0; i < 5; i++) ...{{}, {}, {}, {}},
+      ];
 
-  final double _hList = 143;
+  @override
+  State<_PostRankList> createState() => _PostRankListState();
+}
+
+class _PostRankListState extends State<_PostRankList> {
+  late final PageController _pageController;
+
+  ValueNotifier<int> curIndex = ValueNotifier(0);
+
+  @override
+  void initState() {
+    _pageController = PageController(initialPage: curIndex.value);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  int _getPageTotal() => (widget.posts.length / 3).ceil();
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 220,
+      width: double.infinity,
       decoration: BoxDecoration(color: AppColors.white),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _title(),
-          AppGap.v16,
-          ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: _hList),
-            child: _postList(),
+          Text(
+            "실시간 인기 게시물",
+            style: AppTextStyles.titleBold16(textColor: AppColors.gray90),
           ),
           AppGap.v16,
-          _indicator(),
+          Expanded(child: _postList()),
           AppGap.v16,
+          _indicator(),
         ],
       ),
     );
   }
 
-  Widget _title() {
-    return Text(
-      "실시간 인기 게시물",
-      style: AppTextStyles.titleBold16(textColor: AppColors.gray90),
-    );
-  }
-
-  final double _hPostSpacing = AppSpacing.s6;
-
   Widget _postList() {
     return PageView.builder(
+      controller: _pageController,
+      onPageChanged: (value) {
+        curIndex.value = value;
+      },
       scrollDirection: Axis.horizontal,
       itemBuilder: (context, pageIndex) {
         return Column(
-          spacing: _hPostSpacing,
+          spacing: AppSpacing.s16,
           children: List.generate(3, (itemIndex) {
             final currentItemIndex = (pageIndex * 3) + itemIndex;
 
-            if (currentItemIndex >= popularPosts.length) {
-              return SizedBox.shrink();
-            }
-
-            return HomePostRankItem(
-              title: "요즘 공부 어케 하시나요 다들",
-              createAgo: 3,
-              favorite: 160,
-              rank: currentItemIndex + 1,
-            );
+            return currentItemIndex < widget.posts.length
+                ? HomePostRankItem(
+                    title: "요즘 공부 어케 하시나요 다들",
+                    createAgo: 3,
+                    favorite: 160,
+                    rank: currentItemIndex + 1,
+                  )
+                : SizedBox.shrink();
           }),
         );
       },
-      itemCount: (popularPosts.length ~/ 3) + 1,
+      itemCount: _getPageTotal(),
     );
   }
-
-  final double _indicatorSpacing = AppSpacing.s6;
 
   Widget _indicator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      spacing: _indicatorSpacing,
-      children: [
-        _circle(true),
-        _circle(false),
-        _circle(false),
-      ],
+    return ValueListenableBuilder(
+      valueListenable: curIndex,
+      builder: (context, value, _) {
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: AppSpacing.s6,
+          children: List.generate(
+            3,
+            (index) => _indicatorIcon(index == value % 3),
+          ),
+        );
+      },
     );
   }
 
-  final double _indicatorSize = 4;
-
-  Widget _circle(bool isFocus) {
+  Widget _indicatorIcon(bool isFocus) {
     return Container(
-      width: _indicatorSize,
-      height: _indicatorSize,
+      width: AppSpacing.s4,
+      height: AppSpacing.s4,
       decoration: BoxDecoration(
         color: isFocus ? AppColors.gray80 : AppColors.gray60,
         borderRadius: AppRadius.circleRadius,
@@ -162,32 +187,31 @@ class _PostRankList extends StatelessWidget {
 }
 
 @immutable
-class _RecommendProfileList extends StatelessWidget {
+class _RecommendChatList extends StatelessWidget {
   final List<Map<String, dynamic>> _chats;
 
-  _RecommendProfileList() : _chats = [{}, {}, {}, {}];
+  _RecommendChatList()
+    : _chats = [
+        for (int i = 0; i < 5; i++) ...{{}, {}, {}, {}},
+      ];
 
-  final String _titleTest = "커피챗 추천";
+  int _getPageTotal() => (_chats.length / 3).ceil();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _title(),
-        AppGap.v16,
-        ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: 160),
-          child: _chatList(),
-        ),
-      ],
-    );
-  }
-
-  Widget _title() {
-    return Text(
-      _titleTest,
-      style: AppTextStyles.titleBold16(),
+    return SizedBox(
+      height: 200,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "커피챗 추천",
+            style: AppTextStyles.titleBold16(),
+          ),
+          AppGap.v16,
+          Expanded(child: _chatList()),
+        ],
+      ),
     );
   }
 
@@ -196,35 +220,38 @@ class _RecommendProfileList extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       itemBuilder: (_, pageIndex) {
         return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          spacing: AppSpacing.s16,
           children: List.generate(3, (itemIndex) {
-            final int currentIndex = (pageIndex * 3) + itemIndex;
+            final int currentItemIndex = (pageIndex * 3) + itemIndex;
 
-            return currentIndex < _chats.length
-                ? HomeProfileCard(
-                    skill: "UI/UX",
-                    name: "김유찬",
-                    getStar: 4,
+            return currentItemIndex < _chats.length
+                ? Flexible(
+                    child: HomeProfileCard(
+                      skill: "UI/UX",
+                      name: "김유찬",
+                      rating: 4,
+                    ),
                   )
                 : SizedBox.shrink();
           }),
         );
       },
-      itemCount: (_chats.length ~/ 3) + 1,
+      itemCount: _getPageTotal(),
     );
   }
 }
 
 @immutable
-class _RecommendPostList extends BasePostList {
+class _RecommendPostList extends BasePostGrid {
   final List<Map<String, dynamic>> posts;
 
-  _RecommendPostList({
-    super.title = "추천 게시물",
-  }) : posts = [{}, {}, {}, {}, {}, {}, {}];
+  _RecommendPostList({super.title = "추천 게시물", super.gridHeight = 320})
+    : posts = [
+        for (int i = 0; i < 5; i++) ...{{}, {}, {}, {}},
+      ];
 
   @override
-  List<Widget> list() {
+  List<Widget> listBuilder() {
     return List.generate(posts.length, (index) {
       return PostItem(
         skills: ["UI/UX", "FrontEnd"],

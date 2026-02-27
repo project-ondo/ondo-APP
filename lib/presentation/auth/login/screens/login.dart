@@ -6,9 +6,9 @@ import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/login/controllers/login_controller.dart';
-import 'package:ondo/presentation/login/widgets/auth_link.dart';
-import 'package:ondo/presentation/login/widgets/show_password.dart';
+import 'package:ondo/presentation/auth/login/controllers/login_controller.dart';
+import 'package:ondo/presentation/auth/login/widgets/auth_link.dart';
+import 'package:ondo/presentation/auth/login/widgets/show_password.dart';
 
 class LoginScreen extends GetView<LoginController> {
   const LoginScreen({super.key});

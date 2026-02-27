@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/login/controllers/splash_controller.dart';
+import 'package:ondo/presentation/auth/login/controllers/splash_controller.dart';
 
 class SplashScreen extends GetView<SplashController> {
   const SplashScreen({super.key});

@@ -5,7 +5,7 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
-import 'package:ondo/presentation/login/controllers/login_controller.dart';
+import 'package:ondo/presentation/auth/login/controllers/login_controller.dart';
 
 class ShowPassword extends StatelessWidget {
   const ShowPassword({super.key, required this.controller});

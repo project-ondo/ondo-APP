@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
-import 'package:ondo/presentation/password_find/controllers/password_find_binding.dart';
-import 'package:ondo/presentation/password_find/screens/password_find_email_code_screen.dart';
+import 'package:ondo/presentation/auth/password_find/controllers/password_find_binding.dart';
+import 'package:ondo/presentation/auth/password_find/screens/password_find_email_code_screen.dart';
 
 class ForgotPasswordController extends GetxController {
   static final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');

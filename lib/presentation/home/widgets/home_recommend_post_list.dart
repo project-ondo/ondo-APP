@@ -13,22 +13,26 @@ class HomeRecommendPostList extends BasePostGrid {
   @override
   List<Widget> listBuilder() {
     return List.generate(_controller.posts.length, (index) {
-      final post = _controller.posts[index];
-      return PostItem(
-        skills: post.skills,
-        title: post.title,
-        author: post.name,
-        bookmarks: post.bookmarks,
-        favorites: post.favoites,
-        createMinutes: post.createAt.inMinutes,
-        bookmarkAction: (isBookmark, total) {
-          //TODO : model 정의되면 setter 적용
-        },
-        heartAction: (isFavorite, total) {
-          //TODO : model 정의되면 setter 적용
-        },
-        initialBookmark: post.isBookmark,
-        initialFavorite: post.isFavorite,
+      return Obx(
+        () {
+          final post = _controller.posts[index];
+          return PostItem(
+            skills: post.skills,
+            title: post.title,
+            author: post.name,
+            bookmarks: post.bookmarks,
+            favorites: post.favoites,
+            createMinutes: post.createAt.inMinutes,
+            bookmarkAction: (isBookmark, total) {
+              //TODO : model 정의되면 setter 적용
+            },
+            heartAction: (isFavorite, total) {
+              //TODO : model 정의되면 setter 적용
+            },
+            initialBookmark: post.isBookmark,
+            initialFavorite: post.isFavorite,
+          );
+        }
       );
     });
   }

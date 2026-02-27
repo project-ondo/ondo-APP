@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 
+typedef FavoriteAction = void Function(bool isFavorite, int total);
+typedef BookmarkAction = void Function(bool isBookmark, int total);
+
 class CustomIconButton extends StatefulWidget {
   const CustomIconButton({
     super.key,
     required this.imagePath,
     required this.total,
     required this.activeColor,
-    required this.action,
+    this.action,
     this.initialIsSelected = false,
     required this.iconSize,
     required this.totalStyle,
@@ -20,7 +23,7 @@ class CustomIconButton extends StatefulWidget {
   final int total;
   final bool initialIsSelected;
   final Color activeColor;
-  final void Function(bool isSelect, int total) action;
+  final void Function(bool isSelect, int total)? action;
 
   @override
   State<CustomIconButton> createState() => _CustomIconButtonState();
@@ -49,7 +52,7 @@ class _CustomIconButtonState extends State<CustomIconButton> {
               isSelect = !isSelect;
               isSelect ? total += 1 : total -= 1;
             });
-            widget.action.call(isSelect, total);
+            widget.action?.call(isSelect, total);
           },
           child: Image.asset(
             widget.imagePath,

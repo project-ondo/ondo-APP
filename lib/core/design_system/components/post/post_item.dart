@@ -14,6 +14,10 @@ class PostItem extends StatelessWidget {
   final int favorites;
   final int bookmarks;
   final int createMinutes;
+  final bool initialBookmark;
+  final bool initialFavorite;
+  final FavoriteAction? heartAction;
+  final BookmarkAction? bookmarkAction;
 
   const PostItem({
     super.key,
@@ -23,6 +27,10 @@ class PostItem extends StatelessWidget {
     required this.bookmarks,
     required this.favorites,
     required this.createMinutes,
+    this.heartAction,
+    this.bookmarkAction,
+    this.initialBookmark = false,
+    this.initialFavorite = false,
   });
 
   @override
@@ -96,18 +104,20 @@ class PostItem extends StatelessWidget {
           imagePath: AppIcon.heart.path,
           total: favorites,
           activeColor: AppColors.red,
-          action: (isSelect, total) {},
+          action: heartAction,
           iconSize: AppSpacing.s16,
           totalStyle: AppTextStyles.caption(),
+          initialIsSelected: initialFavorite,
         ),
         AppGap.h8,
         CustomIconButton(
-          imagePath: AppIcon.heart.path,
+          imagePath: AppIcon.bookmark.path,
           total: bookmarks,
           activeColor: AppColors.yellow,
-          action: (isSelect, total) {},
+          action: bookmarkAction,
           iconSize: AppSpacing.s16,
           totalStyle: AppTextStyles.caption(),
+          initialIsSelected: initialBookmark,
         ),
         Spacer(),
 

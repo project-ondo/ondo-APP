@@ -4,7 +4,7 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_tag_card.dart';
-import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_search_controller.dart';
+import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
 
 @immutable
 class SearchPopup extends StatelessWidget {

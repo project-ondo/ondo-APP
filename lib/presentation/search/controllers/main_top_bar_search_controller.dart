@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ondo/core/design_system/components/top_bar/main_top_search_bar.dart';
+import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 
 class MainTopBarSearchController extends GetxController {
   final TextEditingController textController = TextEditingController();

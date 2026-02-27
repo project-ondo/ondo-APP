@@ -6,9 +6,9 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/presentation/alert/controllers/alert_controller.dart';
-import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_search_controller.dart';
-import 'package:ondo/core/design_system/components/top_bar/search_popup.dart';
+import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
 import 'package:ondo/presentation/alert/screens/alert_screen.dart';
+import 'package:ondo/presentation/search/widgets/search_popup.dart';
 
 typedef HomeSearchModel = ({
   List<Map<String, dynamic>> chats,

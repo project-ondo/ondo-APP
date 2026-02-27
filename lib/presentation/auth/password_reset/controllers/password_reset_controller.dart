@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
-import 'package:ondo/presentation/auth/password_find/controllers/password_find_binding.dart';
-import 'package:ondo/presentation/auth/password_find/screens/password_find_email_code_screen.dart';
+import 'package:ondo/core/router/bindings/password_reset_binding.dart';
+import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_code_screen.dart';
 
-class ForgotPasswordController extends GetxController {
+class PasswordResetController extends GetxController {
   static final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
   final emailController = TextEditingController();
 
@@ -45,9 +45,9 @@ class ForgotPasswordController extends GetxController {
       debugPrint('인증번호 발송: $email');
 
       Get.to(
-            () => PasswordFindEmailCodeInputScreen(),
+            () => PasswordResetEmailCodeInputScreen(),
         arguments: {'email': email},
-        binding: PasswordFindBinding(),
+        binding: PasswordResetBinding(),
       );
     }
   }

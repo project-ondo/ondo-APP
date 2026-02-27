@@ -1,15 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
-import 'package:ondo/presentation/auth/signup/controllers/email_code_input_controller.dart';
-import 'package:ondo/presentation/auth/signup/controllers/email_input_controller.dart';
-import 'package:ondo/presentation/auth/signup/controllers/introduction_input_controller.dart';
-import 'package:ondo/presentation/auth/signup/controllers/major_interest_controller.dart';
-import 'package:ondo/presentation/auth/signup/controllers/nickname_input_controller.dart';
-import 'package:ondo/presentation/auth/signup/controllers/password_input_controller.dart';
-import 'package:ondo/presentation/auth/signup/controllers/profile_image_setup_controller.dart';
-import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
-import 'package:ondo/presentation/auth/signup/controllers/terms_agreement_controller.dart';
+import 'package:ondo/core/router/bindings/signup_binding.dart';
 import 'package:ondo/presentation/auth/signup/screens/email_code_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/email_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/introduction_input_screen.dart';
@@ -20,8 +12,10 @@ import 'package:ondo/presentation/auth/signup/screens/profile_image_setup_screen
 import 'package:ondo/presentation/auth/signup/screens/signup_complete_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/terms_agreement_screen.dart';
 import 'package:ondo/presentation/home/screens/home_screen.dart';
-import 'package:ondo/presentation/login/controllers/splash_controller.dart';
-import 'package:ondo/presentation/login/screens/splash.dart';
+import 'package:ondo/presentation/auth/login/controllers/login_controller.dart';
+import 'package:ondo/presentation/auth/login/controllers/splash_controller.dart';
+import 'package:ondo/presentation/auth/login/screens/login.dart';
+import 'package:ondo/presentation/auth/login/screens/splash.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
 import 'package:ondo/presentation/navigation/screens/navigation_screen.dart';
 import 'package:ondo/presentation/profile/screens/edit_profile_screen.dart';
@@ -36,6 +30,8 @@ class RoutePaths {
 
   static const String home = '/home';
   static const String login = '/login';
+
+  static const String passwordReset = '/password_reset';
 
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
@@ -84,27 +80,39 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: RoutePaths.login,
       name: 'login',
-      builder: (context, state) => Scaffold(
-        body: Text('로그인페이지'),
-      ),
+      builder: (context, state) {
+        Get.put(LoginController());
+        return LoginScreen();
+      },
     ), //login
+
+    GoRoute(
+      path: RoutePaths.passwordReset,
+      name: 'passwordReset',
+      builder: (context, state) => Scaffold(
+        body: Center(
+          child: Text("password reset"),
+        ),
+      ),
+    ),
+
     GoRoute(
       path: RoutePaths.profile,
       name: 'profile',
       builder: (context, state) => MyProfileScreen(),
       routes: [
         GoRoute(
-          path: 'edit',
+          path: RoutePaths.editProfile,
           name: 'editProfile',
           builder: (context, state) => EditProfileScreen(),
         ),
         GoRoute(
-          path: 'setting',
+          path: RoutePaths.profileSetting,
           name: 'profileSetting',
           builder: (context, state) => SettingScreen(),
           routes: [
             GoRoute(
-              path: 'terms',
+              path: RoutePaths.profileTerms,
               name: 'profileTerms',
               builder: (context, state) => TermsScreen(),
             ),
@@ -118,11 +126,13 @@ final GoRouter appRouter = GoRouter(
       ],
     ), //profile
 
-    GoRoute(
-      path: RoutePaths.signup,
-      name: 'signup',
+    ShellRoute(
+      builder: (context, state, child) {
+        SignupBinding().dependencies();
+        return child;
+      },
       redirect: (context, state) {
-        Get.lazyPut(() => SignupFlowController());
+
         if (state.uri.toString() == RoutePaths.signup) {
           return RoutePaths.signupTerms;
         }
@@ -130,52 +140,47 @@ final GoRouter appRouter = GoRouter(
       },
       routes: [
         GoRoute(
-          path: 'terms',
+          path: RoutePaths.signupTerms,
           name: "signupTerms",
-          builder: (context, state) {
-            if (!Get.isRegistered<SignupFlowController>()) {
-              SignupBinding().dependencies();
-            }
-            return TermsAgreementScreen();
-          },
+          builder: (context, state) =>TermsAgreementScreen(),
         ),
         GoRoute(
-          path: 'email',
+          path: RoutePaths.signupEmail,
           name: "signupEmail",
           builder: (context, state) => EmailInputScreen(),
         ),
         GoRoute(
-          path: 'email-code',
+          path: RoutePaths.signupEmailCode,
           name: "signupEmailCode",
           builder: (context, state) => EmailCodeInputScreen(),
         ),
         GoRoute(
-          path: 'password',
+          path: RoutePaths.signupPassword,
           name: "signupPassword",
           builder: (context, state) => PasswordSetupScreen(),
         ),
         GoRoute(
-          path: 'nickname',
+          path: RoutePaths.signupNickname,
           name: "signupNickname",
           builder: (context, state) => NicknameSetupScreen(),
         ),
         GoRoute(
-          path: 'profile-image',
+          path: RoutePaths.signupProfileImage,
           name: "signupProfileImage",
           builder: (context, state) => ProfileImageSetupScreen(),
         ),
         GoRoute(
-          path: 'introduction',
+          path: RoutePaths.signupIntroduction,
           name: "signupIntroduction",
           builder: (context, state) => IntroductionInputScreen(),
         ),
         GoRoute(
-          path: 'major-interest',
+          path: RoutePaths.signupMajorInterest,
           name: "signupMajorInterest",
           builder: (context, state) => MajorInterestSetupScreen(),
         ),
         GoRoute(
-          path: 'complete',
+          path: RoutePaths.signupComplete,
           name: "signupComplete",
           builder: (context, state) {
             return SignupCompleteScreen();
@@ -190,23 +195,3 @@ final GoRouter appRouter = GoRouter(
     ),
   ),
 );
-
-class SignupBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.lazyPut<SignupFlowController>(() => SignupFlowController());
-
-    Get.lazyPut<TermsAgreementController>(() => TermsAgreementController());
-    Get.lazyPut<EmailInputController>(() => EmailInputController());
-    Get.lazyPut<EmailCodeInputController>(() => EmailCodeInputController());
-    Get.lazyPut<PasswordInputController>(() => PasswordInputController());
-    Get.lazyPut<NicknameInputController>(() => NicknameInputController());
-    Get.lazyPut<ProfileImageSetupController>(
-      () => ProfileImageSetupController(),
-    );
-    Get.lazyPut<IntroductionInputController>(
-      () => IntroductionInputController(),
-    );
-    Get.lazyPut<MajorInterestController>(() => MajorInterestController());
-  }
-}

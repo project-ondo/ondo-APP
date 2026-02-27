@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
-class PasswordResetController extends GetxController {
+class PasswordResetPasswordController extends GetxController {
   static const int mainPasswordLength = 8;
   static const String passwordPattern =
       r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$';

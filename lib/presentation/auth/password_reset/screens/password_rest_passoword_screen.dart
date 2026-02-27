@@ -11,11 +11,11 @@ import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/auth/password_find/controllers/password_find_password_controller.dart';
+import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_password_controller.dart';
 import '../../../../core/design_system/app_icon.dart';
 
 class PasswordReset extends StatelessWidget {
-  final PasswordResetController controller;
+  final PasswordResetPasswordController controller;
 
   const PasswordReset({
     super.key,

@@ -10,14 +10,14 @@ import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/auth/password_find/controllers/password_find_email_code_controller.dart';
+import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_email_code_controller.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
 
-class PasswordFindEmailCodeInputScreen
-    extends GetView<PasswordFindEmailCodeInputController> {
-  const PasswordFindEmailCodeInputScreen({super.key});
+class PasswordResetEmailCodeInputScreen
+    extends GetView<PasswordResetEmailCodeController> {
+  const PasswordResetEmailCodeInputScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -47,22 +47,22 @@ class PasswordFindEmailCodeInputScreen
                     padding: AppPadding.textField,
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      controller.passwordFindEmail,
+                      controller.passwordResetEmail,
                       style: AppTextStyles.textMedium(
                         textColor: AppColors.gray60,
                       ),
                     ),
                   ),
                   AppGap.v24,
-                  GetBuilder<PasswordFindEmailCodeInputController>(
+                  GetBuilder<PasswordResetEmailCodeController>(
                     builder: (controller) {
                       return LabelTextField(
                         label: '인증번호',
                         keyboardType: TextInputType.number,
-                        controller: controller.passwordFindCodeInputController,
+                        controller: controller.passwordResetCodeInputController,
                         hintText: AppStrings.emailCodeInputHint,
-                        errorText: controller.passwordFindHasError
-                            ? controller.passwordFindErrorMessage
+                        errorText: controller.passwordResetHasError
+                            ? controller.passwordResetErrorMessage
                             : null,
                       );
                     },
@@ -86,14 +86,14 @@ class PasswordFindEmailCodeInputScreen
                     ),
                   ),
                   AppGap.v16,
-                  GetBuilder<PasswordFindEmailCodeInputController>(
+                  GetBuilder<PasswordResetEmailCodeController>(
                     builder: (controller) {
                       return CustomButton(
                         text: '인증하기',
                         variant: ButtonVariant.primary,
-                        enabled: controller.passwordFindIsButtonEnabled,
-                        onPressed: controller.passwordFindIsButtonEnabled
-                            ? controller.passwordFindVerifyEmailCode
+                        enabled: controller.passwordResetIsButtonEnabled,
+                        onPressed: controller.passwordResetIsButtonEnabled
+                            ? controller.passwordResetVerifyEmailCode
                             : null,
                       );
                     },

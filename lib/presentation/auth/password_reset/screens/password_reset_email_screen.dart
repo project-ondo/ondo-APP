@@ -7,12 +7,12 @@ import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
-import 'package:ondo/presentation/auth/password_find/controllers/password_find_controller.dart';
+import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_controller.dart';
 import 'package:get/get.dart';
 
 
 
-class PasswordFindEmailScreen extends GetView<ForgotPasswordController> {
+class PasswordFindEmailScreen extends GetView<PasswordResetController> {
   final bool isError;
 
   const PasswordFindEmailScreen({

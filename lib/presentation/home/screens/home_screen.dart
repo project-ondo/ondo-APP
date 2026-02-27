@@ -1,27 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
-import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/home/controllers/home_controller.dart';
 import 'package:ondo/presentation/home/screens/home_search_detail_screen.dart';
-import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_list.dart';
-import 'package:ondo/presentation/home/widgets/home_profile_card.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_chat_list.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_post_list.dart';
 
-import '../../../core/design_system/components/post/base_post_list.dart';
-import '../../../core/design_system/components/post/post_item.dart';
 import '../../../core/design_system/components/top_bar/main_top_search_bar.dart';
 
-void main() {
-  runApp(
-    MaterialApp(
-      home: HomeScreen(),
-    ),
-  );
-}
 
+
+//TODO : Binding HomeController 필수
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 

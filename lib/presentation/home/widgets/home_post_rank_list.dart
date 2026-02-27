@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/presentation/home/controllers/home_controller.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
 
 @immutable
 class HomePostRankList extends StatefulWidget {
-  final List<Map<String, dynamic>> posts;
-
-  HomePostRankList({super.key})
-      : posts = [
-    for (int i = 0; i < 5; i++) ...{{}, {}, {}, {}},
-  ];
+  const HomePostRankList({super.key});
 
   @override
   State<HomePostRankList> createState() => _HomePostRankListState();
@@ -19,12 +16,16 @@ class HomePostRankList extends StatefulWidget {
 
 class _HomePostRankListState extends State<HomePostRankList> {
   late final PageController _pageController;
+  late final HomeController _controller;
 
   ValueNotifier<int> curIndex = ValueNotifier(0);
 
   @override
   void initState() {
-    _pageController = PageController(initialPage: curIndex.value);
+    _controller = Get.find<HomeController>();
+    _pageController = PageController(
+      initialPage: curIndex.value,
+    );
     super.initState();
   }
 
@@ -34,7 +35,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
     super.dispose();
   }
 
-  int _getPageTotal() => (widget.posts.length / 3).ceil();
+  int _getPageTotal() => (_controller.ranks.length / 3).ceil();
 
   @override
   Widget build(BuildContext context) {
@@ -59,31 +60,38 @@ class _HomePostRankListState extends State<HomePostRankList> {
   }
 
   Widget _postList() {
-    return PageView.builder(
-      controller: _pageController,
-      onPageChanged: (value) {
-        curIndex.value = value;
-      },
-      scrollDirection: Axis.horizontal,
-      itemBuilder: (context, pageIndex) {
-        return Column(
-          spacing: AppSpacing.s16,
-          children: List.generate(3, (itemIndex) {
-            final currentItemIndex = (pageIndex * 3) + itemIndex;
+    return Obx(() {
+      final ranks = _controller.ranks;
+      return PageView.builder(
+        controller: _pageController,
+        pageSnapping: true,
+        onPageChanged: (value) {
+          curIndex.value = value;
+        },
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, pageIndex) {
+          return Column(
+            spacing: AppSpacing.s16,
+            children: List.generate(3, (itemIndex) {
+              final currentItemIndex = (pageIndex * 3) + itemIndex;
 
-            return currentItemIndex < widget.posts.length
-                ? HomePostRankItem(
-              title: "요즘 공부 어케 하시나요 다들",
-              createAgo: 3,
-              favorite: 160,
-              rank: currentItemIndex + 1,
-            )
-                : SizedBox.shrink();
-          }),
-        );
-      },
-      itemCount: _getPageTotal(),
-    );
+              return currentItemIndex < ranks.length
+                  ? HomePostRankItem(
+                      title: ranks[currentItemIndex].title,
+                      createAgo: ranks[currentItemIndex].creatAt.inDays,
+                      favorite: ranks[currentItemIndex].favorites,
+                      rank: currentItemIndex + 1,
+                      heartAction: (isFavorite, total) {
+                        //TODO : model 정의되면 setter 적용
+                      },
+                    )
+                  : SizedBox.shrink();
+            }),
+          );
+        },
+        itemCount: _getPageTotal(),
+      );
+    });
   }
 
   Widget _indicator() {
@@ -95,7 +103,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
           spacing: AppSpacing.s6,
           children: List.generate(
             3,
-                (index) => _indicatorIcon(index == value % 3),
+            (index) => _indicatorIcon(index == value % 3),
           ),
         );
       },

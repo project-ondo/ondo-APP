@@ -1,26 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/post/base_post_list.dart';
 import 'package:ondo/core/design_system/components/post/post_item.dart';
+import 'package:ondo/presentation/home/controllers/home_controller.dart';
 
 @immutable
 class HomeRecommendPostList extends BasePostGrid {
-  final List<Map<String, dynamic>> posts;
+  final HomeController _controller = Get.find<HomeController>();
 
-  HomeRecommendPostList({super.key, super.title = "추천 게시물"})
-    : posts = [
-        for (int i = 0; i < 5; i++) ...{{}, {}, {}},
-      ];
+  HomeRecommendPostList({super.key, super.title = "추천 게시물"});
 
   @override
   List<Widget> listBuilder() {
-    return List.generate(posts.length, (index) {
+    return List.generate(_controller.posts.length, (index) {
+      final post = _controller.posts[index];
       return PostItem(
-        skills: ["UI/UX", "FrontEnd"],
-        title: "요즘 UI UX",
-        author: "김유찬",
-        bookmarks: 12,
-        favorites: 12,
-        createMinutes: 4,
+        skills: post.skills,
+        title: post.title,
+        author: post.name,
+        bookmarks: post.bookmarks,
+        favorites: post.favoites,
+        createMinutes: post.createAt.inMinutes,
+        bookmarkAction: (isBookmark, total) {
+          //TODO : model 정의되면 setter 적용
+        },
+        heartAction: (isFavorite, total) {
+          //TODO : model 정의되면 setter 적용
+        },
+        initialBookmark: post.isBookmark,
+        initialFavorite: post.isFavorite,
       );
     });
   }

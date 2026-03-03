@@ -24,28 +24,12 @@ typedef ChatSearchModel = ({
 @immutable
 class MainTopSearchBar extends StatefulWidget {
   final Widget mainPage;
-  final Widget Function(dynamic resultModel) resultPageBuilder;
-  final Type resultModelType;
+  final Widget? Function(String searchText) resultPageBuilder;
 
-  const MainTopSearchBar.home({
+  const MainTopSearchBar({
     super.key,
     required this.mainPage,
     required this.resultPageBuilder,
-    this.resultModelType = HomeSearchModel,
-  });
-
-  const MainTopSearchBar.community({
-    super.key,
-    required this.mainPage,
-    required this.resultPageBuilder,
-    this.resultModelType = CommunitySearchModel,
-  });
-
-  const MainTopSearchBar.chat({
-    super.key,
-    required this.mainPage,
-    required this.resultPageBuilder,
-    this.resultModelType = ChatSearchModel,
   });
 
   @override
@@ -73,14 +57,13 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
               GestureDetector(
                 onTap: _controller.onOtherTap,
                 child: Obx(() {
-                  if (!_controller.showResult.value) {
-                    return widget.mainPage;
-                  }
-                  final data = _controller.checkResultDataType(
-                    widget.resultModelType,
-                  );
-                  if (data == null) return SizedBox.shrink();
-                  return widget.resultPageBuilder(data);
+                  return !_controller.showResult.value
+                      ? widget.mainPage
+                  //result 즉 검색 결과가 없다면 null을 반환해 mainPage 표시
+                      : widget.resultPageBuilder(
+                              _controller.textController.text,
+                            ) ??
+                            widget.mainPage;
                 }),
               ),
               Obx(() {
@@ -105,9 +88,11 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
           Expanded(
             child: CustomTextField(
               onSubmitted: _controller.onSubmit,
+              onChanged: _controller.onChange,
               focusNode: _controller.focusNode,
               controller: _controller.textController,
               hintText: "게시물 또는 프로필 검색어를 입력해 주세요",
+              maxLines: 1,
               prefix: SvgPicture.asset(AppIcon.searchFocus.path),
             ),
           ),

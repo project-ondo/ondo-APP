@@ -6,7 +6,7 @@ import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 class MainTopBarSearchController extends GetxController {
   final TextEditingController textController = TextEditingController();
   final FocusNode focusNode = FocusNode();
-  late SearchPopupController _popupController;
+  late final SearchPopupController _popupController;
 
   RxBool showResult = false.obs;
   RxBool showSearchPopup = false.obs;
@@ -23,14 +23,13 @@ class MainTopBarSearchController extends GetxController {
 
   @override
   void onReady() {
+    _popupController = Get.put(SearchPopupController());
     focusNode.addListener(_showPopupToggle);
-    textController.addListener(_onChange);
     super.onReady();
   }
 
   @override
   void onClose() {
-    textController.removeListener(_onChange);
     textController.dispose();
     focusNode.removeListener(_showPopupToggle);
     focusNode.dispose();
@@ -41,9 +40,9 @@ class MainTopBarSearchController extends GetxController {
 
   void onOtherTap() => focusNode.unfocus();
 
-  void _onChange() {
+  void onChange(String value) {
     _ensureIsRegisterPopController(() {
-      _popupController.searchFitsKeywords(textController.text);
+      _popupController.searchFitsKeywords(value.trim());
     });
   }
 
@@ -51,36 +50,18 @@ class MainTopBarSearchController extends GetxController {
     _ensureIsRegisterPopController(() {
       if (textController.text.isNotEmpty) {
         showResult.value = true;
+        showResult.refresh();
         focusNode.unfocus();
       }
     });
   }
 
-  void _showPopupToggle() {
-    if (focusNode.hasFocus) {
-      if (!Get.isRegistered<SearchPopupController>()) {
-        _popupController = Get.put(SearchPopupController());
-      } else {
-        _popupController = Get.find<SearchPopupController>();
-      }
-      showSearchPopup.value = true;
-    } else {
-      showSearchPopup.value = false;
-    }
-  }
+  void _showPopupToggle() => showSearchPopup.value = focusNode.hasFocus;
 
   void _ensureIsRegisterPopController(Function callBack) {
     if (Get.isRegistered<SearchPopupController>()) {
       callBack.call();
     }
-  }
-
-  dynamic checkResultDataType(Type type) {
-    return switch (type) {
-      const (HomeSearchModel) => loadHomeResultData(),
-      const (CommunitySearchModel) => loadCommunityResultData(),
-      (_) => null,
-    };
   }
 }
 

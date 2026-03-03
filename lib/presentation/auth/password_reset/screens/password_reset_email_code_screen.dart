@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
@@ -9,11 +10,11 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
+import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_email_code_controller.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
-
 
 class PasswordResetEmailCodeInputScreen
     extends GetView<PasswordResetEmailCodeController> {
@@ -93,7 +94,12 @@ class PasswordResetEmailCodeInputScreen
                         variant: ButtonVariant.primary,
                         enabled: controller.passwordResetIsButtonEnabled,
                         onPressed: controller.passwordResetIsButtonEnabled
-                            ? controller.passwordResetVerifyEmailCode
+                            ? () {
+                                controller.passwordResetVerifyEmailCode;
+                                context.go(
+                                  RoutePaths.passwordResetInputPassword,
+                                );
+                              }
                             : null,
                       );
                     },

@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/core/router/bindings/login_binding.dart';
 import 'package:ondo/core/router/bindings/navigation_binding.dart';
+import 'package:ondo/core/router/bindings/password_reset_binding.dart';
 import 'package:ondo/core/router/bindings/signup_binding.dart';
 import 'package:ondo/core/router/bindings/splash_binding.dart';
+import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_flow_controller.dart';
+import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_code_screen.dart';
+import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_screen.dart';
+import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_completed.dart';
 import 'package:ondo/presentation/auth/signup/screens/email_code_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/email_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/introduction_input_screen.dart';
@@ -31,6 +38,10 @@ class RoutePaths {
   static const String login = '/login';
 
   static const String passwordReset = '/password_reset';
+  static const String passwordResetInputEmail = '/password_reset/email';
+  static const String passwordResetInputEmailCode = '/password_reset/email-code';
+  static const String passwordResetInputPassword = '/password_reset/password';
+  static const String passwordResetComplete = '/password_reset/complete';
 
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
@@ -86,15 +97,52 @@ final GoRouter appRouter = GoRouter(
       },
     ), //login
 
-    GoRoute(
-      path: RoutePaths.passwordReset,
-      name: 'passwordReset',
-      builder: (context, state) => Scaffold(
-        body: Center(
-          child: Text("password reset"),
+    ShellRoute(
+      builder: (context, state, child) {
+        PasswordResetBinding().dependencies();
+        return child;
+      },
+      redirect: (context, state) {
+        final flowController = Get.find<PasswordResetFlowController>();
+        final location = state.uri.toString();
+
+        if (location == RoutePaths.passwordReset) {
+          return RoutePaths.passwordResetInputEmail;
+        }
+        if (location == RoutePaths.passwordResetInputPassword &&
+            !flowController.isEmailVerified) {
+          return RoutePaths.passwordResetInputEmail;
+        }
+        if (location == RoutePaths.passwordResetComplete &&
+            !flowController.isEmailVerified) {
+          return RoutePaths.passwordResetInputEmail;
+        }
+
+        return null;
+      },
+      routes: [
+        GoRoute(
+          path: RoutePaths.passwordResetInputEmail,
+          name: 'passwordResetInputEmail',
+          builder: (context, state) => PasswordResetEmailInputScreen(),
         ),
-      ),
-    ),
+        GoRoute(
+          path: RoutePaths.passwordResetInputEmailCode,
+          name: 'passwordResetInputEmailCode',
+          builder: (context, state) => PasswordResetEmailCodeInputScreen(),
+        ),
+        GoRoute(
+          path: RoutePaths.passwordResetInputPassword,
+          name: 'passwordResetInputPassword',
+          builder: (context, state) => PasswordSetupScreen(),
+        ),
+        GoRoute(
+          path: RoutePaths.passwordResetComplete,
+          name: 'passwordResetComplete',
+          builder: (context, state) => PasswordResetCompletedScreen(),
+        ),
+      ],
+    ), // password_reset
 
     GoRoute(
       path: RoutePaths.profile,

@@ -11,17 +11,15 @@ import 'package:ondo/presentation/home/widgets/home_recommend_post_list.dart';
 
 import '../../search/widgets/main_top_search_bar.dart';
 
-
-
 //TODO : Binding HomeController 필수
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
       backgroundColor: AppColors.background,
-      body: MainTopSearchBar.home(
+      body: MainTopSearchBar(
         mainPage: SingleChildScrollView(
           child: Column(
             children: [
@@ -31,9 +29,10 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
         ),
-        resultPageBuilder: (resultModel) {
-          Get.put(HomeSearchResultController());
-          return HomeSearchDetailPage();
+        resultPageBuilder: (searchText) {
+          if(searchText.trim().isEmpty) return null;
+          controller.searchResultController.searchResultInfo(searchText);
+          return HomeSearchPage();
         },
       ),
     );

@@ -10,19 +10,8 @@ import 'package:ondo/presentation/home/widgets/base_home_profile_list.dart';
 import '../../../core/design_system/app_layout.dart';
 import '../../../core/design_system/components/post/post_item.dart';
 
-class HomeSearchDetailPage extends StatefulWidget {
-  const HomeSearchDetailPage({super.key});
-
-  @override
-  State<HomeSearchDetailPage> createState() => _HomeSearchDetailPageState();
-}
-
-class _HomeSearchDetailPageState extends State<HomeSearchDetailPage> {
-  @override
-  void initState() {
-    Get.put(HomeSearchResultController());
-    super.initState();
-  }
+class HomeSearchPage extends StatelessWidget {
+  const HomeSearchPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +43,9 @@ class _ProfileResults extends BaseHomeProfileList {
 
   @override
   List<Widget> listBuilder() => List.generate(
-    _controller.chats.length,
+    _controller.resultChats.length,
     (index) {
-      final chat = _controller.chats[index];
+      final chat = _controller.resultChats[index];
       return HomeProfileCard(
         skill: chat.skill,
         name: chat.name,
@@ -75,9 +64,9 @@ class _PostResults extends BasePostGrid {
 
   @override
   List<Widget> listBuilder() {
-    return List.generate(_controller.posts.length, (index) {
+    return List.generate(_controller.resultPosts.length, (index) {
       return Obx(() {
-        final post = _controller.posts[index];
+        final post = _controller.resultPosts[index];
         return PostItem(
           skills: post.skills,
           title: post.title,

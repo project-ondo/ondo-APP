@@ -1,13 +1,12 @@
 import 'dart:math';
-
 import 'package:get/get.dart';
 
 class HomeController extends GetxController {
   final RxList<HomeRecentPopularPostInfo> ranks =
       <HomeRecentPopularPostInfo>[].obs;
-  final RxList<HomeProfileInfo> chats =
-      <HomeProfileInfo>[].obs;
-  final RxList<HomePostInfo> posts = <HomePostInfo>[].obs;
+  final RxList<HomeProfileInfo> chats = <HomeProfileInfo>[].obs;
+  final RxList<PostInfo> posts = <PostInfo>[].obs;
+  late final HomeSearchResultController searchResultController;
 
   @override
   void onInit() {
@@ -17,21 +16,25 @@ class HomeController extends GetxController {
     super.onInit();
   }
 
+  @override
+  void onReady() {
+    searchResultController = Get.put(HomeSearchResultController());
+    super.onReady();
+  }
+
   void _sortRating(RxList<HomeRecentPopularPostInfo>? list) => list == null
       ? ranks.sort((a, b) => (b.favorites - a.favorites))
       : list.sort((a, b) => b.favorites - a.favorites);
 }
 
 class HomeSearchResultController extends GetxController {
-  final RxList<HomeProfileInfo> chats =
-      <HomeProfileInfo>[].obs;
-  final RxList<HomePostInfo> posts = <HomePostInfo>[].obs;
+  final RxList<HomeProfileInfo> resultChats = <HomeProfileInfo>[].obs;
+  final RxList<PostInfo> resultPosts = <PostInfo>[].obs;
 
-  @override
-  void onInit() {
-    chats.addAll(_getChats());
-    posts.addAll(_getPosts());
-    super.onInit();
+  void searchResultInfo(String text) {
+    //TODO: 서버와의 연결에서 결과 가져오기
+    resultChats.assignAll(_getChats());
+    resultPosts.assignAll(_getPosts());
   }
 }
 
@@ -42,7 +45,7 @@ typedef HomeRecentPopularPostInfo = ({
   bool isFavorite,
 });
 typedef HomeProfileInfo = ({String name, String skill, int rating});
-typedef HomePostInfo = ({
+typedef PostInfo = ({
   List<String> skills,
   String title,
   String name,
@@ -82,8 +85,8 @@ List<HomeProfileInfo> _getChats() => [
   },
 ];
 
-List<HomePostInfo> _getPosts() => [
-  for (int i = 0; i < 4; i++) ...{
+List<PostInfo> _getPosts() => [
+  for (int i = 0; i < 8; i++) ...{
     (
       name: "김유찬",
       title: "요즘 UI UX",

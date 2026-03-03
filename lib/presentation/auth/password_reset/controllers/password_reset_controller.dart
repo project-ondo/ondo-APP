@@ -1,10 +1,12 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
-import 'package:ondo/core/router/bindings/password_reset_binding.dart';
-import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_code_screen.dart';
+import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_flow_controller.dart';
 
 class PasswordResetController extends GetxController {
+  final flowController = Get.find<PasswordResetFlowController>();
   static final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
   final emailController = TextEditingController();
 
@@ -41,14 +43,8 @@ class PasswordResetController extends GetxController {
   void sendVerificationCode() {
     if (validateEmail()) {
       final email = emailController.text.trim();
-
-      debugPrint('인증번호 발송: $email');
-
-      Get.to(
-            () => PasswordResetEmailCodeInputScreen(),
-        arguments: {'email': email},
-        binding: PasswordResetBinding(),
-      );
+      flowController.setEmail(email);
+      log(email);
     }
   }
 

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
+import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
 class PasswordResetPasswordController extends GetxController {
+  final flowController = Get.find<PasswordResetFlowController>();
   static const int mainPasswordLength = 8;
   static const String passwordPattern =
       r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$';
@@ -43,6 +45,9 @@ class PasswordResetPasswordController extends GetxController {
   void submit() {
     _submitted = true;
     _validate();
+    if(state.value == InputValidationState.valid){
+      flowController.setNewPassword(passwordController.text);
+    }
   }
 
   void _validate() {

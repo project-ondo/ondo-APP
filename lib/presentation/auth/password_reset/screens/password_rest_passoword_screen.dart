@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
@@ -10,17 +11,13 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
+import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_password_controller.dart';
 import '../../../../core/design_system/app_icon.dart';
 
-class PasswordReset extends StatelessWidget {
-  final PasswordResetPasswordController controller;
-
-  const PasswordReset({
-    super.key,
-    required this.controller,
-  });
+class PasswordResetScreen extends GetView<PasswordResetPasswordController> {
+  const PasswordResetScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +33,7 @@ class PasswordReset extends StatelessWidget {
                 child: _buildForm(),
               ),
             ),
-            _buildNextButton(),
+            _buildNextButton(context),
           ],
         ),
       ),
@@ -107,7 +104,7 @@ class PasswordReset extends StatelessWidget {
     });
   }
 
-  Widget _buildNextButton() {
+  Widget _buildNextButton(BuildContext context) {
     return Obx(() {
       return Column(
         children: [
@@ -119,6 +116,7 @@ class PasswordReset extends StatelessWidget {
               controller.submit();
               if (controller.canProceed) {
                 _handleNext();
+                context.go(RoutePaths.passwordResetComplete);
               }
             },
           ),

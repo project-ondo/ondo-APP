@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/post/base_post_list.dart';
 import 'package:ondo/core/design_system/components/post/post_item.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/community/controllers/community_controller.dart';
 import 'package:ondo/presentation/community/widgets/community_post_add_button.dart';
 
-class CommunitySearchDetailPage extends StatelessWidget {
-  const CommunitySearchDetailPage({super.key, required this.posts});
-
-  final List<Map<String, dynamic>> posts;
+class CommunitySearchPage extends StatelessWidget {
+  const CommunitySearchPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +22,7 @@ class CommunitySearchDetailPage extends StatelessWidget {
           child: Column(
             children: [
               AppGap.v16,
-              _PostResults(
-                posts: [],
-              ),
+              _PostResults(),
               AppGap.v16,
             ],
           ),
@@ -36,24 +34,27 @@ class CommunitySearchDetailPage extends StatelessWidget {
 
 @immutable
 class _PostResults extends BasePostGrid {
-  final List<Map<String, dynamic>> posts;
+  final CommunitySearchResultController _controller =
+      Get.find<CommunitySearchResultController>();
 
-  const _PostResults({
+  _PostResults({
     super.title = "게시물 검색 결과",
-    required this.posts,
   });
 
   @override
   List<Widget> listBuilder() {
-    return List.generate(posts.length, (index) {
-      return PostItem(
-        skills: ["UI/UX", "FrontEnd"],
-        title: "요즘 UI UX",
-        author: "김유찬",
-        bookmarks: 12,
-        favorites: 12,
-        createMinutes: 4,
-      );
+    return List.generate(_controller.posts.length, (index) {
+      return Obx(() {
+        final post = _controller.posts[index];
+        return PostItem(
+          skills: post.skills,
+          title: post.title,
+          author: post.name,
+          bookmarks: post.bookmarks,
+          favorites: post.favoites,
+          createMinutes: post.createAt.inMinutes,
+        );
+      });
     });
   }
 }

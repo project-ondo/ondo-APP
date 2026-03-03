@@ -16,8 +16,9 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_password_controller.dart';
 import '../../../../core/design_system/app_icon.dart';
 
-class PasswordResetScreen extends GetView<PasswordResetPasswordController> {
-  const PasswordResetScreen({super.key});
+class PasswordResetPasswordScreen
+    extends GetView<PasswordResetPasswordController> {
+  const PasswordResetPasswordScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,8 @@ class PasswordResetScreen extends GetView<PasswordResetPasswordController> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
                 child: _buildForm(),
               ),
             ),

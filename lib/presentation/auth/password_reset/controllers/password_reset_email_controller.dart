@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_flow_controller.dart';
 
-class PasswordResetController extends GetxController {
+class PasswordResetEmailController extends GetxController {
   final flowController = Get.find<PasswordResetFlowController>();
   static final emailRegex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
   final emailController = TextEditingController();

@@ -10,7 +10,7 @@ import 'package:ondo/core/router/bindings/splash_binding.dart';
 import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_flow_controller.dart';
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_code_screen.dart';
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_screen.dart';
-import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_completed.dart';
+import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_completed_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/email_code_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/email_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/introduction_input_screen.dart';

@@ -9,14 +9,14 @@ import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_completed_controller.dart';
-import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_completed.dart';
+import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_completed_screen.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
-import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_controller.dart';
+import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_email_controller.dart';
 import 'package:get/get.dart';
 
 void main() {
   Get.put(PasswordResetCompletedController());
-  Get.put(PasswordResetController());
+  Get.put(PasswordResetEmailController());
   runApp(
     MaterialApp(
       home: PasswordResetCompletedScreen(),
@@ -24,7 +24,7 @@ void main() {
   );
 }
 
-class PasswordResetEmailInputScreen extends GetView<PasswordResetController> {
+class PasswordResetEmailInputScreen extends GetView<PasswordResetEmailController> {
   final bool isError;
 
   const PasswordResetEmailInputScreen({

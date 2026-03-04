@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
+import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/login/controllers/login_controller.dart';
 import 'package:ondo/presentation/auth/login/widgets/auth_link.dart';
@@ -62,7 +64,10 @@ class LoginScreen extends GetView<LoginController> {
             child: CustomButton(
               text: '로그인',
               variant: ButtonVariant.primary,
-              onPressed: () => controller.login(context),
+              onPressed: () {
+                controller.login();
+                context.go(RoutePaths.navigation);
+              },
             ),
           ),
           AppGap.v24,

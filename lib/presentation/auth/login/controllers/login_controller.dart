@@ -47,7 +47,7 @@ class LoginController extends GetxController {
     return true;
   }
 
-  void login(BuildContext context) {
+  void login() {
     final String testEmail = 'test1@gmail.com';
     final String testPassword = 'asdf1234!';
 
@@ -56,7 +56,6 @@ class LoginController extends GetxController {
     if (emailController.text == testEmail &&
         passwordController.text == testPassword) {
       generalError.value = null;
-      context.go(RoutePaths.navigation);
     } else {
       generalError.value = AppStrings.inputEmailOrPassword;
     }

@@ -55,18 +55,16 @@ class PasswordResetEmailCodeInputScreen
                     ),
                   ),
                   AppGap.v24,
-                  GetBuilder<PasswordResetEmailCodeController>(
-                    builder: (controller) {
-                      return LabelTextField(
-                        label: '인증번호',
-                        keyboardType: TextInputType.number,
-                        controller: controller.passwordResetCodeInputController,
-                        hintText: AppStrings.emailCodeInputHint,
-                        errorText: controller.passwordResetHasError
-                            ? controller.passwordResetErrorMessage
-                            : null,
-                      );
-                    },
+                  Obx(
+                    () => LabelTextField(
+                      label: '인증번호',
+                      keyboardType: TextInputType.number,
+                      controller: controller.passwordResetCodeInputController,
+                      hintText: AppStrings.emailCodeInputHint,
+                      errorText: controller.passwordResetHasError
+                          ? controller.passwordResetErrorMessage
+                          : null,
+                    ),
                   ),
                 ],
               ),
@@ -87,22 +85,23 @@ class PasswordResetEmailCodeInputScreen
                     ),
                   ),
                   AppGap.v16,
-                  GetBuilder<PasswordResetEmailCodeController>(
-                    builder: (controller) {
-                      return CustomButton(
-                        text: '인증하기',
-                        variant: ButtonVariant.primary,
-                        enabled: controller.passwordResetIsButtonEnabled,
-                        onPressed: controller.passwordResetIsButtonEnabled
-                            ? () {
-                                controller.passwordResetVerifyEmailCode;
+                  Obx(
+                    () => CustomButton(
+                      text: '인증하기',
+                      variant: ButtonVariant.primary,
+                      enabled: controller.passwordResetIsButtonEnabled,
+                      onPressed: controller.passwordResetIsButtonEnabled
+                          ? () {
+                              final success = controller
+                                  .passwordResetVerifyEmailCode();
+                              if (success) {
                                 context.go(
                                   RoutePaths.passwordResetInputPassword,
                                 );
                               }
-                            : null,
-                      );
-                    },
+                            }
+                          : null,
+                    ),
                   ),
                   AppGap.v16,
                 ],

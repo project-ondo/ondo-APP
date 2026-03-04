@@ -14,7 +14,7 @@ class AuthLink extends StatelessWidget {
       children: [
         TextButton(
           onPressed: () {
-            context.go(RoutePaths.passwordReset);
+            context.go(RoutePaths.passwordResetInputEmail);
           },
           child: Text(
             '비밀번호 찾기',

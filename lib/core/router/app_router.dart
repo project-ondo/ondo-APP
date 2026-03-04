@@ -11,6 +11,7 @@ import 'package:ondo/presentation/auth/password_reset/controllers/password_reset
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_code_screen.dart';
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_screen.dart';
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_completed_screen.dart';
+import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/email_code_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/email_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/introduction_input_screen.dart';
@@ -103,6 +104,10 @@ final GoRouter appRouter = GoRouter(
         return child;
       },
       redirect: (context, state) {
+        if (!Get.isRegistered<PasswordResetFlowController>()) {
+          return null;
+        }
+
         final flowController = Get.find<PasswordResetFlowController>();
         final location = state.uri.toString();
 
@@ -134,7 +139,7 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: RoutePaths.passwordResetInputPassword,
           name: 'passwordResetInputPassword',
-          builder: (context, state) => PasswordSetupScreen(),
+          builder: (context, state) => PasswordResetPasswordScreen(),
         ),
         GoRoute(
           path: RoutePaths.passwordResetComplete,

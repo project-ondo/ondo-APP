@@ -15,10 +15,11 @@ class PasswordResetEmailCodeController extends GetxController {
 
   late final TextEditingController passwordResetCodeInputController;
 
+  final code = ''.obs;
+
   final Rx<PasswordResetEmailCodeState> passwordResetCodeState = PasswordResetEmailCodeState.initial.obs;
 
-  bool get passwordResetHasCodeInput => passwordResetCodeInputController.text.trim().isNotEmpty;
-  bool get passwordResetIsButtonEnabled => passwordResetHasCodeInput;
+  bool get passwordResetIsButtonEnabled => code.value.trim().isNotEmpty;
   bool get passwordResetHasError => passwordResetCodeState.value == PasswordResetEmailCodeState.invalid;
   String get passwordResetErrorMessage => AppStrings.invalidEmailCode;
   String get passwordResetEmail => flowController.email;
@@ -27,23 +28,25 @@ class PasswordResetEmailCodeController extends GetxController {
   void onInit() {
     super.onInit();
     passwordResetCodeInputController = TextEditingController();
-    passwordResetCodeInputController.addListener(_onPasswordResetCodeChanged);
+    passwordResetCodeInputController.addListener(() {
+      code.value = passwordResetCodeInputController.text;
+
+      if(passwordResetCodeState.value == PasswordResetEmailCodeState.invalid){
+        passwordResetCodeState.value = PasswordResetEmailCodeState.initial;
+      }
+    });
   }
 
-  void _onPasswordResetCodeChanged() {
-    if (passwordResetCodeState.value == PasswordResetEmailCodeState.invalid) {
-      passwordResetCodeState.value = PasswordResetEmailCodeState.initial;
-    }
-  }
-
-  void passwordResetVerifyEmailCode() {
-    final inputCode = passwordResetCodeInputController.text.trim();
+  bool passwordResetVerifyEmailCode() {
+    final inputCode = code.value.trim();
 
     if (inputCode == tempEmailCode) {
       passwordResetCodeState.value = PasswordResetEmailCodeState.valid;
       flowController.setVerificationCode(true);
+      return true;
     } else {
       passwordResetCodeState.value = PasswordResetEmailCodeState.invalid;
+      return false;
     }
   }
 

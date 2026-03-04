@@ -12,13 +12,9 @@ import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
 import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_email_controller.dart';
 import 'package:get/get.dart';
 
-class PasswordResetEmailInputScreen extends GetView<PasswordResetEmailController> {
-  final bool isError;
-
-  const PasswordResetEmailInputScreen({
-    super.key,
-    this.isError = false,
-  });
+class PasswordResetEmailInputScreen
+    extends GetView<PasswordResetEmailController> {
+  const PasswordResetEmailInputScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +27,7 @@ class PasswordResetEmailInputScreen extends GetView<PasswordResetEmailController
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppGap.v16,
-              LoginBackButton(onTap: () => Get.back()),
+              LoginBackButton(onTap: () => context.go(RoutePaths.login)),
               AppGap.v36,
               Text(
                 AppStrings.passwordResetEmail,

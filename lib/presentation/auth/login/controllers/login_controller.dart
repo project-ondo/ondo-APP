@@ -1,8 +1,6 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
-import 'package:ondo/core/router/app_router.dart';
 
 class LoginController extends GetxController {
   final emailController = TextEditingController();

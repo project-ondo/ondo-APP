@@ -33,7 +33,9 @@ class PasswordResetEmailCodeInputScreen
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   AppGap.v16,
-                  LoginBackButton(onTap: Get.back),
+                  LoginBackButton(
+                    onTap: () => context.go(RoutePaths.login),
+                  ),
                   AppGap.v36,
                   TitleText.titleText(AppStrings.emailCodeInputTitle),
                   AppGap.v24,
@@ -75,6 +77,7 @@ class PasswordResetEmailCodeInputScreen
                     child: GestureDetector(
                       onTap: () {
                         log('이메일 입력 페이지로 이동');
+                        context.go(RoutePaths.passwordResetInputEmail);
                       },
                       child: Text(
                         '다른 이메일을 입력하시고 싶나요?',

@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/constants/password_policy.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
 class PasswordInputController extends GetxController {
-  static const int mainPasswordLength = 8;
-  static const String passwordPattern =
-      r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$';
 
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -54,7 +52,9 @@ class PasswordInputController extends GetxController {
       return;
     }
 
-    if (!_isValidPassword(password)) {
+    final result = PasswordPolicy.validate(password);
+
+    if (result != PasswordValidationResult.valid) {
       state.value = InputValidationState.invalid;
       return;
     }
@@ -67,19 +67,14 @@ class PasswordInputController extends GetxController {
     state.value = InputValidationState.valid;
   }
 
-  bool _isValidPassword(String password) {
-    return RegExp(passwordPattern).hasMatch(password);
-  }
-
   bool get canProceed => state.value == InputValidationState.valid;
 
   String? get passwordErrorText {
     if (!_submitted) return null;
 
-    if (state.value == InputValidationState.invalid) {
-      return '$mainPasswordLength자 이상, 영문+숫자 조합이 필요합니다.';
-    }
-    return null;
+    final result = PasswordPolicy.validate(passwordController.text);
+
+    return AppStrings.passwordError(result);
   }
 
   String? get confirmPasswordErrorText {

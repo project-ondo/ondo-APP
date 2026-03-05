@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/constants/password_policy.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
 class PasswordResetPasswordController extends GetxController {
   final flowController = Get.find<PasswordResetFlowController>();
-  static const int mainPasswordLength = 8;
-  static const String passwordPattern =
-      r'^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$';
 
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
@@ -32,20 +30,17 @@ class PasswordResetPasswordController extends GetxController {
 
   void _onTextChanged() {
     hasInput.value =
-        passwordController.text.isNotEmpty ||
-            confirmPasswordController.text.isNotEmpty;
+        passwordController.text.isNotEmpty &&
+        confirmPasswordController.text.isNotEmpty;
 
-
-    if(_submitted){
       _validate();
-    }
   }
 
   /// 버튼 클릭 시 호출
   void submit() {
     _submitted = true;
     _validate();
-    if(state.value == InputValidationState.valid){
+    if (state.value == InputValidationState.valid) {
       flowController.setNewPassword(passwordController.text);
     }
   }
@@ -59,7 +54,9 @@ class PasswordResetPasswordController extends GetxController {
       return;
     }
 
-    if (!_isValidPassword(password)) {
+    final result = PasswordPolicy.validate(password);
+
+    if (result != PasswordValidationResult.valid) {
       state.value = InputValidationState.invalid;
       return;
     }
@@ -72,34 +69,24 @@ class PasswordResetPasswordController extends GetxController {
     state.value = InputValidationState.valid;
   }
 
-  bool _isValidPassword(String password) {
-    return RegExp(passwordPattern).hasMatch(password);
-  }
-
   bool get canProceed => state.value == InputValidationState.valid;
 
   String? get passwordErrorText {
     if (!_submitted) return null;
-    final password = passwordController.text;
-    
-    if(password.length < mainPasswordLength) {
-      return AppStrings.passwordLength;
-    }
+    final result = PasswordPolicy.validate(passwordController.text);
 
-    if (!_isValidPassword(password)) {
-      return AppStrings.passwordRegex;
-    }
-    return null;
+    if (result == PasswordValidationResult.valid) return null;
+    return AppStrings.passwordError(result);
   }
 
-  String? get confirmPasswordErrorText {
-    if (!_submitted && state.value != InputValidationState.mismatch) return null;
+    String? get confirmPasswordErrorText {
+        if (!_submitted) return null;
 
-    if (state.value == InputValidationState.mismatch) {
-      return AppStrings.invalidPassword;
+      if (state.value == InputValidationState.mismatch) {
+        return AppStrings.invalidPassword;
+      }
+      return null;
     }
-    return null;
-  }
 
   @override
   void onClose() {

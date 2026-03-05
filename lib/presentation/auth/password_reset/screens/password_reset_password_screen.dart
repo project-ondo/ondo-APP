@@ -113,7 +113,7 @@ class PasswordResetPasswordScreen
           CustomButton(
             text: '다음',
             variant: ButtonVariant.primary,
-            enabled: controller.hasInput.value,
+            enabled: controller.canProceed,
             onPressed: () {
               controller.submit();
               if (controller.canProceed) {

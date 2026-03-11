@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
@@ -18,6 +19,9 @@ class CustomTextField extends StatelessWidget {
   final int? maxLines;
   final int? minLines;
   final FocusNode? focusNode;
+  final List<Widget>? chips;
+  final int? maxLength;
+  final MaxLengthEnforcement? maxLengthEnforcement;
 
   const CustomTextField({
     super.key,
@@ -34,7 +38,10 @@ class CustomTextField extends StatelessWidget {
     this.prefix,
     this.focusNode,
     this.maxLines,
-    this.minLines
+    this.minLines,
+    this.chips,
+    this.maxLength,
+    this.maxLengthEnforcement,
   });
 
   @override
@@ -45,7 +52,7 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
-      maxLines: maxLines ?? 1,
+      maxLines: maxLines,
       minLines: minLines ?? 1,
       enabled: enabled,
       onChanged: onChanged,
@@ -57,6 +64,9 @@ class CustomTextField extends StatelessWidget {
             : AppColors.gray60,
       ),
       cursorColor: AppColors.black,
+      inputFormatters: maxLength != null
+          ? [LengthLimitingTextInputFormatter(maxLength)]
+          : null,
       decoration: InputDecoration(
         filled: true,
         fillColor: AppColors.gray20,
@@ -121,6 +131,11 @@ class LabelTextField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final int? maxLines;
   final int? minLines;
+  final Widget? child;
+  final List<Widget>? chips;
+  final double? height;
+  final int? maxLength;
+  final MaxLengthEnforcement? maxLengthEnforcement;
 
   const LabelTextField({
     super.key,
@@ -136,6 +151,11 @@ class LabelTextField extends StatelessWidget {
     this.onSubmitted,
     this.maxLines,
     this.minLines,
+    this.child,
+    this.chips,
+    this.height,
+    this.maxLength,
+    this.maxLengthEnforcement,
   });
 
   @override
@@ -153,18 +173,24 @@ class LabelTextField extends StatelessWidget {
         AppGap.v4,
 
         /// Input
-        CustomTextField(
-          controller: controller,
-          hintText: hintText,
-          keyboardType: keyboardType,
-          obscureText: obscureText,
-          isError: isError,
-          enabled: enabled,
-          onChanged: onChanged,
-          onSubmitted: onSubmitted,
-          errorText: errorText,
-          minLines: minLines,
-          maxLines: maxLines,
+        SizedBox(
+          height: height,
+          child: CustomTextField(
+            controller: controller,
+            hintText: hintText,
+            keyboardType: keyboardType,
+            obscureText: obscureText,
+            isError: isError,
+            enabled: enabled,
+            onChanged: onChanged,
+            onSubmitted: onSubmitted,
+            errorText: errorText,
+            minLines: minLines ?? 1,
+            maxLines: height != null ? null : maxLines,
+            maxLength: maxLength,
+            maxLengthEnforcement:
+                maxLengthEnforcement ?? MaxLengthEnforcement.enforced,
+          ),
         ),
 
         /// Error Message

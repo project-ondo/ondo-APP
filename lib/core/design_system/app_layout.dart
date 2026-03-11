@@ -21,8 +21,10 @@ class AppSpacing {
   static const double s42 = 42;
   static const double s48 = 48;
   static const double s51 = 51;
+  static const double s52 = 52;
   static const double s76 = 76;
   static const double s80 = 80;
+  static const double s100 = 100;
 }
 
 class AppGap {
@@ -32,6 +34,7 @@ class AppGap {
   static const SizedBox h10 = SizedBox(width: AppSpacing.s10);
   static const SizedBox h12 = SizedBox(width: AppSpacing.s12);
   static const SizedBox h16 = SizedBox(width: AppSpacing.s16);
+  static const SizedBox h18 = SizedBox(width: AppSpacing.s18);
   static const SizedBox h24 = SizedBox(width: AppSpacing.s24);
   static const SizedBox h36 = SizedBox(width: AppSpacing.s36);
 
@@ -41,11 +44,13 @@ class AppGap {
   static const SizedBox v10 = SizedBox(height: AppSpacing.s10);
   static const SizedBox v12 = SizedBox(height: AppSpacing.s12);
   static const SizedBox v16 = SizedBox(height: AppSpacing.s16);
+  static const SizedBox v18 = SizedBox(height: AppSpacing.s18);
   static const SizedBox v24 = SizedBox(height: AppSpacing.s24);
   static const SizedBox v36 = SizedBox(height: AppSpacing.s36);
   static const SizedBox v40 = SizedBox(height: AppSpacing.s40);
   static const SizedBox v51 = SizedBox(height: AppSpacing.s51);
   static const SizedBox v76 = SizedBox(height: AppSpacing.s76);
+  static const SizedBox v80 = SizedBox(height: AppSpacing.s80);
 
 }
 
@@ -111,6 +116,11 @@ class AppPadding {
   
   static const EdgeInsets terms = EdgeInsets.symmetric(
     horizontal: AppSpacing.s24,
+  );
+
+  static const EdgeInsets tagChip = EdgeInsets.symmetric(
+    vertical: AppSpacing.s8,
+    horizontal: AppSpacing.s12,
   );
 
   static const EdgeInsets camera = EdgeInsets.only(

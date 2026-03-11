@@ -12,10 +12,10 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/auth/signup/controllers/profile_image_setup_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_profile_image_setup_controller.dart';
 
-class ProfileImageSetupScreen extends GetView<ProfileImageSetupController> {
-  const ProfileImageSetupScreen({super.key});
+class SignupProfileImageSetupScreen extends GetView<SignupProfileImageSetupController> {
+  const SignupProfileImageSetupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class ProfileImageSetupScreen extends GetView<ProfileImageSetupController> {
   Widget _buildProfileImage() {
     return Align(
       alignment: Alignment.center,
-      child: GetBuilder<ProfileImageSetupController>(
+      child: GetBuilder<SignupProfileImageSetupController>(
         builder: (controller) {
           return Stack(
             alignment: Alignment.bottomRight,
@@ -73,7 +73,7 @@ class ProfileImageSetupScreen extends GetView<ProfileImageSetupController> {
     );
   }
 
-  Widget _profileImageView(ProfileImageSetupController controller) {
+  Widget _profileImageView(SignupProfileImageSetupController controller) {
     return Container(
       width: 180,
       height: 180,
@@ -90,7 +90,7 @@ class ProfileImageSetupScreen extends GetView<ProfileImageSetupController> {
     );
   }
 
-  Widget _cameraButtonMenu(ProfileImageSetupController controller) {
+  Widget _cameraButtonMenu(SignupProfileImageSetupController controller) {
     double popupButtonSize = 135;
 
     return Container(

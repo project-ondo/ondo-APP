@@ -4,7 +4,7 @@ import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
-class EmailCodeInputController extends GetxController {
+class SignupEmailCodeInputController extends GetxController {
   final flowController = Get.find<SignupFlowController>();
 
   static const String tempEmailCode = '111111';

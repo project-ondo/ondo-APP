@@ -5,7 +5,7 @@ import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
-class PasswordInputController extends GetxController {
+class SignupPasswordInputController extends GetxController {
   final flowController = Get.find<SignupFlowController>();
 
   final passwordController = TextEditingController();

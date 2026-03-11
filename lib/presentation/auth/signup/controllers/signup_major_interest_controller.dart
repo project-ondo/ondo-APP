@@ -40,7 +40,7 @@ extension MajorCategoryX on MajorCategory {
   }
 }
 
-class MajorInterestController extends GetxController {
+class SignupMajorInterestController extends GetxController {
   final SignupFlowController flowController = Get.find();
   MajorCategory? selectedMajor;
 

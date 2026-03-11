@@ -12,15 +12,15 @@ import 'package:ondo/presentation/auth/password_reset/screens/password_reset_ema
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_screen.dart';
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_completed_screen.dart';
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_screen.dart';
-import 'package:ondo/presentation/auth/signup/screens/email_code_input_screen.dart';
-import 'package:ondo/presentation/auth/signup/screens/email_input_screen.dart';
-import 'package:ondo/presentation/auth/signup/screens/introduction_input_screen.dart';
-import 'package:ondo/presentation/auth/signup/screens/major_interest_setup_screen.dart';
-import 'package:ondo/presentation/auth/signup/screens/nickname_setup_screen.dart';
-import 'package:ondo/presentation/auth/signup/screens/password_setup_screen.dart';
-import 'package:ondo/presentation/auth/signup/screens/profile_image_setup_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/signup_email_code_input_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/signup_email_input_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/signup_introduction_input_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/signup_major_interest_setup_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/signup_nickname_setup_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/signup_password_setup_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/signup_profile_image_setup_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_complete_screen.dart';
-import 'package:ondo/presentation/auth/signup/screens/terms_agreement_screen.dart';
+import 'package:ondo/presentation/auth/signup/screens/signup_terms_agreement_screen.dart';
 import 'package:ondo/presentation/home/screens/home_screen.dart';
 import 'package:ondo/presentation/auth/login/screens/login.dart';
 import 'package:ondo/presentation/auth/login/screens/splash.dart';
@@ -194,42 +194,42 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: RoutePaths.signupTerms,
           name: "signupTerms",
-          builder: (context, state) => TermsAgreementScreen(),
+          builder: (context, state) => SignupTermsAgreementScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupEmail,
           name: "signupEmail",
-          builder: (context, state) => EmailInputScreen(),
+          builder: (context, state) => SignupEmailInputScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupEmailCode,
           name: "signupEmailCode",
-          builder: (context, state) => EmailCodeInputScreen(),
+          builder: (context, state) => SignupEmailCodeInputScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupPassword,
           name: "signupPassword",
-          builder: (context, state) => PasswordSetupScreen(),
+          builder: (context, state) => SignupPasswordSetupScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupNickname,
           name: "signupNickname",
-          builder: (context, state) => NicknameSetupScreen(),
+          builder: (context, state) => SignupNicknameSetupScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupProfileImage,
           name: "signupProfileImage",
-          builder: (context, state) => ProfileImageSetupScreen(),
+          builder: (context, state) => SignupProfileImageSetupScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupIntroduction,
           name: "signupIntroduction",
-          builder: (context, state) => IntroductionInputScreen(),
+          builder: (context, state) => SignupIntroductionInputScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupMajorInterest,
           name: "signupMajorInterest",
-          builder: (context, state) => MajorInterestSetupScreen(),
+          builder: (context, state) => SignupMajorInterestSetupScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupComplete,

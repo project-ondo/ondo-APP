@@ -11,12 +11,12 @@ import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/auth/signup/controllers/password_input_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_password_input_controller.dart';
 
 import '../../../../core/design_system/app_icon.dart';
 
-class PasswordSetupScreen extends GetView<PasswordInputController> {
-  const PasswordSetupScreen({super.key});
+class SignupPasswordSetupScreen extends GetView<SignupPasswordInputController> {
+  const SignupPasswordSetupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

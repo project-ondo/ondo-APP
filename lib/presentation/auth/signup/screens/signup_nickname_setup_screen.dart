@@ -8,13 +8,13 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
-import 'package:ondo/presentation/auth/signup/controllers/nickname_input_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_nickname_input_controller.dart';
 import '../../../../core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 
-class NicknameSetupScreen extends GetView<NicknameInputController> {
-  const NicknameSetupScreen({super.key});
+class SignupNicknameSetupScreen extends GetView<SignupNicknameInputController> {
+  const SignupNicknameSetupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +61,7 @@ class NicknameSetupScreen extends GetView<NicknameInputController> {
   }
 
   Widget _buildSubmitButton(BuildContext context) {
-    return GetBuilder<NicknameInputController>(
+    return GetBuilder<SignupNicknameInputController>(
       builder: (controller) {
         return Column(
           children: [

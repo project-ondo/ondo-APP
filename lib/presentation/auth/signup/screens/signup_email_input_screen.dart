@@ -8,13 +8,13 @@ import '../../../../core/design_system/app_layout.dart';
 import '../../../../core/design_system/components/custom_textfield.dart';
 import '../../../../core/ui/base/base_scaffold.dart';
 
-import '../controllers/email_input_controller.dart';
+import '../controllers/signup_email_input_controller.dart';
 import '../widgets/login_back_button.dart';
 import '../widgets/next_button.dart';
 import '../widgets/title_text.dart';
 
-class EmailInputScreen extends GetView<EmailInputController> {
-  const EmailInputScreen({super.key});
+class SignupEmailInputScreen extends GetView<SignupEmailInputController> {
+  const SignupEmailInputScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class EmailInputScreen extends GetView<EmailInputController> {
   }
 
   Widget _buildEmailField() {
-    return GetBuilder<EmailInputController>(
+    return GetBuilder<SignupEmailInputController>(
       builder: (controller) {
         return LabelTextField(
           label: '이메일',
@@ -65,7 +65,7 @@ class EmailInputScreen extends GetView<EmailInputController> {
   }
 
   Widget _buildNextButton(BuildContext context) {
-    return GetBuilder<EmailInputController>(
+    return GetBuilder<SignupEmailInputController>(
       builder: (controller) {
         return NextButton(
           isAgreementChecked: controller.hasEmailInput,

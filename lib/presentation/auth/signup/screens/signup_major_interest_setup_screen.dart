@@ -8,11 +8,11 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/auth/signup/controllers/major_interest_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_major_interest_controller.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
-class MajorInterestSetupScreen extends GetView<MajorInterestController> {
-  const MajorInterestSetupScreen({super.key});
+class SignupMajorInterestSetupScreen extends GetView<SignupMajorInterestController> {
+  const SignupMajorInterestSetupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
   }
 
   Widget _buildInterestSection({required List<MajorCategory> categories}) {
-    return GetBuilder<MajorInterestController>(
+    return GetBuilder<SignupMajorInterestController>(
       builder: (controller) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +82,7 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
   Widget _buildMajorSelectSection({
     required List<MajorCategory> categories
   }) {
-    return GetBuilder<MajorInterestController>(
+    return GetBuilder<SignupMajorInterestController>(
       builder: (controller) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,7 +114,7 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
   }
 
   Widget _buildNextButton(BuildContext context) {
-    return GetBuilder<MajorInterestController>(
+    return GetBuilder<SignupMajorInterestController>(
       builder: (controller) {
         return Column(
           children: [

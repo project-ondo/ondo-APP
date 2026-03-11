@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
-class EmailInputController extends GetxController {
+class SignupEmailInputController extends GetxController {
   final flowController = Get.find<SignupFlowController>();
   late final TextEditingController emailTextController;
 
@@ -45,7 +45,7 @@ class EmailInputController extends GetxController {
   }
 
   bool _isValidEmail(String email) {
-    final regex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final regex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
     return regex.hasMatch(email);
   }
 }

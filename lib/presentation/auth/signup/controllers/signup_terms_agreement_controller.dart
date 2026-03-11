@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-class TermsAgreementController extends GetxController{
+class SignupTermsAgreementController extends GetxController{
   final RxBool isAgreementChecked = false.obs;
 
   bool get canProceed => isAgreementChecked.value;

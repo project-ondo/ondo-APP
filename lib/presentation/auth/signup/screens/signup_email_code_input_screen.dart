@@ -9,12 +9,12 @@ import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/auth/signup/controllers/email_code_input_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_email_code_input_controller.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
-class EmailCodeInputScreen extends GetView<EmailCodeInputController> {
-  const EmailCodeInputScreen({super.key});
+class SignupEmailCodeInputScreen extends GetView<SignupEmailCodeInputController> {
+  const SignupEmailCodeInputScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

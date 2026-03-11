@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 
-class ProfileImageSetupController extends GetxController {
+class SignupProfileImageSetupController extends GetxController {
   final flowController = Get.find<SignupFlowController>();
   String? profileImagePath;
 

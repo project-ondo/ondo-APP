@@ -7,12 +7,12 @@ import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/auth/signup/controllers/introduction_input_controller.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_introduction_input_controller.dart';
 
 import '../widgets/title_text.dart';
 
-class IntroductionInputScreen extends GetView<IntroductionInputController> {
-  const IntroductionInputScreen({super.key});
+class SignupIntroductionInputScreen extends GetView<SignupIntroductionInputController> {
+  const SignupIntroductionInputScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class IntroductionInputScreen extends GetView<IntroductionInputController> {
         AppGap.v76,
         TitleText.titleText(AppStrings.selfIntroductionTitle),
         AppGap.v36,
-        GetBuilder<IntroductionInputController>(
+        GetBuilder<SignupIntroductionInputController>(
           builder: (controller) {
             return LabelTextField(
               label: '자기소개',
@@ -57,7 +57,7 @@ class IntroductionInputScreen extends GetView<IntroductionInputController> {
   }
 
   Widget _buildNextButton(BuildContext context) {
-    return GetBuilder<IntroductionInputController>(
+    return GetBuilder<SignupIntroductionInputController>(
       builder: (controller) {
         return Column(
           children: [

@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
-class IntroductionInputController extends GetxController {
+class SignupIntroductionInputController extends GetxController {
   final SignupFlowController flowController = Get.find<SignupFlowController>();
 
   static const int maxLength = 200;

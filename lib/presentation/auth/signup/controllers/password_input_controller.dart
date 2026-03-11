@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/constants/password_policy.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
 class PasswordInputController extends GetxController {
+  final flowController = Get.find<SignupFlowController>();
 
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
   final RxBool isObscure = true.obs;
-  final Rx<InputValidationState> state = InputValidationState.initial.obs;
-
-  final RxBool hasInput = false.obs;
+  final state = InputValidationState.initial.obs;
+  final passwordResult = PasswordValidationResult.valid.obs;
 
   /// 버튼 클릭 여부
   bool _submitted = false;
@@ -27,14 +28,7 @@ class PasswordInputController extends GetxController {
   void toggleObscure() => isObscure.toggle();
 
   void _onTextChanged() {
-    hasInput.value =
-        passwordController.text.isNotEmpty ||
-        confirmPasswordController.text.isNotEmpty;
-
-
-    if(_submitted){
-      _validate();
-    }
+    _validate();
   }
 
   /// 버튼 클릭 시 호출
@@ -47,14 +41,14 @@ class PasswordInputController extends GetxController {
     final password = passwordController.text;
     final confirm = confirmPasswordController.text;
 
+    passwordResult.value = PasswordPolicy.validate(password);
+
     if (password.isEmpty || confirm.isEmpty) {
       state.value = InputValidationState.invalid;
       return;
     }
 
-    final result = PasswordPolicy.validate(password);
-
-    if (result != PasswordValidationResult.valid) {
+    if (passwordResult.value != PasswordValidationResult.valid) {
       state.value = InputValidationState.invalid;
       return;
     }
@@ -72,18 +66,24 @@ class PasswordInputController extends GetxController {
   String? get passwordErrorText {
     if (!_submitted) return null;
 
-    final result = PasswordPolicy.validate(passwordController.text);
+    if (passwordResult.value == PasswordValidationResult.valid) {
+      return null;
+    }
 
-    return AppStrings.passwordError(result);
+    return AppStrings.passwordError(passwordResult.value);
   }
 
   String? get confirmPasswordErrorText {
-    if (!_submitted && state.value != InputValidationState.mismatch) return null;
+    if (!_submitted) return null;
 
     if (state.value == InputValidationState.mismatch) {
       return AppStrings.invalidPassword;
     }
     return null;
+  }
+
+  void savePassword() {
+    flowController.setPassword(passwordController.text);
   }
 
   @override

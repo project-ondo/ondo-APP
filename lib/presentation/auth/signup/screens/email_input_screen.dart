@@ -13,7 +13,6 @@ import '../widgets/login_back_button.dart';
 import '../widgets/next_button.dart';
 import '../widgets/title_text.dart';
 
-
 class EmailInputScreen extends GetView<EmailInputController> {
   const EmailInputScreen({super.key});
 
@@ -60,7 +59,6 @@ class EmailInputScreen extends GetView<EmailInputController> {
           errorText: controller.emailState == InputValidationState.invalid
               ? AppStrings.invalidEmailFormat
               : null,
-          onChanged: (_) => controller.resetState(),
         );
       },
     );
@@ -71,7 +69,9 @@ class EmailInputScreen extends GetView<EmailInputController> {
       builder: (controller) {
         return NextButton(
           isAgreementChecked: controller.hasEmailInput,
-          onPressed: () =>  _onNextPressed(context),
+          onPressed: controller.hasEmailInput
+              ? () => _onNextPressed(context)
+              : null,
         );
       },
     );

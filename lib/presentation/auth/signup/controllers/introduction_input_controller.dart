@@ -1,19 +1,18 @@
 import 'package:flutter/cupertino.dart';
-import 'package:get/get_state_manager/get_state_manager.dart';
+import 'package:get/get.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
-
 class IntroductionInputController extends GetxController {
+  final SignupFlowController flowController = Get.find<SignupFlowController>();
+
   static const int maxLength = 200;
 
-  final TextEditingController introductionController =
-  TextEditingController();
+  final TextEditingController introductionController = TextEditingController();
 
   InputValidationState state = InputValidationState.initial;
 
-  bool get isValid => state == InputValidationState.valid;
-
-  bool get canProceed => isValid;
+  bool get canProceed => state != InputValidationState.invalid;
 
   @override
   void onInit() {
@@ -44,11 +43,11 @@ class IntroductionInputController extends GetxController {
 
   bool get hasError => state == InputValidationState.invalid;
 
-  String get sanitizedValue =>
-      introductionController.text.trim();
+  String get sanitizedValue => introductionController.text.trim();
 
   void submit() {
-    if (!isValid) return;
+    if (hasError) return;
+    flowController.setIntroduction(sanitizedValue);
   }
 
   @override

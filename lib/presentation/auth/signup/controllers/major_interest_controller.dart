@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:get/get.dart';
+import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 
 enum MajorCategory {
   frontEnd,
@@ -13,7 +14,6 @@ enum MajorCategory {
   ios,
   cloud,
 }
-
 
 extension MajorCategoryX on MajorCategory {
   String get label {
@@ -40,20 +40,21 @@ extension MajorCategoryX on MajorCategory {
   }
 }
 
-class MajorInterestController extends GetxController{
+class MajorInterestController extends GetxController {
+  final SignupFlowController flowController = Get.find();
   MajorCategory? selectedMajor;
 
   final Set<MajorCategory> selectedInterests = {};
 
-  void selectMajor(MajorCategory value){
+  void selectMajor(MajorCategory value) {
     selectedMajor = value;
     update();
   }
 
-  void toggleInterest(MajorCategory value){
-    if(selectedInterests.contains(value)){
+  void toggleInterest(MajorCategory value) {
+    if (selectedInterests.contains(value)) {
       selectedInterests.remove(value);
-    }else{
+    } else {
       selectedInterests.add(value);
     }
     update();
@@ -61,8 +62,18 @@ class MajorInterestController extends GetxController{
 
   bool get canProceed => selectedMajor != null && selectedInterests.isNotEmpty;
 
-  void submit(){
-    log('전공: ${selectedMajor?.name}');
-    log('관심분야: ${selectedInterests.map((e) => e.name,).toList()}');
+  void submit()   {
+    if (!canProceed) return;
+
+    final major = selectedMajor!;
+    flowController.setMajor(major.name);
+    flowController.setInterests(selectedInterests.map((e) => e.name).toSet());
+
+    log('전공: ${major.name}');
+    log(
+      '관심분야: ${selectedInterests.map(
+        (e) => e.name,
+      ).toList()}',
+    );
   }
 }

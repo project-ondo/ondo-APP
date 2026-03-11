@@ -10,7 +10,6 @@ import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/controllers/email_code_input_controller.dart';
-import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
@@ -56,9 +55,8 @@ class EmailCodeInputScreen extends GetView<EmailCodeInputController> {
                         ),
                       ),
                       AppGap.v24,
-                      GetBuilder<EmailCodeInputController>(
-                        builder: (controller) {
-                          return LabelTextField(
+                      Obx(
+                        () => LabelTextField(
                             label: '인증번호',
                             keyboardType: TextInputType.number,
                             controller: controller.emailCodeTextController,
@@ -66,8 +64,7 @@ class EmailCodeInputScreen extends GetView<EmailCodeInputController> {
                             errorText: controller.hasError
                                 ? controller.errorMessage
                                 : null,
-                          );
-                        },
+                          ),
                       ),
                     ],
                   ),
@@ -89,23 +86,22 @@ class EmailCodeInputScreen extends GetView<EmailCodeInputController> {
                     ),
                   ),
                   AppGap.v16,
-                  GetBuilder<EmailCodeInputController>(
-                    builder: (controller) {
-                      return CustomButton(
+                  Obx(
+                    () => CustomButton(
                         text: '인증하기',
                         variant: ButtonVariant.primary,
                         enabled: controller.isButtonEnabled,
                         onPressed: controller.isButtonEnabled
                             ? () {
-                                controller.verifyEmailCode();
-                                if (controller.codeState.value ==
-                                    InputValidationState.valid) {
+                          FocusScope.of(context).unfocus();
+
+                                final result = controller.verifyEmailCode();
+                                if (result) {
                                   context.pushNamed('signupPassword');
                                 }
                               }
                             : null,
-                      );
-                    },
+                      ),
                   ),
                   AppGap.v16,
                 ],

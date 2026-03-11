@@ -11,7 +11,6 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/auth/signup/controllers/major_interest_controller.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
-
 class MajorInterestSetupScreen extends GetView<MajorInterestController> {
   const MajorInterestSetupScreen({super.key});
 
@@ -48,9 +47,7 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
     );
   }
 
-  Widget _buildInterestSection({
-    required List<MajorCategory> categories,
-  }) {
+  Widget _buildInterestSection({required List<MajorCategory> categories}) {
     return GetBuilder<MajorInterestController>(
       builder: (controller) {
         return Column(
@@ -83,7 +80,7 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
   }
 
   Widget _buildMajorSelectSection({
-    required List<MajorCategory> categories,
+    required List<MajorCategory> categories
   }) {
     return GetBuilder<MajorInterestController>(
       builder: (controller) {
@@ -125,10 +122,12 @@ class MajorInterestSetupScreen extends GetView<MajorInterestController> {
               text: '다음',
               variant: ButtonVariant.primary,
               enabled: controller.canProceed,
-              onPressed: controller.canProceed ? (){
-                controller.submit();
-                context.goNamed('signupComplete');
-              } :null,
+              onPressed: controller.canProceed
+                  ? () {
+                      controller.submit();
+                      context.goNamed('signupComplete');
+                    }
+                  : null,
             ),
             AppGap.v16,
           ],

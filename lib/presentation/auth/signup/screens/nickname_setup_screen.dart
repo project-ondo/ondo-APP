@@ -1,5 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
@@ -11,16 +13,8 @@ import '../../../../core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 
-class NicknameSetupScreen extends StatefulWidget {
+class NicknameSetupScreen extends GetView<NicknameInputController> {
   const NicknameSetupScreen({super.key});
-
-  @override
-  State<NicknameSetupScreen> createState() => _NicknameSetupScreenState();
-}
-
-class _NicknameSetupScreenState extends State<NicknameSetupScreen> {
-
-  TextEditingController controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +26,7 @@ class _NicknameSetupScreenState extends State<NicknameSetupScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildForm(),
-              _buildSubmitButton(),
+              _buildSubmitButton(context),
             ],
           ),
         ),
@@ -56,21 +50,17 @@ class _NicknameSetupScreenState extends State<NicknameSetupScreen> {
         ),
         AppGap.v24,
 
-        GetBuilder<NicknameInputController>(
-          builder: (controller) {
-            return LabelTextField(
-              label: '닉네임',
-              controller: controller.nicknameController,
-              hintText: '닉네임을 입력해주세요',
-              errorText: controller.errorText,
-            );
-          },
+        LabelTextField(
+          label: '닉네임',
+          controller: controller.nicknameController,
+          hintText: '닉네임을 입력해주세요',
+          errorText: controller.errorText,
         ),
       ],
     );
   }
 
-  Widget _buildSubmitButton() {
+  Widget _buildSubmitButton(BuildContext context) {
     return GetBuilder<NicknameInputController>(
       builder: (controller) {
         return Column(
@@ -80,10 +70,12 @@ class _NicknameSetupScreenState extends State<NicknameSetupScreen> {
               variant: ButtonVariant.primary,
               enabled: controller.conSubmit,
               onPressed: controller.conSubmit
-                  ? (){
-                controller.validateNickname();
-                context.pushNamed('signupProfileImage');
-              }
+                  ? () {
+                      final valid = controller.validateNickname();
+                      if (!valid) return;
+                      log(controller.nicknameController.text);
+                      context.pushNamed('signupProfileImage');
+                    }
                   : null,
             ),
             AppGap.v16,

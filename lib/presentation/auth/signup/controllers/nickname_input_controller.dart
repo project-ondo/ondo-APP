@@ -28,20 +28,21 @@ class NicknameInputController extends GetxController {
     );
   }
 
-  void validateNickname(){
+  bool validateNickname(){
     final nickname = nicknameController.text.trim();
 
     if(nickname == 'test1')
     {
       state = InputValidationState.invalid;
       update();
-      return;
+      return false;
     }
 
     signupFlowController.setNickname(nickname);
     state = InputValidationState.valid;
     update();
     log('닉네임 설정: $nickname');
+    return true;
   }
 
   String? get errorText {

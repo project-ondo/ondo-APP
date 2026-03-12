@@ -40,7 +40,8 @@ class RoutePaths {
 
   static const String passwordReset = '/password_reset';
   static const String passwordResetInputEmail = '/password_reset/email';
-  static const String passwordResetInputEmailCode = '/password_reset/email-code';
+  static const String passwordResetInputEmailCode =
+      '/password_reset/email-code';
   static const String passwordResetInputPassword = '/password_reset/password';
   static const String passwordResetComplete = '/password_reset/complete';
 
@@ -105,21 +106,19 @@ final GoRouter appRouter = GoRouter(
       },
       redirect: (context, state) {
         if (!Get.isRegistered<PasswordResetFlowController>()) {
-          return null;
+          PasswordResetBinding().dependencies();
         }
 
         final flowController = Get.find<PasswordResetFlowController>();
-        final location = state.uri.toString();
+        final location = state.uri.path;
 
-        if (location == RoutePaths.passwordReset) {
-          return RoutePaths.passwordResetInputEmail;
-        }
-        if (location == RoutePaths.passwordResetInputPassword &&
-            !flowController.isEmailVerified) {
-          return RoutePaths.passwordResetInputEmail;
-        }
-        if (location == RoutePaths.passwordResetComplete &&
-            !flowController.isEmailVerified) {
+        final allowedPaths = {
+          RoutePaths.passwordResetInputEmail,
+          RoutePaths.passwordResetInputEmailCode,
+        };
+
+        if (!flowController.isEmailVerified &&
+            !allowedPaths.contains(location)) {
           return RoutePaths.passwordResetInputEmail;
         }
 

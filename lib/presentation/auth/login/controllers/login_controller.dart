@@ -45,17 +45,19 @@ class LoginController extends GetxController {
     return true;
   }
 
-  void login() {
+  Future<bool> login() async{
     final String testEmail = 'test1@gmail.com';
     final String testPassword = 'asdf1234!';
 
-    if (!validate()) return;
+    if (!validate()) return false;
 
     if (emailController.text == testEmail &&
         passwordController.text == testPassword) {
       generalError.value = null;
+      return true;
     } else {
       generalError.value = AppStrings.inputEmailOrPassword;
+      return false;
     }
   }
 

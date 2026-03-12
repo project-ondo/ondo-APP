@@ -64,9 +64,14 @@ class LoginScreen extends GetView<LoginController> {
             child: CustomButton(
               text: '로그인',
               variant: ButtonVariant.primary,
-              onPressed: () {
-                controller.login();
-                context.go(RoutePaths.navigation);
+              onPressed: () async {
+                final success = await controller.login();
+
+                if (!context.mounted) return;
+
+                if (success) {
+                  context.go(RoutePaths.navigation);
+                }
               },
             ),
           ),

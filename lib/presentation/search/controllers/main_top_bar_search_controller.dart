@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/presentation/search/states/search_state.dart';
@@ -25,7 +24,6 @@ class MainTopBarSearchController extends GetxController {
     state = SearchState();
     cacheTags = loadTags();
     cacheTips = loadTips();
-    print("a ${this.hashCode}");
     super.onInit();
   }
 
@@ -100,7 +98,6 @@ class SearchPopupController extends GetxController {
     //팁, 태그 보이기
     viewTips.addAll(mainController.cacheTips);
     viewTags.addAll(mainController.cacheTags);
-    print("b ${mainController.hashCode}");
     //worker 등록
     worker1 = ever(
       mainController.tempQuery,
@@ -110,7 +107,6 @@ class SearchPopupController extends GetxController {
   }
 
   void _updateData(String text) {
-    print(text);
 
     if (text.isNotEmpty) {
       //입력 걀과와 같은, 태그 20개 보이기

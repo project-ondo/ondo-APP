@@ -4,11 +4,31 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/presentation/alert/controllers/alert_controller.dart';
+import 'package:ondo/presentation/chat/controllers/chat_main_screen_controller.dart';
 import 'package:ondo/presentation/chat/screens/chat_main_screen.dart';
+import 'package:ondo/presentation/community/controllers/community_controller.dart';
 import 'package:ondo/presentation/community/screens/community_main_screen.dart';
+import 'package:ondo/presentation/home/controllers/home_controller.dart';
 import 'package:ondo/presentation/home/screens/home_screen.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
 import 'package:ondo/presentation/profile/screens/my_profile_screen.dart';
+import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
+
+void main() {
+  Get.put(MainTopBarSearchController());
+  Get.put(AlertController());
+  Get.put(HomeController());
+  Get.put(ChatMainScreenController());
+  Get.put(CommunityController());
+  Get.put(NavigationController());
+
+  runApp(
+    MaterialApp(
+      home: NavigationScreen(),
+    ),
+  );
+}
 
 class NavigationScreen extends GetView<NavigationController> {
   const NavigationScreen({super.key});

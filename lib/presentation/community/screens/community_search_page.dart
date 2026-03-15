@@ -6,7 +6,6 @@ import 'package:ondo/core/design_system/components/post/base_post_list.dart';
 import 'package:ondo/core/design_system/components/post/post_item.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
-import 'package:ondo/presentation/community/widgets/community_post_add_button.dart';
 
 class CommunitySearchPage extends StatelessWidget {
   const CommunitySearchPage({super.key});

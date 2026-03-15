@@ -20,6 +20,7 @@ class CommunityMainScreen extends GetView<CommunityController> {
       floatingActionButton: CommunityPostAddButton.float(),
       backgroundColor: AppColors.background,
       body: MainTopSearchBar(
+        pageId: "community",
         mainPage: SingleChildScrollView(
           child: Padding(
             padding: AppPadding.screenHorizontal,
@@ -34,9 +35,9 @@ class CommunityMainScreen extends GetView<CommunityController> {
             ),
           ),
         ),
-        resultPageBuilder: (searchText) {
-          if (searchText.trim().isEmpty) return null;
-          controller.searchResultController.searchResultInfo(searchText);
+        resultPageBuilder: (state) {
+          if (state.query.trim().isEmpty) return null;
+          controller.searchResultController.searchResultInfo(state.query.value);
           return CommunitySearchPage();
         },
       ),

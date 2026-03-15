@@ -6,7 +6,7 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 class CustomTagCard extends StatelessWidget {
   final String tag;
   final Color? color;
-  final void Function(String)? onTap;
+  final void Function(bool isSelect)? onTap;
   final ValueNotifier<bool> isSelect;
 
   CustomTagCard({
@@ -26,13 +26,15 @@ class CustomTagCard extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           onTap: () {
             isSelect.value = !isSelect.value;
-            onTap?.call(tag);
+            onTap?.call(isSelect.value);
           },
           child: Container(
             padding: AppPadding.chip,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: isSelect.value ? AppColors.primary : color ?? AppColors.white,
+              color: isSelect.value
+                  ? AppColors.primary
+                  : color ?? AppColors.white,
             ),
             child: Text(
               tag,
@@ -42,7 +44,7 @@ class CustomTagCard extends StatelessWidget {
             ),
           ),
         );
-      }
+      },
     );
   }
 }

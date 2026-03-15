@@ -17,7 +17,6 @@ class CommunityFilterTagList extends GetView<CommunityController> {
         separatorBuilder: (context, index) => AppGap.h16,
         itemBuilder: (context, index) => CustomTagCard(
           tag: controller.filterTags[index],
-          onTap: controller.filterPosts,
         ),
       ),
     );

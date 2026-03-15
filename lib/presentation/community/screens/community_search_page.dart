@@ -14,7 +14,6 @@ class CommunitySearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      floatingActionButton: CommunityPostAddButton.dock(),
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
         child: Padding(

@@ -135,7 +135,11 @@ class _ChatReviewDialogState extends State<ChatReviewDialog> {
       children: List.generate(
         ChatReviewDialog.categories.length,
         (index) => CustomTagCard(
-          onTap: _tapCategory,
+          onTap: (isSelect) {
+            if (isSelect) {
+              _tapCategory(ChatReviewDialog.categories[index]);
+            }
+          },
           tag: categoriesMap.keys.toList()[index],
           color: AppColors.gray20,
         ),

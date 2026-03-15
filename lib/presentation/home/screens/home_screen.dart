@@ -20,6 +20,7 @@ class HomeScreen extends GetView<HomeController> {
     return BaseScaffold(
       backgroundColor: AppColors.background,
       body: MainTopSearchBar(
+        pageId: "home",
         mainPage: SingleChildScrollView(
           child: Column(
             children: [
@@ -29,9 +30,9 @@ class HomeScreen extends GetView<HomeController> {
             ],
           ),
         ),
-        resultPageBuilder: (searchText) {
-          if(searchText.trim().isEmpty) return null;
-          controller.searchResultController.searchResultInfo(searchText);
+        resultPageBuilder: (state) {
+          if (state.query.trim().isEmpty) return null;
+          controller.searchResultController.searchResultInfo(state.query.value);
           return HomeSearchPage();
         },
       ),

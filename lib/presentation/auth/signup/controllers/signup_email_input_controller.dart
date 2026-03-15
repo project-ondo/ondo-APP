@@ -31,14 +31,14 @@ class SignupEmailInputController extends GetxController {
     });
   }
 
-  bool isLoading =  false;
+  bool isLoading = false;
 
-  Future<bool> sendEmailCode()async{
+  Future<bool> sendEmailCode() async {
     final email = emailTextController.text.trim();
 
-    if(!validateEmail(email)) return false;
+    if (!validateEmail(email)) return false;
 
-    try{
+    try {
       isLoading = true;
       update();
 
@@ -47,11 +47,17 @@ class SignupEmailInputController extends GetxController {
       flowController.setEmail(email);
 
       return true;
-    } catch(e){
+    } catch (e) {
       emailState = InputValidationState.invalid;
       update();
+
+      Get.snackbar(
+        "인증 코드 발송 실패",
+        "잠시 후 다시 시도해주세요.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
       return false;
-    }finally {
+    } finally {
       isLoading = false;
       update();
     }
@@ -76,7 +82,7 @@ class SignupEmailInputController extends GetxController {
   }
 
   bool _isValidEmail(String email) {
-    final regex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
     return regex.hasMatch(email);
   }
 }

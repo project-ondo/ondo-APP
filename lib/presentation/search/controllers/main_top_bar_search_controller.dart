@@ -1,116 +1,140 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/presentation/search/states/search_state.dart';
 import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 
 class MainTopBarSearchController extends GetxController {
   final TextEditingController textController = TextEditingController();
   final FocusNode focusNode = FocusNode();
-  late final SearchPopupController _popupController;
 
+  RxBool showPopup = false.obs;
   RxBool showResult = false.obs;
-  RxBool showSearchPopup = false.obs;
 
-  RxList<String> searchTags = <String>[].obs;
-  RxList<String> searchTips = <String>[].obs;
+  late final List<String> cacheTags;
+  late final List<String> cacheTips;
+
+  final Set<String> selectTagList = {};
+  final RxString tempQuery = "".obs;
+
+  late final SearchState state;
 
   @override
   void onInit() {
-    searchTags.addAll(loadTags());
-    searchTips.addAll(loadTips());
+    state = SearchState();
+    cacheTags = loadTags();
+    cacheTips = loadTips();
+    print("a ${this.hashCode}");
     super.onInit();
   }
 
   @override
   void onReady() {
-    _popupController = Get.put(SearchPopupController());
-    focusNode.addListener(_showPopupToggle);
+    focusNode.addListener(_updateShowPopup);
     super.onReady();
   }
 
   @override
   void onClose() {
+    focusNode.removeListener(_updateShowPopup);
     textController.dispose();
-    focusNode.removeListener(_showPopupToggle);
     focusNode.dispose();
     super.onClose();
   }
 
-  void onTap() => focusNode.requestFocus();
+  void searchFocus() => focusNode.requestFocus();
 
-  void onOtherTap() => focusNode.unfocus();
+  void searchUnfocus() => focusNode.unfocus();
 
-  void onChange(String value) {
-    _ensureIsRegisterPopController(() {
-      _popupController.searchFitsKeywords(value.trim());
-    });
+  void onSubmitText(String value) {
+    state.query.value = value;
+    _submit();
   }
 
-  void onSubmit(String value) {
-    _ensureIsRegisterPopController(() {
-      if (textController.text.isNotEmpty) {
-        showResult.value = true;
-        showResult.refresh();
-        focusNode.unfocus();
-      }
-    });
+  void onSubmitTip(String tip) {
+    final trim = tip.trim();
+    textController.text = trim;
+    onSubmitText(trim);
   }
 
-  void _showPopupToggle() => showSearchPopup.value = focusNode.hasFocus;
+  void onSubmitTags() {
+    state.tags.assignAll(selectTagList);
+    _submit();
+  }
 
-  void _ensureIsRegisterPopController(Function callBack) {
-    if (Get.isRegistered<SearchPopupController>()) {
-      callBack.call();
+  void _submit() {
+    searchUnfocus();
+    showResult.value = true;
+  }
+
+  void selectTag(String value, bool isSelect) {
+    if (isSelect) {
+      selectTagList.add(value);
+      onSubmitTags();
+    }
+    {
+      selectTagList.remove(value);
     }
   }
+
+  void onChange(String value) {
+    tempQuery.value = value;
+  }
+
+  void _updateShowPopup() => showPopup.value = focusNode.hasFocus;
 }
 
 class SearchPopupController extends GetxController {
-  RxList<String> tempSearchTags = <String>[].obs;
-  RxList<String> tempSearchTips = <String>[].obs;
+  RxList<String> viewTags = <String>[].obs;
+  RxList<String> viewTips = <String>[].obs;
 
-  Set<String> selectTags = {};
-  Set<String> selectTips = {};
+  final MainTopBarSearchController mainController;
 
-  late final MainTopBarSearchController _controller;
+  late final Worker worker1;
+
+  SearchPopupController({required this.mainController});
 
   @override
   void onInit() {
-    _controller = Get.find<MainTopBarSearchController>();
-    tempSearchTips.addAll(_controller.searchTips);
-    tempSearchTags.addAll(_controller.searchTags);
+    //팁, 태그 보이기
+    viewTips.addAll(mainController.cacheTips);
+    viewTags.addAll(mainController.cacheTags);
+    print("b ${mainController.hashCode}");
+    //worker 등록
+    worker1 = ever(
+      mainController.tempQuery,
+      _updateData,
+    );
     super.onInit();
   }
 
-  void searchFitsKeywords(String text) {
+  void _updateData(String text) {
+    print(text);
+
     if (text.isNotEmpty) {
-      tempSearchTags.value = List.of(
-        _controller.searchTags.where(
-          (tag) => tag.trim().toLowerCase().contains(text.trim().toLowerCase()),
-        ),
+      //입력 걀과와 같은, 태그 20개 보이기
+      viewTags.value = List.of(
+        mainController.cacheTags
+            .where(
+              (tag) =>
+                  tag.trim().toLowerCase().contains(text.trim().toLowerCase()),
+            )
+            .take(20),
       );
-      tempSearchTips.value = List.of(
-        _controller.searchTips.where(
-          (tip) => tip.trim().toLowerCase().contains(text.trim().toLowerCase()),
-        ),
+      //입력 걀과와 같은, 팁 20개 보이기
+      viewTips.value = List.of(
+        mainController.cacheTips
+            .where(
+              (tip) =>
+                  tip.trim().toLowerCase().contains(text.trim().toLowerCase()),
+            )
+            .take(20),
       );
     } else {
-      tempSearchTags.value = _controller.searchTags;
-      tempSearchTips.value = _controller.searchTips;
+      viewTags.value = mainController.cacheTags;
+      viewTips.value = mainController.cacheTips;
     }
-  }
-
-  void selectTag(int index, bool isSelect) => isSelect
-      ? selectTags.add(tempSearchTags[index])
-      : selectTags.remove(tempSearchTags[index]);
-
-  void selectTip(int index, bool isSelect) => isSelect
-      ? selectTips.add(tempSearchTips[index])
-      : selectTips.remove(tempSearchTips[index]);
-
-  void resetSelectKeyword() {
-    selectTags.clear();
-    selectTips.clear();
   }
 }
 

@@ -8,6 +8,7 @@ import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/presentation/alert/controllers/alert_controller.dart';
 import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
 import 'package:ondo/presentation/alert/screens/alert_screen.dart';
+import 'package:ondo/presentation/search/states/search_state.dart';
 import 'package:ondo/presentation/search/widgets/search_popup.dart';
 
 typedef HomeSearchModel = ({
@@ -24,12 +25,14 @@ typedef ChatSearchModel = ({
 @immutable
 class MainTopSearchBar extends StatefulWidget {
   final Widget mainPage;
-  final Widget? Function(String searchText) resultPageBuilder;
+  final String pageId;
+  final Widget? Function(SearchState state) resultPageBuilder;
 
   const MainTopSearchBar({
     super.key,
     required this.mainPage,
     required this.resultPageBuilder,
+    required this.pageId,
   });
 
   @override
@@ -41,8 +44,9 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
 
   @override
   void initState() {
-    _controller = Get.put(MainTopBarSearchController());
     Get.put(AlertController());
+    _controller = Get.put(MainTopBarSearchController(), tag: widget.pageId);
+    Get.lazyPut(() => SearchPopupController(mainController: _controller));
     super.initState();
   }
 
@@ -55,22 +59,30 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
           child: Stack(
             children: [
               GestureDetector(
-                onTap: _controller.onOtherTap,
+                onTap: _controller.searchUnfocus,
                 child: Obx(() {
-                  return !_controller.showResult.value
-                      ? widget.mainPage
-                  //result 즉 검색 결과가 없다면 null을 반환해 mainPage 표시
-                      : widget.resultPageBuilder(
-                              _controller.textController.text,
-                            ) ??
-                            widget.mainPage;
+                  if (!_controller.showResult.value) return widget.mainPage;
+
+                  final res = widget.resultPageBuilder(_controller.state);
+
+                  //검색 결과가 없다면 null을 반환해 mainPage 표시
+                  if (res == null) {
+                    _controller.showResult.value = false;
+                    _controller.textController.clear();
+                    return widget.mainPage;
+                  }
+
+                  return res;
                 }),
               ),
               Obx(() {
-                if (!_controller.showSearchPopup.value) {
+                if (!_controller.showPopup.value) {
                   return SizedBox.shrink();
                 }
-                return SearchPopup();
+
+                return SearchPopup(
+                  pageId: widget.pageId,
+                );
               }),
             ],
           ),
@@ -87,7 +99,7 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
         children: [
           Expanded(
             child: CustomTextField(
-              onSubmitted: _controller.onSubmit,
+              onSubmitted: _controller.onSubmitText,
               onChanged: _controller.onChange,
               focusNode: _controller.focusNode,
               controller: _controller.textController,
@@ -97,7 +109,7 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
             ),
           ),
           Obx(() {
-            if (_controller.showSearchPopup.value) {
+            if (_controller.showPopup.value) {
               return SizedBox.shrink();
             }
             return Row(

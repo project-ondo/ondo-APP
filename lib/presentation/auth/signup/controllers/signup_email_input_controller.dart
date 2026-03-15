@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/domain/usecases/auth/send_email_code_usecase.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
 class SignupEmailInputController extends GetxController {
   final flowController = Get.find<SignupFlowController>();
+
+  final SendEmailCodeUsecase sendEmailCodeUsecase;
+
+  SignupEmailInputController(this.sendEmailCodeUsecase);
+
   late final TextEditingController emailTextController;
 
   InputValidationState emailState = InputValidationState.initial;
@@ -25,6 +31,32 @@ class SignupEmailInputController extends GetxController {
     });
   }
 
+  bool isLoading =  false;
+
+  Future<bool> sendEmailCode()async{
+    final email = emailTextController.text.trim();
+
+    if(!validateEmail(email)) return false;
+
+    try{
+      isLoading = true;
+      update();
+
+      await sendEmailCodeUsecase(email);
+
+      flowController.setEmail(email);
+
+      return true;
+    } catch(e){
+      emailState = InputValidationState.invalid;
+      update();
+      return false;
+    }finally {
+      isLoading = false;
+      update();
+    }
+  }
+
   @override
   void onClose() {
     emailTextController.dispose();
@@ -34,7 +66,6 @@ class SignupEmailInputController extends GetxController {
   bool validateEmail(String email) {
     if (_isValidEmail(email)) {
       emailState = InputValidationState.valid;
-      flowController.setEmail(email);
       update();
       return true;
     } else {

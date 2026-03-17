@@ -1,32 +1,89 @@
 import 'package:get/get.dart';
+import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
+import 'package:ondo/presentation/community/screens/community_post_create_screen.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
 
 class CommunityController extends GetxController {
-  RxList<String> filterTags = <String>[].obs;
-  late final CommunitySearchResultController searchResultController;
+  final List<String> tags = <String>[].obs;
+  final RxSet<String> selectTagList = <String>{}.obs;
+  final List<PostInfo> _cachePosts = <PostInfo>[];
+  final RxList<PostInfo> viewPosts = <PostInfo>[].obs;
 
   @override
   void onInit() {
-    filterTags.addAll(_getTags());
+    tags.addAll(_getTags());
+    _cachePosts.addAll(_getPosts());
+    viewPosts.addAll(_cachePosts);
     super.onInit();
   }
 
   @override
   void onReady() {
-    searchResultController = Get.put(CommunitySearchResultController());
+    Get.put(CommunityResultController());
     super.onReady();
   }
 
-  void filterPosts(String filterString) {}
+  void enterPostCreate() {
+    Get.lazyPut(() => CommunityPostCreateController());
+    Get.to(CommunityPostCreateScreen());
+  }
+
+  void searchPost(List<String> searchList) {
+    //TODO: 커뮤니티 서버 검색 결과 반환
+    final Set<PostInfo> result = {};
+    result.addAllIf(
+      searchList.isNotEmpty,
+      _cachePosts.where(
+        (post) =>
+            searchList.any(
+              (search) => post.title.contains(search),
+            ) ||
+            searchList.any(
+              (search) => post.name.contains(search),
+            ) ||
+            searchList.any(
+              (search) => post.skills.any(
+                (skill) => skill.contains(search),
+              ),
+            ),
+      ),
+    );
+    Get.find<CommunityResultController>().updateResult(result);
+  }
+
+  void filterPostTag(String tag, bool isSelect) {
+    //TODO: 커뮤니티 서버 필터 검색 결과 반환
+    isSelect ? selectTagList.add(tag) : selectTagList.remove(tag);
+    if (selectTagList.isEmpty) {
+      viewPosts.assignAll(_cachePosts);
+      return;
+    }
+    final Set<PostInfo> result = {};
+    result.addAll(
+      _cachePosts.where(
+        (post) =>
+            selectTagList.any(
+              (tag) => post.title.contains(tag),
+            ) ||
+            selectTagList.any(
+              (tag) => post.name.contains(tag),
+            ) ||
+            selectTagList.any(
+              (tag) => post.skills.any(
+                (skill) => skill.contains(tag),
+              ),
+            ),
+      ),
+    );
+    viewPosts.assignAll(result);
+  }
 }
 
-class CommunitySearchResultController extends GetxController {
-  List<PostInfo> posts = <PostInfo>[].obs;
+class CommunityResultController extends GetxController {
+  final RxList<PostInfo> viewPosts = <PostInfo>[].obs;
 
-  void searchResultInfo(String text) {
-    //TODO: 커뮤니티 서버 검색 결과 반환
-    if(text.isEmpty) posts.clear();
-    posts.assignAll(_getPosts());
+  void updateResult(Iterable<PostInfo> results) {
+    viewPosts.assignAll(results);
   }
 }
 
@@ -46,7 +103,7 @@ List<PostInfo> _getPosts() => [
       skills: ["UI/UX", "FrontEnd"],
       bookmarks: 12,
       favoites: 12,
-      createAt: Duration(minutes: i),
+      createAt: Duration(minutes: i + 1),
       isFavorite: i % 2 == 0,
       isBookmark: i % 3 == 0,
     ),

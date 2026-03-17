@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ondo/core/design_system/app_colors.dart';
+import 'package:ondo/core/design_system/app_icon.dart';
+import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_icon_button.dart';
+import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
-import '../../app_colors.dart';
-import '../../app_icon.dart';
-import '../../app_layout.dart';
-import '../../app_text_styles.dart';
-
-class PostItem extends StatelessWidget {
+class PostItem extends GetView<PostController> {
   final List<String> skills;
   final String title;
   final String author;
@@ -35,24 +36,30 @@ class PostItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: AppPadding.card,
-      decoration: BoxDecoration(
-        borderRadius: AppRadius.baseRadius,
-        color: AppColors.white,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _skillList(),
-          Spacer(flex: AppSpacing.s12.toInt()),
+    return GestureDetector(
+      onTap: () {
+        //TODO : 해당 Post가 나의 Post인지, 타인의 Post인지 구분 필요, Date Model 정의 요구됨
+        controller.enterPostDetail(true);
+      },
+      child: Container(
+        padding: AppPadding.card,
+        decoration: BoxDecoration(
+          borderRadius: AppRadius.baseRadius,
+          color: AppColors.white,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _skillList(),
+            Spacer(flex: AppSpacing.s12.toInt()),
 
-          _content(),
-          Spacer(flex: AppSpacing.s16.toInt()),
+            _content(),
+            Spacer(flex: AppSpacing.s16.toInt()),
 
-          _bottomContent(),
-        ],
+            _bottomContent(),
+          ],
+        ),
       ),
     );
   }

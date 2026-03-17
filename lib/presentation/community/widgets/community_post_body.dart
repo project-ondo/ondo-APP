@@ -6,7 +6,7 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_icon_button.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
-import 'package:ondo/presentation/community/controllers/post_view_controller.dart';
+import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
 
 class CommunityPostBody extends GetView<PostViewController> {
   const CommunityPostBody({super.key});

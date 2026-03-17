@@ -5,9 +5,10 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
-import 'package:ondo/core/design_system/components/post/post_list_indicator.dart';
-import 'package:ondo/presentation/community/controllers/post_view_controller.dart';
+import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
 import 'package:ondo/presentation/community/widgets/community_post_comment_card.dart';
+
+import '../../post/widgets/post_list_indicator.dart';
 
 class CommunityCommentList extends StatefulWidget {
   const CommunityCommentList({super.key});

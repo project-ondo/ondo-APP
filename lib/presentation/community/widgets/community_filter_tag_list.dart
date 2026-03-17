@@ -13,10 +13,12 @@ class CommunityFilterTagList extends GetView<CommunityController> {
       height: AppSpacing.s36,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: controller.filterTags.length,
+        itemCount: controller.tags.length,
         separatorBuilder: (context, index) => AppGap.h16,
         itemBuilder: (context, index) => CustomTagCard(
-          tag: controller.filterTags[index],
+          onTap: (isSelect) =>
+              controller.filterPostTag(controller.tags[index], isSelect),
+          tag: controller.tags[index],
         ),
       ),
     );

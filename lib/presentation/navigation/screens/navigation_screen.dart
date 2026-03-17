@@ -15,20 +15,6 @@ import 'package:ondo/presentation/navigation/controllers/navigation_controller.d
 import 'package:ondo/presentation/profile/screens/my_profile_screen.dart';
 import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
 
-void main() {
-  Get.put(MainTopBarSearchController());
-  Get.put(AlertController());
-  Get.put(HomeController());
-  Get.put(ChatMainScreenController());
-  Get.put(CommunityController());
-  Get.put(NavigationController());
-
-  runApp(
-    MaterialApp(
-      home: NavigationScreen(),
-    ),
-  );
-}
 
 class NavigationScreen extends GetView<NavigationController> {
   const NavigationScreen({super.key});

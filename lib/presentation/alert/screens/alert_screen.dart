@@ -19,17 +19,14 @@ import '../widgets/report_alert_card.dart';
 class AlertScreen extends GetView<AlertController> {
   const AlertScreen({super.key});
 
-  void _showAlertDeleteDialog(BuildContext context) => showDialog(
-    context: context,
-    builder: (context) => CustomAlertDialog(
+  void _showAlertDeleteDialog() => Get.dialog(
+    CustomAlertDialog(
       title: "알림",
       comment: "정말 모든 알림을 삭제하시겠어요?",
-      actionLeft: () {
-        Navigator.pop(context);
-      },
+      actionLeft: () => Get.back(),
       actionRight: () {
-        controller.clearAlerts();
-        Navigator.pop(context);
+        controller.clear();
+        Get.back();
       },
       rightActionText: "삭제",
     ),
@@ -53,7 +50,7 @@ class AlertScreen extends GetView<AlertController> {
     itemBuilder: (context) => [
       PopupMenuItem(
         padding: AppPadding.popupManuButton,
-        onTap: () => _showAlertDeleteDialog(context),
+        onTap: _showAlertDeleteDialog,
         height: double.minPositive,
         child: Align(
           alignment: Alignment.center,
@@ -74,7 +71,7 @@ class AlertScreen extends GetView<AlertController> {
 
         Obx(
           () => Expanded(
-            child: controller.enable.value
+            child: controller.alertList.isNotEmpty
                 ? _AlertPageList()
                 : _noMessageIcon(),
           ),
@@ -119,7 +116,7 @@ class _Title extends GetView<AlertController> {
               AppGap.h12,
               Obx(
                 () => Text(
-                  "${controller.total.value}",
+                  "${controller.alertList.length}",
                   style: AppTextStyles.textMedium(textColor: AppColors.gray60),
                 ),
               ),
@@ -136,12 +133,12 @@ class _Title extends GetView<AlertController> {
 class _AlertPageList extends GetView<AlertController> {
   final ValueNotifier<int> curIndex = ValueNotifier(0);
 
-  int getTotalPage() => (controller.total / 11).ceil();
+  int getTotalPage() => (controller.alertList.length / 11).ceil();
 
   int getStartIndex(int index) => index * 11;
 
   int getLastIndex(int index) =>
-      min(getStartIndex(index) + 11, controller.total.value);
+      min(getStartIndex(index) + 11, controller.alertList.length);
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +163,7 @@ class _AlertPageList extends GetView<AlertController> {
   }
 
   Widget _alertList(int startIndex, int lastIndex) {
-    final subAlerts = controller.alerts.sublist(startIndex, lastIndex);
+    final subAlerts = controller.alertList.sublist(startIndex, lastIndex);
     return ListView.separated(
       shrinkWrap: true,
       itemCount: subAlerts.length,
@@ -199,7 +196,7 @@ class _AlertPageList extends GetView<AlertController> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
-          (controller.alerts.length / 11).ceil(),
+          (controller.alertList.length / 11).ceil(),
           (index) => Padding(
             padding: AppPadding.userCard,
             child: Text(

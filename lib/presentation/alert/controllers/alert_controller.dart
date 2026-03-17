@@ -2,25 +2,16 @@ import 'package:get/get.dart';
 import 'package:ondo/presentation/alert/states/alert_state.dart';
 
 class AlertController extends GetxController {
-  RxBool enable = true.obs;
-  RxInt total = 0.obs;
-  final RxList<Alert> alerts = <Alert>[].obs;
+  final RxList<Alert> alertList = <Alert>[].obs;
 
   @override
   void onInit() {
-    alerts.addAll(getAlerts());
-    setTotal();
+    alertList.addAll(getAlerts());
     super.onInit();
   }
 
-  void clearAlerts() {
-    alerts.clear();
-    setTotal();
-  }
-
-  void setTotal() {
-    total.value = alerts.length;
-    enable.value = total > 0;
+  void clear() {
+    alertList.clear();
   }
 }
 

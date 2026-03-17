@@ -10,15 +10,13 @@ class HomeRecommendChatList extends BaseHomeProfileList {
   final HomeController _controller = Get.find<HomeController>();
 
   @override
-  List<Widget> listBuilder() => List.generate(
-    _controller.chats.length,
-    (index) {
-      final chat = _controller.chats[index];
-      return HomeProfileCard(
-        skill: chat.skill,
-        name: chat.name,
-        rating: chat.rating,
-      );
-    },
-  );
+  List<Widget> listBuilder() => _controller.viewProfileList
+      .map(
+        (chat) => HomeProfileCard(
+          skill: chat.skill,
+          name: chat.name,
+          rating: chat.rating,
+        ),
+      )
+      .toList();
 }

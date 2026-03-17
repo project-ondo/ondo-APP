@@ -12,6 +12,7 @@ class HomePostRankItem extends StatelessWidget {
   final int createAgo;
   final int favorite;
   final FavoriteAction? heartAction;
+  final VoidCallback? onTap;
 
   const HomePostRankItem({
     super.key,
@@ -20,25 +21,29 @@ class HomePostRankItem extends StatelessWidget {
     required this.favorite,
     required this.rank,
     this.heartAction,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        _rank(),
-        Expanded(child: _content()),
-        AppGap.h16,
-        CustomIconButton(
-          imagePath: AppIcon.heart.path,
-          total: favorite,
-          activeColor: AppColors.red,
-          action: heartAction,
-          iconSize: AppSpacing.s16,
-          totalStyle: AppTextStyles.caption(),
-        ),
-      ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _rank(),
+          Expanded(child: _content()),
+          AppGap.h16,
+          CustomIconButton(
+            imagePath: AppIcon.heart.path,
+            total: favorite,
+            activeColor: AppColors.red,
+            action: heartAction,
+            iconSize: AppSpacing.s16,
+            totalStyle: AppTextStyles.caption(),
+          ),
+        ],
+      ),
     );
   }
 

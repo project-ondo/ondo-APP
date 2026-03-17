@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ondo/core/design_system/components/post/base_post_list.dart';
-import 'package:ondo/core/design_system/components/post/post_item.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
+import 'package:ondo/presentation/post/widgets/base_post_list.dart';
+import 'package:ondo/presentation/post/widgets/post_item.dart';
 
 @immutable
 class HomeRecommendPostList extends BasePostGrid {
@@ -12,11 +12,9 @@ class HomeRecommendPostList extends BasePostGrid {
 
   @override
   List<Widget> listBuilder() {
-    return List.generate(_controller.posts.length, (index) {
-      return Obx(
-        () {
-          final post = _controller.posts[index];
-          return PostItem(
+    return _controller.viewPostList
+        .map(
+          (post) => PostItem(
             skills: post.skills,
             title: post.title,
             author: post.name,
@@ -31,9 +29,8 @@ class HomeRecommendPostList extends BasePostGrid {
             },
             initialBookmark: post.isBookmark,
             initialFavorite: post.isFavorite,
-          );
-        }
-      );
-    });
+          ),
+        )
+        .toList();
   }
 }

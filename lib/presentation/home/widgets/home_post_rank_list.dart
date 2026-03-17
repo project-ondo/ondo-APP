@@ -5,6 +5,7 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
+import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 @immutable
 class HomePostRankList extends StatefulWidget {
@@ -16,16 +17,16 @@ class HomePostRankList extends StatefulWidget {
 
 class _HomePostRankListState extends State<HomePostRankList> {
   late final PageController _pageController;
-  late final HomeController _controller;
+  late final HomeController _mainController;
+  late final PostController _postController;
 
   ValueNotifier<int> curIndex = ValueNotifier(0);
 
   @override
   void initState() {
-    _controller = Get.find<HomeController>();
-    _pageController = PageController(
-      initialPage: curIndex.value,
-    );
+    _mainController = Get.find<HomeController>();
+    _postController = Get.find<PostController>();
+    _pageController = PageController(initialPage: curIndex.value);
     super.initState();
   }
 
@@ -35,7 +36,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
     super.dispose();
   }
 
-  int _getPageTotal() => (_controller.ranks.length / 3).ceil();
+  int _getPageTotal() => (_mainController.ranks.length / 3).ceil();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
 
   Widget _postList() {
     return Obx(() {
-      final ranks = _controller.ranks;
+      final ranks = _mainController.ranks;
       return PageView.builder(
         controller: _pageController,
         pageSnapping: true,
@@ -77,6 +78,10 @@ class _HomePostRankListState extends State<HomePostRankList> {
 
               return currentItemIndex < ranks.length
                   ? HomePostRankItem(
+                      onTap: () {
+                        //TODO : 나의 게시물인지 판단하여 넘김
+                        _postController.enterPostDetail(false);
+                      },
                       title: ranks[currentItemIndex].title,
                       createAgo: ranks[currentItemIndex].creatAt.inDays,
                       favorite: ranks[currentItemIndex].favorites,

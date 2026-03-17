@@ -61,8 +61,8 @@ class HomeProfileCard extends StatelessWidget {
           bottom: 0,
           child: SvgPicture.asset(
             AppIcon.star1.path,
-            height: 35,
-            width: 32,
+            height: AppSpacing.s36,
+            width: AppSpacing.s32,
             fit: BoxFit.cover,
           ),
         ),

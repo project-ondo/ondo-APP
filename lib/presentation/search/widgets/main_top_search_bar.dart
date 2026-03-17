@@ -46,7 +46,6 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
   void initState() {
     Get.put(AlertController());
     _controller = Get.put(MainTopBarSearchController(), tag: widget.pageId);
-    Get.lazyPut(() => SearchPopupController(mainController: _controller));
     super.initState();
   }
 
@@ -65,14 +64,10 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
 
                   final res = widget.resultPageBuilder(_controller.state);
 
+                  _controller.showResult.value = false;
+                  _controller.state.clear();
                   //검색 결과가 없다면 null을 반환해 mainPage 표시
-                  if (res == null) {
-                    _controller.showResult.value = false;
-                    _controller.textController.clear();
-                    return widget.mainPage;
-                  }
-
-                  return res;
+                  return res ?? widget.mainPage;
                 }),
               ),
               Obx(() {
@@ -134,7 +129,7 @@ class _AlertButton extends GetView<AlertController> {
         child: Badge.count(
           padding: AppPadding.alertCount,
           backgroundColor: AppColors.deepRed,
-          count: controller.total.value,
+          count: controller.alertList.length,
           alignment: Alignment(0.28, -0.58),
           child: IconButton(
             style: IconButton.styleFrom(
@@ -142,16 +137,13 @@ class _AlertButton extends GetView<AlertController> {
               shape: RoundedRectangleBorder(borderRadius: AppRadius.baseRadius),
               minimumSize: Size.square(AppSpacing.s44),
             ),
-            onPressed: controller.enable.value
-                ? () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AlertScreen(),
-                    ),
+            onPressed: controller.alertList.isNotEmpty
+                ? () => Get.to(
+                    AlertScreen(),
                   )
                 : null,
             icon: SvgPicture.asset(
-              controller.enable.value
+              controller.alertList.isNotEmpty
                   ? AppIcon.alarmBrown.path
                   : AppIcon.alarmGrey.path,
               height: AppSpacing.s16,

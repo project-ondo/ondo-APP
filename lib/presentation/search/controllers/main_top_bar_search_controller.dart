@@ -2,19 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/presentation/search/states/search_state.dart';
-import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 
 class MainTopBarSearchController extends GetxController {
   final TextEditingController textController = TextEditingController();
   final FocusNode focusNode = FocusNode();
 
-  RxBool showPopup = false.obs;
-  RxBool showResult = false.obs;
+  final RxBool showPopup = false.obs;
+  final RxBool showResult = false.obs;
 
-  late final List<String> cacheTags;
-  late final List<String> cacheTips;
+  late final List<String> _cacheTags;
+  late final List<String> _cacheTips;
 
-  final Set<String> selectTagList = {};
   final RxString tempQuery = "".obs;
 
   late final SearchState state;
@@ -22,14 +20,15 @@ class MainTopBarSearchController extends GetxController {
   @override
   void onInit() {
     state = SearchState();
-    cacheTags = loadTags();
-    cacheTips = loadTips();
+    _cacheTags = loadTags();
+    _cacheTips = loadTips();
     super.onInit();
   }
 
   @override
   void onReady() {
     focusNode.addListener(_updateShowPopup);
+    Get.lazyPut(() => SearchPopupController(mainController: this));
     super.onReady();
   }
 
@@ -46,7 +45,7 @@ class MainTopBarSearchController extends GetxController {
   void searchUnfocus() => focusNode.unfocus();
 
   void onSubmitText(String value) {
-    state.query.value = value;
+    state.query = value;
     _submit();
   }
 
@@ -56,24 +55,13 @@ class MainTopBarSearchController extends GetxController {
     onSubmitText(trim);
   }
 
-  void onSubmitTags() {
-    state.tags.assignAll(selectTagList);
-    _submit();
-  }
-
   void _submit() {
     searchUnfocus();
     showResult.value = true;
   }
 
   void selectTag(String value, bool isSelect) {
-    if (isSelect) {
-      selectTagList.add(value);
-      onSubmitTags();
-    }
-    {
-      selectTagList.remove(value);
-    }
+    isSelect ? state.tags.add(value) : state.tags.remove(value);
   }
 
   void onChange(String value) {
@@ -96,8 +84,8 @@ class SearchPopupController extends GetxController {
   @override
   void onInit() {
     //팁, 태그 보이기
-    viewTips.addAll(mainController.cacheTips);
-    viewTags.addAll(mainController.cacheTags);
+    viewTips.addAll(mainController._cacheTips);
+    viewTags.addAll(mainController._cacheTags);
     //worker 등록
     worker1 = ever(
       mainController.tempQuery,
@@ -107,11 +95,10 @@ class SearchPopupController extends GetxController {
   }
 
   void _updateData(String text) {
-
     if (text.isNotEmpty) {
       //입력 걀과와 같은, 태그 20개 보이기
       viewTags.value = List.of(
-        mainController.cacheTags
+        mainController._cacheTags
             .where(
               (tag) =>
                   tag.trim().toLowerCase().contains(text.trim().toLowerCase()),
@@ -120,7 +107,7 @@ class SearchPopupController extends GetxController {
       );
       //입력 걀과와 같은, 팁 20개 보이기
       viewTips.value = List.of(
-        mainController.cacheTips
+        mainController._cacheTips
             .where(
               (tip) =>
                   tip.trim().toLowerCase().contains(text.trim().toLowerCase()),
@@ -128,8 +115,8 @@ class SearchPopupController extends GetxController {
             .take(20),
       );
     } else {
-      viewTags.value = mainController.cacheTags;
-      viewTips.value = mainController.cacheTips;
+      viewTags.value = mainController._cacheTags;
+      viewTips.value = mainController._cacheTips;
     }
   }
 }
@@ -154,31 +141,4 @@ extension DummyMoel on MainTopBarSearchController {
     "공부방법",
     "공부인증",
   ];
-
-  HomeSearchModel loadHomeResultData() => (
-    chats: [
-      {"": ""},
-      {"": ""},
-      {"": ""},
-      {"": ""},
-      {"": ""},
-    ],
-    posts: [
-      {"": ""},
-      {"": ""},
-      {"": ""},
-      {"": ""},
-      {"": ""},
-    ],
-  );
-
-  CommunitySearchModel? loadCommunityResultData() => (
-    posts: [
-      {},
-      {},
-      {},
-      {},
-      {},
-    ],
-  );
 }

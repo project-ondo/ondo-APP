@@ -31,7 +31,8 @@ class ChatMainScreen extends GetView<ChatMainScreenController> {
           ),
         ),
         resultPageBuilder: (state) {
-          controller.searchChatRooms(state.query.value);
+          if (state.query.isEmpty || state.tags.isEmpty) return;
+          controller.searchChatRooms([state.query, ...state.tags]);
           return null;
         },
       ),
@@ -49,8 +50,11 @@ class TagList extends GetView<ChatMainScreenController> {
       child: Obx(
         () => ListView.separated(
           scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) =>
-              CustomTagCard(tag: controller.tags[index]),
+          itemBuilder: (context, index) => CustomTagCard(
+            tag: controller.tags[index],
+            onTap: (isSelect) =>
+                controller.filterChatRooms(controller.tags[index], isSelect),
+          ),
           itemCount: controller.tags.length,
           separatorBuilder: (context, index) => AppGap.h16,
         ),
@@ -67,8 +71,12 @@ class ChatList extends GetView<ChatMainScreenController> {
     return Obx(
       () => ListView.separated(
         itemBuilder: (context, index) {
-          final chatRoom = controller.viewChatRooms[index];
+          final chatRoom = controller.viewChatList[index];
           return ChatRoomCard(
+            onTap: () {
+              //TODO : chat model 정의 후 관련 데이터 전달
+              controller.enterChatRoom();
+            },
             bookmark: chatRoom.isBookmark,
             name: chatRoom.name,
             lastChatAt: chatRoom.lastChatAt,
@@ -77,7 +85,7 @@ class ChatList extends GetView<ChatMainScreenController> {
           );
         },
         separatorBuilder: (context, index) => AppGap.v4,
-        itemCount: controller.viewChatRooms.length,
+        itemCount: controller.viewChatList.length,
       ),
     );
   }

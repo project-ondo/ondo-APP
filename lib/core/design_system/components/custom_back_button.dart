@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
 
 import '../app_colors.dart';
 import '../app_icon.dart';
@@ -43,7 +44,10 @@ class CustomBackButton extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SvgPicture.asset(AppIcon.arrowLeft.path),
+              GestureDetector(
+                onTap: Get.back,
+                child: SvgPicture.asset(AppIcon.arrowLeft.path),
+              ),
               if (!useUserProfile) _text() else _profile(),
             ],
           ),
@@ -56,16 +60,19 @@ class CustomBackButton extends StatelessWidget {
     );
   }
 
-  Widget _text() => Row(
-    children: [
-      AppGap.v4,
-      Text(
-        "이전으로",
-        style: AppTextStyles.textMedium(
-          textColor: AppColors.gray60,
+  Widget _text() => GestureDetector(
+    onTap: Get.back,
+    child: Row(
+      children: [
+        AppGap.v4,
+        Text(
+          "이전으로",
+          style: AppTextStyles.textMedium(
+            textColor: AppColors.gray60,
+          ),
         ),
-      ),
-    ],
+      ],
+    ),
   );
 
   Widget _profile() => Row(

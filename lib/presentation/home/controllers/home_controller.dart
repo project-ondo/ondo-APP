@@ -4,37 +4,83 @@ import 'package:get/get.dart';
 class HomeController extends GetxController {
   final RxList<HomeRecentPopularPostInfo> ranks =
       <HomeRecentPopularPostInfo>[].obs;
-  final RxList<HomeProfileInfo> chats = <HomeProfileInfo>[].obs;
-  final RxList<PostInfo> posts = <PostInfo>[].obs;
-  late final HomeSearchResultController searchResultController;
+  final List<HomeProfileInfo> _cacheProfileList = [];
+  final List<PostInfo> _cachePostList = [];
+  final RxList<HomeProfileInfo> viewProfileList = <HomeProfileInfo>[].obs;
+  final RxList<PostInfo> viewPostList = <PostInfo>[].obs;
 
   @override
   void onInit() {
     _sortRating(ranks..addAll(_getRanks()));
-    chats.addAll(_getChats());
-    posts.addAll(_getPosts());
+    _cacheProfileList.addAll(_getChats());
+    _cachePostList.addAll(_getPosts());
+    viewProfileList.addAll(_cacheProfileList);
+    viewPostList.addAll(_cachePostList);
     super.onInit();
   }
 
   @override
   void onReady() {
-    searchResultController = Get.put(HomeSearchResultController());
+    Get.put(HomeSearchResultController());
     super.onReady();
   }
 
   void _sortRating(RxList<HomeRecentPopularPostInfo>? list) => list == null
       ? ranks.sort((a, b) => (b.favorites - a.favorites))
       : list.sort((a, b) => b.favorites - a.favorites);
+
+  void searchResultInfo(List<String> searchList) {
+    final Set<HomeProfileInfo> profileResult = {};
+    final Set<PostInfo> postResult = {};
+
+    //TODO: 서버와의 연결에서 결과 가져오기
+    profileResult.addAll(
+      _cacheProfileList.where(
+        (profile) =>
+            searchList.any(
+              (search) => profile.name.contains(search),
+            ) ||
+            searchList.any(
+              (search) => profile.skill.contains(search),
+            ),
+      ),
+    );
+
+    //TODO: 서버와의 연결에서 결과 가져오기
+    postResult.addAll(
+      _cachePostList.where(
+        (post) =>
+            searchList.any(
+              (search) => post.name.contains(search),
+            ) ||
+            searchList.any(
+              (search) => post.title.contains(search),
+            ) ||
+            searchList.any(
+              (search) => post.skills.any(
+                (skill) => skill.contains(search),
+              ),
+            ),
+      ),
+    );
+
+    Get.find<HomeSearchResultController>().updateResult(
+      postResult,
+      profileResult,
+    );
+  }
 }
 
 class HomeSearchResultController extends GetxController {
-  final RxList<HomeProfileInfo> resultChats = <HomeProfileInfo>[].obs;
-  final RxList<PostInfo> resultPosts = <PostInfo>[].obs;
+  final RxList<HomeProfileInfo> viewChatList = <HomeProfileInfo>[].obs;
+  final RxList<PostInfo> viewPostList = <PostInfo>[].obs;
 
-  void searchResultInfo(String text) {
-    //TODO: 서버와의 연결에서 결과 가져오기
-    resultChats.assignAll(_getChats());
-    resultPosts.assignAll(_getPosts());
+  void updateResult(
+    Iterable<PostInfo> posts,
+    Iterable<HomeProfileInfo> profiles,
+  ) {
+    viewChatList.assignAll(profiles);
+    viewPostList.assignAll(posts);
   }
 }
 

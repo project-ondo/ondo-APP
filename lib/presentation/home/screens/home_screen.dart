@@ -4,7 +4,7 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
-import 'package:ondo/presentation/home/screens/home_search_page.dart';
+import 'package:ondo/presentation/home/screens/home_search_screen.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_list.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_chat_list.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_post_list.dart';
@@ -31,9 +31,9 @@ class HomeScreen extends GetView<HomeController> {
           ),
         ),
         resultPageBuilder: (state) {
-          if (state.query.trim().isEmpty) return null;
-          controller.searchResultController.searchResultInfo(state.query.value);
-          return HomeSearchPage();
+          if (state.query.trim().isEmpty && state.tags.isEmpty) return null;
+          controller.searchResultInfo([state.query, ...state.tags]);
+          return HomeSearchScreen();
         },
       ),
     );

@@ -86,7 +86,7 @@ class SignupCompleteScreen extends GetView<SignupFlowController> {
               //enabled: controller.canSubmit,
               onPressed: () {
                 controller.submitInfo();
-                context.goNamed('home');
+                context.goNamed('login');
               },
             );
           },

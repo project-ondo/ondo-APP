@@ -1,3 +1,5 @@
+import 'package:ondo/core/constants/password_policy.dart';
+
 class AppStrings {
   static const agreementTitle = '온도에 오신 것을 환영합니다! \n개인정보 수집 및 이용에 동의해주세요';
 
@@ -71,7 +73,28 @@ class AppStrings {
 
   static const emailRegex = '이메일 형식이 올바르지 않아요.';
 
+  static String? passwordError(PasswordValidationResult result) {
+    switch (result){
+      case PasswordValidationResult.tooShort:
+        return passwordLength;
+      case PasswordValidationResult.tooLong:
+        return passwordLength;
+      case PasswordValidationResult.missingLetter:
+        return passwordLetter;
+      case PasswordValidationResult.missingNumber:
+        return passwordNumber;
+      case PasswordValidationResult.missingSpecial:
+        return passwordRegex;
+      case PasswordValidationResult.valid:
+        return null;
+    }
+  }
+
   static const passwordLength = '비밀번호는 8~15자여야 해요.';
+
+  static const passwordLetter = '비밀번호에 영문을 포함해주세요.';
+
+  static const passwordNumber = '비밀번호에 숫자를 포함해주세요.';
 
   static const passwordRegex = '비밀번호에 특수기호를 포함해주세요.';
 

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:ondo/data/models/auth/request/email_send_request_model.dart';
+import 'package:ondo/data/models/auth/request/email_send_request_model.dartt';
 
 class AuthRemoteDatasource {
   final String baseUrl;
@@ -13,9 +13,6 @@ class AuthRemoteDatasource {
 
     final url = Uri.parse("$baseUrl/auth/email/send");
 
-    print("api요청 : $url");
-    print("body : ${model.toJson()}");
-
     final response = await http.post(
       url,
       headers: {
@@ -23,8 +20,6 @@ class AuthRemoteDatasource {
       },
       body: jsonEncode(model.toJson()),
     );
-    print("sta: ${response.statusCode}");
-    print("response : ${response.body}");
 
     if (response.statusCode != 200 || response.statusCode >= 300) {
       throw Exception("이메일 인증 코드 전송 실패");

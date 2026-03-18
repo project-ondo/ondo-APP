@@ -72,6 +72,7 @@ class SignupEmailInputController extends GetxController {
   bool validateEmail(String email) {
     if (_isValidEmail(email)) {
       emailState = InputValidationState.valid;
+      flowController.setEmail(email);
       update();
       return true;
     } else {

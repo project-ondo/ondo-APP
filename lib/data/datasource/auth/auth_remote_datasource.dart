@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:ondo/data/models/auth/request/email_send_request_model.dartt';
+import 'package:ondo/data/models/auth/request/email_send_request_model.dart';
 
 class AuthRemoteDatasource {
   final String baseUrl;

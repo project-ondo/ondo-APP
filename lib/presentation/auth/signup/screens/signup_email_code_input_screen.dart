@@ -103,6 +103,7 @@ class SignupEmailCodeInputScreen
 
                           final result = await controller
                               .verifyEmailCode();
+                          if(!context.mounted) return;
                           if (result) {
                             context.pushNamed('signupPassword');
                           }

@@ -53,7 +53,8 @@ class SignupEmailCodeInputController extends GetxController {
       flowController.setVerificationToken(token);
 
       return true;
-    } catch (e) {
+    } catch (e ,s) {
+      debugPrint('Failed to verify email code: $e\n$s');
       codeState.value = InputValidationState.invalid;
       return false;
     } finally {

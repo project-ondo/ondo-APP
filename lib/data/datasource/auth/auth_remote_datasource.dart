@@ -40,7 +40,7 @@ class AuthRemoteDatasource {
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw Exception("이메일 인증 코드 실패");
+      throw Exception("이메일 인증 코드 검증에 실패했습니다.");
     }
 
     final responseModel = EmailVerifyResponseModel.fromJson(

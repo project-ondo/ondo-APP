@@ -6,6 +6,7 @@ import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/repositories/auth/auth_repository_impl.dart';
 import 'package:ondo/domain/repositories/auth/auth_repository.dart';
 import 'package:ondo/domain/usecases/auth/send_email_code_usecase.dart';
+import 'package:ondo/domain/usecases/auth/signup_usecase.dart';
 import 'package:ondo/domain/usecases/auth/verify_email_code_usecase.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_email_code_input_controller.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_email_input_controller.dart';
@@ -38,6 +39,10 @@ class SignupBinding extends Bindings {
 
     Get.lazyPut<VerifyEmailCodeUsecase>(
       () => VerifyEmailCodeUsecase(Get.find()),
+    );
+
+    Get.lazyPut<SignupUsecase>(
+      () => SignupUsecase(Get.find()),
     );
 
     Get.lazyPut<SignupTermsAgreementController>(

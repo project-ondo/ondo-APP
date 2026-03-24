@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:get/get.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 
@@ -62,18 +60,12 @@ class SignupMajorInterestController extends GetxController {
 
   bool get canProceed => selectedMajor != null && selectedInterests.isNotEmpty;
 
-  void submit()   {
-    if (!canProceed) return;
+  Future<bool> submit() async  {
+    if (!canProceed) return false;
 
-    final major = selectedMajor!;
-    flowController.setMajor(major.name);
-    flowController.setInterests(selectedInterests.map((e) => e.name).toSet());
+    flowController.setMajor(selectedMajor!.label);
+    flowController.setInterests(selectedInterests.map((e) => e.label).toSet());
 
-    log('전공: ${major.name}');
-    log(
-      '관심분야: ${selectedInterests.map(
-        (e) => e.name,
-      ).toList()}',
-    );
+    return await flowController.submitInfo();
   }
 }

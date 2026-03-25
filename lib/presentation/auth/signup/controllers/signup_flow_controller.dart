@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:ondo/data/models/auth/request/signup_request_model.dart';
 import 'package:ondo/domain/usecases/auth/signup_usecase.dart';
@@ -36,7 +36,7 @@ class SignupFlowController extends GetxController {
     nickname = value;
   }
 
-  void setLoginId(String value){
+  void setLoginId(String value) {
     loginId = value;
   }
 
@@ -90,17 +90,7 @@ class SignupFlowController extends GetxController {
     try {
       isLoading.value = true;
 
-      // 디버그용 로그 추가
-      debugPrint('=== 회원가입 요청 데이터 ===');
-      debugPrint('email: $email');
-      debugPrint('loginId: $loginId');
-      debugPrint('verificationToken: $verificationToken');
-      debugPrint('password: $password');
-      debugPrint('nickname: $nickname');
-      debugPrint('gender: $gender');
-      debugPrint('major: $major');
-      debugPrint('interests: $interests');
-      debugPrint('profileImageKey: $profileImageKey');
+      _logSignupData();
 
       final model = SignupRequestModel(
         verificationToken: verificationToken!,
@@ -120,6 +110,27 @@ class SignupFlowController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _logSignupData() {
+    if (!kDebugMode) return;
+
+    debugPrint('=== 회원가입 요청 데이터 ===');
+    debugPrint('email: $email');
+    debugPrint('loginId: $loginId');
+    debugPrint('nickname: $nickname');
+    debugPrint('gender: $gender');
+    debugPrint('major: $major');
+    debugPrint('interests: $interests');
+    debugPrint('profileImageKey: $profileImageKey');
+
+    debugPrint('verificationToken: ${_mask(verificationToken)}');
+    debugPrint('password: ${_mask(password)}');
+  }
+
+  String _mask(String? value) {
+    if (value == null || value.isEmpty) return '';
+    return '*' * value.length;
   }
 
   void clear() {

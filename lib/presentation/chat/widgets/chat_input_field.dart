@@ -7,12 +7,8 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/presentation/chat/controllers/chat_controller.dart';
 
-class ChatInputField extends StatelessWidget {
-  ChatInputField({super.key});
-
-  final ChatController _controller = Get.find<ChatController>();
-
-  void _send() {}
+class ChatInputField extends GetView<ChatController> {
+  const ChatInputField({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +19,10 @@ class ChatInputField extends StatelessWidget {
         children: [
           Expanded(
             child: CustomTextField(
-              controller: _controller.textEditingController,
+              controller: controller.textController,
               hintText: "메세지 내용을 입력해 주세요",
               maxLines: 2,
+              onSubmitted: controller.sendChat,
             ),
           ),
           AppGap.h16,
@@ -36,11 +33,11 @@ class ChatInputField extends StatelessWidget {
   }
 
   Widget _sendButton() => GestureDetector(
-    onTap: _send,
+    onTap: () => controller.sendChat(controller.textController.text),
     child: SvgPicture.asset(
       AppIcon.send.path,
-      width: 36,
-      height: 18,
+      width: AppSpacing.s32,
+      height: AppSpacing.s18,
     ),
   );
 }

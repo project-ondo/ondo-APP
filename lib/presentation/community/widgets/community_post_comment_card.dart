@@ -3,8 +3,8 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/components/custom_icon_button.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
-import 'package:ondo/presentation/community/widgets/community_custom_icon_button.dart';
 
 class CommunityPostCommentCard extends StatelessWidget {
   const CommunityPostCommentCard({
@@ -30,7 +30,9 @@ class CommunityPostCommentCard extends StatelessWidget {
           AppGap.h12,
           Expanded(child: _body()),
           AppGap.h6,
-          CommunityCustomIconButton(
+          CustomIconButton(
+            iconSize: AppSpacing.s32,
+            totalStyle: AppTextStyles.textMedium(),
             imagePath: AppIcon.heart.path,
             total: heartTotal,
             activeColor: AppColors.red,

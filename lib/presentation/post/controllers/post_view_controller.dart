@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ondo/presentation/home/controllers/home_controller.dart';
 
 class PostViewController extends GetxController {
   RxString title = "".obs;
@@ -11,6 +12,7 @@ class PostViewController extends GetxController {
   RxList<String> postTags = <String>[].obs;
   RxString bodyText = "".obs;
   RxList<Comment> comments = <Comment>[].obs;
+  RxList<PostInfo> postList = <PostInfo>[].obs;
 
   @override
   void onInit() {
@@ -24,13 +26,12 @@ class PostViewController extends GetxController {
     postTags.value = getPostTags();
     bodyText.value = getBodyText();
     comments.value = getComments();
+    postList.value = _getPosts();
 
     super.onInit();
   }
 
-  void deletePostRequest () {}
-
-
+  void deletePostRequest() {}
 }
 
 extension DummyData on PostViewController {
@@ -41,8 +42,11 @@ extension DummyData on PostViewController {
   Duration getPostAt() => Duration(minutes: 4);
 
   bool getSelectHeart() => false;
+
   bool getSelectBookMark() => true;
+
   int getHeartTotal() => 12;
+
   int getBookMarkTotal() => 12;
 
   List<String> getPostTags() => ["#UI/UX", "#FrontEnd"];
@@ -76,6 +80,21 @@ extension DummyData on PostViewController {
         author: "김유찬",
         heartTotal: 12,
         comment: "진짜 ㄹㅇ 계정 탈퇴 한번 하려면 이거하고 저거하고 귀찮아 죽겠음 진짜",
+      ),
+    },
+  ];
+
+  List<PostInfo> _getPosts() => [
+    for (int i = 0; i < 8; i++) ...{
+      (
+        name: "김유찬",
+        title: "요즘 UI UX",
+        skills: ["UI/UX", "FrontEnd"],
+        bookmarks: 12,
+        favoites: 12,
+        createAt: Duration(minutes: i),
+        isFavorite: i % 2 == 0,
+        isBookmark: i % 3 == 0,
       ),
     },
   ];

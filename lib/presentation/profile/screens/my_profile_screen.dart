@@ -6,9 +6,9 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_popup_menu_button.dart';
-import 'package:ondo/core/design_system/components/post/post_item.dart';
 import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/post/widgets/post_item.dart';
 import 'package:ondo/presentation/profile/widget/profile_activity_section.dart';
 import 'package:ondo/presentation/profile/widget/profile_indicator_post_page_list.dart';
 import 'package:ondo/presentation/profile/widget/profile_interest_section.dart';
@@ -287,7 +287,7 @@ class MyProfileScreen extends StatelessWidget {
           onTap: () {
             log("설정");
             context.push(RoutePaths.profileSetting);
-            },
+          },
           padding: AppPadding.settingSession,
           child: Text(
             "설정",

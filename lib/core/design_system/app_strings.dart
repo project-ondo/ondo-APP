@@ -73,6 +73,12 @@ class AppStrings {
 
   static const emailRegex = '이메일 형식이 올바르지 않아요.';
 
+  static const emailSendFail = '이메일 인증 코드 전송 실패';
+  static const emailVerifyFail = '이메일 인증 코드 검증에 실패했습니다.';
+  static const verificationTokenEmpty = 'verificationToken이 존재하지 않습니다.';
+  static const signupFail = '회원가입에 실패했습니다.';
+  static const retryMessage = '잠시 후 다시 시도해주세요.';
+
   static String? passwordError(PasswordValidationResult result) {
     switch (result){
       case PasswordValidationResult.tooShort:

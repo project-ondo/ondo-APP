@@ -1,17 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get.dart';
+
 import 'package:go_router/go_router.dart';
+
+// bindings
 import 'package:ondo/core/router/bindings/login_binding.dart';
 import 'package:ondo/core/router/bindings/navigation_binding.dart';
 import 'package:ondo/core/router/bindings/password_reset_binding.dart';
 import 'package:ondo/core/router/bindings/signup_binding.dart';
 import 'package:ondo/core/router/bindings/splash_binding.dart';
+
+// controllers
 import 'package:ondo/presentation/auth/password_reset/controllers/password_reset_flow_controller.dart';
+
+// password reset screens
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_code_screen.dart';
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_email_screen.dart';
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_completed_screen.dart';
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_screen.dart';
+
+// signup screens
 import 'package:ondo/presentation/auth/signup/screens/signup_email_code_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_email_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_introduction_input_screen.dart';
@@ -21,10 +29,16 @@ import 'package:ondo/presentation/auth/signup/screens/signup_password_setup_scre
 import 'package:ondo/presentation/auth/signup/screens/signup_profile_image_setup_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_complete_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_terms_agreement_screen.dart';
-import 'package:ondo/presentation/home/screens/home_screen.dart';
+
+// auth / home
 import 'package:ondo/presentation/auth/login/screens/login.dart';
 import 'package:ondo/presentation/auth/login/screens/splash.dart';
+import 'package:ondo/presentation/home/screens/home_screen.dart';
+
+// navigation
 import 'package:ondo/presentation/navigation/screens/navigation_screen.dart';
+
+// profile
 import 'package:ondo/presentation/profile/screens/edit_profile_screen.dart';
 import 'package:ondo/presentation/profile/screens/my_profile_screen.dart';
 import 'package:ondo/presentation/profile/screens/other_profile_screen.dart';
@@ -240,7 +254,7 @@ final GoRouter appRouter = GoRouter(
   ],
   errorBuilder: (context, state) => Scaffold(
     body: Center(
-      child: Text('페이지르 찾을 수 없습니다.'),
+      child: Text('페이지를 찾을 수 없습니다.'),
     ),
   ),
 );

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
@@ -54,7 +55,7 @@ class SignupEmailCodeInputController extends GetxController {
 
       return true;
     } catch (e ,s) {
-      debugPrint('Failed to verify email code: $e\n$s');
+      if(!kDebugMode) debugPrint('Failed to verify email code: $e\n$s');
       codeState.value = InputValidationState.invalid;
       return false;
     } finally {

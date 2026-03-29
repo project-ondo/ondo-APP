@@ -9,6 +9,7 @@ import 'package:ondo/data/models/auth/request/signup_request_model.dart';
 import 'package:ondo/data/models/auth/response/email_verify_response_model.dart';
 import 'package:ondo/data/models/auth/response/signup_response_model.dart';
 
+
 class AuthRemoteDatasource {
   final String baseUrl;
 
@@ -31,6 +32,7 @@ class AuthRemoteDatasource {
       throw Exception(AppStrings.emailSendFail);
     }
   }
+  
 
   Future<String> verifyEmailCode(String email, String code) async {
     final model = EmailVerifyRequestModel(email: email, code: code);
@@ -44,6 +46,7 @@ class AuthRemoteDatasource {
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
+
       throw Exception(AppStrings.emailVerifyFail);
     }
 

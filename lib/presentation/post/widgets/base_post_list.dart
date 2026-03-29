@@ -4,44 +4,30 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
 @immutable
-abstract class BasePostList extends StatelessWidget {
+abstract class BasePostGrid extends StatelessWidget {
   final String title;
-  final double itemHeight;
   final bool scrollable;
 
-  const BasePostList({
+  const BasePostGrid({
     super.key,
     required this.title,
-    this.itemHeight = 143,
     this.scrollable = false,
   });
 
-  List<Widget> list();
+  List<Widget> listBuilder();
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _title(),
-
-        AppGap.v16,
-
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: ((list().length / 2).ceil() * itemHeight) - 16,
-            maxWidth: double.maxFinite,
-          ),
-          child: _PostList(scrollable: scrollable, list: list()),
+        Text(
+          title,
+          style: AppTextStyles.titleSm16(textColor: AppColors.gray90),
         ),
+        AppGap.v16,
+        _PostGrid(scrollable: scrollable, list: listBuilder()),
       ],
-    );
-  }
-
-  Widget _title() {
-    return Text(
-      title,
-      style: AppTextStyles.titleSm16(textColor: AppColors.gray90),
     );
   }
 }
@@ -49,7 +35,7 @@ abstract class BasePostList extends StatelessWidget {
 @immutable
 abstract class BasePostPageList extends StatelessWidget {
   final String title;
-  final double itemHeight;
+  final double? pageHeight;
   final int floors;
   final bool scrollable;
 
@@ -57,7 +43,7 @@ abstract class BasePostPageList extends StatelessWidget {
     super.key,
     required this.title,
     this.floors = 2,
-    this.itemHeight = 143,
+    this.pageHeight,
     this.scrollable = false,
   });
 
@@ -69,64 +55,60 @@ abstract class BasePostPageList extends StatelessWidget {
 
   int _pageTotal() => (list().length / _pageItemCount()).ceil();
 
-  int _startIndex (int pageIndex) => pageIndex * _pageItemCount();
+  int _startIndex(int pageIndex) => pageIndex * _pageItemCount();
 
   int _lastIndex(int pageIndex) {
     return pageIndex == _pageTotal() - 1 && !_isTight()
         ? _startIndex(pageIndex) + list().length % _pageItemCount()
         : _startIndex(pageIndex) + _pageItemCount();
   }
+
   @override
   Widget build(BuildContext context) {
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _Title(title: title),
-
-        AppGap.v16,
-
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight: (floors * itemHeight) - 16,
-            maxWidth: double.maxFinite,
+    return SizedBox(
+      height: pageHeight,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _Title(title: title),
+          AppGap.v16,
+          Expanded(
+            child: PageView.builder(
+              itemBuilder: (context, pageIndex) {
+                final int startIndex = pageIndex * _pageItemCount();
+                return _PostGrid(
+                  scrollable: scrollable,
+                  list: list().sublist(
+                    startIndex,
+                    _lastIndex(pageIndex),
+                  ),
+                );
+              },
+              itemCount: _pageTotal(),
+            ),
           ),
-          child: PageView.builder(
-            itemBuilder: (context, pageIndex) {
-              final int startIndex = pageIndex * _pageItemCount();
-              return _PostList(
-                scrollable: scrollable,
-                list: list().sublist(
-                  startIndex,
-                  _lastIndex(pageIndex),
-                ),
-              );
-            },
-            itemCount: _pageTotal(),
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-class _PostList extends StatelessWidget {
+class _PostGrid extends StatelessWidget {
   final bool scrollable;
   final List<Widget> list;
 
-  const _PostList({required this.scrollable, required this.list});
-
-  final double _itemSpace = AppSpacing.s16;
+  const _PostGrid({required this.scrollable, required this.list});
 
   @override
   Widget build(BuildContext context) {
     return GridView(
+      shrinkWrap: true,
       physics: scrollable ? null : NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: _itemSpace,
-        crossAxisSpacing: _itemSpace,
-        childAspectRatio: 1.4,
+        mainAxisSpacing: AppSpacing.s16,
+        crossAxisSpacing: AppSpacing.s16,
+        childAspectRatio: 3 / 2,
       ),
       children: List.generate(
         list.length,

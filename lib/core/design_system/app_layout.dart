@@ -19,6 +19,7 @@ class AppSpacing {
   static const double s36 = 36;
   static const double s40 = 40;
   static const double s42 = 42;
+  static const double s44 = 44;
   static const double s48 = 48;
   static const double s51 = 51;
   static const double s52 = 52;
@@ -98,22 +99,21 @@ class AppPadding {
     horizontal: AppSpacing.s12,
   );
 
-  static const EdgeInsets popUp = EdgeInsets.only(
+  static const EdgeInsets popup = EdgeInsets.only(
     bottom: AppSpacing.s24,
     left: AppSpacing.s16,
     right: AppSpacing.s16,
   );
 
-  static const EdgeInsets alertCount = EdgeInsets.all(AppSpacing.s2);
-
-  static const EdgeInsets alertReportItem = EdgeInsets.all(AppSpacing.s12);
-
+  static const EdgeInsets alertCount = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s2,
+  );
 
   static const EdgeInsets settingSession = EdgeInsets.symmetric(
     vertical: AppSpacing.s12,
     horizontal: AppSpacing.s24,
   );
-  
+
   static const EdgeInsets terms = EdgeInsets.symmetric(
     horizontal: AppSpacing.s24,
   );
@@ -128,8 +128,12 @@ class AppPadding {
     bottom: AppSpacing.s18,
   );
 
-  static const EdgeInsets indicatorSpacing = EdgeInsets.symmetric(horizontal: AppSpacing.s6);
-  static const EdgeInsets currentIndicatorUnderline = EdgeInsets.only(top: AppSpacing.s2);
+  static const EdgeInsets indicatorSpacing = EdgeInsets.symmetric(
+    horizontal: AppSpacing.s6,
+  );
+  static const EdgeInsets currentIndicatorUnderline = EdgeInsets.only(
+    top: AppSpacing.s2,
+  );
   static const EdgeInsets popupManuButton = EdgeInsets.symmetric(
     vertical: AppSpacing.s12,
     horizontal: AppSpacing.s24,

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
@@ -6,38 +8,25 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
-import 'package:ondo/core/design_system/components/top_bar/controllers/main_top_bar_alert_controller.dart';
+import 'package:ondo/presentation/alert/controllers/alert_controller.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/alert/states/alert_state.dart';
 
 import '../widgets/alert_card.dart';
 import '../widgets/report_alert_card.dart';
 
 @immutable
-class AlertScreen extends StatefulWidget {
+class AlertScreen extends GetView<AlertController> {
   const AlertScreen({super.key});
 
-  @override
-  State<AlertScreen> createState() => _AlertScreenState();
-}
-
-class _AlertScreenState extends State<AlertScreen> {
-  final MainTopBarAlertController _controller = Get.put(
-    MainTopBarAlertController(),
-  );
-
-  void _showAlertDeleteDialog() => showDialog(
-    context: context,
-    builder: (context) => CustomAlertDialog(
+  void _showAlertDeleteDialog() => Get.dialog(
+    CustomAlertDialog(
       title: "알림",
       comment: "정말 모든 알림을 삭제하시겠어요?",
-      actionLeft: () {
-        Navigator.pop(context);
-      },
+      actionLeft: () => Get.back(),
       actionRight: () {
-        setState(() {
-          _controller.clearAlerts();
-        });
-        Navigator.pop(context);
+        controller.clear();
+        Get.back();
       },
       rightActionText: "삭제",
     ),
@@ -50,67 +39,45 @@ class _AlertScreenState extends State<AlertScreen> {
         children: [
           _topBar(),
           Expanded(child: _body()),
+          AppGap.v16,
         ],
       ),
     );
   }
 
-  Widget _topBar() => Column(
-    children: [
-      CustomBackButton(
-        moreOptions: true,
-        itemBuilder: (context) => [
-          PopupMenuItem(
-            padding: AppPadding.popupManuButton,
-            onTap: () => _showAlertDeleteDialog(),
-            height: double.minPositive,
-            child: Align(
-              alignment: Alignment.center,
-              child: Text(
-                "읽은 알림 모두 삭제",
-                style: AppTextStyles.caption(textColor: AppColors.gray90),
-              ),
-            ),
+  Widget _topBar() => CustomBackButton(
+    moreOptions: true,
+    itemBuilder: (context) => [
+      PopupMenuItem(
+        padding: AppPadding.popupManuButton,
+        onTap: _showAlertDeleteDialog,
+        height: double.minPositive,
+        child: Align(
+          alignment: Alignment.center,
+          child: Text(
+            "읽은 알림 모두 삭제",
+            style: AppTextStyles.caption(textColor: AppColors.gray90),
           ),
-        ],
+        ),
       ),
-      AppGap.v8,
-      Padding(
-        padding: AppPadding.screenHorizontal,
-        child: _title(),
-      ),
-      AppGap.v16,
     ],
   );
 
   Widget _body() => Container(
-    width: double.maxFinite,
     color: AppColors.background,
-    child: Padding(
-      padding: AppPadding.screenHorizontal,
-      child: Column(
-        children: [
-          if (_controller.totals <= 0)
-            Expanded(child: _noMessageIcon())
-          else
-            _AlertPageList(),
-        ],
-      ),
-    ),
-  );
+    child: Column(
+      children: [
+        _Title(),
 
-  Widget _title() => Row(
-    children: [
-      Text(
-        "알림",
-        style: AppTextStyles.titleSm16(textColor: AppColors.gray90),
-      ),
-      AppGap.h12,
-      Text(
-        "${_controller.totals.value}",
-        style: AppTextStyles.textMedium(textColor: AppColors.gray60),
-      ),
-    ],
+        Obx(
+          () => Expanded(
+            child: controller.alertList.isNotEmpty
+                ? _AlertPageList()
+                : _noMessageIcon(),
+          ),
+        ),
+      ],
+    ),
   );
 
   Widget _noMessageIcon() => Column(
@@ -130,84 +97,112 @@ class _AlertScreenState extends State<AlertScreen> {
   );
 }
 
-@immutable
-class _AlertPageList extends StatefulWidget {
-  const _AlertPageList();
-
+class _Title extends GetView<AlertController> {
   @override
-  State<_AlertPageList> createState() => _AlertPageListState();
+  Widget build(BuildContext context) {
+    return Container(
+      color: AppColors.white,
+      padding: AppPadding.screenHorizontal,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppGap.v8,
+          Row(
+            children: [
+              Text(
+                "알림",
+                style: AppTextStyles.titleSm16(textColor: AppColors.gray90),
+              ),
+              AppGap.h12,
+              Obx(
+                () => Text(
+                  "${controller.alertList.length}",
+                  style: AppTextStyles.textMedium(textColor: AppColors.gray60),
+                ),
+              ),
+            ],
+          ),
+          AppGap.v16,
+        ],
+      ),
+    );
+  }
 }
 
-class _AlertPageListState extends State<_AlertPageList> {
-  final MainTopBarAlertController _controller =
-      Get.find<MainTopBarAlertController>();
+@immutable
+class _AlertPageList extends GetView<AlertController> {
+  final ValueNotifier<int> curIndex = ValueNotifier(0);
 
-  ValueNotifier<int> curPageIndex = ValueNotifier(0);
+  int getTotalPage() => (controller.alertList.length / 11).ceil();
 
-  bool isOverInList(int lastIndex) => lastIndex > _controller.alerts.length;
+  int getStartIndex(int index) => index * 11;
 
-  int lastIndexInList(int startIndex) =>
-      isOverInList(startIndex + 11) ? _controller.alerts.length : 11;
+  int getLastIndex(int index) =>
+      min(getStartIndex(index) + 11, controller.alertList.length);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 624,
-          child: PageView.builder(
-            onPageChanged: (value) => curPageIndex.value = value,
-            itemBuilder: (context, index) {
-              return _alertList(
-                _controller.alerts.sublist(
-                  index * 11,
-                  lastIndexInList(index * 11),
-                ),
-              );
-            },
-            itemCount: (_controller.alerts.length / 11).ceil(),
+    return Container(
+      color: AppColors.white,
+      padding: AppPadding.screenHorizontal,
+      child: Column(
+        children: [
+          Expanded(
+            child: PageView.builder(
+              itemCount: getTotalPage(),
+              onPageChanged: (value) => curIndex.value = value,
+              itemBuilder: (context, index) =>
+                  _alertList(getStartIndex(index), getLastIndex(index)),
+            ),
           ),
-        ),
-        AppGap.v16,
-        _indicator(),
-      ],
+          AppGap.v16,
+          _indicator(),
+        ],
+      ),
     );
   }
 
-  Widget _alertList(List subAlerts) => ListView.separated(
-    itemBuilder: (context, index) {
-      if (index % 2 == 0) {
-        return ReportAlertCard(
-          profileImage: AppIcon.defaultProfile.path,
-          reason: "욕설",
-          restrictAt: DateTime.now(),
-          restrictDuration: Duration(days: 7),
+  Widget _alertList(int startIndex, int lastIndex) {
+    final subAlerts = controller.alertList.sublist(startIndex, lastIndex);
+    return ListView.separated(
+      shrinkWrap: true,
+      itemCount: subAlerts.length,
+      itemBuilder: (context, index) {
+        final alert = subAlerts[index];
+
+        if (alert.type == AlertState.reported) {
+          return ReportAlertCard(
+            profileImg: alert.profileImg,
+            reason: "욕설",
+            restrictAt: DateTime.now(),
+            restrictDuration: Duration(days: 7),
+          );
+        }
+
+        return AlertCard(
+          profileImg: alert.profileImg,
+          alertType: alert.type.title,
+          sendAt: alert.sendAt ?? Duration.zero,
+          comment: alert.comment,
         );
-      }
-      return AlertCard(
-        profileImage: AppIcon.defaultProfile.path,
-        alertType: "누군가가 댓글을 남겼어요.",
-        sendAt: Duration(hours: 3),
-        comment: "진짜 ㄹㅇ...",
-      );
-    },
-    separatorBuilder: (context, index) => AppGap.v16,
-    itemCount: subAlerts.length,
-  );
+      },
+      separatorBuilder: (context, index) => AppGap.v16,
+    );
+  }
 
   Widget _indicator() => ValueListenableBuilder(
-    valueListenable: curPageIndex,
+    valueListenable: curIndex,
     builder: (_, _, _) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
-          (_controller.alerts.length / 11).ceil(),
+          (controller.alertList.length / 11).ceil(),
           (index) => Padding(
             padding: AppPadding.userCard,
             child: Text(
               "${index + 1}",
               style: AppTextStyles.pageIndicator(
-                isCurrent: curPageIndex.value == index,
+                isCurrent: curIndex.value == index,
               ),
             ),
           ),

@@ -35,8 +35,8 @@ class TagChip extends StatelessWidget {
             child: Image.asset(
               AppIcon.close.path,
               color: AppColors.white,
-              width: 14,
-              height: 14,
+              width: AppSpacing.s14,
+              height: AppSpacing.s14,
             ),
           ),
         ],

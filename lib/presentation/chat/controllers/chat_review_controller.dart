@@ -1,29 +1,47 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 class ChatReviewController extends GetxController {
-  RxBool enableSubmit = false.obs;
-  RxList<String> checkCategories = <String>[].obs;
-  Rx<String> detailReview = "".obs;
-  RxInt star = 5.obs;
+  final RxBool enableSubmit = false.obs;
+  final RxSet<String> viewCategories = <String>{}.obs;
+  final Rx<String> detailReview = "".obs;
+  final RxInt star = 5.obs;
 
-  void addCategory(String category) {
-    checkCategories.addIf(!checkCategories.contains(category), category);
+  final TextEditingController textController = TextEditingController();
+
+  @override
+  void onInit() {
+    textController.addListener(() => setDetailReview(textController.text));
+    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    textController.removeListener(() => setDetailReview(textController.text));
+    super.onClose();
+  }
+
+  void onCategoryChange(String category, bool isSelect) {
+    isSelect ? viewCategories.add(category) : viewCategories.remove(category);
     checkEnableSubmit();
   }
 
-  void removeCategory(String category) {
-    checkCategories.remove(category);
-    checkEnableSubmit();
-  }
+  void checkEnableSubmit() => enableSubmit.value = viewCategories.isNotEmpty;
 
-  void checkEnableSubmit() => enableSubmit.value = checkCategories.isNotEmpty;
+  set star(int index) => star.value = index + 1;
 
-  void setStar (int starIndex) => star.value = starIndex + 1;
+  void setDetailReview(String review) => detailReview.value = review;
 
-  void setDetailReview (String review) => detailReview.value = review;
+  void submitReview() {}
 
-  void submit () {
-    if(enableSubmit.value) {}
-  }
-
+  final List<String> baseCategories = [
+    "질문에 대한 답변이 빨라요",
+    "친절해요",
+    "예의있어요",
+    "매너가 좋아요",
+    "잘 들어줘요",
+    "상세하게 설명해줘요",
+    "저를 존중해줘요",
+    "신뢰할 수 있는 정보를 주었어요",
+  ];
 }

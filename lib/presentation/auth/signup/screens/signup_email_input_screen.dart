@@ -77,10 +77,12 @@ class SignupEmailInputScreen extends GetView<SignupEmailInputController> {
     );
   }
 
-  void _onNextPressed(BuildContext context) {
-    final email = controller.emailTextController.text.trim();
+  void _onNextPressed(BuildContext context) async{
+    if(controller.isLoading) return;
 
-    if (controller.validateEmail(email)) {
+    final success = await controller.sendEmailCode();
+
+    if (success && context.mounted) {
       context.pushNamed('signupEmailCode');
     }
   }

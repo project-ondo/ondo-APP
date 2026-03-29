@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/domain/usecases/auth/send_email_code_usecase.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
 
 class SignupEmailInputController extends GetxController {
   final flowController = Get.find<SignupFlowController>();
+
+  final SendEmailCodeUsecase sendEmailCodeUsecase;
+
+  SignupEmailInputController(this.sendEmailCodeUsecase);
+
   late final TextEditingController emailTextController;
 
   InputValidationState emailState = InputValidationState.initial;
@@ -23,6 +29,38 @@ class SignupEmailInputController extends GetxController {
       }
       update();
     });
+  }
+
+  bool isLoading = false;
+
+  Future<bool> sendEmailCode() async {
+    final email = emailTextController.text.trim();
+
+    if (!validateEmail(email)) return false;
+
+    try {
+      isLoading = true;
+      update();
+
+      await sendEmailCodeUsecase(email);
+
+      flowController.setEmail(email);
+
+      return true;
+    } catch (e) {
+      emailState = InputValidationState.invalid;
+      update();
+
+      Get.snackbar(
+        "인증 코드 발송 실패",
+        "잠시 후 다시 시도해주세요.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return false;
+    } finally {
+      isLoading = false;
+      update();
+    }
   }
 
   @override
@@ -45,7 +83,7 @@ class SignupEmailInputController extends GetxController {
   }
 
   bool _isValidEmail(String email) {
-    final regex = RegExp(r'^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$');
+    final regex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
     return regex.hasMatch(email);
   }
 }

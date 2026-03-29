@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 class SignupFlowController extends GetxController {
   String? email;
   bool isEmailVerified = false;
+  String? verificationToken;
   String? password;
   String? nickname;
   String? introduction;
@@ -14,6 +15,7 @@ class SignupFlowController extends GetxController {
   bool get isValid {
     return email != null &&
         isEmailVerified &&
+        verificationToken != null &&
         password != null &&
         nickname != null &&
         introduction != null &&
@@ -32,6 +34,10 @@ class SignupFlowController extends GetxController {
 
   void setEmailVerified(bool value) {
     isEmailVerified = value;
+  }
+
+  void setVerificationToken(String value){
+    verificationToken = value;
   }
 
   void setPassword(String value) {
@@ -61,6 +67,7 @@ class SignupFlowController extends GetxController {
   void clear() {
     email = null;
     isEmailVerified = false;
+    verificationToken = null;
     password = null;
     nickname = null;
     introduction = null;

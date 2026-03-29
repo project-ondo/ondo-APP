@@ -13,7 +13,8 @@ import 'package:ondo/presentation/auth/signup/controllers/signup_email_code_inpu
 import 'package:ondo/presentation/auth/signup/widgets/login_back_button.dart';
 import 'package:ondo/presentation/auth/signup/widgets/title_text.dart';
 
-class SignupEmailCodeInputScreen extends GetView<SignupEmailCodeInputController> {
+class SignupEmailCodeInputScreen
+    extends GetView<SignupEmailCodeInputController> {
   const SignupEmailCodeInputScreen({super.key});
 
   @override
@@ -56,15 +57,15 @@ class SignupEmailCodeInputScreen extends GetView<SignupEmailCodeInputController>
                       ),
                       AppGap.v24,
                       Obx(
-                        () => LabelTextField(
-                            label: '인증번호',
-                            keyboardType: TextInputType.number,
-                            controller: controller.emailCodeTextController,
-                            hintText: AppStrings.emailCodeInputHint,
-                            errorText: controller.hasError
-                                ? controller.errorMessage
-                                : null,
-                          ),
+                            () => LabelTextField(
+                          label: '인증번호',
+                          keyboardType: TextInputType.number,
+                          controller: controller.emailCodeTextController,
+                          hintText: AppStrings.emailCodeInputHint,
+                          errorText: controller.hasError
+                              ? controller.errorMessage
+                              : null,
+                        ),
                       ),
                     ],
                   ),
@@ -87,21 +88,29 @@ class SignupEmailCodeInputScreen extends GetView<SignupEmailCodeInputController>
                   ),
                   AppGap.v16,
                   Obx(
-                    () => CustomButton(
+                        () {
+                      final isEnabled =
+                          controller.isButtonEnabled &&
+                              !controller.isLoading.value;
+
+                      return CustomButton(
                         text: '인증하기',
                         variant: ButtonVariant.primary,
-                        enabled: controller.isButtonEnabled,
-                        onPressed: controller.isButtonEnabled
-                            ? () {
+                        enabled: isEnabled,
+                        onPressed: isEnabled
+                            ? () async {
                           FocusScope.of(context).unfocus();
 
-                                final result = controller.verifyEmailCode();
-                                if (result) {
-                                  context.pushNamed('signupPassword');
-                                }
-                              }
+                          final result = await controller
+                              .verifyEmailCode();
+                          if(!context.mounted) return;
+                          if (result) {
+                            context.pushNamed('signupPassword');
+                          }
+                        }
                             : null,
-                      ),
+                      );
+                    },
                   ),
                   AppGap.v16,
                 ],

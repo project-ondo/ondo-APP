@@ -10,4 +10,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> sendEmailCode(String email) {
     return datasource.sendEmailCode(email);
   }
+  
+  @override
+  Future<String> verifyEmailCode(String email, String code) {
+    return datasource.verifyEmailCode(email, code);
+  }
 }

@@ -3,6 +3,7 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/components/custom_icon_button.dart';
 
 @immutable
 class HomePostRankItem extends StatelessWidget {
@@ -10,6 +11,8 @@ class HomePostRankItem extends StatelessWidget {
   final String title;
   final int createAgo;
   final int favorite;
+  final FavoriteAction? heartAction;
+  final VoidCallback? onTap;
 
   const HomePostRankItem({
     super.key,
@@ -17,34 +20,36 @@ class HomePostRankItem extends StatelessWidget {
     required this.createAgo,
     required this.favorite,
     required this.rank,
+    this.heartAction,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 43,
-      width: double.maxFinite,
+    return GestureDetector(
+      onTap: onTap,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _rank(),
-
-          Expanded(
-            child: _content(),
-          ),
-
+          Expanded(child: _content()),
           AppGap.h16,
-
-          _heart(),
+          CustomIconButton(
+            imagePath: AppIcon.heart.path,
+            total: favorite,
+            activeColor: AppColors.red,
+            action: heartAction,
+            iconSize: AppSpacing.s16,
+            totalStyle: AppTextStyles.caption(),
+          ),
         ],
       ),
     );
   }
 
   Widget _rank() {
-    return SizedBox(
-      width: 42,
-      height: double.maxFinite,
+    return SizedBox.square(
+      dimension: AppSpacing.s42,
       child: Align(
         alignment: Alignment.center,
         child: Text(
@@ -57,34 +62,17 @@ class HomePostRankItem extends StatelessWidget {
 
   Widget _content() {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           title,
           style: AppTextStyles.textMedium(textColor: AppColors.gray90),
         ),
-
+        AppGap.v4,
         Text(
           "$createAgo일 전",
           style: AppTextStyles.subCaption(textColor: AppColors.gray60),
-        ),
-      ],
-    );
-  }
-
-  Widget _heart() {
-    return Row(
-      children: [
-        Image.asset(
-          AppIcon.heart.path,
-          color: AppColors.gray40,
-          width: 16,
-          height: 16,
-        ),
-        Text(
-          "$favorite",
-          style: AppTextStyles.caption(textColor: AppColors.gray40),
         ),
       ],
     );

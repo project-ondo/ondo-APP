@@ -19,8 +19,6 @@ class ChatCard extends StatelessWidget {
   final String? otherName;
   final Duration? sendAt;
 
-
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -50,8 +48,8 @@ class ChatCard extends StatelessWidget {
   );
 
   Widget _profile() => Container(
-    width: 36,
-    height: 36,
+    width: AppSpacing.s36,
+    height: AppSpacing.s36,
     decoration: BoxDecoration(
       borderRadius: AppRadius.circleRadius,
     ),

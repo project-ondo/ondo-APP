@@ -12,6 +12,7 @@ class ChatRoomCard extends StatelessWidget {
   final Duration lastChatAt;
   final String lastChat;
   final int newChatCount;
+  final VoidCallback? onTap;
 
   ChatRoomCard({
     super.key,
@@ -20,33 +21,35 @@ class ChatRoomCard extends StatelessWidget {
     required this.lastChatAt,
     required this.lastChat,
     required this.newChatCount,
+    this.onTap,
   }) : bookmark = ValueNotifier(bookmark);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: AppPadding.card,
-      decoration: BoxDecoration(
-        borderRadius: AppRadius.baseRadius,
-        color: AppColors.white,
-      ),
-      child: Row(
-        children: [
-          _profile(),
-          AppGap.h16,
-          Expanded(child: _content()),
-          if (newChatCount > 1) _newChatCountIcon(),
-          _bookmarkIcon(),
-        ],
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: AppPadding.card,
+        decoration: BoxDecoration(
+          borderRadius: AppRadius.baseRadius,
+          color: AppColors.white,
+        ),
+        child: Row(
+          children: [
+            _profile(),
+            AppGap.h16,
+            Expanded(child: _content()),
+            if (newChatCount > 1) _newChatCountIcon(),
+            _bookmarkIcon(),
+          ],
+        ),
       ),
     );
   }
 
-  final double _profileSize = 36;
-
   Widget _profile() => Container(
-    height: _profileSize,
-    width: _profileSize,
+    height: AppSpacing.s36,
+    width: AppSpacing.s36,
     decoration: BoxDecoration(borderRadius: AppRadius.circleRadius),
     child: SvgPicture.asset(AppIcon.defaultProfile.path),
   );

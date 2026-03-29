@@ -13,7 +13,6 @@ import 'package:ondo/presentation/community/controllers/tag_input_field_controll
 import 'package:ondo/presentation/community/widgets/tag_input_field.dart';
 import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
 
-
 class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
   static const _contentMinLength = 10;
   static const _contentMaxLength = 3000;
@@ -37,7 +36,7 @@ class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
                     padding: AppPadding.topBar,
                     child: LabelTextField(
                       label: '글 제목',
-                      controller:controller.titleController,
+                      controller: controller.titleController,
                       hintText: '제목을 입력해주세요',
                       maxLines: 3,
                     ),
@@ -55,20 +54,22 @@ class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
                           label: '게시물 내용',
                           controller: controller.contentController,
                           hintText: '게시물 내용을 입력해주세요',
-                          minLines:  _contentMinLength,
+                          minLines: _contentMinLength,
                           maxLines: null,
                           maxLength: _contentMaxLength,
-                          maxLengthEnforcement: MaxLengthEnforcement.enforced
+                          maxLengthEnforcement: MaxLengthEnforcement.enforced,
                         ),
                         AppGap.v4,
-                        Obx(() => Text(
-                          '${controller.contentLength.value}/3000',
-                          style: AppTextStyles.caption(
-                            textColor: controller.contentLength.value >= 3000
-                                ? AppColors.red
-                                : AppColors.gray60,
+                        Obx(
+                          () => Text(
+                            '${controller.contentLength.value}/3000',
+                            style: AppTextStyles.caption(
+                              textColor: controller.contentLength.value >= 3000
+                                  ? AppColors.red
+                                  : AppColors.gray60,
+                            ),
                           ),
-                        )),
+                        ),
                       ],
                     ),
                   ),
@@ -81,13 +82,15 @@ class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
           Padding(
             padding: AppPadding.textField,
             child: SizedBox(
-              height:AppSpacing.s52,
+              height: AppSpacing.s52,
               width: double.infinity,
-              child: Obx(() => CustomButton(
-                text: '커뮤니티에 게시',
-                variant: ButtonVariant.primary,
-                enabled: controller.isFormValid.value,
-              )),
+              child: Obx(
+                () => CustomButton(
+                  text: '커뮤니티에 게시',
+                  variant: ButtonVariant.primary,
+                  enabled: controller.isFormValid.value,
+                ),
+              ),
             ),
           ),
         ],

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
-import 'package:ondo/core/design_system/components/post/post_list_indicator.dart';
+import 'package:ondo/presentation/post/widgets/post_list_indicator.dart';
 
 class IndicatorPostPageList extends StatefulWidget {
   const IndicatorPostPageList({
@@ -26,7 +26,6 @@ class IndicatorPostPageList extends StatefulWidget {
 }
 
 class _IndicatorPostPageListState extends State<IndicatorPostPageList> {
-
   @override
   void dispose() {
     _controller.dispose();
@@ -90,7 +89,7 @@ class _IndicatorPostPageListState extends State<IndicatorPostPageList> {
                 ),
                 children: List.generate(
                   slice.length,
-                      (index) => slice[index],
+                  (index) => slice[index],
                 ),
               );
             },

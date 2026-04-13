@@ -1,13 +1,15 @@
 import 'dart:convert';
-
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/data/models/auth/request/email_send_request_model.dart';
 import 'package:ondo/data/models/auth/request/email_verify_request_model.dart';
+import 'package:ondo/data/models/auth/request/sign_in_request_model.dart';
 import 'package:ondo/data/models/auth/request/signup_request_model.dart';
 import 'package:ondo/data/models/auth/response/email_verify_response_model.dart';
 import 'package:ondo/data/models/auth/response/signup_response_model.dart';
+import 'package:ondo/data/network/constants/api_constants.dart';
 
 class AuthRemoteDatasource {
   final String baseUrl;
@@ -90,5 +92,20 @@ class AuthRemoteDatasource {
     }
 
     return responseModel;
+  }
+
+  //TODO : 임시 로그인
+  Future<Map?> signIn(SignInRequestModel model) async {
+    final res = await http.post(
+      Uri.parse("$baseUrl/auth/signin"),
+      headers: ApiConstants.baseHeader,
+      body: jsonEncode(model.toJson()),
+    );
+
+    if (res.statusCode == 200) {
+      final json = jsonDecode(res.body)["data"];
+      return json;
+    }
+    return null;
   }
 }

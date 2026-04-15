@@ -6,9 +6,6 @@ import 'package:ondo/presentation/navigation/controllers/navigation_controller.d
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 import '../../../presentation/alert/controllers/alert_controller.dart';
-import '../../../presentation/chat/controllers/chat_controller.dart';
-import '../../../presentation/community/controllers/community_controller.dart';
-import '../../../presentation/home/controllers/home_controller.dart';
 import '../../../presentation/search/controllers/main_top_bar_search_controller.dart';
 
 class NavigationBinding extends Bindings {

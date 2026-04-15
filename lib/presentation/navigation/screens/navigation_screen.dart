@@ -8,7 +8,6 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/router/bindings/navigation_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
-import 'package:ondo/data/models/auth/request/sign_in_request_model.dart';
 import 'package:ondo/data/network/constants/api_constants.dart';
 import 'package:ondo/data/repositories/auth/auth_repository_impl.dart';
 import 'package:ondo/presentation/chat/screens/chat_main_screen.dart';

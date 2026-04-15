@@ -2,6 +2,9 @@ import 'package:get/get.dart';
 import 'package:ondo/core/router/bindings/chat_binding.dart';
 import 'package:ondo/core/router/bindings/community_binding.dart';
 import 'package:ondo/core/router/bindings/home_binding.dart';
+import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
+import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
+import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
@@ -11,10 +14,22 @@ import '../../../presentation/search/controllers/main_top_bar_search_controller.
 class NavigationBinding extends Bindings {
   @override
   void dependencies() {
+    /// 인증 token을 포함하는 client 틍록
+    Get.lazyPut(
+      () => AuthClient(
+        localDatasource: Get.find<AuthLocalDatasource>(),
+        remoteDatasource: Get.find<AuthRemoteDatasource>(),
+      ),
+      fenix: true,
+    );
+
+    ///전 화면 공통 controller 등록
     Get.lazyPut<NavigationController>(() => NavigationController());
     Get.lazyPut<MainTopBarSearchController>(() => MainTopBarSearchController());
     Get.lazyPut<AlertController>(() => AlertController());
     Get.lazyPut(() => PostController());
+
+    ///각 화면 Binding
     HomeBinding().dependencies();
     CommunityBinding().dependencies();
     ChatBinding().dependencies();

@@ -146,23 +146,3 @@ List<HomeRecentPopularPostInfo> _getRanks() => [
   },
 ];
 
-List<HomeProfileInfo> _getChats() => [
-  for (int i = 1; i < 6; i++) ...{
-    (name: "김유찬", skill: " UI/UX", rating: i),
-  },
-];
-
-List<PostInfo> _getPosts() => [
-  for (int i = 0; i < 8; i++) ...{
-    (
-      name: "김유찬",
-      title: "요즘 UI UX",
-      skills: ["UI/UX", "FrontEnd"],
-      bookmarks: 12,
-      favoites: 12,
-      createAt: Duration(minutes: i),
-      isFavorite: i % 2 == 0,
-      isBookmark: i % 3 == 0,
-    ),
-  },
-];

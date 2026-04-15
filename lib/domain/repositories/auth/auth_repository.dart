@@ -1,4 +1,3 @@
-import 'package:ondo/data/models/auth/request/sign_in_request_model.dart';
 import 'package:ondo/data/models/auth/request/signup_request_model.dart';
 import 'package:ondo/data/models/auth/response/signup_response_model.dart';
 

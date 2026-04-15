@@ -1,21 +1,23 @@
 import 'dart:developer';
 
+import 'package:ondo/core/env.dart';
+
 class ApiConstants {
   ApiConstants({required this.logName});
 
   final String logName;
 
-  static const domain = "https://ondo.o-r.kr";
-  static const posts = "$domain/posts";
-  static const users = "$domain/users";
-  static const auth = "$domain/auth";
+  //.env 파일에서 설정한 환경 변수 불러오기
+  static String get domain => Env.apiBaseUrl;
+  static String get posts => "${Env.apiBaseUrl}/posts";
+  static String get users => "${Env.apiBaseUrl}/users";
+  static String get auth => "${Env.apiBaseUrl}/auth";
 
   static const baseHeader = {"Content-Type": "application/json"};
 
-
   //TODO : 임시 로그인 데이터
-  static String loginId = "94/94";
-  static String loginPassword = "4X8zB27Ommwktsm";
+  static String get loginId => Env.loginId;
+  static String get loginPassword => Env.loginPassword;
 
   void errorLog(Object error) => log("$logName 서버 에러 : ${error.toString()}");
 

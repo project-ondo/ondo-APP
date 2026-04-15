@@ -1,7 +1,7 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/bindings_interface.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:ondo/core/env.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
@@ -28,16 +28,17 @@ class SignupBinding extends Bindings {
     );
 
     Get.lazyPut<AuthRemoteDatasource>(
-      () => AuthRemoteDatasource(Env.apiBaseUrl),
+      () => AuthRemoteDatasource(dotenv.env["API_BASE_URL"]!),
     );
+
     Get.lazyPut<AuthLocalDatasource>(
       () => AuthLocalDatasourceImpl(),
     );
 
     Get.lazyPut<AuthRepository>(
       () => AuthRepositoryImpl(
-        remoteDatasource: Get.find(),
-        localDatasource: Get.find(),
+        localDatasource: Get.find<AuthLocalDatasource>(),
+        remoteDatasource: Get.find<AuthRemoteDatasource>(),
       ),
     );
 
@@ -52,7 +53,6 @@ class SignupBinding extends Bindings {
     Get.lazyPut<SignupUsecase>(
       () => SignupUsecase(Get.find()),
     );
-
     Get.lazyPut<SignupTermsAgreementController>(
       () => SignupTermsAgreementController(),
     );

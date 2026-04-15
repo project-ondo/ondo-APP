@@ -47,9 +47,9 @@ class _ProfileResults extends BaseHomeProfileList {
     (index) {
       final chat = _controller.viewChatList[index];
       return HomeProfileCard(
-        skill: chat.skill,
-        name: chat.name,
-        rating: chat.rating,
+        skill: chat.interests.first,
+        name: chat.displayName,
+        rating: chat.ratingCount,
       );
     },
   );
@@ -68,12 +68,13 @@ class _PostResults extends BasePostGrid {
       return Obx(() {
         final post = _controller.viewPostList[index];
         return PostItem(
-          skills: post.skills,
+          skills: post.tags,
           title: post.title,
-          author: post.name,
-          bookmarks: post.bookmarks,
-          favorites: post.favoites,
-          createMinutes: post.createAt.inMinutes,
+          author: post.authorName,
+          //TODO : 북마크 api 요구됨
+          bookmarks: post.likeCount,
+          favorites: post.likeCount,
+          createAt: post.createAt,
         );
       });
     });

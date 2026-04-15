@@ -1,10 +1,15 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
+import 'package:ondo/domain/usecases/auth/sign_in_use_case.dart';
 
 class LoginController extends GetxController {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  final SignInUseCase signInUseCase;
+
+  LoginController({required this.signInUseCase});
 
   var emailError = RxnString();
   var passwordError = RxnString();
@@ -45,20 +50,20 @@ class LoginController extends GetxController {
     return true;
   }
 
-  Future<bool> login() async{
-    final String testEmail = 'test1@gmail.com';
-    final String testPassword = 'asdf1234!';
-
+  Future<bool> login() async {
     if (!validate()) return false;
 
-    if (emailController.text == testEmail &&
-        passwordController.text == testPassword) {
+    final result = await signInUseCase.call(
+      loginId: emailController.text.trim(),
+      password: passwordController.text.trim(),
+    );
+
+    if (result) {
       generalError.value = null;
-      return true;
     } else {
       generalError.value = AppStrings.inputEmailOrPassword;
-      return false;
     }
+    return result;
   }
 
   @override

@@ -1,21 +1,34 @@
 import 'dart:math';
 import 'package:get/get.dart';
+import 'package:ondo/domain/entities/home/recommend_post_entity.dart';
+import 'package:ondo/domain/entities/home/recommend_user_entity.dart';
+import 'package:ondo/domain/usecases/home/load_recommend_posts_use__case.dart';
+import 'package:ondo/domain/usecases/home/load_recommend_users_use_case.dart';
 
 class HomeController extends GetxController {
   final RxList<HomeRecentPopularPostInfo> ranks =
       <HomeRecentPopularPostInfo>[].obs;
-  final List<HomeProfileInfo> _cacheProfileList = [];
-  final List<PostInfo> _cachePostList = [];
-  final RxList<HomeProfileInfo> viewProfileList = <HomeProfileInfo>[].obs;
-  final RxList<PostInfo> viewPostList = <PostInfo>[].obs;
+  final List<PostEntity> _cachePostList = [];
+  final RxList<PostEntity> viewPostList = <PostEntity>[].obs;
+  final RxList<UserEntity> viewProfileList = <UserEntity>[].obs;
+  final List<UserEntity> _cacheProfileList = [];
+
+  final LoadRecommendPostsUseCase recommendPostsUseCase;
+  final LoadRecommendUsersUseCase recommendUsersUseCase;
+
+  HomeController({
+    required this.recommendPostsUseCase,
+    required this.recommendUsersUseCase,
+  });
 
   @override
-  void onInit() {
+  void onInit() async {
+    //TODO : ranking 게시물 불러오기
     _sortRating(ranks..addAll(_getRanks()));
-    _cacheProfileList.addAll(_getChats());
-    _cachePostList.addAll(_getPosts());
-    viewProfileList.addAll(_cacheProfileList);
+    await loadRecommendPosts();
+    await loadRecommendUsers();
     viewPostList.addAll(_cachePostList);
+    viewProfileList.addAll(_cacheProfileList);
     super.onInit();
   }
 
@@ -25,23 +38,31 @@ class HomeController extends GetxController {
     super.onReady();
   }
 
+  Future<void> loadRecommendPosts() async {
+    _cachePostList.addAll(await recommendPostsUseCase.call());
+  }
+
+  Future<void> loadRecommendUsers() async {
+    _cacheProfileList.addAll(await recommendUsersUseCase.call());
+  }
+
   void _sortRating(RxList<HomeRecentPopularPostInfo>? list) => list == null
       ? ranks.sort((a, b) => (b.favorites - a.favorites))
       : list.sort((a, b) => b.favorites - a.favorites);
 
   void searchResultInfo(List<String> searchList) {
-    final Set<HomeProfileInfo> profileResult = {};
-    final Set<PostInfo> postResult = {};
+    final Set<UserEntity> profileResult = {};
+    final Set<PostEntity> postResult = {};
 
     //TODO: 서버와의 연결에서 결과 가져오기
     profileResult.addAll(
       _cacheProfileList.where(
         (profile) =>
             searchList.any(
-              (search) => profile.name.contains(search),
+              (search) => profile.displayName.contains(search),
             ) ||
             searchList.any(
-              (search) => profile.skill.contains(search),
+              (search) => profile.interests.contains(search),
             ),
       ),
     );
@@ -51,13 +72,13 @@ class HomeController extends GetxController {
       _cachePostList.where(
         (post) =>
             searchList.any(
-              (search) => post.name.contains(search),
+              (search) => post.authorName.contains(search),
             ) ||
             searchList.any(
               (search) => post.title.contains(search),
             ) ||
             searchList.any(
-              (search) => post.skills.any(
+              (search) => post.tags.any(
                 (skill) => skill.contains(search),
               ),
             ),
@@ -72,12 +93,12 @@ class HomeController extends GetxController {
 }
 
 class HomeSearchResultController extends GetxController {
-  final RxList<HomeProfileInfo> viewChatList = <HomeProfileInfo>[].obs;
-  final RxList<PostInfo> viewPostList = <PostInfo>[].obs;
+  final RxList<UserEntity> viewChatList = <UserEntity>[].obs;
+  final RxList<PostEntity> viewPostList = <PostEntity>[].obs;
 
   void updateResult(
-    Iterable<PostInfo> posts,
-    Iterable<HomeProfileInfo> profiles,
+    Iterable<PostEntity> posts,
+    Iterable<UserEntity> profiles,
   ) {
     viewChatList.assignAll(profiles);
     viewPostList.assignAll(posts);
@@ -97,7 +118,7 @@ typedef PostInfo = ({
   String name,
   int favoites,
   int bookmarks,
-  Duration createAt,
+  DateTime createAt,
   bool isBookmark,
   bool isFavorite,
 });
@@ -125,23 +146,3 @@ List<HomeRecentPopularPostInfo> _getRanks() => [
   },
 ];
 
-List<HomeProfileInfo> _getChats() => [
-  for (int i = 1; i < 6; i++) ...{
-    (name: "김유찬", skill: " UI/UX", rating: i),
-  },
-];
-
-List<PostInfo> _getPosts() => [
-  for (int i = 0; i < 8; i++) ...{
-    (
-      name: "김유찬",
-      title: "요즘 UI UX",
-      skills: ["UI/UX", "FrontEnd"],
-      bookmarks: 12,
-      favoites: 12,
-      createAt: Duration(minutes: i),
-      isFavorite: i % 2 == 0,
-      isBookmark: i % 3 == 0,
-    ),
-  },
-];

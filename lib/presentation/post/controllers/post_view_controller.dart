@@ -92,7 +92,7 @@ extension DummyData on PostViewController {
         skills: ["UI/UX", "FrontEnd"],
         bookmarks: 12,
         favoites: 12,
-        createAt: Duration(minutes: i),
+        createAt: DateTime.now(),
         isFavorite: i % 2 == 0,
         isBookmark: i % 3 == 0,
       ),

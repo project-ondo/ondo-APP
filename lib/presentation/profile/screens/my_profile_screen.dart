@@ -193,7 +193,7 @@ class MyProfileScreen extends StatelessWidget {
         author: data["author"],
         bookmarks: data["bookmarks"],
         favorites: data["favorites"],
-        createMinutes: data["createMinutes"],
+        createAt: data["createMinutes"],
       );
     }).toList();
 

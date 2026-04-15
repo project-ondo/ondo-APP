@@ -28,7 +28,7 @@ class MainTopBarSearchController extends GetxController {
   @override
   void onReady() {
     focusNode.addListener(_updateShowPopup);
-    Get.lazyPut(() => SearchPopupController(mainController: this));
+    Get.lazyPut(() => SearchPopupController(mainController: this), fenix: true);
     super.onReady();
   }
 

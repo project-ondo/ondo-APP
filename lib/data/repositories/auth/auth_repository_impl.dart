@@ -35,7 +35,12 @@ class AuthRepositoryImpl implements AuthRepository {
     final json = await remoteDatasource.signIn(model);
     if (json != null) {
       final res = SignInResponseModel.fromJson(json);
-      await localDatasource.saveToken(res.refreshToken, res.accessToken);
+      await localDatasource.saveToken(
+        accessToken: res.accessToken,
+        accessTokenExpiration: res.accessTokenExpiration,
+        refreshToken: res.refreshToken,
+        refreshTokenExpiration: res.refreshTokenExpiration,
+      );
     }
   }
 }

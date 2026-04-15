@@ -97,9 +97,6 @@ class AuthRemoteDatasource {
   Future<Map?> signIn(SignInRequestModel model) async {
     final log = ApiConstants(logName: "로그인");
 
-    print(ApiConstants.baseHeader);
-    print("${ApiConstants.auth}/signin");
-    print(model.toJson());
     try {
       final res = await http.post(
         Uri.parse("${ApiConstants.auth}/signin"),

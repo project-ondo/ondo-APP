@@ -13,7 +13,6 @@ class HomeRemoteDatasource {
     final log = ApiConstants(logName: "홈 추천 게시물 조회");
 
     try {
-      print("post");
       final res = await client.get(
         Uri.parse("${ApiConstants.posts}/recommend").replace(
           queryParameters: model.toJson(),
@@ -42,7 +41,6 @@ class HomeRemoteDatasource {
     final log = ApiConstants(logName: "홈 추천 사용자 조회");
 
     try {
-      print("user");
       final res = await client.get(
         Uri.parse(
           "${ApiConstants.users}/recommend",

@@ -6,6 +6,7 @@ import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_icon_button.dart';
+import 'package:ondo/core/utils/date_utils.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 class PostItem extends GetView<PostController> {
@@ -14,7 +15,7 @@ class PostItem extends GetView<PostController> {
   final String author;
   final int favorites;
   final int bookmarks;
-  final int createAt;
+  final DateTime createAt;
   final bool initialBookmark;
   final bool initialFavorite;
   final FavoriteAction? heartAction;
@@ -128,12 +129,12 @@ class PostItem extends GetView<PostController> {
         ),
         Spacer(),
 
-        //TODO : 게시물 시간 표시 공통 메서드 정의 요함
         Text(
-          "${DateTime.now().difference(DateTime.now().subtract(Duration(minutes: createAt))).inMinutes} createAt분전",
+          AppDateUtils.timeAgo(createAt),
           style: AppTextStyles.caption(textColor: AppColors.gray50),
         ),
       ],
     );
   }
+
 }

@@ -118,7 +118,7 @@ typedef PostInfo = ({
   String name,
   int favoites,
   int bookmarks,
-  Duration createAt,
+  DateTime createAt,
   bool isBookmark,
   bool isFavorite,
 });

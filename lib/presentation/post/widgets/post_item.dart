@@ -14,7 +14,7 @@ class PostItem extends GetView<PostController> {
   final String author;
   final int favorites;
   final int bookmarks;
-  final int createMinutes;
+  final int createAt;
   final bool initialBookmark;
   final bool initialFavorite;
   final FavoriteAction? heartAction;
@@ -27,7 +27,7 @@ class PostItem extends GetView<PostController> {
     required this.author,
     required this.bookmarks,
     required this.favorites,
-    required this.createMinutes,
+    required this.createAt,
     this.heartAction,
     this.bookmarkAction,
     this.initialBookmark = false,
@@ -128,8 +128,9 @@ class PostItem extends GetView<PostController> {
         ),
         Spacer(),
 
+        //TODO : 게시물 시간 표시 공통 메서드 정의 요함
         Text(
-          "$createMinutes분전",
+          "${DateTime.now().difference(DateTime.now().subtract(Duration(minutes: createAt))).inMinutes} createAt분전",
           style: AppTextStyles.caption(textColor: AppColors.gray50),
         ),
       ],

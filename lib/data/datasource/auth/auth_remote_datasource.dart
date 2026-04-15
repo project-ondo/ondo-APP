@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:ondo/core/design_system/app_strings.dart';
@@ -96,15 +95,55 @@ class AuthRemoteDatasource {
 
   //TODO : 임시 로그인
   Future<Map?> signIn(SignInRequestModel model) async {
-    final res = await http.post(
-      Uri.parse("$baseUrl/auth/signin"),
-      headers: ApiConstants.baseHeader,
-      body: jsonEncode(model.toJson()),
-    );
+    final log = ApiConstants(logName: "로그인");
 
-    if (res.statusCode == 200) {
-      final json = jsonDecode(res.body)["data"];
-      return json;
+    print(ApiConstants.baseHeader);
+    print("${ApiConstants.auth}/signin");
+    print(model.toJson());
+    try {
+      final res = await http.post(
+        Uri.parse("${ApiConstants.auth}/signin"),
+        headers: ApiConstants.baseHeader,
+        body: jsonEncode(model.toJson()),
+      );
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"]);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200 && body["success"] == true) {
+        return body["data"];
+      }
+
+      log.statusLog(res.statusCode);
+    } catch (e) {
+      log.errorLog(e);
+    }
+    return null;
+  }
+
+  Future<Map?> refreshToken(String refreshToken) async {
+    final log = ApiConstants(logName: "토큰 갱신");
+
+    try {
+      final res = await http.post(
+        Uri.parse("${ApiConstants.auth}/refresh"),
+        headers: ApiConstants.baseHeader,
+        body: jsonEncode({"refreshToken": refreshToken}),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"]);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200 && body["success"] == true) {
+        return body["data"];
+      }
+
+      log.statusLog(res.statusCode);
+    } catch (e) {
+      log.errorLog(e);
     }
     return null;
   }

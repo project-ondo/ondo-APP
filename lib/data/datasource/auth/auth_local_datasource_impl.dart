@@ -7,6 +7,8 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
   //TODO : 환경 변수 설정
   static const String _accessTokenKey = "ACCESS_TOKEN";
   static const String _refreshTokenKey = "REFRESH_TOKEN";
+  static const String _accessTokenExpirationKey = "ACCESS_TOKEN_EXPIRATION";
+  static const String _refreshTokenExpirationKey = "REFRESH_TOKEN_EXPIRATION";
 
   @override
   Future<String?> getAccessToken() async =>
@@ -17,9 +19,24 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
       await store.read(key: _refreshTokenKey);
 
   @override
-  Future<void> saveToken(String refreshToken, String accessToken) async {
-    await store.write(key: _refreshTokenKey, value: refreshToken);
+  Future<String?> getAccessTokenExpiration() async =>
+      await store.read(key: _accessTokenExpirationKey);
+
+  @override
+  Future<String?> getRefreshTokenExpiration() async =>
+      await store.read(key: _refreshTokenExpirationKey);
+
+  @override
+  Future<void> saveToken({
+    required String accessToken,
+    required String accessTokenExpiration,
+    required String refreshToken,
+    required String refreshTokenExpiration,
+  }) async {
     await store.write(key: _accessTokenKey, value: accessToken);
+    await store.write(key: _accessTokenExpirationKey, value: accessTokenExpiration);
+    await store.write(key: _refreshTokenKey, value: refreshToken);
+    await store.write(key: _refreshTokenExpirationKey, value: refreshTokenExpiration);
   }
 
   @override

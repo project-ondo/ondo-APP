@@ -18,13 +18,3 @@ abstract class BaseDataModel<T> {
   Map toJson();
 }
 
-/*
- "data": {
-        "content": {},
-        "page": 0,
-        "size": 0,
-        "totalElement": 0,
-        "totalPages": 0,
-        "last": true
-    }
-* */

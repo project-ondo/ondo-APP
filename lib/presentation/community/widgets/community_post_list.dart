@@ -22,7 +22,7 @@ class CommunityPostList extends GetView<CommunityController> {
               author: post.name,
               bookmarks: post.bookmarks,
               favorites: post.favoites,
-              createAt: post.createAt.inMinutes,
+              createAt: post.createAt,
             );
           },
         ),

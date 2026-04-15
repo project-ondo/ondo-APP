@@ -103,7 +103,7 @@ List<PostInfo> _getPosts() => [
       skills: ["UI/UX", "FrontEnd"],
       bookmarks: 12,
       favoites: 12,
-      createAt: Duration(minutes: i + 1),
+      createAt: DateTime.now(),
       isFavorite: i % 2 == 0,
       isBookmark: i % 3 == 0,
     ),

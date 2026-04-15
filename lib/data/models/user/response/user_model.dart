@@ -2,7 +2,6 @@ import 'package:ondo/data/models/base/response/base_model.dart';
 
 import '../../base/response/base_data_model.dart';
 
-//users/recommend
 class UserDataModel extends BaseDataModel<UserModel> {
   UserDataModel({
     required super.content,
@@ -85,44 +84,3 @@ class UserModel extends BaseModel {
     "ratingCount": ratingCount,
   };
 }
-
-/*
-{
-    "success": true,
-    "message": "string",
-    "data": {
-        "content": {
-            "publicId": "string",
-            "displayName": "string",
-            "gender": "MALE",
-            "major": "string",
-            "interests": [
-                "string"
-            ],
-            "profileImageKey": "string",
-            "ratingAverage": 0,
-            "ratingCount": 0
-        },
-        "page": 0,
-        "size": 0,
-        "totalElement": 0,
-        "totalPages": 0,
-        "last": true
-    }
-}
-* */
-
-/*
-      "content": {
-            "publicId": "string",
-            "displayName": "string",
-            "gender": "MALE",
-            "major": "string",
-            "interests": [
-                "string"
-            ],
-            "profileImageKey": "string",
-            "ratingAverage": 0,
-            "ratingCount": 0
-        },
-* */

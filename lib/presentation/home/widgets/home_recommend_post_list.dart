@@ -22,9 +22,9 @@ class HomeRecommendPostList extends BasePostGrid {
             author: post.authorName,
             bookmarks: post.bookmarkCount,
             favorites: post.likeCount,
-            createAt: post.createAt.minute,
+            createAt: post.createAt,
             bookmarkAction: (isBookmark, total) {
-              //TODO : model 정의되면 setter 적용
+              //TODO :  정의되면 setter 적용
             },
             heartAction: (isFavorite, total) {
               //TODO : model 정의되면 setter 적용

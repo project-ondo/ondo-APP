@@ -74,7 +74,7 @@ class _PostResults extends BasePostGrid {
           //TODO : 북마크 api 요구됨
           bookmarks: post.likeCount,
           favorites: post.likeCount,
-          createAt: post.createAt.minute,
+          createAt: post.createAt,
         );
       });
     });

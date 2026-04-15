@@ -1,6 +1,5 @@
 import '../../base/response/base_data_model.dart';
 
-//posts/recommend
 class PostDataModel extends BaseDataModel<PostModel> {
   PostDataModel({
     required super.content,
@@ -39,6 +38,8 @@ class PostDataModel extends BaseDataModel<PostModel> {
   };
 }
 
+
+//TODO : bookmarkCount, createAt 서버 api로부터 받기
 class PostModel {
   final int postId;
   final String title;
@@ -79,27 +80,3 @@ class PostModel {
   };
 }
 
-/*
-{
-    "success": true,
-    "message": 0,
-    "data": {
-        "content": {
-            "postId": "string",
-            "title": "string",
-            "authorName": "string",
-            "tags": [
-                "string"
-            ],
-            "viewCount": 0,
-            "likeCount": 0,
-            "commentCount": 0
-        },
-        "page": 0,
-        "size": 0,
-        "totalElement": 0,
-        "totalPages": 0,
-        "last": true
-    },
-}
-*/

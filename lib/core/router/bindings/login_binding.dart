@@ -1,5 +1,5 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/env.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
@@ -13,7 +13,7 @@ class LoginBinding extends Bindings {
   void dependencies() {
     ///인증 관련 dataSource 등록
     Get.lazyPut<AuthRemoteDatasource>(
-      () => AuthRemoteDatasource(dotenv.env["API_BASE_URL"]!),
+      () => AuthRemoteDatasource(Env.apiBaseUrl),
     );
     Get.lazyPut<AuthLocalDatasource>(
       () => AuthLocalDatasourceImpl(),

@@ -31,7 +31,8 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> signIn(SignInRequestModel model) async {
+  Future<bool> signIn(String loginId, String password) async {
+    final model = SignInRequestModel(loginId: loginId, password: password);
     final json = await remoteDatasource.signIn(model);
     if (json != null) {
       final res = SignInResponseModel.fromJson(json);
@@ -41,6 +42,10 @@ class AuthRepositoryImpl implements AuthRepository {
         refreshToken: res.refreshToken,
         refreshTokenExpiration: res.refreshTokenExpiration,
       );
+
+      return true;
     }
+
+    return false;
   }
 }

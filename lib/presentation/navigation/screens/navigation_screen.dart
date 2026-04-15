@@ -28,10 +28,8 @@ void main() async {
       remoteDatasource: Get.find(),
     ),
   ).signIn(
-    SignInRequestModel(
-      loginId: ApiConstants.loginId,
-      password: ApiConstants.loginPassword,
-    ),
+    ApiConstants.loginId,
+    ApiConstants.loginPassword,
   );
 
   NavigationBinding().dependencies();

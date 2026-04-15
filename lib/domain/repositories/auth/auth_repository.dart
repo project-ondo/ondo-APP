@@ -9,5 +9,5 @@ abstract class AuthRepository {
 
   Future<SignupResponseModel> signup(SignupRequestModel model);
 
-  Future<void> signIn(SignInRequestModel model);
+  Future<bool> signIn(String loginId, String password);
 }

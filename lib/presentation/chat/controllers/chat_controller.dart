@@ -1,48 +1,89 @@
-import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
-import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
-import 'package:ondo/presentation/chat/controllers/chat_review_controller.dart';
-import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
+import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
+import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 
 class ChatController extends GetxController {
-  final RxList<Chat> chats = <Chat>[].obs;
-  final TextEditingController textController = TextEditingController();
+  final List<String> tags = <String>[].obs;
+  final RxSet<String> selectTagList = <String>{}.obs;
+  final List<ChatRoomInfo> _cacheChatList = <ChatRoomInfo>[];
+  final RxList<ChatRoomInfo> viewChatList = <ChatRoomInfo>[].obs;
 
   @override
   void onInit() {
-    chats.assignAll(_getChatList());
+    tags.addAll(_getTags());
+    _cacheChatList.addAll(_getChatRooms());
+    viewChatList.addAll(_cacheChatList);
     super.onInit();
   }
 
-  void sendChat(String comment) {
-    //TODO : 채팅 전송 및, 채팅 리스트에 대화 내역 추가
-    textController.clear();
-    chats.add((comment: comment, isMe: true));
-  }
-
-  void showQuitAlert() {
-    Get.dialog(
-      CustomAlertDialog(
-        title: "커피챗 종료",
-        comment: "정말 커피챗을 종료하시겠어요?",
-        actionLeft: () => Get.back(),
-        actionRight: () {
-          Get.lazyPut(() => ChatReviewController());
-          Get.back();
-          Get.dialog(ChatReviewDialog());
-        },
-        rightActionText: "다음",
+  void searchChatRooms(List<String> searchList) {
+    //TODO : 채팅 리스트 조회 (아마도 서버로부터 불러옴)
+    //임시 조회 결과 객체
+    final Set<ChatRoomInfo> results = {};
+    results.addAll(
+      _cacheChatList.where(
+        (chatRoom) => searchList.any(
+          (search) => chatRoom.name.contains(search),
+        ),
       ),
     );
+    //보여지는 채잍 방 리스토 갱신
+    viewChatList.clear();
+    viewChatList.addAll(results);
+  }
+
+  void filterChatRooms(String tag, bool isSelect) {
+    //TODO : 태그 필터 젹용, 불러온 cache에서 거를지, 서버로부터 불러올 지, 서버 연결 시 검토 요함
+    //임시 조회 결과
+    isSelect ? selectTagList.add(tag) : selectTagList.remove(tag);
+    //선택한 tag가 없을 시 전체 표시
+    if (selectTagList.isEmpty) {
+      viewChatList.assignAll(_cacheChatList);
+      return;
+    }
+    final Set<ChatRoomInfo> result = {};
+    result.addAll(
+      viewChatList.where(
+        (chat) => selectTagList.any((tag) => chat.name.contains(tag)),
+      ),
+    );
+    //보여지는 채팅 방 리스트 갱신
+    viewChatList.assignAll(result);
+  }
+
+  void enterChatRoom() {
+    //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
+    Get.put(ChatRoomController());
+    Get.to(ChatRoomScreen());
   }
 }
 
-List<Chat> _getChatList() => <Chat>[
-  (
-    comment: "안녕하세요 UI/UX에 관심이 많으신 것 같아서 연락드려요! 혹시 조금만 이야기 가능할까요?",
-    isMe: true,
-  ),
-  (comment: "네 당연히 가능하죠! 근데 제가 지금은 좀 바빠서 이따 다시 연락드려도 괜찮으실까요?", isMe: false),
+List<String> _getTags() => [
+  "최근검색태그",
+  "UI/UX",
+  "Android",
+  "멘토링",
+  "팁",
+  "공부인증",
+  "김유찬",
 ];
 
-typedef Chat = ({String comment, bool isMe});
+List<ChatRoomInfo> _getChatRooms() => [
+  for (int i = 0; i < 8; i++) ...{
+    (
+      isBookmark: i < 2,
+      name: i % 2 == 0 ? "김유찬" : "UI",
+      lastChat: "ㄹㅇ 다크 패턴은 진짜 법으로 좀 쳐야 함… 탈퇴 버튼 숨겨놓는 거 볼 때마다 정 떨어짐.",
+      lastChatAt: Duration(hours: i),
+      newChatCount: i,
+    ),
+  },
+];
+
+typedef ChatRoomInfo = ({
+  bool isBookmark,
+  String name,
+  Duration lastChatAt,
+  String lastChat,
+  int newChatCount,
+});

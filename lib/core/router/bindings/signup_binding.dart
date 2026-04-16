@@ -1,8 +1,10 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:ondo/core/env.dart';
 import 'package:get/get_instance/src/bindings_interface.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
+import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/repositories/auth/auth_repository_impl.dart';
 import 'package:ondo/domain/repositories/auth/auth_repository.dart';
 import 'package:ondo/domain/usecases/auth/send_email_code_usecase.dart';
@@ -26,11 +28,18 @@ class SignupBinding extends Bindings {
     );
 
     Get.lazyPut<AuthRemoteDatasource>(
-      () => AuthRemoteDatasource(dotenv.env["API_BASE_URL"]!),
+      () => AuthRemoteDatasource(Env.apiBaseUrl),
+    );
+
+    Get.lazyPut<AuthLocalDatasource>(
+      () => AuthLocalDatasourceImpl(),
     );
 
     Get.lazyPut<AuthRepository>(
-      () => AuthRepositoryImpl(Get.find()),
+      () => AuthRepositoryImpl(
+        localDatasource: Get.find<AuthLocalDatasource>(),
+        remoteDatasource: Get.find<AuthRemoteDatasource>(),
+      ),
     );
 
     Get.lazyPut<SendEmailCodeUsecase>(

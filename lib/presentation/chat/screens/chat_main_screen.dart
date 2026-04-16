@@ -3,13 +3,13 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_tag_card.dart';
-import 'package:ondo/presentation/chat/controllers/chat_main_screen_controller.dart';
+import 'package:ondo/presentation/chat/controllers/chat_controller.dart';
 import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/chat/widgets/chat_room_card.dart';
 
 //TODO : Binding ChatMainScreenController 필수
-class ChatMainScreen extends GetView<ChatMainScreenController> {
+class ChatMainScreen extends GetView<ChatController> {
   const ChatMainScreen({super.key});
 
   @override
@@ -40,7 +40,7 @@ class ChatMainScreen extends GetView<ChatMainScreenController> {
   }
 }
 
-class TagList extends GetView<ChatMainScreenController> {
+class TagList extends GetView<ChatController> {
   const TagList({super.key});
 
   @override
@@ -63,7 +63,7 @@ class TagList extends GetView<ChatMainScreenController> {
   }
 }
 
-class ChatList extends GetView<ChatMainScreenController> {
+class ChatList extends GetView<ChatController> {
   const ChatList({super.key});
 
   @override

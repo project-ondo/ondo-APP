@@ -7,11 +7,11 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/chat/controllers/chat_controller.dart';
+import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
 import 'package:ondo/presentation/chat/widgets/chat_card.dart';
 import 'package:ondo/presentation/chat/widgets/chat_input_field.dart';
 
-class ChatRoomScreen extends GetView<ChatController> {
+class ChatRoomScreen extends GetView<ChatRoomController> {
   const ChatRoomScreen({super.key});
 
   @override

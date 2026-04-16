@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:ondo/main.dart';
@@ -8,6 +9,9 @@ import 'package:ondo/core/design_system/component_variants.dart';
 
 void main() {
   // 테스트마다 GetX 상태를 완전히 초기화합니다.
+  setUpAll(() async {
+    await dotenv.load(fileName: '.env');
+  });
   setUp(() => Get.reset());
   tearDown(() => Get.reset());
 

@@ -35,30 +35,5 @@ class HomeRemoteDatasource {
     return null;
   }
 
-  Future<Map?> loadRecommendProfileList(
-    BaseListRequestModel model,
-  ) async {
-    final log = ApiConstants(logName: "홈 추천 사용자 조회");
 
-    try {
-      final res = await client.get(
-        Uri.parse(
-          "${ApiConstants.users}/recommend",
-        ).replace(queryParameters: model.toJson()),
-      );
-      final body = jsonDecode(res.body);
-
-      log.successLog(body["success"]);
-      log.messageLog(body["message"]);
-
-      if (res.statusCode == 200 && body["success"] == true) {
-        return body["data"];
-      }
-
-      log.statusLog(res.statusCode);
-    } catch (e) {
-      log.errorLog(e);
-    }
-    return null;
-  }
 }

@@ -1,14 +1,14 @@
 import 'package:ondo/domain/entities/home/recommend_user_entity.dart';
-import 'package:ondo/domain/repositories/home/home_repository.dart';
+import 'package:ondo/domain/repositories/search/user_repository.dart';
 
 class LoadRecommendUsersUseCase {
-  final HomeRepository homeRepository;
+  final UserRepository repository;
 
-  LoadRecommendUsersUseCase({required this.homeRepository});
+  LoadRecommendUsersUseCase({required this.repository});
 
   //TODO : 정적 값 임시 삽입
   Future<List<UserEntity>> call() async {
-    return (await homeRepository.getRecommendUserList(page: 0, size: 10))
+    return (await repository.getRecommendUserList(page: 0, size: 10))
         .map(
           (e) => UserEntity.fromUserModel(e),
         )

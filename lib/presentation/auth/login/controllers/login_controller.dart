@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
+import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/domain/usecases/auth/sign_in_use_case.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
   final SignInUseCase signInUseCase;
+  final MediaRemoteDatasource mediaRemoteDatasource;
 
-  LoginController({required this.signInUseCase});
+  LoginController({
+    required this.signInUseCase,
+    required this.mediaRemoteDatasource,
+  });
+
+  static const String _profileImagePathKey = 'pending_profile_image_path';
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -66,12 +74,46 @@ class LoginController extends GetxController {
       }
 
       generalError.value = null;
+
+      // 로그인 성공 후 대기 중인 프로필 이미지 업로드 처리
+      await _uploadPendingProfileImage();
+
       return true;
     } catch (e) {
       generalError.value = AppStrings.inputEmailOrPassword;
       return false;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  /// SharedPreferences에 저장된 프로필 이미지 경로 확인 후 업로드
+  Future<void> _uploadPendingProfileImage() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final imagePath = prefs.getString(_profileImagePathKey);
+
+      if (imagePath == null || imagePath.isEmpty) return;
+
+      debugPrint('[프로필 이미지 업로드 시작] path: $imagePath');
+
+      await mediaRemoteDatasource.uploadImage(imagePath: imagePath);
+
+      // 업로드 완료 후 임시 데이터 삭제
+      await prefs.remove(_profileImagePathKey);
+
+      debugPrint('[프로필 이미지 업로드 완료]');
+    } catch (e, s) {
+      // 이미지 업로드 실패해도 로그인은 성공으로 처리
+      debugPrint('프로필 이미지 업로드 실패 (무시): $e\n$s');
+    }
+  }
+
+  /// 회원가입 완료 후 이미지 경로를 SharedPreferences에 임시 저장
+  static Future<void> savePendingProfileImage(String? imagePath) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (imagePath != null && imagePath.isNotEmpty) {
+      await prefs.setString(_profileImagePathKey, imagePath);
     }
   }
 

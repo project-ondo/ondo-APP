@@ -5,7 +5,7 @@ class PostDataModel extends BaseDataModel<PostModel> {
     required super.content,
     required super.page,
     required super.size,
-    required super.totalElement,
+    required super.totalElements,
     required super.totalPages,
     required super.last,
   });
@@ -20,7 +20,7 @@ class PostDataModel extends BaseDataModel<PostModel> {
         [],
     page: json["page"],
     size: json["size"],
-    totalElement: json["totalElements"],
+    totalElements: json["totalElements"],
     totalPages: json["totalPages"],
     last: json["last"],
   );
@@ -32,12 +32,11 @@ class PostDataModel extends BaseDataModel<PostModel> {
     ),
     "page": page,
     "size": size,
-    "totalElements": totalElement,
+    "totalElements": totalElements,
     "totalPages": totalPages,
     "last": last,
   };
 }
-
 
 //TODO : bookmarkCount, createAt 서버 api로부터 받기
 class PostModel {
@@ -69,7 +68,7 @@ class PostModel {
     commentCount: json["commentCount"],
   );
 
-  Map<dynamic, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
     "postId": postId,
     "title": title,
     "authorName": authorName,
@@ -79,4 +78,3 @@ class PostModel {
     "commentCount": commentCount,
   };
 }
-

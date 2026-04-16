@@ -7,7 +7,7 @@ class UserDataModel extends BaseDataModel<UserModel> {
     required super.content,
     required super.page,
     required super.size,
-    required super.totalElement,
+    required super.totalElements,
     required super.totalPages,
     required super.last,
   });
@@ -22,7 +22,7 @@ class UserDataModel extends BaseDataModel<UserModel> {
         [],
     page: json["page"],
     size: json["size"],
-    totalElement: json["totalElement"],
+    totalElements: json["totalElements"],
     totalPages: json["totalPages"],
     last: json["last"],
   );
@@ -34,7 +34,7 @@ class UserDataModel extends BaseDataModel<UserModel> {
     ),
     "page": page,
     "size": size,
-    "totalElement": totalElement,
+    "totalElements": totalElements,
     "totalPages": totalPages,
     "last": last,
   };
@@ -66,7 +66,7 @@ class UserModel extends BaseModel {
     displayName: json["displayName"],
     gender: json["gender"],
     major: json["major"],
-    interests: (json["interests"] as List).cast<String>(),
+    interests: (json["interests"]as List).map((e) => e.toString()).toList(),
     profileImageKey: json["profileImageKey"],
     ratingAverage: json["ratingAverage"],
     ratingCount: json["ratingCount"],

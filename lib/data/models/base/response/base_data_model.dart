@@ -2,7 +2,7 @@ abstract class BaseDataModel<T> {
   final List<T> content;
   final int page;
   final int size;
-  final int? totalElement;
+  final int totalElements;
   final int totalPages;
   final bool? last;
 
@@ -10,11 +10,10 @@ abstract class BaseDataModel<T> {
     required this.content,
     required this.page,
     required this.size,
-    required this.totalElement,
+    required this.totalElements,
     required this.totalPages,
     required this.last,
   });
 
   Map toJson();
 }
-

@@ -15,14 +15,18 @@ class BaseSearchRequestModel {
     required this.size,
   });
 
-  Map<String, List<String>> toQueryParametersAll() {
-    final map = <String, List<String>>{};
-    if (keyword != null) map['keyword'] = [keyword!];
-    if (major != null) map['major'] = [major!];
-    if (interests != null && interests!.isNotEmpty) map['interests'] = interests!;
-    if (sort != null) map['sort'] = [sort!];
-    if (page != null) map['page'] = [page.toString()];
-    if (size != null) map['size'] = [size.toString()];
-    return map;
+  String toQueryString() {
+    final params = <String>[];
+    if (keyword != null) params.add('keyword=${Uri.encodeQueryComponent(keyword!)}');
+    if (major != null) params.add('major=${Uri.encodeQueryComponent(major!)}');
+    if (interests != null) {
+      for (final interest in interests!) {
+        params.add('interests=${Uri.encodeQueryComponent(interest)}');
+      }
+    }
+    if (sort != null) params.add('sort=${Uri.encodeQueryComponent(sort!)}');
+    if (page != null) params.add('page=$page');
+    if (size != null) params.add('size=$size');
+    return params.join('&');
   }
 }

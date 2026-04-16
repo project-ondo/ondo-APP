@@ -14,9 +14,7 @@ class SearchRemoteDatasource {
 
     try {
       final res = await client.get(
-        Uri.parse(
-          "${ApiConstants.users}/search",
-        ).replace(queryParameters: model.toQueryParametersAll()),
+        Uri.parse("${ApiConstants.users}/search?${model.toQueryString()}"),
       );
 
       final body = jsonDecode(res.body);

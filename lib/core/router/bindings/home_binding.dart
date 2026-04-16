@@ -2,11 +2,12 @@ import 'package:get/get.dart';
 import 'package:ondo/data/datasource/home/home_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/home/home_repository_impl.dart';
-import 'package:ondo/data/repositories/search/user_repository_impl.dart';
 import 'package:ondo/domain/usecases/home/load_recommend_posts_use_case.dart';
 import 'package:ondo/domain/usecases/home/load_recommend_users_use_case.dart';
 import 'package:ondo/domain/usecases/search/user_search_use_case.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
+
+import '../../../data/repositories/user/user_repository_impl.dart';
 
 class HomeBinding extends Bindings {
   @override

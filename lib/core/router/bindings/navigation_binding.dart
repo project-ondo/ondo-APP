@@ -6,11 +6,11 @@ import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
-import 'package:ondo/data/repositories/search/user_repository_impl.dart';
 import 'package:ondo/domain/usecases/search/user_search_use_case.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
+import '../../../data/repositories/user/user_repository_impl.dart';
 import '../../../presentation/alert/controllers/alert_controller.dart';
 import '../../../presentation/search/controllers/main_top_bar_search_controller.dart';
 
@@ -41,13 +41,13 @@ class NavigationBinding extends Bindings {
         remoteDatasource: Get.find<UserRemoteDatasource>(),
       ),
     );
+
     ///user 검색 usecase 등록
     Get.lazyPut(
       () => UserSearchUseCase(repository: Get.find<UserRepositoryImpl>()),
     );
 
     //TODO : 게시물 관련 api 등록
-
 
     ///각 화면 Binding
     HomeBinding().dependencies();

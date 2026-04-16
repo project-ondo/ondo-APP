@@ -1,20 +1,21 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/domain/usecases/auth/sign_in_use_case.dart';
 
 class LoginController extends GetxController {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-
   final SignInUseCase signInUseCase;
 
   LoginController({required this.signInUseCase});
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
 
   var emailError = RxnString();
   var passwordError = RxnString();
   var generalError = RxnString();
   var showPassword = false.obs;
+  var isLoading = false.obs;
 
   bool validate() {
     emailError.value = null;
@@ -36,14 +37,8 @@ class LoginController extends GetxController {
       return false;
     }
 
-    if (password.length < 8 || password.length > 15) {
+    if (password.length < 8 || password.length > 50) {
       passwordError.value = AppStrings.passwordLength;
-      return false;
-    }
-
-    final passwordRegex = RegExp(r'[!@#$%^&*(),.?":{}|<>]');
-    if (!passwordRegex.hasMatch(password)) {
-      passwordError.value = AppStrings.passwordRegex;
       return false;
     }
 
@@ -52,18 +47,32 @@ class LoginController extends GetxController {
 
   Future<bool> login() async {
     if (!validate()) return false;
+    if (isLoading.value) return false;
 
-    final result = await signInUseCase.call(
-      loginId: emailController.text.trim(),
-      password: passwordController.text.trim(),
-    );
+    try {
+      isLoading.value = true;
 
-    if (result) {
+      // loginId = 이메일 @ 앞부분 (회원가입 시 동일하게 처리)
+      final loginId = emailController.text.trim().split('@').first;
+
+      final success = await signInUseCase(
+        loginId: loginId,
+        password: passwordController.text,
+      );
+
+      if (!success) {
+        generalError.value = AppStrings.inputEmailOrPassword;
+        return false;
+      }
+
       generalError.value = null;
-    } else {
+      return true;
+    } catch (e) {
       generalError.value = AppStrings.inputEmailOrPassword;
+      return false;
+    } finally {
+      isLoading.value = false;
     }
-    return result;
   }
 
   @override

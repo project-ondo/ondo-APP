@@ -29,22 +29,24 @@ class HomeController extends GetxController {
 
   @override
   void onInit() async {
+    super.onInit();
     Get.put(searchResultController);
     //TODO : ranking 게시물 불러오기
     _sortRating(ranks..addAll(_getRanks()));
     await loadRecommendPosts();
     await loadRecommendUsers();
-    super.onInit();
   }
 
   Future<void> loadRecommendPosts() async {
+    _cachePostList.clear();
     _cachePostList.addAll(await recommendPostsUseCase.call());
-    viewPostList.addAll(_cachePostList);
+    viewPostList.assignAll(_cachePostList);
   }
 
   Future<void> loadRecommendUsers() async {
+    _cacheProfileList.clear();
     _cacheProfileList.addAll(await recommendUsersUseCase.call());
-    viewUserList.addAll(_cacheProfileList);
+    viewUserList.assignAll(_cacheProfileList);
   }
 
   void _sortRating(RxList<HomeRecentPopularPostInfo>? list) => list == null

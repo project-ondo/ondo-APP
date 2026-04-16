@@ -48,7 +48,7 @@ class UserRemoteDatasource {
       );
       final body = jsonDecode(res.body);
 
-      log.successLog(body["success"]);
+      log.successLog(body["success"] == true);
       log.messageLog(body["message"]);
 
       if (res.statusCode == 200 && body["success"] == true) {

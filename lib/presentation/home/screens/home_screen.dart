@@ -8,10 +8,8 @@ import 'package:ondo/presentation/home/screens/home_search_screen.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_list.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_chat_list.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_post_list.dart';
-
 import '../../search/widgets/main_top_search_bar.dart';
 
-//TODO : Binding HomeController 필수
 class HomeScreen extends GetView<HomeController> {
   const HomeScreen({super.key});
 
@@ -32,7 +30,7 @@ class HomeScreen extends GetView<HomeController> {
         ),
         resultPageBuilder: (state) {
           if (state.query.trim().isEmpty && state.tags.isEmpty) return null;
-          controller.searchResultInfo([state.query, ...state.tags]);
+          controller.search(query: state.query, tags: state.tags.toList());
           return HomeSearchScreen();
         },
       ),

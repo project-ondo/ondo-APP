@@ -4,107 +4,87 @@ import 'package:ondo/domain/entities/home/recommend_post_entity.dart';
 import 'package:ondo/domain/entities/home/recommend_user_entity.dart';
 import 'package:ondo/domain/usecases/home/load_recommend_posts_use__case.dart';
 import 'package:ondo/domain/usecases/home/load_recommend_users_use_case.dart';
+import 'package:ondo/domain/usecases/search/user_search_use_case.dart';
 
 class HomeController extends GetxController {
   final RxList<HomeRecentPopularPostInfo> ranks =
       <HomeRecentPopularPostInfo>[].obs;
   final List<PostEntity> _cachePostList = [];
   final RxList<PostEntity> viewPostList = <PostEntity>[].obs;
-  final RxList<UserEntity> viewProfileList = <UserEntity>[].obs;
+  final RxList<UserEntity> viewUserList = <UserEntity>[].obs;
   final List<UserEntity> _cacheProfileList = [];
 
+  ///usecase 모음
   final LoadRecommendPostsUseCase recommendPostsUseCase;
   final LoadRecommendUsersUseCase recommendUsersUseCase;
+  final UserSearchUseCase userSearchUseCase;
+
+  final searchResultController = HomeSearchResultController();
 
   HomeController({
     required this.recommendPostsUseCase,
     required this.recommendUsersUseCase,
+    required this.userSearchUseCase,
   });
 
   @override
   void onInit() async {
+    Get.put(searchResultController);
     //TODO : ranking 게시물 불러오기
     _sortRating(ranks..addAll(_getRanks()));
     await loadRecommendPosts();
     await loadRecommendUsers();
-    viewPostList.addAll(_cachePostList);
-    viewProfileList.addAll(_cacheProfileList);
     super.onInit();
-  }
-
-  @override
-  void onReady() {
-    Get.put(HomeSearchResultController());
-    super.onReady();
   }
 
   Future<void> loadRecommendPosts() async {
     _cachePostList.addAll(await recommendPostsUseCase.call());
+    viewPostList.addAll(_cachePostList);
   }
 
   Future<void> loadRecommendUsers() async {
     _cacheProfileList.addAll(await recommendUsersUseCase.call());
+    viewUserList.addAll(_cacheProfileList);
   }
 
   void _sortRating(RxList<HomeRecentPopularPostInfo>? list) => list == null
       ? ranks.sort((a, b) => (b.favorites - a.favorites))
       : list.sort((a, b) => b.favorites - a.favorites);
 
-  void searchResultInfo(List<String> searchList) {
-    final Set<UserEntity> profileResult = {};
-    final Set<PostEntity> postResult = {};
+  void search({required String query, required List<String> tags}) async {
+    final Set<UserEntity> userRes = {};
+    final Set<PostEntity> postRes = {};
 
-    //TODO: 서버와의 연결에서 결과 가져오기
-    profileResult.addAll(
-      _cacheProfileList.where(
-        (profile) =>
-            searchList.any(
-              (search) => profile.displayName.contains(search),
-            ) ||
-            searchList.any(
-              (search) => profile.interests.contains(search),
-            ),
-      ),
+    ///서버 유저 검색 api에서 user결과 실시간 표시
+    userRes.addAll(
+      await userSearchUseCase.call(interests: tags, keyword: query),
     );
 
-    //TODO: 서버와의 연결에서 결과 가져오기
-    postResult.addAll(
-      _cachePostList.where(
-        (post) =>
-            searchList.any(
-              (search) => post.authorName.contains(search),
-            ) ||
-            searchList.any(
-              (search) => post.title.contains(search),
-            ) ||
-            searchList.any(
-              (search) => post.tags.any(
-                (skill) => skill.contains(search),
-              ),
-            ),
-      ),
-    );
+    //TODO : 서버 게시물 검색 api 개발 이후 구현
 
-    Get.find<HomeSearchResultController>().updateResult(
-      postResult,
-      profileResult,
+    ///홈 검색 결과 표시 controller
+    searchResultController.updateResult(
+      postRes,
+      userRes,
     );
   }
 }
 
 class HomeSearchResultController extends GetxController {
-  final RxList<UserEntity> viewChatList = <UserEntity>[].obs;
+  final RxList<UserEntity> viewUserList = <UserEntity>[].obs;
   final RxList<PostEntity> viewPostList = <PostEntity>[].obs;
 
+  ///홈 검색 결과 업데이트
   void updateResult(
     Iterable<PostEntity> posts,
     Iterable<UserEntity> profiles,
   ) {
-    viewChatList.assignAll(profiles);
+    viewUserList.assignAll(profiles);
     viewPostList.assignAll(posts);
   }
 }
 
+//TODO : 임시 데이터 삭제
 typedef HomeRecentPopularPostInfo = ({
   String title,
   Duration creatAt,
@@ -145,4 +125,3 @@ List<HomeRecentPopularPostInfo> _getRanks() => [
     ),
   },
 ];
-

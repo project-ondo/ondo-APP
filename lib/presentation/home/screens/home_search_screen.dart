@@ -43,9 +43,9 @@ class _ProfileResults extends BaseHomeProfileList {
 
   @override
   List<Widget> listBuilder() => List.generate(
-    _controller.viewChatList.length,
+    _controller.viewUserList.length,
     (index) {
-      final chat = _controller.viewChatList[index];
+      final chat = _controller.viewUserList[index];
       return HomeProfileCard(
         skill: chat.interests.first,
         name: chat.displayName,

@@ -12,7 +12,7 @@ class HomeRecommendChatList extends BaseHomeProfileList {
   Widget build(BuildContext context) => Obx(() => super.build(context));
 
   @override
-  List<Widget> listBuilder() => _controller.viewProfileList
+  List<Widget> listBuilder() => _controller.viewUserList
       .map(
         (chat) => HomeProfileCard(
           skill: chat.interests.first,

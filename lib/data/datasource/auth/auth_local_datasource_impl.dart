@@ -34,17 +34,25 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
     required String refreshTokenExpiration,
   }) async {
     await store.write(key: _accessTokenKey, value: accessToken);
-    await store.write(key: _accessTokenExpirationKey, value: accessTokenExpiration);
+    await store.write(
+      key: _accessTokenExpirationKey,
+      value: accessTokenExpiration,
+    );
     await store.write(key: _refreshTokenKey, value: refreshToken);
-    await store.write(key: _refreshTokenExpirationKey, value: refreshTokenExpiration);
+    await store.write(
+      key: _refreshTokenExpirationKey,
+      value: refreshTokenExpiration,
+    );
   }
 
   @override
   Future<void> deleteAll() async => await store.deleteAll();
 
+  @override
   Future<void> deleteAccessToken() async =>
       await store.delete(key: _accessTokenKey);
 
+  @override
   Future<void> deleteRefreshToken() async =>
       await store.delete(key: _refreshTokenKey);
 }

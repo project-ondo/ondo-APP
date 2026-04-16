@@ -68,7 +68,7 @@ class PostModel {
     commentCount: json["commentCount"],
   );
 
-  Map<dynamic, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
     "postId": postId,
     "title": title,
     "authorName": authorName,

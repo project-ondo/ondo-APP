@@ -1,7 +1,10 @@
 abstract class AuthLocalDatasource {
   Future<String?> getAccessToken();
+
   Future<String?> getRefreshToken();
+
   Future<String?> getAccessTokenExpiration();
+
   Future<String?> getRefreshTokenExpiration();
 
   Future<void> saveToken({
@@ -12,4 +15,8 @@ abstract class AuthLocalDatasource {
   });
 
   Future<void> deleteAll();
+
+  Future<void> deleteAccessToken();
+
+  Future<void> deleteRefreshToken();
 }

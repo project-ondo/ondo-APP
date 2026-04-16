@@ -4,13 +4,13 @@ import 'package:http/http.dart';
 import 'package:ondo/data/models/base/request/base_search_request_model.dart';
 import 'package:ondo/data/network/constants/api_constants.dart';
 
-class SearchRemoteDatasource {
+class UserRemoteDatasource {
   final BaseClient client;
 
-  SearchRemoteDatasource({required this.client});
+  UserRemoteDatasource({required this.client});
 
-  Future<Map?> searchPost(BaseSearchRequestModel model) async {
-    final log = ApiConstants(logName: "게시물 검색");
+  Future<Map?> search(BaseSearchRequestModel model) async {
+    final log = ApiConstants(logName: "유저 검색");
 
     try {
       final res = await client.get(
@@ -19,8 +19,8 @@ class SearchRemoteDatasource {
 
       final body = jsonDecode(res.body);
 
-      log.successLog(body["success"]);
-      log.successLog(body["message"]);
+      log.successLog(body["success"] == true);
+      log.messageLog(body["message"]);
 
       if (res.statusCode == 200 && body["success"] == true) {
         return body["data"];

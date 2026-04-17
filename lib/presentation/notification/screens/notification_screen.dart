@@ -71,7 +71,7 @@ class NotificationScreen extends GetView<NotificationController> {
 
         Obx(
           () => Expanded(
-            child: controller.notificationList.isNotEmpty
+            child: controller.viewNotificationList.isNotEmpty
                 ? _NotificationPageList()
                 : _noMessageIcon(),
           ),
@@ -116,7 +116,7 @@ class _Title extends GetView<NotificationController> {
               AppGap.h12,
               Obx(
                 () => Text(
-                  "${controller.notificationList.length}",
+                  "${controller.viewNotificationList.length}",
                   style: AppTextStyles.textMedium(textColor: AppColors.gray60),
                 ),
               ),
@@ -133,12 +133,12 @@ class _Title extends GetView<NotificationController> {
 class _NotificationPageList extends GetView<NotificationController> {
   final ValueNotifier<int> curIndex = ValueNotifier(0);
 
-  int getTotalPage() => (controller.notificationList.length / 11).ceil();
+  int getTotalPage() => (controller.viewNotificationList.length / 11).ceil();
 
   int getStartIndex(int index) => index * 11;
 
   int getLastIndex(int index) =>
-      min(getStartIndex(index) + 11, controller.notificationList.length);
+      min(getStartIndex(index) + 11, controller.viewNotificationList.length);
 
   @override
   Widget build(BuildContext context) {
@@ -163,28 +163,24 @@ class _NotificationPageList extends GetView<NotificationController> {
   }
 
   Widget _notificationList(int startIndex, int lastIndex) {
-    final subNotifications =
-        controller.notificationList.sublist(startIndex, lastIndex);
+    final subNotifications = controller.viewNotificationList.sublist(
+      startIndex,
+      lastIndex,
+    );
     return ListView.separated(
       shrinkWrap: true,
       itemCount: subNotifications.length,
       itemBuilder: (context, index) {
         final notification = subNotifications[index];
 
-        if (notification.type == NotificationState.reported) {
+        if (notification.type == NotificationState.reported.title) {
           return ReportNotificationCard(
-            profileImg: notification.profileImg,
-            reason: "욕설",
-            restrictAt: DateTime.now(),
-            restrictDuration: Duration(days: 7),
+            notificationInfo: notification,
           );
         }
 
         return NotificationCard(
-          profileImg: notification.profileImg,
-          notificationType: notification.type.title,
-          sendAt: notification.sendAt ?? Duration.zero,
-          comment: notification.comment,
+          notificationInfo: notification,
         );
       },
       separatorBuilder: (context, index) => AppGap.v16,
@@ -197,7 +193,7 @@ class _NotificationPageList extends GetView<NotificationController> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
-          (controller.notificationList.length / 11).ceil(),
+          (controller.viewNotificationList.length / 11).ceil(),
           (index) => Padding(
             padding: AppPadding.indicatorSpacing,
             child: Text(

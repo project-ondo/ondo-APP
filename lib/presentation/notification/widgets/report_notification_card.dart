@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
+import 'package:ondo/core/utils/app_date_utils.dart';
+import 'package:ondo/domain/notification/notification_entity.dart';
 
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_layout.dart';
 import '../../../core/design_system/app_text_styles.dart';
 
 class ReportNotificationCard extends StatelessWidget {
-  final String? profileImg;
-  final String reason;
-  final DateTime restrictAt;
-  final Duration restrictDuration;
+  final NotificationEntity notificationInfo;
   final VoidCallback? onTap;
 
   const ReportNotificationCard({
     super.key,
-    this.profileImg,
-    required this.reason,
-    required this.restrictAt,
-    required this.restrictDuration,
     this.onTap,
+    required this.notificationInfo,
   });
 
-  String _dateFormat(DateTime date) => "${date.year}-${date.month}-${date.day}";
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +32,8 @@ class ReportNotificationCard extends StatelessWidget {
           children: [
             CustomProfileCircle(
               radius: AppSpacing.s24,
-              imageUrl: profileImg,
+              //TODO : 프로필 이미지 api 개발 이후에 수정
+              imageUrl: null,
             ),
             AppGap.h12,
             Expanded(
@@ -47,10 +43,16 @@ class ReportNotificationCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    "신고가 누적되어 커피챗 및 커뮤티니 활동이 제한되었습니다.",
+                    notificationInfo.title,
                     style: AppTextStyles.caption(textColor: AppColors.gray90),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  _content(),
+                  Text(
+                    notificationInfo.body,
+                    style: AppTextStyles.caption(textColor: AppColors.gray70),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
@@ -59,21 +61,4 @@ class ReportNotificationCard extends StatelessWidget {
       ),
     );
   }
-
-  Widget _content() => Column(
-    mainAxisSize: MainAxisSize.min,
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        "시유: $reason",
-        style: AppTextStyles.caption(textColor: AppColors.gray70),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-      Text(
-        "기간: 제한 된 날로부터 ${restrictDuration.inDays}일간: ${_dateFormat(restrictAt)} - ${_dateFormat(restrictAt.add(restrictDuration))}",
-        style: AppTextStyles.caption(textColor: AppColors.gray70),
-      ),
-    ],
-  );
 }

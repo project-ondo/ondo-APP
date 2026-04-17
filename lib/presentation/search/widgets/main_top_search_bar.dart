@@ -11,16 +11,7 @@ import 'package:ondo/presentation/notification/screens/notification_screen.dart'
 import 'package:ondo/presentation/search/states/search_state.dart';
 import 'package:ondo/presentation/search/widgets/search_popup.dart';
 
-typedef HomeSearchModel = ({
-  List<Map<String, dynamic>> chats,
-  List<Map<String, dynamic>> posts,
-});
-typedef CommunitySearchModel = ({
-  List<Map<String, dynamic>> posts,
-});
-typedef ChatSearchModel = ({
-  List<Map<String, dynamic>> chats,
-});
+
 
 @immutable
 class MainTopSearchBar extends StatefulWidget {
@@ -44,7 +35,6 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
 
   @override
   void initState() {
-    Get.put(NotificationController());
     _controller = Get.put(MainTopBarSearchController(), tag: widget.pageId);
     super.initState();
   }
@@ -129,7 +119,7 @@ class _AlertButton extends GetView<NotificationController> {
         child: Badge.count(
           padding: AppPadding.alertCount,
           backgroundColor: AppColors.deepRed,
-          count: controller.notificationList.length,
+          count: controller.viewNotificationList.length,
           alignment: Alignment(0.28, -0.58),
           child: IconButton(
             style: IconButton.styleFrom(
@@ -137,13 +127,13 @@ class _AlertButton extends GetView<NotificationController> {
               shape: RoundedRectangleBorder(borderRadius: AppRadius.baseRadius),
               minimumSize: Size.square(AppSpacing.s44),
             ),
-            onPressed: controller.notificationList.isNotEmpty
+            onPressed: controller.viewNotificationList.isNotEmpty
                 ? () => Get.to(
                     NotificationScreen(),
                   )
                 : null,
             icon: SvgPicture.asset(
-              controller.notificationList.isNotEmpty
+              controller.viewNotificationList.isNotEmpty
                   ? AppIcon.alarmBrown.path
                   : AppIcon.alarmGrey.path,
               height: AppSpacing.s16,

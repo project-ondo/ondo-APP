@@ -1,17 +1,35 @@
 import 'package:get/get.dart';
+import 'package:ondo/domain/notification/notification_entity.dart';
+import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
+import 'package:ondo/domain/usecases/notification/load_my_notification_list_use_case.dart';
 import 'package:ondo/presentation/notification/states/notification_state.dart';
 
 class NotificationController extends GetxController {
-  final RxList<NotificationItem> notificationList = <NotificationItem>[].obs;
+  final List<NotificationEntity> _cacheNotificationList =
+      <NotificationEntity>[].obs;
+  final RxList<NotificationEntity> viewNotificationList =
+      <NotificationEntity>[].obs;
+
+  final LoadMyNotificationListUseCase loadMyNotificationListUseCase;
+
+  NotificationController({required this.loadMyNotificationListUseCase});
 
   @override
-  void onInit() {
-    notificationList.addAll(getNotifications());
+  void onInit() async {
+    await loadMyNotificationList();
     super.onInit();
   }
 
+  Future<void> loadMyNotificationList() async {
+    //TODO : 화면 연동 과정에서 범위 맞추기
+    _cacheNotificationList.assignAll(
+      await loadMyNotificationListUseCase.call(size: 20, page: 0),
+    );
+    viewNotificationList.assignAll(_cacheNotificationList);
+  }
+
   void clear() {
-    notificationList.clear();
+    viewNotificationList.clear();
   }
 }
 

@@ -1,3 +1,5 @@
+import 'package:ondo/data/models/base/response/base_model.dart';
+
 import '../../base/response/base_data_model.dart';
 
 class PostDataModel extends BaseDataModel<PostModel> {
@@ -39,7 +41,7 @@ class PostDataModel extends BaseDataModel<PostModel> {
 }
 
 //TODO : bookmarkCount, createAt 서버 api로부터 받기
-class PostModel {
+class PostModel extends BaseModel {
   final int postId;
   final String title;
   final String authorName;

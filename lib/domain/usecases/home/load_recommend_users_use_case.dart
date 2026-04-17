@@ -1,4 +1,4 @@
-import 'package:ondo/domain/entities/home/recommend_user_entity.dart';
+import 'package:ondo/domain/entities/user/user_entity.dart';
 import 'package:ondo/domain/repositories/search/user_repository.dart';
 
 class LoadRecommendUsersUseCase {

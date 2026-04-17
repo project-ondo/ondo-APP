@@ -12,6 +12,7 @@ class ApiConstants {
   static String get posts => "${Env.apiBaseUrl}/posts";
   static String get users => "${Env.apiBaseUrl}/users";
   static String get auth => "${Env.apiBaseUrl}/auth";
+  static String get chats => "${Env.apiBaseUrl}/chat";
 
   static const baseHeader = {"Content-Type": "application/json"};
 

@@ -4,7 +4,7 @@ import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/presentation/chat/controllers/chat_review_controller.dart';
 import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
 
-class ChatRoomController extends GetxController {
+class ChatController extends GetxController {
   final RxList<Chat> chats = <Chat>[].obs;
   final TextEditingController textController = TextEditingController();
 

@@ -28,7 +28,7 @@ class UserDataModel extends BaseDataModel<UserModel> {
   );
 
   @override
-  Map<dynamic, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
     "content": content.map(
       (e) => e.toJson(),
     ),
@@ -66,14 +66,14 @@ class UserModel extends BaseModel {
     displayName: json["displayName"],
     gender: json["gender"],
     major: json["major"],
-    interests: (json["interests"]as List).map((e) => e.toString()).toList(),
+    interests: (json["interests"] as List).map((e) => e.toString()).toList(),
     profileImageKey: json["profileImageKey"],
     ratingAverage: json["ratingAverage"],
     ratingCount: json["ratingCount"],
   );
 
   @override
-  Map<dynamic, dynamic> toJson() => {
+  Map<String, dynamic> toJson() => {
     "publicId": publicId,
     "displayName": displayName,
     "gender": gender,

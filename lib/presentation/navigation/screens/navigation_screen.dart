@@ -1,14 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/router/bindings/login_binding.dart';
+import 'package:ondo/core/router/bindings/navigation_binding.dart';
+import 'package:ondo/data/network/constants/api_constants.dart';
+import 'package:ondo/presentation/auth/login/controllers/login_controller.dart';
 import 'package:ondo/presentation/chat/screens/chat_main_screen.dart';
 import 'package:ondo/presentation/community/screens/community_main_screen.dart';
 import 'package:ondo/presentation/home/screens/home_screen.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
 import 'package:ondo/presentation/profile/screens/my_profile_screen.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: '.env');
+
+  LoginBinding().dependencies();
+
+  //TODO : 임시 login 로직 삭제
+  final loginController = Get.find<LoginController>();
+  loginController.emailController.text = ApiConstants.loginId;
+  loginController.passwordController.text = ApiConstants.loginPassword;
+  await loginController.login();
+
+  NavigationBinding().dependencies();
+
+  runApp(
+    MaterialApp.router(
+      routerConfig: GoRouter(
+        initialLocation: "/",
+        routes: [
+          GoRoute(
+            path: "/",
+            builder: (context, state) {
+              return NavigationScreen();
+            },
+          ),
+        ],
+      ),
+    ),
+  );
+}
 
 class NavigationScreen extends GetView<NavigationController> {
   const NavigationScreen({super.key});

@@ -14,9 +14,7 @@ class HomeRemoteDatasource {
 
     try {
       final res = await client.get(
-        Uri.parse("${ApiConstants.posts}/recommend").replace(
-          queryParameters: model.toJson(),
-        ),
+        Uri.parse("${ApiConstants.posts}/recommend${model.toQueryParameter()}"),
       );
 
       final body = jsonDecode(res.body);
@@ -34,6 +32,4 @@ class HomeRemoteDatasource {
     }
     return null;
   }
-
-
 }

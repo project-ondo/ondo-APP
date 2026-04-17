@@ -26,7 +26,7 @@ class PostDataModel extends BaseDataModel<PostModel> {
   );
 
   @override
-  Map toJson() => {
+  Map<String, dynamic> toJson() => {
     "content": content.map(
       (e) => e.toJson(),
     ),

@@ -2,11 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:ondo/data/models/media/request/presign_upload_request_model.dart';
 import 'package:ondo/data/models/media/response/presign_upload_response_model.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/network/constants/api_constants.dart';
-import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as p;
 
 class MediaRemoteDatasource {
   final AuthClient client;
@@ -81,12 +82,13 @@ class MediaRemoteDatasource {
     required String imagePath,
     String category = 'PROFILE',
   }) async {
-    // 확장자로 contentType 결정
-    final ext = imagePath.split('.').last.toLowerCase();
+    // path 패키지로 파일명에서만 확장자 추출 (디렉토리 경로의 점 영향 없음)
+    final ext = p.extension(imagePath).replaceFirst('.', '').toLowerCase();
     final contentType = switch (ext) {
       'png' => 'image/png',
       'webp' => 'image/webp',
-      _ => 'image/jpeg',
+      'jpg' || 'jpeg' => 'image/jpeg',
+      _ => 'image/jpeg', // 확장자 없거나 알 수 없는 경우 기본값
     };
 
     final presignData = await getPresignUrl(

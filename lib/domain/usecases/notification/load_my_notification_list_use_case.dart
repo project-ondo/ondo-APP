@@ -10,10 +10,6 @@ class LoadMyNotificationListUseCase {
     required int size,
     required int page,
   }) async {
-    return (await repository.loadMyNotificationModel(size, page))
-        .map(
-          (e) => NotificationEntity.fromNotificationModel(e),
-        )
-        .toList();
+    return (await repository.loadMyNotificationModel(size, page));
   }
 }

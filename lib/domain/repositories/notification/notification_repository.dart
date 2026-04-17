@@ -1,5 +1,5 @@
-import 'package:ondo/data/models/notification/response/notification_model.dart';
+import 'package:ondo/domain/notification/notification_entity.dart';
 
 abstract class NotificationRepository {
-  Future<List<NotificationModel>> loadMyNotificationModel(int size, int page);
+  Future<List<NotificationEntity>> loadMyNotificationModel(int size, int page);
 }

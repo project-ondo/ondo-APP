@@ -1,3 +1,4 @@
+//TODO : 서버의 알림 상태 통일시키기
 enum NotificationState {
   newComment("누군가가 댓글을 남겼어요"),
   requestChat("누군가가 커피챗을 신청했어요"),

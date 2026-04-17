@@ -13,11 +13,13 @@ class NotificationDataModel extends BaseDataModel<NotificationModel> {
   });
 
   factory NotificationDataModel.fromJson(Map json) => NotificationDataModel(
-    content: (json["content"] as List)
-        .map(
-          (e) => NotificationModel.fromJson(e),
-        )
-        .toList(),
+    content:
+        (json["content"] as List?)
+            ?.map(
+              (e) => NotificationModel.fromJson(e),
+            )
+            .toList() ??
+        [],
     page: json["page"],
     size: json["size"],
     totalElements: json["totalElements"],

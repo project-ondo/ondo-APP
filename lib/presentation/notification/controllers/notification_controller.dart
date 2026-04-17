@@ -14,8 +14,8 @@ class NotificationController extends GetxController {
   NotificationController({required this.loadMyNotificationListUseCase});
 
   @override
-  void onInit() async {
-    await loadMyNotificationList();
+  void onInit() {
+    loadMyNotificationList();
     super.onInit();
   }
 

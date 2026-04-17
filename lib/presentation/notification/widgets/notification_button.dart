@@ -8,8 +8,8 @@ import 'package:ondo/presentation/notification/controllers/notification_controll
 import 'package:ondo/presentation/notification/screens/notification_screen.dart';
 
 @immutable
-class AlertButton extends GetView<NotificationController> {
-  const AlertButton({super.key});
+class NotificationButton extends GetView<NotificationController> {
+  const NotificationButton({super.key});
 
   @override
   Widget build(BuildContext context) {

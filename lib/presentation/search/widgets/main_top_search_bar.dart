@@ -5,10 +5,8 @@ import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
-import 'package:ondo/presentation/notification/controllers/notification_controller.dart';
 import 'package:ondo/presentation/notification/widgets/notification_button.dart';
 import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
-import 'package:ondo/presentation/notification/screens/notification_screen.dart';
 import 'package:ondo/presentation/search/states/search_state.dart';
 import 'package:ondo/presentation/search/widgets/search_popup.dart';
 
@@ -99,7 +97,7 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
             return Row(
               children: [
                 AppGap.h16,
-                AlertButton(),
+                NotificationButton(),
               ],
             );
           }),

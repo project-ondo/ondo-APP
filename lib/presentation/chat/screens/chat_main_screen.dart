@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_tag_card.dart';
-import 'package:ondo/presentation/chat/controllers/chat_controller.dart';
+import 'package:ondo/presentation/chat/controllers/main_chat_controller.dart';
 import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/chat/widgets/chat_room_card.dart';

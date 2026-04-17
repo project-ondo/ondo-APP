@@ -11,7 +11,7 @@ import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
 import 'package:ondo/presentation/chat/widgets/chat_card.dart';
 import 'package:ondo/presentation/chat/widgets/chat_input_field.dart';
 
-class ChatScreen extends GetView<ChatController> {
+class ChatScreen extends GetView<ChatRoomController> {
   const ChatScreen({super.key});
 
   @override

@@ -61,7 +61,7 @@ class MainChatController extends GetxController {
 
   void enterChatRoom() {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
-    Get.put(ChatController());
+    Get.put(ChatRoomController());
     Get.to(ChatScreen());
   }
 }

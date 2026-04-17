@@ -5,9 +5,9 @@ import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
-import 'package:ondo/presentation/alert/controllers/alert_controller.dart';
+import 'package:ondo/presentation/notification/controllers/notification_controller.dart';
 import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
-import 'package:ondo/presentation/alert/screens/alert_screen.dart';
+import 'package:ondo/presentation/notification/screens/notification_screen.dart';
 import 'package:ondo/presentation/search/states/search_state.dart';
 import 'package:ondo/presentation/search/widgets/search_popup.dart';
 
@@ -44,7 +44,7 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
 
   @override
   void initState() {
-    Get.put(AlertController());
+    Get.put(NotificationController());
     _controller = Get.put(MainTopBarSearchController(), tag: widget.pageId);
     super.initState();
   }
@@ -121,7 +121,7 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
 }
 
 @immutable
-class _AlertButton extends GetView<AlertController> {
+class _AlertButton extends GetView<NotificationController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
@@ -129,7 +129,7 @@ class _AlertButton extends GetView<AlertController> {
         child: Badge.count(
           padding: AppPadding.alertCount,
           backgroundColor: AppColors.deepRed,
-          count: controller.alertList.length,
+          count: controller.notificationList.length,
           alignment: Alignment(0.28, -0.58),
           child: IconButton(
             style: IconButton.styleFrom(
@@ -137,13 +137,13 @@ class _AlertButton extends GetView<AlertController> {
               shape: RoundedRectangleBorder(borderRadius: AppRadius.baseRadius),
               minimumSize: Size.square(AppSpacing.s44),
             ),
-            onPressed: controller.alertList.isNotEmpty
+            onPressed: controller.notificationList.isNotEmpty
                 ? () => Get.to(
-                    AlertScreen(),
+                    NotificationScreen(),
                   )
                 : null,
             icon: SvgPicture.asset(
-              controller.alertList.isNotEmpty
+              controller.notificationList.isNotEmpty
                   ? AppIcon.alarmBrown.path
                   : AppIcon.alarmGrey.path,
               height: AppSpacing.s16,

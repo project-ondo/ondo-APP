@@ -8,18 +8,18 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
-import 'package:ondo/presentation/alert/controllers/alert_controller.dart';
+import 'package:ondo/presentation/notification/controllers/notification_controller.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/alert/states/alert_state.dart';
+import 'package:ondo/presentation/notification/states/notification_state.dart';
 
-import '../widgets/alert_card.dart';
-import '../widgets/report_alert_card.dart';
+import '../widgets/notification_card.dart';
+import '../widgets/report_notification_card.dart';
 
 @immutable
-class AlertScreen extends GetView<AlertController> {
-  const AlertScreen({super.key});
+class NotificationScreen extends GetView<NotificationController> {
+  const NotificationScreen({super.key});
 
-  void _showAlertDeleteDialog() => Get.dialog(
+  void _showNotificationDeleteDialog() => Get.dialog(
     CustomAlertDialog(
       title: "알림",
       comment: "정말 모든 알림을 삭제하시겠어요?",
@@ -50,7 +50,7 @@ class AlertScreen extends GetView<AlertController> {
     itemBuilder: (context) => [
       PopupMenuItem(
         padding: AppPadding.popupManuButton,
-        onTap: _showAlertDeleteDialog,
+        onTap: _showNotificationDeleteDialog,
         height: double.minPositive,
         child: Align(
           alignment: Alignment.center,
@@ -71,8 +71,8 @@ class AlertScreen extends GetView<AlertController> {
 
         Obx(
           () => Expanded(
-            child: controller.alertList.isNotEmpty
-                ? _AlertPageList()
+            child: controller.notificationList.isNotEmpty
+                ? _NotificationPageList()
                 : _noMessageIcon(),
           ),
         ),
@@ -97,7 +97,7 @@ class AlertScreen extends GetView<AlertController> {
   );
 }
 
-class _Title extends GetView<AlertController> {
+class _Title extends GetView<NotificationController> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -116,7 +116,7 @@ class _Title extends GetView<AlertController> {
               AppGap.h12,
               Obx(
                 () => Text(
-                  "${controller.alertList.length}",
+                  "${controller.notificationList.length}",
                   style: AppTextStyles.textMedium(textColor: AppColors.gray60),
                 ),
               ),
@@ -130,15 +130,15 @@ class _Title extends GetView<AlertController> {
 }
 
 @immutable
-class _AlertPageList extends GetView<AlertController> {
+class _NotificationPageList extends GetView<NotificationController> {
   final ValueNotifier<int> curIndex = ValueNotifier(0);
 
-  int getTotalPage() => (controller.alertList.length / 11).ceil();
+  int getTotalPage() => (controller.notificationList.length / 11).ceil();
 
   int getStartIndex(int index) => index * 11;
 
   int getLastIndex(int index) =>
-      min(getStartIndex(index) + 11, controller.alertList.length);
+      min(getStartIndex(index) + 11, controller.notificationList.length);
 
   @override
   Widget build(BuildContext context) {
@@ -152,7 +152,7 @@ class _AlertPageList extends GetView<AlertController> {
               itemCount: getTotalPage(),
               onPageChanged: (value) => curIndex.value = value,
               itemBuilder: (context, index) =>
-                  _alertList(getStartIndex(index), getLastIndex(index)),
+                  _notificationList(getStartIndex(index), getLastIndex(index)),
             ),
           ),
           AppGap.v16,
@@ -162,28 +162,29 @@ class _AlertPageList extends GetView<AlertController> {
     );
   }
 
-  Widget _alertList(int startIndex, int lastIndex) {
-    final subAlerts = controller.alertList.sublist(startIndex, lastIndex);
+  Widget _notificationList(int startIndex, int lastIndex) {
+    final subNotifications =
+        controller.notificationList.sublist(startIndex, lastIndex);
     return ListView.separated(
       shrinkWrap: true,
-      itemCount: subAlerts.length,
+      itemCount: subNotifications.length,
       itemBuilder: (context, index) {
-        final alert = subAlerts[index];
+        final notification = subNotifications[index];
 
-        if (alert.type == AlertState.reported) {
-          return ReportAlertCard(
-            profileImg: alert.profileImg,
+        if (notification.type == NotificationState.reported) {
+          return ReportNotificationCard(
+            profileImg: notification.profileImg,
             reason: "욕설",
             restrictAt: DateTime.now(),
             restrictDuration: Duration(days: 7),
           );
         }
 
-        return AlertCard(
-          profileImg: alert.profileImg,
-          alertType: alert.type.title,
-          sendAt: alert.sendAt ?? Duration.zero,
-          comment: alert.comment,
+        return NotificationCard(
+          profileImg: notification.profileImg,
+          notificationType: notification.type.title,
+          sendAt: notification.sendAt ?? Duration.zero,
+          comment: notification.comment,
         );
       },
       separatorBuilder: (context, index) => AppGap.v16,
@@ -196,9 +197,9 @@ class _AlertPageList extends GetView<AlertController> {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: List.generate(
-          (controller.alertList.length / 11).ceil(),
+          (controller.notificationList.length / 11).ceil(),
           (index) => Padding(
-            padding: AppPadding.userCard,
+            padding: AppPadding.indicatorSpacing,
             child: Text(
               "${index + 1}",
               style: AppTextStyles.pageIndicator(

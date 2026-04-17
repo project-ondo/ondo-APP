@@ -5,20 +5,20 @@ import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_layout.dart';
 import '../../../core/design_system/app_text_styles.dart';
 
-class AlertCard extends StatelessWidget {
-  final String alertType;
+class NotificationCard extends StatelessWidget {
+  final String notificationType;
   final Duration sendAt;
   final String? comment;
   final String? profileImg;
   final VoidCallback? onTap;
 
-  const AlertCard({
+  const NotificationCard({
     super.key,
     this.profileImg,
-    required this.alertType,
+    required this.notificationType,
     required this.sendAt,
     this.comment,
-    this.onTap
+    this.onTap,
   });
 
   @override
@@ -55,7 +55,7 @@ class AlertCard extends StatelessWidget {
   Widget _title() => Row(
     children: [
       Text(
-        alertType,
+        notificationType,
         style: AppTextStyles.caption(textColor: AppColors.gray90),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,

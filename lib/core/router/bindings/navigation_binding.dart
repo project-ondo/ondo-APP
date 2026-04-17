@@ -11,7 +11,7 @@ import 'package:ondo/presentation/navigation/controllers/navigation_controller.d
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 import '../../../data/repositories/user/user_repository_impl.dart';
-import '../../../presentation/alert/controllers/alert_controller.dart';
+import '../../../presentation/notification/controllers/notification_controller.dart';
 import '../../../presentation/search/controllers/main_top_bar_search_controller.dart';
 
 class NavigationBinding extends Bindings {
@@ -29,7 +29,7 @@ class NavigationBinding extends Bindings {
     ///전 화면 공통 controller 등록
     Get.lazyPut<NavigationController>(() => NavigationController());
     Get.lazyPut<MainTopBarSearchController>(() => MainTopBarSearchController());
-    Get.lazyPut<AlertController>(() => AlertController());
+    Get.lazyPut<NotificationController>(() => NotificationController());
     Get.lazyPut(() => PostController());
 
     ///user 관련 dataSource, repository 등록

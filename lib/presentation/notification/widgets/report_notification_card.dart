@@ -5,14 +5,14 @@ import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_layout.dart';
 import '../../../core/design_system/app_text_styles.dart';
 
-class ReportAlertCard extends StatelessWidget {
+class ReportNotificationCard extends StatelessWidget {
   final String? profileImg;
   final String reason;
   final DateTime restrictAt;
   final Duration restrictDuration;
   final VoidCallback? onTap;
 
-  const ReportAlertCard({
+  const ReportNotificationCard({
     super.key,
     this.profileImg,
     required this.reason,

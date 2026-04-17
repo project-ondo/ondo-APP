@@ -7,7 +7,7 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
 
-class ChatInputField extends GetView<ChatRoomController> {
+class ChatInputField extends GetView<ChatController> {
   const ChatInputField({super.key});
 
   @override

@@ -70,6 +70,7 @@ class PostModel extends BaseModel {
     commentCount: json["commentCount"],
   );
 
+  @override
   Map<String, dynamic> toJson() => {
     "postId": postId,
     "title": title,

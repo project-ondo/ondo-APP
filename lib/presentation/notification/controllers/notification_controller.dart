@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:ondo/domain/notification/notification_entity.dart';
-import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
 import 'package:ondo/domain/usecases/notification/load_my_notification_list_use_case.dart';
 import 'package:ondo/presentation/notification/states/notification_state.dart';
 

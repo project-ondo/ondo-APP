@@ -188,12 +188,14 @@ class MyProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<PostItem> testPostItemList = mockPostData.map((data) {
       return PostItem(
-        skills: data["skills"],
+        skills: List<String>.from(data["skills"]),
         title: data["title"],
         author: data["author"],
         bookmarks: data["bookmarks"],
         favorites: data["favorites"],
-        createAt: data["createMinutes"],
+        createAt: DateTime.now().subtract(
+          Duration(minutes: data["createMinutes"]),
+        ),
       );
     }).toList();
 

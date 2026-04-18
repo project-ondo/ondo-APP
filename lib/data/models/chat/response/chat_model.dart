@@ -87,28 +87,3 @@ class ChatModel extends BaseModel {
     "lastMessageAt": lastMessageAt,
   };
 }
-
-/*
-{
-    "success": true,
-    "message": "string",
-    "data": {
-        "content": {
-            "roomId": "string",
-            "opponentPublicId": "string",
-            "opponentDisplayName": "string",
-            "opponentProfileImageKey": "string",
-            "opponentOnline": true,
-            "unreadCount": 0,
-            "lastMessagePreview": "string",
-            "muted": true,
-            "lastMessageAt": "string"
-        },
-        "page": 0,
-        "size": 0,
-        "totalElement": 0,
-        "totalPages": 0,
-        "last": true
-    }
-}
-},*/

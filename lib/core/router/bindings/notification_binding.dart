@@ -10,33 +10,39 @@ import '../../../presentation/notification/controllers/notification_controller.d
 class NotificationBinding extends Bindings {
   @override
   void dependencies() {
-    ///notification관련 api class
-    final datasource = NotificationRemoteDatasource(
-      client: Get.find<AuthClient>(),
+    /// notification 관련 dataSource 등록
+    Get.lazyPut<NotificationRemoteDatasource>(
+      () => NotificationRemoteDatasource(
+        client: Get.find<AuthClient>(),
+      ),
     );
-    final repository = NotificationRepositoryImpl(remoteDatasource: datasource);
-    final loadMyNotificationListUseCase = LoadMyNotificationListUseCase(
-      repository: repository,
+
+    /// notification 관련 repository 등록
+    Get.lazyPut<NotificationRepositoryImpl>(
+      () => NotificationRepositoryImpl(
+        remoteDatasource: Get.find<NotificationRemoteDatasource>(),
+      ),
     );
-    final loadUnreadNotificationCountUseCase =
-        LoadUnreadNotificationCountUseCase(repository: repository);
 
-    ///binding 등록
-    Get.lazyPut<NotificationRemoteDatasource>(() => datasource);
-    Get.lazyPut<NotificationRepositoryImpl>(() => repository);
-
+    /// notification 관련 usecase 등록
     Get.lazyPut<LoadMyNotificationListUseCase>(
-      () => loadMyNotificationListUseCase,
+      () => LoadMyNotificationListUseCase(
+        repository: Get.find<NotificationRepositoryImpl>(),
+      ),
     );
     Get.lazyPut<LoadUnreadNotificationCountUseCase>(
-      () => loadUnreadNotificationCountUseCase,
+      () => LoadUnreadNotificationCountUseCase(
+        repository: Get.find<NotificationRepositoryImpl>(),
+      ),
     );
 
     ///notification controller 등록
     Get.lazyPut<NotificationController>(
       () => NotificationController(
-        loadMyNotificationListUseCase: loadMyNotificationListUseCase,
-        loadUnreadNotificationCountUseCase: loadUnreadNotificationCountUseCase,
+        loadMyNotificationListUseCase:
+            Get.find<LoadMyNotificationListUseCase>(),
+        loadUnreadNotificationCountUseCase:
+            Get.find<LoadUnreadNotificationCountUseCase>(),
       ),
     );
   }

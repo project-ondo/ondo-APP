@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
@@ -30,7 +30,7 @@ class MyProfileController extends GetxController {
     }
   }
 
-  Future<void> logout(context) async {
+  Future<void> logout(BuildContext context) async {
     try {
       final localDatasource = AuthLocalDatasourceImpl();
       await localDatasource.deleteAll();
@@ -45,7 +45,6 @@ class MyProfileController extends GetxController {
     try {
       isLoading.value = true;
       await profileRemoteDatasource.deleteAccount();
-      // 토큰 삭제
       final localDatasource = AuthLocalDatasourceImpl();
       await localDatasource.deleteAll();
       return true;

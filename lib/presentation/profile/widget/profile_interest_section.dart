@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
+import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/presentation/profile/widget/profile_interest_chip.dart';
 
-import '../../../core/design_system/app_layout.dart' show AppGap;
-
 class ProfileInterestSection extends StatelessWidget {
-  const ProfileInterestSection({super.key});
+  const ProfileInterestSection({super.key, required this.interests});
+
+  final List<String> interests;
 
   @override
   Widget build(BuildContext context) {
+    if (interests.isEmpty) return const SizedBox.shrink();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "관심분야",
+          '관심분야',
           style: AppTextStyles.titleSm16(textColor: AppColors.gray90),
         ),
         AppGap.v16,
-        Row(
-          children: [
-            ProfileInterestChip(name: "FrontEnd"),
-            AppGap.h10,
-            ProfileInterestChip(name: "기획"),
-            AppGap.h10,
-            ProfileInterestChip(name: "UI/UX"),
-          ],
+        Wrap(
+          spacing: AppSpacing.s10,
+          runSpacing: AppSpacing.s8,
+          children: interests
+              .map((e) => ProfileInterestChip(name: e))
+              .toList(),
         ),
       ],
     );

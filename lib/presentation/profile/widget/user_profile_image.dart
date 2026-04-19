@@ -1,11 +1,13 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
-import '../../../core/design_system/app_icon.dart';
-import '../../../core/design_system/app_layout.dart';
+import 'package:ondo/core/design_system/app_icon.dart';
+import 'package:ondo/core/design_system/app_layout.dart';
 
 class UserProfileImage extends StatelessWidget {
-  const UserProfileImage({super.key});
+  const UserProfileImage({super.key, this.imageUrl});
+
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -20,16 +22,20 @@ class UserProfileImage extends StatelessWidget {
             height: AppSpacing.s80,
             decoration: BoxDecoration(
               borderRadius: AppRadius.circleRadius,
-              border: BoxBorder.all(
-                width: 2,
-                color: Colors.brown,
-              ),
+              border: Border.all(width: 2, color: Colors.brown),
             ),
-            child: SvgPicture.asset(
-              AppIcon.defaultProfile.path,
+            child: ClipOval(
+              child: imageUrl != null && imageUrl!.isNotEmpty
+                  ? CachedNetworkImage(
+                imageUrl: imageUrl!,
+                fit: BoxFit.cover,
+                width: AppSpacing.s80,
+                height: AppSpacing.s80,
+                errorWidget: (_, _, _) => _defaultImage(),
+              )
+                  : _defaultImage(),
             ),
           ),
-
           Positioned(
             right: 12,
             bottom: 4,
@@ -44,4 +50,11 @@ class UserProfileImage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _defaultImage() => SvgPicture.asset(
+    AppIcon.defaultProfile.path,
+    fit: BoxFit.cover,
+    width: AppSpacing.s80,
+    height: AppSpacing.s80,
+  );
 }

@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
-import 'package:ondo/data/models/user/request/update_profile_request_model.dart';
 import 'package:ondo/domain/usecases/auth/sign_in_use_case.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -108,10 +107,8 @@ class LoginController extends GetxController {
 
       debugPrint('[프로필 이미지 S3 업로드 완료] key: $imageKey');
 
-      // 2단계: PATCH /users/me로 프로필에 key 반영
-      await profileRemoteDatasource.updateProfile(
-        UpdateProfileRequestModel(profileImageKey: imageKey),
-      );
+      // 2단계: PUT /users/my/profile/image 로 key 반영
+      await profileRemoteDatasource.updateProfileImage(imageKey);
 
       debugPrint('[프로필 이미지 반영 완료]');
 

@@ -15,5 +15,5 @@ abstract class BaseDataModel<T> {
     required this.last,
   });
 
-  Map toJson();
+  Map<String, dynamic> toJson();
 }

@@ -44,7 +44,7 @@ class UserRepositoryImpl extends UserRepository {
   }) async {
     final model = BaseListRequestModel(size: size, page: page);
 
-    final json = await remoteDatasource.loadRecommendProfileList(model);
+    final json = await remoteDatasource.loadRecommendUserList(model);
     if (json != null) {
       final res = UserDataModel.fromJson(json);
       return res.content;

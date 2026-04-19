@@ -4,8 +4,5 @@ class BaseListRequestModel {
 
   BaseListRequestModel({required this.size, required this.page});
 
-  Map<String, dynamic> toJson() => {
-    "size": size.toString(),
-    "page": page.toString(),
-  };
+  String toQueryParameter() => "?size=$size&page=$page";
 }

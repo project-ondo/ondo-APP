@@ -3,12 +3,12 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_tag_card.dart';
-import 'package:ondo/presentation/chat/controllers/chat_controller.dart';
+import 'package:ondo/presentation/chat/controllers/chat_main_controller.dart';
 import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/chat/widgets/chat_room_card.dart';
 
-class ChatMainScreen extends GetView<MainChatController> {
+class ChatMainScreen extends GetView<ChatMainController> {
   const ChatMainScreen({super.key});
 
   @override
@@ -39,7 +39,7 @@ class ChatMainScreen extends GetView<MainChatController> {
   }
 }
 
-class TagList extends GetView<MainChatController> {
+class TagList extends GetView<ChatMainController> {
   const TagList({super.key});
 
   @override
@@ -60,7 +60,7 @@ class TagList extends GetView<MainChatController> {
   }
 }
 
-class ChatList extends GetView<MainChatController> {
+class ChatList extends GetView<ChatMainController> {
   const ChatList({super.key});
 
   @override

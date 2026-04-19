@@ -70,41 +70,25 @@ class SignupCompleteScreen extends GetView<SignupFlowController> {
   }
 
   Widget _buildStartButton(BuildContext context) {
-    return Obx(
-          () => Column(
-        children: [
-          CustomButton(
-            text: '시작하기',
-            variant: ButtonVariant.primary,
-            enabled: !controller.isLoading.value,
-            onPressed: controller.isLoading.value
-                ? null
-                : () async {
-              final success = await controller.submitInfo();
-              if (!context.mounted) return;
+    return Column(
+      children: [
+        CustomButton(
+          text: '시작하기',
+          variant: ButtonVariant.primary,
+          onPressed: () async {
+            // 회원가입은 이미 MajorInterest 화면에서 완료됨
+            // 프로필 이미지 경로 임시 저장 후 로그인으로 이동
+            final imagePath = controller.profileImagePath;
+            controller.clear();
 
-              if (!success) {
-                Get.snackbar(
-                  '회원가입 실패',
-                  '회원가입에 실패했습니다. 다시 시도해주세요.',
-                  snackPosition: SnackPosition.BOTTOM,
-                );
-                return;
-              }
+            await LoginController.savePendingProfileImage(imagePath);
+            if (!context.mounted) return;
 
-              // 프로필 이미지 경로 임시 저장 (로그인 후 업로드)
-              final imagePath = controller.profileImagePath;
-              controller.clear();
-
-              await LoginController.savePendingProfileImage(imagePath);
-              if (!context.mounted) return;
-
-              context.go(RoutePaths.login);
-            },
-          ),
-          AppGap.v16,
-        ],
-      ),
+            context.go(RoutePaths.login);
+          },
+        ),
+        AppGap.v16,
+      ],
     );
   }
 }

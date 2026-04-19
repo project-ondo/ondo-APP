@@ -4,6 +4,7 @@ import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
+import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/auth/auth_repository_impl.dart';
 import 'package:ondo/domain/repositories/auth/auth_repository.dart';
@@ -47,11 +48,17 @@ class LoginBinding extends Bindings {
           () => MediaRemoteDatasource(client: Get.find<AuthClient>()),
     );
 
+    /// 프로필 수정용 datasource 등록
+    Get.lazyPut<ProfileRemoteDatasource>(
+          () => ProfileRemoteDatasource(client: Get.find<AuthClient>()),
+    );
+
     /// 최종적으로 LoginController 등록
     Get.lazyPut<LoginController>(
           () => LoginController(
         signInUseCase: Get.find<SignInUseCase>(),
         mediaRemoteDatasource: Get.find<MediaRemoteDatasource>(),
+        profileRemoteDatasource: Get.find<ProfileRemoteDatasource>(),
       ),
     );
   }

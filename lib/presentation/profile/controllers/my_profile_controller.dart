@@ -4,10 +4,12 @@ import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
 import 'package:ondo/domain/usecases/auth/logout_usecase.dart';
+import 'package:ondo/domain/usecases/user/delete_account_usecase.dart';
 
 class MyProfileController extends GetxController {
   final ProfileRemoteDatasource profileRemoteDatasource = Get.find();
   final LogoutUseCase logoutUseCase = Get.find();
+  final DeleteAccountUseCase deleteAccountUseCase = Get.find();
 
   final isLoading = false.obs;
   final Rxn<UserProfileDataModel> profile = Rxn();
@@ -40,7 +42,6 @@ class MyProfileController extends GetxController {
       if (refreshToken != null) {
         await logoutUseCase(refreshToken);
       } else {
-        // refreshToken 없으면 로컬만 삭제
         await localDatasource.deleteAll();
       }
     } catch (e, s) {
@@ -53,7 +54,7 @@ class MyProfileController extends GetxController {
 
     try {
       isLoading.value = true;
-      await profileRemoteDatasource.deleteAccount();
+      await deleteAccountUseCase();
       final localDatasource = AuthLocalDatasourceImpl();
       await localDatasource.deleteAll();
       return true;

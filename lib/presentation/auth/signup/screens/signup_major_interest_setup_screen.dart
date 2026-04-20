@@ -26,7 +26,7 @@ class SignupMajorInterestSetupScreen
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded( // overflow 수정
+              Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,7 +124,7 @@ class SignupMajorInterestSetupScreen
                 final result = await controller.submit();
                 if (!context.mounted) return;
                 if (result) {
-                  controller.flowController.clear();
+                  // clear()는 SignupCompleteScreen에서 로그인 이동 시 처리
                   context.goNamed('signupComplete');
                 }
               }

@@ -4,6 +4,7 @@ import 'package:ondo/core/router/bindings/chat_binding.dart';
 import 'package:ondo/core/router/bindings/community_binding.dart';
 import 'package:ondo/core/router/bindings/home_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
+import 'package:ondo/core/router/bindings/notification_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
@@ -13,7 +14,6 @@ import 'package:ondo/presentation/navigation/controllers/navigation_controller.d
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 import '../../../data/repositories/user/user_repository_impl.dart';
-import '../../../presentation/alert/controllers/alert_controller.dart';
 import '../../../presentation/search/controllers/main_top_bar_search_controller.dart';
 
 class NavigationBinding extends Bindings {
@@ -39,8 +39,8 @@ class NavigationBinding extends Bindings {
 
     ///전 화면 공통 controller 등록
     Get.lazyPut<NavigationController>(() => NavigationController());
+    NotificationBinding().dependencies();
     Get.lazyPut<MainTopBarSearchController>(() => MainTopBarSearchController());
-    Get.lazyPut<AlertController>(() => AlertController());
     Get.lazyPut(() => PostController());
 
     ///user 관련 dataSource, repository 등록

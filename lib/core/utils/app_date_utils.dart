@@ -11,5 +11,5 @@ class AppDateUtils {
     } else {
       return '${diff.inDays ~/ 365}년 전';
     }
-  }
+}
 }

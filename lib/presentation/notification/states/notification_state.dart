@@ -1,4 +1,5 @@
-enum AlertState {
+//TODO : 서버의 알림 상태 통일시키기
+enum NotificationState {
   newComment("누군가가 댓글을 남겼어요"),
   requestChat("누군가가 커피챗을 신청했어요"),
   reported("신고가 누적되어 커피챗 및 커뮤니티 활동이 제한되었습니다."),
@@ -8,5 +9,5 @@ enum AlertState {
 
   final String title;
 
-  const AlertState(this.title);
+  const NotificationState(this.title);
 }

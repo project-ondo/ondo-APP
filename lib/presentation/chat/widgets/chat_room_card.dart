@@ -4,25 +4,21 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/utils/app_date_utils.dart';
+import 'package:ondo/domain/entities/chat/chat_entity.dart';
 
 @immutable
 class ChatRoomCard extends StatelessWidget {
   final ValueNotifier<bool> bookmark;
-  final String name;
-  final Duration lastChatAt;
-  final String lastChat;
-  final int newChatCount;
+  final ChatEntity chatInfo;
   final VoidCallback? onTap;
 
   ChatRoomCard({
     super.key,
-    required bool bookmark,
-    required this.name,
-    required this.lastChatAt,
-    required this.lastChat,
-    required this.newChatCount,
+    required this.chatInfo,
     this.onTap,
-  }) : bookmark = ValueNotifier(bookmark);
+    //TODO : 북마크 api 이후 수정
+  }) : bookmark = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +35,7 @@ class ChatRoomCard extends StatelessWidget {
             _profile(),
             AppGap.h16,
             Expanded(child: _content()),
-            if (newChatCount > 1) _newChatCountIcon(),
+            if (chatInfo.unreadCount > 1) _newChatCountIcon(),
             _bookmarkIcon(),
           ],
         ),
@@ -60,19 +56,21 @@ class ChatRoomCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            name,
+            chatInfo.opponentDisplayName,
             style: AppTextStyles.caption(textColor: AppColors.gray60),
           ),
           Text(
-            "${lastChatAt.inHours}시간 전",
+            AppDateUtils.timeAgo(chatInfo.lastMessageAt),
             style: AppTextStyles.caption(textColor: AppColors.gray60),
           ),
         ],
       ),
       Text(
-        lastChat,
+        chatInfo.lastMessagePreview,
         style: AppTextStyles.caption(
-          textColor: newChatCount != 0 ? AppColors.gray90 : AppColors.gray60,
+          textColor: chatInfo.unreadCount != 0
+              ? AppColors.gray90
+              : AppColors.gray60,
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -83,7 +81,7 @@ class ChatRoomCard extends StatelessWidget {
   Widget _newChatCountIcon() => Padding(
     padding: AppPadding.between,
     child: Text(
-      "+$newChatCount",
+      "+${chatInfo.unreadCount}",
       style: AppTextStyles.caption(textColor: AppColors.primary),
     ),
   );

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/profile/controllers/my_profile_controller.dart';
 import 'package:ondo/presentation/profile/widget/build_app_version_session.dart';
 import 'package:ondo/presentation/profile/widget/build_custom_switch.dart';
 import 'package:ondo/presentation/profile/widget/custom_setting_item.dart';
@@ -24,6 +26,8 @@ class _SettingScreenState extends State<SettingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.find<MyProfileController>();
+
     return SafeArea(
       child: BaseScaffold(
         body: Column(
@@ -90,8 +94,11 @@ class _SettingScreenState extends State<SettingScreen> {
                     name: '회원탈퇴',
                     onTap: () => UserDeletePopup.userDeletePopup(
                       context,
-                      onDelete: () {
-                        // TODO: MyProfileController 연동
+                      onDelete: () async {
+                        final success = await controller.deleteAccount();
+                        if (success && context.mounted) {
+                          context.go(RoutePaths.login);
+                        }
                       },
                     ),
                   ),

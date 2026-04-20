@@ -2,16 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
+import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/domain/usecases/auth/sign_in_use_case.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
   final SignInUseCase signInUseCase;
   final MediaRemoteDatasource mediaRemoteDatasource;
+  final ProfileRemoteDatasource profileRemoteDatasource;
 
   LoginController({
     required this.signInUseCase,
     required this.mediaRemoteDatasource,
+    required this.profileRemoteDatasource,
   });
 
   static const String _profileImagePathKey = 'pending_profile_image_path';
@@ -87,7 +90,7 @@ class LoginController extends GetxController {
     }
   }
 
-  /// SharedPreferences에 저장된 프로필 이미지 경로 확인 후 업로드
+  /// SharedPreferences에 저장된 프로필 이미지 경로 확인 후 업로드 및 프로필 반영
   Future<void> _uploadPendingProfileImage() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -97,12 +100,20 @@ class LoginController extends GetxController {
 
       debugPrint('[프로필 이미지 업로드 시작] path: $imagePath');
 
-      await mediaRemoteDatasource.uploadImage(imagePath: imagePath);
+      // 1단계: S3 업로드 → key 반환
+      final imageKey = await mediaRemoteDatasource.uploadImage(
+        imagePath: imagePath,
+      );
+
+      debugPrint('[프로필 이미지 S3 업로드 완료] key: $imageKey');
+
+      // 2단계: PUT /users/my/profile/image 로 key 반영
+      await profileRemoteDatasource.updateProfileImage(imageKey);
+
+      debugPrint('[프로필 이미지 반영 완료]');
 
       // 업로드 완료 후 임시 데이터 삭제
       await prefs.remove(_profileImagePathKey);
-
-      debugPrint('[프로필 이미지 업로드 완료]');
     } catch (e, s) {
       // 이미지 업로드 실패해도 로그인은 성공으로 처리
       debugPrint('프로필 이미지 업로드 실패 (무시): $e\n$s');

@@ -18,6 +18,7 @@ import 'package:ondo/presentation/profile/widget/user_name_and_major.dart';
 import 'package:ondo/presentation/profile/widget/user_profile_image.dart';
 import 'package:ondo/presentation/profile/widget/user_report_popup.dart';
 
+// TODO: 게시글 API 연동 후 교체
 final List<Map<String, dynamic>> mockPostData = [
   {
     "skills": ["Flutter", "Firebase"],
@@ -35,150 +36,6 @@ final List<Map<String, dynamic>> mockPostData = [
     "favorites": 20,
     "createMinutes": 15,
   },
-  {
-    "skills": ["Android", "Kotlin"],
-    "title": "Coroutine 완전 정복",
-    "author": "이서연",
-    "bookmarks": 60,
-    "favorites": 33,
-    "createMinutes": 22,
-  },
-  {
-    "skills": ["Backend", "Node.js"],
-    "title": "REST API 설계 원칙",
-    "author": "박지훈",
-    "bookmarks": 18,
-    "favorites": 7,
-    "createMinutes": 8,
-  },
-  {
-    "skills": ["Flutter", "Animation"],
-    "title": "Custom Animation 만들기",
-    "author": "최유진",
-    "bookmarks": 90,
-    "favorites": 55,
-    "createMinutes": 40,
-  },
-  {
-    "skills": ["Database", "MySQL"],
-    "title": "인덱스 구조 이해하기",
-    "author": "정도현",
-    "bookmarks": 21,
-    "favorites": 9,
-    "createMinutes": 12,
-  },
-  {
-    "skills": ["Clean Architecture"],
-    "title": "Layered Architecture 설계",
-    "author": "한지민",
-    "bookmarks": 33,
-    "favorites": 14,
-    "createMinutes": 6,
-  },
-  {
-    "skills": ["Flutter", "Riverpod"],
-    "title": "Riverpod 실전 적용",
-    "author": "오승현",
-    "bookmarks": 77,
-    "favorites": 44,
-    "createMinutes": 30,
-  },
-  {
-    "skills": ["Testing", "Unit Test"],
-    "title": "Flutter 테스트 전략",
-    "author": "윤서진",
-    "bookmarks": 25,
-    "favorites": 11,
-    "createMinutes": 18,
-  },
-  {
-    "skills": ["DevOps", "CI/CD"],
-    "title": "GitHub Actions 자동화",
-    "author": "강다은",
-    "bookmarks": 50,
-    "favorites": 23,
-    "createMinutes": 27,
-  },
-  {
-    "skills": ["Flutter", "Firebase"],
-    "title": "실전 Flutter 상태관리",
-    "author": "허은서",
-    "bookmarks": 12,
-    "favorites": 5,
-    "createMinutes": 3,
-  },
-  {
-    "skills": ["UI/UX", "Figma"],
-    "title": "모바일 UX 설계 방법",
-    "author": "김민준",
-    "bookmarks": 45,
-    "favorites": 20,
-    "createMinutes": 15,
-  },
-  {
-    "skills": ["Android", "Kotlin"],
-    "title": "Coroutine 완전 정복",
-    "author": "이서연",
-    "bookmarks": 60,
-    "favorites": 33,
-    "createMinutes": 22,
-  },
-  {
-    "skills": ["Backend", "Node.js"],
-    "title": "REST API 설계 원칙",
-    "author": "박지훈",
-    "bookmarks": 18,
-    "favorites": 7,
-    "createMinutes": 8,
-  },
-  {
-    "skills": ["Flutter", "Animation"],
-    "title": "Custom Animation 만들기",
-    "author": "최유진",
-    "bookmarks": 90,
-    "favorites": 55,
-    "createMinutes": 40,
-  },
-  {
-    "skills": ["Database", "MySQL"],
-    "title": "인덱스 구조 이해하기",
-    "author": "정도현",
-    "bookmarks": 21,
-    "favorites": 9,
-    "createMinutes": 12,
-  },
-  {
-    "skills": ["Clean Architecture"],
-    "title": "Layered Architecture 설계",
-    "author": "한지민",
-    "bookmarks": 33,
-    "favorites": 14,
-    "createMinutes": 6,
-  },
-  {
-    "skills": ["Flutter", "Riverpod"],
-    "title": "Riverpod 실전 적용",
-    "author": "오승현",
-    "bookmarks": 77,
-    "favorites": 44,
-    "createMinutes": 30,
-  },
-  {
-    "skills": ["Testing", "Unit Test"],
-    "title": "Flutter 테스트 전략",
-    "author": "윤서진",
-    "bookmarks": 25,
-    "favorites": 11,
-    "createMinutes": 18,
-  },
-  {
-    "skills": ["DevOps", "CI/CD"],
-    "title": "GitHub Actions 자동화",
-    "author": "강다은",
-    "bookmarks": 50,
-    "favorites": 23,
-    "createMinutes": 27,
-  },
 ];
 
 class OtherProfileScreen extends StatelessWidget {
@@ -188,14 +45,17 @@ class OtherProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<PostItem> testPostItemList = mockPostData.map((data) {
       return PostItem(
-        skills: data["skills"],
-        title: data["title"],
-        author: data["author"],
-        bookmarks: data["bookmarks"],
-        favorites: data["favorites"],
-        createAt: data["createMinutes"],
+        skills: List<String>.from(data['skills']),
+        title: data['title'],
+        author: data['author'],
+        bookmarks: data['bookmarks'],
+        favorites: data['favorites'],
+        createAt: DateTime.now().subtract(
+          Duration(minutes: data['createMinutes']),
+        ),
       );
     }).toList();
+
     return SafeArea(
       child: BaseScaffold(
         backgroundColor: AppColors.background,
@@ -213,21 +73,21 @@ class OtherProfileScreen extends StatelessWidget {
                           PopupMenuItem(
                             onTap: () => showDialog(
                               context: context,
-                              builder: (context) => UserReportPopup(),
+                              builder: (context) => const UserReportPopup(),
                             ),
                             padding: AppPadding.settingSession,
                             child: Text(
-                              "신고하기",
+                              '신고하기',
                               style: AppTextStyles.caption(
                                 textColor: AppColors.gray90,
                               ),
                             ),
                           ),
                           PopupMenuItem(
-                            onTap: () => log("차단하기"),
+                            onTap: () => log('차단하기'), // TODO: 차단 API 연동
                             padding: AppPadding.settingSession,
                             child: Text(
-                              "차단하기",
+                              '차단하기',
                               style: AppTextStyles.caption(
                                 textColor: AppColors.gray90,
                               ),
@@ -236,13 +96,10 @@ class OtherProfileScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    //상대방 정보(프로필 이미지, 이름 전공등)
                     _buildOtherUserIntroductionSession(),
-                    //상대방 평점 세션
                     ProfileRatingSession(),
-                    //작성한 게시물 목록
                     ProfileIndicatorPostPageList(
-                      title: "작성한 게시물 목록",
+                      title: '작성한 게시물 목록',
                       postItemCount: testPostItemList.length,
                       postItemList: testPostItemList,
                     ),
@@ -266,11 +123,12 @@ class OtherProfileScreen extends StatelessWidget {
           AppGap.v8,
           _buildOtherUserProfileInformation(),
           AppGap.v16,
-          UserIntroductionText(),
+          // TODO: 상대 프로필 API 연동 후 실제 데이터로 교체
+          const UserIntroductionText(bio: null),
           AppGap.v24,
-          ProfileActivitySection(),
+          const ProfileActivitySection(),
           AppGap.v24,
-          ProfileInterestSection(),
+          const ProfileInterestSection(interests: []),
           AppGap.v16,
         ],
       ),
@@ -282,8 +140,9 @@ class OtherProfileScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        UserProfileImage(),
-        UserNameAndMajor(),
+        // TODO: 상대 프로필 API 연동 후 실제 데이터로 교체
+        const UserProfileImage(),
+        const UserNameAndMajor(name: '', major: ''),
       ],
     );
   }
@@ -293,9 +152,9 @@ class OtherProfileScreen extends StatelessWidget {
       padding: AppPadding.textField,
       color: AppColors.white,
       child: CustomButton(
-        text: "커피챗 신청하기",
+        text: '커피챗 신청하기',
         variant: ButtonVariant.primary,
-        onPressed: () => log("커피챗 신청하기"),
+        onPressed: () => log('커피챗 신청하기'), // TODO: 커피챗 API 연동
       ),
     );
   }

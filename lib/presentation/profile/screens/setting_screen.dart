@@ -21,7 +21,6 @@ class _SettingScreenState extends State<SettingScreen> {
   bool isVibrationState = false;
   bool isSoundState = false;
   bool isOnLine = false;
-  bool isOptions = false;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +31,7 @@ class _SettingScreenState extends State<SettingScreen> {
           children: [
             GestureDetector(
               onTap: () => context.pop(),
-              child: CustomBackButton(moreOptions: false),
+              child: const CustomBackButton(moreOptions: false),
             ),
             AppGap.v16,
             Container(
@@ -41,7 +40,7 @@ class _SettingScreenState extends State<SettingScreen> {
               child: Column(
                 children: [
                   BuildCustomSwitch(
-                    name: "푸시알람",
+                    name: '푸시알람',
                     value: isPushState,
                     onChanged: (value) => setState(() {
                       isPushState = !isPushState;
@@ -50,27 +49,24 @@ class _SettingScreenState extends State<SettingScreen> {
                     }),
                   ),
                   AppGap.v24,
-                  //진동알람
                   BuildCustomSwitch(
-                    name: "ㄴ 진동알람",
+                    name: 'ㄴ 진동알람',
                     value: isVibrationState,
                     onChanged: (value) => setState(() {
                       isVibrationState = !isVibrationState;
                     }),
                   ),
                   AppGap.v16,
-                  //소리알람
                   BuildCustomSwitch(
-                    name: "ㄴ 소리알람",
+                    name: 'ㄴ 소리알람',
                     value: isSoundState,
                     onChanged: (value) => setState(() {
                       isSoundState = !isSoundState;
                     }),
                   ),
                   AppGap.v24,
-                  //온라인 표시
                   BuildCustomSwitch(
-                    name: "다른 사람에게 온라인 표시",
+                    name: '다른 사람에게 온라인 표시',
                     value: isOnLine,
                     onChanged: (value) => setState(() {
                       isOnLine = !isOnLine;
@@ -86,19 +82,24 @@ class _SettingScreenState extends State<SettingScreen> {
               child: Column(
                 children: [
                   CustomSettingItem(
-                    name: "이용약관",
+                    name: '이용약관',
                     onTap: () => context.push(RoutePaths.profileTerms),
                   ),
                   AppGap.v24,
                   CustomSettingItem(
-                    name: "회원탈퇴",
-                    onTap: () => UserDeletePopup.userDeletePopup(context),
+                    name: '회원탈퇴',
+                    onTap: () => UserDeletePopup.userDeletePopup(
+                      context,
+                      onDelete: () {
+                        // TODO: MyProfileController 연동
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
             AppGap.v16,
-            BuildAppVersionSession(),
+            const BuildAppVersionSession(),
           ],
         ),
       ),

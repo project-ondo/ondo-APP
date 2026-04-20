@@ -3,6 +3,7 @@ import 'package:ondo/core/env.dart';
 import 'package:ondo/core/router/bindings/chat_binding.dart';
 import 'package:ondo/core/router/bindings/community_binding.dart';
 import 'package:ondo/core/router/bindings/home_binding.dart';
+import 'package:ondo/core/router/bindings/profile_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
@@ -20,49 +21,48 @@ class NavigationBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<AuthRemoteDatasource>(
-      () => AuthRemoteDatasource(Env.apiBaseUrl),
+          () => AuthRemoteDatasource(Env.apiBaseUrl),
       fenix: true,
     );
     Get.lazyPut<AuthLocalDatasource>(
-      () => AuthLocalDatasourceImpl(),
+          () => AuthLocalDatasourceImpl(),
       fenix: true,
     );
 
-    /// 인증 token을 포함하는 client 틍록
+    /// 인증 token을 포함하는 client 등록
     Get.lazyPut(
-      () => AuthClient(
+          () => AuthClient(
         localDatasource: Get.find<AuthLocalDatasource>(),
         remoteDatasource: Get.find<AuthRemoteDatasource>(),
       ),
       fenix: true,
     );
 
-    ///전 화면 공통 controller 등록
+    /// 전 화면 공통 controller 등록
     Get.lazyPut<NavigationController>(() => NavigationController());
     Get.lazyPut<MainTopBarSearchController>(() => MainTopBarSearchController());
     Get.lazyPut<AlertController>(() => AlertController());
     Get.lazyPut(() => PostController());
 
-    ///user 관련 dataSource, repository 등록
+    /// user 관련 dataSource, repository 등록
     Get.lazyPut<UserRemoteDatasource>(
-      () => UserRemoteDatasource(client: Get.find<AuthClient>()),
+          () => UserRemoteDatasource(client: Get.find<AuthClient>()),
     );
     Get.lazyPut<UserRepositoryImpl>(
-      () => UserRepositoryImpl(
+          () => UserRepositoryImpl(
         remoteDatasource: Get.find<UserRemoteDatasource>(),
       ),
     );
 
-    ///user 검색 usecase 등록
+    /// user 검색 usecase 등록
     Get.lazyPut(
-      () => UserSearchUseCase(repository: Get.find<UserRepositoryImpl>()),
+          () => UserSearchUseCase(repository: Get.find<UserRepositoryImpl>()),
     );
 
-    //TODO : 게시물 관련 api 등록
-
-    ///각 화면 Binding
+    /// 각 화면 Binding
     HomeBinding().dependencies();
     CommunityBinding().dependencies();
     ChatBinding().dependencies();
+    ProfileBinding().dependencies();
   }
 }

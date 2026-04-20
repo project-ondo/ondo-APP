@@ -65,4 +65,4 @@ class NavigationBinding extends Bindings {
     ChatBinding().dependencies();
     ProfileBinding().dependencies();
   }
-}
+} 

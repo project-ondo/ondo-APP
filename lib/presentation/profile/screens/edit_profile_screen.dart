@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
@@ -6,71 +7,22 @@ import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/profile/controllers/edit_profile_controller.dart';
 import 'package:ondo/presentation/profile/widget/edit_profile/profile_image_section.dart';
 import 'package:ondo/presentation/profile/widget/edit_profile/profile_tag_section.dart';
 
-class EditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends GetView<EditProfileController> {
   const EditProfileScreen({super.key});
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
-}
-
-class _EditProfileScreenState extends State<EditProfileScreen> {
-  final TextEditingController nickNameController = TextEditingController(
-    text: "기존 닉네임",
-  );
-
-  final TextEditingController introductionController = TextEditingController(
-    text: "기존 소개글",
-  );
-
-  final List<String> majorTags = [
-    "FrontEnd",
-    "BackEnd",
-    "AI",
-    "devops",
-    "기획",
-    "UI/UX",
-    "Android",
-    "ios",
-    "Cloud",
-  ];
-
-  final List<String> interestTags = [
-    "FrontEnd",
-    "BackEnd",
-    "AI",
-    "devops",
-    "기획",
-    "UI/UX",
-    "Android",
-    "ios",
-    "Cloud",
-  ];
-
-  final Set<String> selectedMajors = {"UI/UX"};
-  final Set<String> selectedInterests = {"AI"};
-
-  void toggleTag(Set<String> targetSet, String tag) {
-    setState(() {
-      if (targetSet.contains(tag)) {
-        targetSet.remove(tag);
-      } else {
-        targetSet.add(tag);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    nickNameController.dispose();
-    introductionController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final nickNameController = TextEditingController(
+      text: controller.displayName.value,
+    );
+    final introductionController = TextEditingController(
+      text: controller.bio.value,
+    );
+
     return SafeArea(
       child: BaseScaffold(
         resizeToAvoidBottomInset: true,
@@ -79,9 +31,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             GestureDetector(
               onTap: () => context.pop(),
-              child: CustomBackButton(
-                moreOptions: false,
-              ),
+              child: const CustomBackButton(moreOptions: false),
             ),
             Expanded(
               child: SingleChildScrollView(
@@ -90,10 +40,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const ProfileImageSection(),
+                      Obx(() => ProfileImageSection(
+                        imagePath: controller.selectedImage.value?.path,
+                        imageUrl: null, // TODO: 프로필 이미지 URL 연동
+                        onPickImage: controller.pickImage,
+                        onRemoveImage: controller.removeImage,
+                      )),
                       AppGap.v24,
 
-                      //닉네임 수정 텍스트필드
                       LabelTextField(
                         label: '닉네임',
                         controller: nickNameController,
@@ -101,7 +55,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       AppGap.v24,
 
-                      //자기소개 수정 텍스트필드
                       LabelTextField(
                         label: '소개글',
                         controller: introductionController,
@@ -111,20 +64,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       ),
                       AppGap.v24,
 
-                      ProfileTagSection(
-                        title: "전공",
-                        tags: majorTags,
-                        selectedTags: selectedMajors,
-                        onTagToggle: (tag) => toggleTag(selectedMajors, tag),
-                      ),
+                      Obx(() => ProfileTagSection(
+                        title: '전공',
+                        tags: controller.tags,
+                        selectedTags: {controller.selectedMajor.value},
+                        onTagToggle: (tag) => controller.selectMajor(tag),
+                      )),
                       AppGap.v24,
 
-                      ProfileTagSection(
-                        title: "관심분야",
-                        tags: interestTags,
-                        selectedTags: selectedInterests,
-                        onTagToggle: (tag) => toggleTag(selectedInterests, tag),
-                      ),
+                      Obx(() => ProfileTagSection(
+                        title: '관심분야',
+                        tags: controller.tags,
+                        selectedTags: controller.selectedInterests.toSet(),
+                        onTagToggle: (tag) => controller.toggleInterest(tag),
+                      )),
 
                       AppGap.v24,
                     ],
@@ -132,16 +85,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ),
               ),
             ),
-            Padding(
+            Obx(() => Padding(
               padding: AppPadding.settingSession,
               child: CustomButton(
-                text: "변경 완료",
+                text: '변경 완료',
                 variant: ButtonVariant.primary,
-                onPressed: () {
-                  context.pop();
+                enabled: !controller.isLoading.value,
+                onPressed: controller.isLoading.value
+                    ? null
+                    : () async {
+                  final success = await controller.saveProfile(
+                    displayName: nickNameController.text.trim(),
+                    bio: introductionController.text.trim(),
+                  );
+                  if (success && context.mounted) {
+                    context.pop();
+                  }
                 },
               ),
-            ),
+            )),
           ],
         ),
       ),

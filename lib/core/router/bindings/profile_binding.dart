@@ -3,12 +3,14 @@ import 'package:ondo/core/env.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
+import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/auth/auth_repository_impl.dart';
 import 'package:ondo/domain/repositories/auth/auth_repository.dart';
 import 'package:ondo/domain/usecases/auth/logout_usecase.dart';
 import 'package:ondo/domain/usecases/user/delete_account_usecase.dart';
+import 'package:ondo/presentation/profile/controllers/edit_profile_controller.dart';
 import 'package:ondo/presentation/profile/controllers/my_profile_controller.dart';
 
 class ProfileBinding extends Bindings {
@@ -57,6 +59,12 @@ class ProfileBinding extends Bindings {
       fenix: true,
     );
 
+    /// 미디어 업로드 datasource 등록 (이미지 변경에 필요)
+    Get.lazyPut<MediaRemoteDatasource>(
+          () => MediaRemoteDatasource(client: Get.find<AuthClient>()),
+      fenix: true,
+    );
+
     /// DeleteAccountUseCase 등록
     Get.lazyPut<DeleteAccountUseCase>(
           () => DeleteAccountUseCase(
@@ -64,9 +72,14 @@ class ProfileBinding extends Bindings {
       ),
     );
 
-    /// Controller 등록
+    /// MyProfileController 등록
     Get.lazyPut<MyProfileController>(
           () => MyProfileController(),
+    );
+
+    /// EditProfileController 등록
+    Get.lazyPut<EditProfileController>(
+          () => EditProfileController(),
     );
   }
 }

@@ -12,8 +12,8 @@ class EditProfileController extends GetxController {
 
   final isLoading = false.obs;
   final Rxn<XFile> selectedImage = Rxn();
+  final profileImageUrl = RxnString();
 
-  // 텍스트 초기값 (프로필 데이터에서 가져옴)
   final displayName = ''.obs;
   final bio = ''.obs;
   final selectedMajor = ''.obs;
@@ -30,8 +30,7 @@ class EditProfileController extends GetxController {
     _loadCurrentProfile();
   }
 
-  void _loadCurrentProfile() {
-    // MyProfileController에서 현재 프로필 데이터 가져오기
+  Future<void> _loadCurrentProfile() async {
     final myProfileController = Get.find<MyProfileController>();
     final profile = myProfileController.profile.value;
 
@@ -41,6 +40,9 @@ class EditProfileController extends GetxController {
       selectedMajor.value = profile.major;
       selectedInterests.assignAll(profile.interests);
     }
+
+    // 기존 프로필 이미지 URL 가져오기
+    profileImageUrl.value = myProfileController.profileImageUrl.value;
   }
 
   void toggleInterest(String tag) {
@@ -63,11 +65,13 @@ class EditProfileController extends GetxController {
     );
     if (picked != null) {
       selectedImage.value = picked;
+      profileImageUrl.value = null; // 새 이미지 선택 시 기존 URL 초기화
     }
   }
 
   void removeImage() {
     selectedImage.value = null;
+    profileImageUrl.value = null;
   }
 
   Future<bool> saveProfile({
@@ -79,7 +83,7 @@ class EditProfileController extends GetxController {
     try {
       isLoading.value = true;
 
-      // 1. 프로필 이미지 변경 (선택된 경우)
+      // 1. 프로필 이미지 변경 (새로 선택된 경우)
       if (selectedImage.value != null) {
         final imageKey = await mediaRemoteDatasource.uploadImage(
           imagePath: selectedImage.value!.path,

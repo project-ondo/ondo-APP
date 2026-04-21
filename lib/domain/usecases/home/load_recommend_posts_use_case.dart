@@ -1,4 +1,4 @@
-import '../../entities/home/recommend_post_entity.dart';
+import '../../entities/post/post_entity.dart';
 import '../../repositories/home/home_repository.dart';
 
 class LoadRecommendPostsUseCase {

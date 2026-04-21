@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:get/get.dart';
-import 'package:ondo/domain/entities/home/recommend_post_entity.dart';
-import 'package:ondo/domain/entities/home/recommend_user_entity.dart';
+import 'package:ondo/domain/entities/post/post_entity.dart';
+import 'package:ondo/domain/entities/user/user_entity.dart';
 import 'package:ondo/domain/usecases/home/load_recommend_posts_use_case.dart';
 import 'package:ondo/domain/usecases/home/load_recommend_users_use_case.dart';
 import 'package:ondo/domain/usecases/search/user_search_use_case.dart';

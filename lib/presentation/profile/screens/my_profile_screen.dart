@@ -19,43 +19,43 @@ import 'package:ondo/presentation/profile/widget/user_name_and_major.dart';
 import 'package:ondo/presentation/profile/widget/user_profile_image.dart';
 
 // TODO: 게시글 API 연동 후 교체
-final List<Map<String, dynamic>> mockPostData = [
+final List<Map<String, dynamic>> _mockPostData = [
   {
-    "skills": ["Flutter", "Firebase"],
-    "title": "실전 Flutter 상태관리",
-    "author": "허은서",
-    "bookmarks": 12,
-    "favorites": 5,
-    "createMinutes": 3,
+    'skills': ['Flutter', 'Firebase'],
+    'title': '실전 Flutter 상태관리',
+    'author': '허은서',
+    'bookmarks': 12,
+    'favorites': 5,
+    'createMinutes': 3,
   },
   {
-    "skills": ["UI/UX", "Figma"],
-    "title": "모바일 UX 설계 방법",
-    "author": "김민준",
-    "bookmarks": 45,
-    "favorites": 20,
-    "createMinutes": 15,
+    'skills': ['UI/UX', 'Figma'],
+    'title': '모바일 UX 설계 방법',
+    'author': '김민준',
+    'bookmarks': 45,
+    'favorites': 20,
+    'createMinutes': 15,
   },
 ];
+
+final List<PostItem> _testPostItemList = _mockPostData.map((data) {
+  return PostItem(
+    skills: List<String>.from(data['skills']),
+    title: data['title'],
+    author: data['author'],
+    bookmarks: data['bookmarks'],
+    favorites: data['favorites'],
+    createAt: DateTime.now().subtract(
+      Duration(minutes: data['createMinutes']),
+    ),
+  );
+}).toList();
 
 class MyProfileScreen extends GetView<MyProfileController> {
   const MyProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<PostItem> testPostItemList = mockPostData.map((data) {
-      return PostItem(
-        skills: List<String>.from(data['skills']),
-        title: data['title'],
-        author: data['author'],
-        bookmarks: data['bookmarks'],
-        favorites: data['favorites'],
-        createAt: DateTime.now().subtract(
-          Duration(minutes: data['createMinutes']),
-        ),
-      );
-    }).toList();
-
     return SafeArea(
       child: BaseScaffold(
         backgroundColor: AppColors.background,
@@ -73,13 +73,13 @@ class MyProfileScreen extends GetView<MyProfileController> {
                 ProfileRatingSession(),
                 ProfileIndicatorPostPageList(
                   title: '작성한 게시물 목록',
-                  postItemCount: testPostItemList.length,
-                  postItemList: testPostItemList,
+                  postItemCount: _testPostItemList.length,
+                  postItemList: _testPostItemList,
                 ),
                 ProfileIndicatorPostPageList(
                   title: '즐겨찾기한 게시물',
-                  postItemCount: testPostItemList.length,
-                  postItemList: testPostItemList,
+                  postItemCount: _testPostItemList.length,
+                  postItemList: _testPostItemList,
                 ),
               ],
             ),
@@ -118,7 +118,9 @@ class MyProfileScreen extends GetView<MyProfileController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppGap.v12,
-            UserProfileImage(imageUrl: profile?.profileImageKey),
+            Obx(() => UserProfileImage(
+              imageUrl: controller.profileImageUrl.value,
+            )),
             UserNameAndMajor(
               name: profile?.displayName ?? '',
               major: profile?.major ?? '',

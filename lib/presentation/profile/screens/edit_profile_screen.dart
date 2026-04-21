@@ -42,7 +42,7 @@ class EditProfileScreen extends GetView<EditProfileController> {
                     children: [
                       Obx(() => ProfileImageSection(
                         imagePath: controller.selectedImage.value?.path,
-                        imageUrl: null, // TODO: 프로필 이미지 URL 연동
+                        imageUrl: controller.profileImageUrl.value,
                         onPickImage: controller.pickImage,
                         onRemoveImage: controller.removeImage,
                       )),

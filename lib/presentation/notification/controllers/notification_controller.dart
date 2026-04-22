@@ -40,7 +40,7 @@ class NotificationController extends GetxController {
   }
 
   Future<void> _readAllNotification() async {
-    readAllNotificationUseCase.call();
+    await readAllNotificationUseCase.call();
   }
 
   Future<void> readAll() async {
@@ -53,6 +53,6 @@ class NotificationController extends GetxController {
 
   void clear() {
     //TODO : 읽은 알림 모두 삭제 api 개발
-    viewNotificationList.clear();
+    viewNotificationList.removeWhere((element) => element.read == true);
   }
 }

@@ -1,7 +1,7 @@
 import 'package:ondo/data/datasource/notification/notification_remote_datasource.dart';
 import 'package:ondo/data/models/base/request/base_list_request_model.dart';
 import 'package:ondo/data/models/notification/response/notification_model.dart';
-import 'package:ondo/domain/notification/notification_entity.dart';
+import 'package:ondo/domain/entities/notification/notification_entity.dart';
 import 'package:ondo/domain/repositories/notification/notification_repository.dart';
 
 class NotificationRepositoryImpl extends NotificationRepository {
@@ -38,6 +38,13 @@ class NotificationRepositoryImpl extends NotificationRepository {
 
     if (res == null) return 0;
 
+    return res;
+  }
+
+  @override
+  Future<int> readAllNotification() async {
+    final res = await remoteDatasource.readAllNotification();
+    if (res == null) return 0;
     return res;
   }
 }

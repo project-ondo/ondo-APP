@@ -3,13 +3,12 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_tag_card.dart';
-import 'package:ondo/presentation/chat/controllers/chat_controller.dart';
+import 'package:ondo/presentation/chat/controllers/chat_main_controller.dart';
 import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/chat/widgets/chat_room_card.dart';
 
-//TODO : Binding ChatMainScreenController 필수
-class ChatMainScreen extends GetView<ChatController> {
+class ChatMainScreen extends GetView<ChatMainController> {
   const ChatMainScreen({super.key});
 
   @override
@@ -32,7 +31,7 @@ class ChatMainScreen extends GetView<ChatController> {
         ),
         resultPageBuilder: (state) {
           if (state.query.isEmpty || state.tags.isEmpty) return;
-          controller.searchChatRooms([state.query, ...state.tags]);
+          controller.search(state.query, state.tags.toList());
           return null;
         },
       ),
@@ -40,30 +39,28 @@ class ChatMainScreen extends GetView<ChatController> {
   }
 }
 
-class TagList extends GetView<ChatController> {
+class TagList extends GetView<ChatMainController> {
   const TagList({super.key});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: AppSpacing.s36,
-      child: Obx(
-        () => ListView.separated(
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (context, index) => CustomTagCard(
-            tag: controller.tags[index],
-            onTap: (isSelect) =>
-                controller.filterChatRooms(controller.tags[index], isSelect),
-          ),
-          itemCount: controller.tags.length,
-          separatorBuilder: (context, index) => AppGap.h16,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (context, index) => CustomTagCard(
+          tag: controller.tags[index],
+          onTap: (isSelect) =>
+              controller.selectTag(controller.tags[index], isSelect),
         ),
+        itemCount: controller.tags.length,
+        separatorBuilder: (context, index) => AppGap.h16,
       ),
     );
   }
 }
 
-class ChatList extends GetView<ChatController> {
+class ChatList extends GetView<ChatMainController> {
   const ChatList({super.key});
 
   @override
@@ -71,21 +68,17 @@ class ChatList extends GetView<ChatController> {
     return Obx(
       () => ListView.separated(
         itemBuilder: (context, index) {
-          final chatRoom = controller.viewChatList[index];
+          final chatRoom = controller.viewChatRoomList[index];
           return ChatRoomCard(
             onTap: () {
               //TODO : chat model 정의 후 관련 데이터 전달
               controller.enterChatRoom();
             },
-            bookmark: chatRoom.isBookmark,
-            name: chatRoom.name,
-            lastChatAt: chatRoom.lastChatAt,
-            lastChat: chatRoom.lastChat,
-            newChatCount: chatRoom.newChatCount,
+            chatInfo: chatRoom,
           );
         },
         separatorBuilder: (context, index) => AppGap.v4,
-        itemCount: controller.viewChatList.length,
+        itemCount: controller.viewChatRoomList.length,
       ),
     );
   }

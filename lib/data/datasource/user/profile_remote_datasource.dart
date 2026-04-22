@@ -20,20 +20,26 @@ class ProfileRemoteDatasource {
 
     final body = jsonDecode(res.body);
     log.statusLog(res.statusCode);
-    log.successLog(body['success'] ?? false);
-    log.messageLog(body['message'] ?? '');
 
-    if (res.statusCode != 200 || body['success'] != true) {
-      throw Exception(body['message'] ?? '내 프로필 조회 실패');
-    }
+    try {
+      final body = jsonDecode(res.body);
+      log.successLog(body['success'] ?? false);
+      log.messageLog(body['message'] ?? '');
+
+      if (res.statusCode != 200 || body['success'] != true) {
+        throw Exception(body['message'] ?? '내 프로필 조회 실패');
+      }
 
     final responseModel = UserProfileResponseModel.fromJson(body);
-
     if (responseModel.data == null) {
       throw Exception('프로필 데이터가 없습니다.');
     }
 
-    return responseModel.data!;
+      return responseModel.data!;
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('내 프로필 조회 중 오류가 발생했습니다.');
+    }
   }
 
   /// 내 프로필 수정 PATCH /users/my/profile
@@ -48,11 +54,18 @@ class ProfileRemoteDatasource {
 
     final body = jsonDecode(res.body);
     log.statusLog(res.statusCode);
-    log.successLog(body['success'] ?? false);
-    log.messageLog(body['message'] ?? '');
 
-    if (res.statusCode != 200 || body['success'] != true) {
-      throw Exception(body['message'] ?? '프로필 수정 실패');
+    try {
+      final body = jsonDecode(res.body);
+      log.successLog(body['success'] ?? false);
+      log.messageLog(body['message'] ?? '');
+
+      if (res.statusCode != 200 || body['success'] != true) {
+        throw Exception(body['message'] ?? '프로필 수정 실패');
+      }
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('프로필 수정 중 오류가 발생했습니다.');
     }
   }
 
@@ -68,11 +81,18 @@ class ProfileRemoteDatasource {
 
     final body = jsonDecode(res.body);
     log.statusLog(res.statusCode);
-    log.successLog(body['success'] ?? false);
-    log.messageLog(body['message'] ?? '');
 
-    if (res.statusCode != 200 || body['success'] != true) {
-      throw Exception(body['message'] ?? '프로필 이미지 변경 실패');
+    try {
+      final body = jsonDecode(res.body);
+      log.successLog(body['success'] ?? false);
+      log.messageLog(body['message'] ?? '');
+
+      if (res.statusCode != 200 || body['success'] != true) {
+        throw Exception(body['message'] ?? '프로필 이미지 변경 실패');
+      }
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('프로필 이미지 변경 중 오류가 발생했습니다.');
     }
   }
 
@@ -86,11 +106,18 @@ class ProfileRemoteDatasource {
 
     final body = jsonDecode(res.body);
     log.statusLog(res.statusCode);
-    log.successLog(body['success'] ?? false);
-    log.messageLog(body['message'] ?? '');
 
-    if (res.statusCode != 200 || body['success'] != true) {
-      throw Exception(body['message'] ?? '회원탈퇴 실패');
+    try {
+      final body = jsonDecode(res.body);
+      log.successLog(body['success'] ?? false);
+      log.messageLog(body['message'] ?? '');
+
+      if (res.statusCode != 200 || body['success'] != true) {
+        throw Exception(body['message'] ?? '회원탈퇴 실패');
+      }
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('회원탈퇴 중 오류가 발생했습니다.');
     }
   }
 }

@@ -35,16 +35,14 @@ class UserRemoteDatasource {
     return null;
   }
 
-  Future<Map?> loadRecommendProfileList(
+  Future<Map?> loadRecommendUserList(
     BaseListRequestModel model,
   ) async {
     final log = ApiConstants(logName: "홈 추천 사용자 조회");
 
     try {
       final res = await client.get(
-        Uri.parse(
-          "${ApiConstants.users}/recommend",
-        ).replace(queryParameters: model.toJson()),
+        Uri.parse("${ApiConstants.users}/recommend${model.toQueryParameter()}"),
       );
       final body = jsonDecode(res.body);
 

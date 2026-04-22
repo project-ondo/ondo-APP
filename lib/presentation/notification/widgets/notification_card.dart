@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
+import 'package:ondo/core/utils/app_date_utils.dart';
+import 'package:ondo/domain/notification/notification_entity.dart';
 
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_layout.dart';
 import '../../../core/design_system/app_text_styles.dart';
 
-class AlertCard extends StatelessWidget {
-  final String alertType;
-  final Duration sendAt;
-  final String? comment;
-  final String? profileImg;
+class NotificationCard extends StatelessWidget {
+  final NotificationEntity notificationInfo;
   final VoidCallback? onTap;
 
-  const AlertCard({
+  const NotificationCard({
     super.key,
-    this.profileImg,
-    required this.alertType,
-    required this.sendAt,
-    this.comment,
-    this.onTap
+    this.onTap,
+    required this.notificationInfo,
   });
 
   @override
@@ -29,7 +25,8 @@ class AlertCard extends StatelessWidget {
         children: [
           CustomProfileCircle(
             radius: AppSpacing.s24,
-            imageUrl: profileImg,
+            //TODO : 서버 프로필 이미지 api 개발 이후에 수정
+            imageUrl: null,
           ),
           AppGap.h12,
           Expanded(
@@ -37,13 +34,12 @@ class AlertCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _title(),
-                if (comment != null)
-                  Text(
-                    comment!,
-                    style: AppTextStyles.caption(textColor: AppColors.gray60),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                Text(
+                  notificationInfo.body,
+                  style: AppTextStyles.caption(textColor: AppColors.gray60),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
@@ -55,14 +51,14 @@ class AlertCard extends StatelessWidget {
   Widget _title() => Row(
     children: [
       Text(
-        alertType,
+        notificationInfo.title,
         style: AppTextStyles.caption(textColor: AppColors.gray90),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
       Spacer(),
       Text(
-        "${sendAt.inHours}시간 전",
+        AppDateUtils.timeAgo(notificationInfo.createdAt),
         style: AppTextStyles.caption(textColor: AppColors.gray60),
       ),
     ],

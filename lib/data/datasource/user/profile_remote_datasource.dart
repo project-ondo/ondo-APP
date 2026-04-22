@@ -18,7 +18,7 @@ class ProfileRemoteDatasource {
       Uri.parse('${ApiConstants.users}/my/profile'),
     );
 
-    final body = jsonDecode(res.body);
+    jsonDecode(res.body);
     log.statusLog(res.statusCode);
 
     try {
@@ -52,7 +52,7 @@ class ProfileRemoteDatasource {
       body: jsonEncode(model.toJson()),
     );
 
-    final body = jsonDecode(res.body);
+    jsonDecode(res.body);
     log.statusLog(res.statusCode);
 
     try {
@@ -79,7 +79,7 @@ class ProfileRemoteDatasource {
       body: jsonEncode({'key': imageKey}),
     );
 
-    final body = jsonDecode(res.body);
+    jsonDecode(res.body);
     log.statusLog(res.statusCode);
 
     try {
@@ -104,7 +104,7 @@ class ProfileRemoteDatasource {
       Uri.parse('${ApiConstants.users}/my'),
     );
 
-    final body = jsonDecode(res.body);
+    jsonDecode(res.body);
     log.statusLog(res.statusCode);
 
     try {

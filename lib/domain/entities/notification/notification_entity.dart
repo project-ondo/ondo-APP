@@ -29,4 +29,14 @@ class NotificationEntity {
         read: model.read,
         createdAt: DateTime.parse(model.createdAt),
       );
+
+  NotificationEntity copyWith({bool? read}) => NotificationEntity(
+    id: id,
+    type: type,
+    title: title,
+    body: body,
+    target: target,
+    read: read ?? this.read,
+    createdAt: createdAt,
+  );
 }

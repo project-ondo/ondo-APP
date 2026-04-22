@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
-import 'package:ondo/domain/notification/notification_entity.dart';
+import 'package:ondo/domain/entities/notification/notification_entity.dart';
 
 import '../../../core/design_system/app_colors.dart';
 import '../../../core/design_system/app_layout.dart';

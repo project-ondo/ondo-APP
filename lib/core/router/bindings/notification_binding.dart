@@ -4,6 +4,7 @@ import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/notification/notification_repository_impl.dart';
 import 'package:ondo/domain/usecases/notification/load_my_notification_list_use_case.dart';
 import 'package:ondo/domain/usecases/notification/load_unread_notification_count_use_case.dart';
+import 'package:ondo/domain/usecases/notification/read_all_notification_use_case.dart';
 
 import '../../../presentation/notification/controllers/notification_controller.dart';
 
@@ -35,10 +36,16 @@ class NotificationBinding extends Bindings {
         repository: Get.find<NotificationRepositoryImpl>(),
       ),
     );
+    Get.lazyPut<ReadAllNotificationUseCase>(
+      () => ReadAllNotificationUseCase(
+        repository: Get.find<NotificationRepositoryImpl>(),
+      ),
+    );
 
     ///notification controller 등록
     Get.lazyPut<NotificationController>(
       () => NotificationController(
+        readAllNotificationUseCase: Get.find<ReadAllNotificationUseCase>(),
         loadMyNotificationListUseCase:
             Get.find<LoadMyNotificationListUseCase>(),
         loadUnreadNotificationCountUseCase:

@@ -47,4 +47,9 @@ class NotificationRepositoryImpl extends NotificationRepository {
     if (res == null) return 0;
     return res;
   }
+
+  @override
+  Future<bool> readNotification(int id) {
+    return remoteDatasource.readNotification(id);
+  }
 }

@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
+import 'package:ondo/core/env.dart';
 import 'package:ondo/core/router/bindings/chat_binding.dart';
 import 'package:ondo/core/router/bindings/community_binding.dart';
 import 'package:ondo/core/router/bindings/home_binding.dart';
+import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/core/router/bindings/notification_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
@@ -17,6 +19,15 @@ import '../../../presentation/search/controllers/main_top_bar_search_controller.
 class NavigationBinding extends Bindings {
   @override
   void dependencies() {
+    Get.lazyPut<AuthRemoteDatasource>(
+      () => AuthRemoteDatasource(Env.apiBaseUrl),
+      fenix: true,
+    );
+    Get.lazyPut<AuthLocalDatasource>(
+      () => AuthLocalDatasourceImpl(),
+      fenix: true,
+    );
+
     /// 인증 token을 포함하는 client 틍록
     Get.lazyPut(
       () => AuthClient(

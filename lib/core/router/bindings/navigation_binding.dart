@@ -21,17 +21,17 @@ class NavigationBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<AuthRemoteDatasource>(
-          () => AuthRemoteDatasource(Env.apiBaseUrl),
+      () => AuthRemoteDatasource(Env.apiBaseUrl),
       fenix: true,
     );
     Get.lazyPut<AuthLocalDatasource>(
-          () => AuthLocalDatasourceImpl(),
+      () => AuthLocalDatasourceImpl(),
       fenix: true,
     );
 
-    /// 인증 token을 포함하는 client 등록
+    /// 인증 token을 포함하는 client 틍록
     Get.lazyPut(
-          () => AuthClient(
+      () => AuthClient(
         localDatasource: Get.find<AuthLocalDatasource>(),
         remoteDatasource: Get.find<AuthRemoteDatasource>(),
       ),
@@ -46,17 +46,17 @@ class NavigationBinding extends Bindings {
 
     /// user 관련 dataSource, repository 등록
     Get.lazyPut<UserRemoteDatasource>(
-          () => UserRemoteDatasource(client: Get.find<AuthClient>()),
+      () => UserRemoteDatasource(client: Get.find<AuthClient>()),
     );
     Get.lazyPut<UserRepositoryImpl>(
-          () => UserRepositoryImpl(
+      () => UserRepositoryImpl(
         remoteDatasource: Get.find<UserRemoteDatasource>(),
       ),
     );
 
     /// user 검색 usecase 등록
     Get.lazyPut(
-          () => UserSearchUseCase(repository: Get.find<UserRepositoryImpl>()),
+      () => UserSearchUseCase(repository: Get.find<UserRepositoryImpl>()),
     );
 
     /// 각 화면 Binding

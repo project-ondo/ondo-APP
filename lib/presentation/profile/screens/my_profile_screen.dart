@@ -13,6 +13,7 @@ import 'package:ondo/presentation/profile/widget/profile_activity_section.dart';
 import 'package:ondo/presentation/profile/widget/profile_indicator_post_page_list.dart';
 import 'package:ondo/presentation/profile/widget/profile_interest_section.dart';
 import 'package:ondo/presentation/profile/widget/profile_rating_session.dart';
+import 'package:ondo/presentation/profile/widget/user_delete_popup.dart';
 import 'package:ondo/presentation/profile/widget/user_introduction_text.dart';
 import 'package:ondo/presentation/profile/widget/user_logout_popup.dart';
 import 'package:ondo/presentation/profile/widget/user_name_and_major.dart';
@@ -161,6 +162,22 @@ class MyProfileScreen extends GetView<MyProfileController> {
           child: Text(
             '설정',
             style: AppTextStyles.caption(textColor: AppColors.gray90),
+          ),
+        ),
+        PopupMenuItem(
+          onTap: () => UserDeletePopup.userDeletePopup(
+            context,
+            onDelete: () async {
+              final success = await controller.deleteAccount();
+              if (success && context.mounted) {
+                context.go(RoutePaths.login);
+              }
+            },
+          ),
+          padding: AppPadding.settingSession,
+          child: Text(
+            '회원탈퇴',
+            style: AppTextStyles.caption(textColor: AppColors.red),
           ),
         ),
       ],

@@ -7,4 +7,6 @@ abstract class NotificationRepository {
 
   Future<int> readAllNotification();
 
+  Future<bool> readNotification(int id);
+
 }

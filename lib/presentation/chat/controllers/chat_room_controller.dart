@@ -8,6 +8,10 @@ class ChatRoomController extends GetxController {
   final RxList<Chat> chats = <Chat>[].obs;
   final TextEditingController textController = TextEditingController();
 
+  final String chatRoomId;
+
+  ChatRoomController({required this.chatRoomId});
+
   @override
   void onInit() {
     chats.assignAll(_getChatList());

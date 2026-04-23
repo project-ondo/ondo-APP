@@ -6,7 +6,7 @@ import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 
 class ChatMainController extends GetxController {
   final List<String> tags = <String>[].obs;
-  final RxSet<String> selectTagList = <String>{}.obs;
+  final Set<String> selectTagList = <String>{};
   final List<ChatEntity> _cacheChatRoomList = <ChatEntity>[];
   final RxList<ChatEntity> viewChatRoomList = <ChatEntity>[].obs;
 
@@ -44,13 +44,21 @@ class ChatMainController extends GetxController {
 
   void _filterChatRooms() {
     final Set<ChatEntity> result = {};
+
+    ///선택한 태그가 없을 경우, 전체 채팅 방 리스트 표시
+    if (selectTagList.isEmpty) {
+      viewChatRoomList.assignAll(_cacheChatRoomList);
+      return;
+    }
+
     result.addAll(
       _cacheChatRoomList.where(
         (room) =>
             selectTagList.any((tag) => room.opponentDisplayName.contains(tag)),
       ),
     );
-    //보여지는 채팅 방 리스트 갱신
+
+    ///보여지는 채팅 방 리스트 갱신
     viewChatRoomList.assignAll(result);
   }
 
@@ -59,10 +67,18 @@ class ChatMainController extends GetxController {
     _filterChatRooms();
   }
 
-  void enterChatRoom() {
+  void enterChatRoom(int index) {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
-    Get.put(ChatRoomController());
-    Get.to(ChatRoomScreen());
+    final roomId = viewChatRoomList[index].roomId;
+    Get.lazyPut<ChatRoomController>(
+      () => ChatRoomController(chatRoomId: roomId),
+      tag: roomId,
+    );
+    Get.to(
+      ChatRoomScreen(
+        roomId: roomId,
+      ),
+    );
   }
 }
 

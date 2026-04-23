@@ -4,6 +4,8 @@ import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
+import 'package:ondo/domain/usecases/auth/logout_usecase.dart';
+import 'package:ondo/domain/usecases/user/delete_account_usecase.dart';
 
 class MyProfileController extends GetxController {
   final ProfileRemoteDatasource profileRemoteDatasource = Get.find();

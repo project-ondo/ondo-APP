@@ -43,12 +43,12 @@ class ChatModel extends BaseModel {
   final String roomId;
   final String opponentPublicId;
   final String opponentDisplayName;
-  final String opponentProfileImageKey;
+  final String? opponentProfileImageKey;
   final bool opponentOnline;
   final int unreadCount;
   final String lastMessagePreview;
   final bool muted;
-  final String lastMessageAt;
+  final String? lastMessageAt;
 
   ChatModel({
     required this.roomId,

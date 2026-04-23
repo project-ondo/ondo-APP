@@ -22,26 +22,26 @@ import 'package:ondo/data/models/user/response/user_profile_response_model.dart'
 import 'package:ondo/presentation/profile/widget/user_report_popup.dart';
 
 // TODO: 게시글 API 연동 후 교체
-final List<Map<String, dynamic>> _mockPostData = [
+final List<Map<String, dynamic>> mockPostData = [
   {
-    'skills': ['Flutter', 'Firebase'],
-    'title': '실전 Flutter 상태관리',
-    'author': '허은서',
-    'bookmarks': 12,
-    'favorites': 5,
-    'createMinutes': 3,
+    "skills": ["Flutter", "Firebase"],
+    "title": "실전 Flutter 상태관리",
+    "author": "허은서",
+    "bookmarks": 12,
+    "favorites": 5,
+    "createMinutes": 3,
   },
   {
-    'skills': ['UI/UX', 'Figma'],
-    'title': '모바일 UX 설계 방법',
-    'author': '김민준',
-    'bookmarks': 45,
-    'favorites': 20,
-    'createMinutes': 15,
+    "skills": ["UI/UX", "Figma"],
+    "title": "모바일 UX 설계 방법",
+    "author": "김민준",
+    "bookmarks": 45,
+    "favorites": 20,
+    "createMinutes": 15,
   },
 ];
 
-final List<PostItem> _testPostItemList = _mockPostData.map((data) {
+final List<PostItem> _testPostItemList = mockPostData.map((data) {
   return PostItem(
     skills: List<String>.from(data['skills']),
     title: data['title'],

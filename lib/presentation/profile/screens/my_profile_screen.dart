@@ -13,32 +13,33 @@ import 'package:ondo/presentation/profile/widget/profile_activity_section.dart';
 import 'package:ondo/presentation/profile/widget/profile_indicator_post_page_list.dart';
 import 'package:ondo/presentation/profile/widget/profile_interest_section.dart';
 import 'package:ondo/presentation/profile/widget/profile_rating_session.dart';
+import 'package:ondo/presentation/profile/widget/user_delete_popup.dart';
 import 'package:ondo/presentation/profile/widget/user_introduction_text.dart';
 import 'package:ondo/presentation/profile/widget/user_logout_popup.dart';
 import 'package:ondo/presentation/profile/widget/user_name_and_major.dart';
 import 'package:ondo/presentation/profile/widget/user_profile_image.dart';
 
 // TODO: 게시글 API 연동 후 교체
-final List<Map<String, dynamic>> _mockPostData = [
+final List<Map<String, dynamic>> mockPostData = [
   {
-    'skills': ['Flutter', 'Firebase'],
-    'title': '실전 Flutter 상태관리',
-    'author': '허은서',
-    'bookmarks': 12,
-    'favorites': 5,
-    'createMinutes': 3,
+    "skills": ["Flutter", "Firebase"],
+    "title": "실전 Flutter 상태관리",
+    "author": "허은서",
+    "bookmarks": 12,
+    "favorites": 5,
+    "createMinutes": 3,
   },
   {
-    'skills': ['UI/UX', 'Figma'],
-    'title': '모바일 UX 설계 방법',
-    'author': '김민준',
-    'bookmarks': 45,
-    'favorites': 20,
-    'createMinutes': 15,
+    "skills": ["UI/UX", "Figma"],
+    "title": "모바일 UX 설계 방법",
+    "author": "김민준",
+    "bookmarks": 45,
+    "favorites": 20,
+    "createMinutes": 15,
   },
 ];
 
-final List<PostItem> _testPostItemList = _mockPostData.map((data) {
+final List<PostItem> testPostItemList = mockPostData.map((data) {
   return PostItem(
     skills: List<String>.from(data['skills']),
     title: data['title'],
@@ -73,13 +74,13 @@ class MyProfileScreen extends GetView<MyProfileController> {
                 ProfileRatingSession(),
                 ProfileIndicatorPostPageList(
                   title: '작성한 게시물 목록',
-                  postItemCount: _testPostItemList.length,
-                  postItemList: _testPostItemList,
+                  postItemCount: testPostItemList.length,
+                  postItemList: testPostItemList,
                 ),
                 ProfileIndicatorPostPageList(
                   title: '즐겨찾기한 게시물',
-                  postItemCount: _testPostItemList.length,
-                  postItemList: _testPostItemList,
+                  postItemCount: testPostItemList.length,
+                  postItemList: testPostItemList,
                 ),
               ],
             ),
@@ -163,6 +164,22 @@ class MyProfileScreen extends GetView<MyProfileController> {
           child: Text(
             '설정',
             style: AppTextStyles.caption(textColor: AppColors.gray90),
+          ),
+        ),
+        PopupMenuItem(
+          onTap: () => UserDeletePopup.userDeletePopup(
+            context,
+            onDelete: () async {
+              final success = await controller.deleteAccount();
+              if (success && context.mounted) {
+                context.go(RoutePaths.login);
+              }
+            },
+          ),
+          padding: AppPadding.settingSession,
+          child: Text(
+            '회원탈퇴',
+            style: AppTextStyles.caption(textColor: AppColors.red),
           ),
         ),
       ],

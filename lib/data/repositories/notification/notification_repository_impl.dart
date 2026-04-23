@@ -31,4 +31,13 @@ class NotificationRepositoryImpl extends NotificationRepository {
         )
         .toList();
   }
+
+  @override
+  Future<int> loadUnreadNotificationCount() async {
+    final res = await remoteDatasource.loadUnreadNotificationCount();
+
+    if (res == null) return 0;
+
+    return res;
+  }
 }

@@ -39,9 +39,11 @@ class AuthRemoteDatasource {
       }
     }
 
-    final body = jsonDecode(response.body);
-    log.successLog(body['success'] ?? true);
-    log.messageLog(body['message'] ?? '');
+    try {
+      final body = jsonDecode(response.body);
+      log.successLog(body['success'] ?? true);
+      log.messageLog(body['message'] ?? '');
+    } catch (_) {}
   }
 
   Future<String> verifyEmailCode(String email, String code) async {
@@ -58,21 +60,25 @@ class AuthRemoteDatasource {
       throw Exception(AppStrings.emailVerifyFail);
     }
 
-    final responseModel = EmailVerifyResponseModel.fromJson(
-      jsonDecode(response.body),
-    );
+    try {
+      final responseModel = EmailVerifyResponseModel.fromJson(
+        jsonDecode(response.body),
+      );
 
-    if (!responseModel.success) {
-      throw Exception(responseModel.message);
+      if (!responseModel.success) {
+        throw Exception(responseModel.message);
+      }
+
+      final token = responseModel.data.verificationToken;
+      if (token.isEmpty) {
+        throw Exception(AppStrings.verificationTokenEmpty);
+      }
+
+      return token;
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception(AppStrings.emailVerifyFail);
     }
-
-    final token = responseModel.data.verificationToken;
-
-    if (token.isEmpty) {
-      throw Exception(AppStrings.verificationTokenEmpty);
-    }
-
-    return token;
   }
 
   Future<SignupResponseModel> signup(SignupRequestModel model) async {
@@ -99,18 +105,23 @@ class AuthRemoteDatasource {
       }
     }
 
-    final responseModel = SignupResponseModel.fromJson(
-      jsonDecode(response.body),
-    );
+    try {
+      final responseModel = SignupResponseModel.fromJson(
+        jsonDecode(response.body),
+      );
 
-    log.successLog(responseModel.success);
-    log.messageLog(responseModel.message);
+      log.successLog(responseModel.success);
+      log.messageLog(responseModel.message);
 
-    if (!responseModel.success) {
-      throw Exception(responseModel.message);
+      if (!responseModel.success) {
+        throw Exception(responseModel.message);
+      }
+
+      return responseModel;
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception(AppStrings.signupFail);
     }
-
-    return responseModel;
   }
 
   Future<Map?> signIn(SignInRequestModel model) async {

@@ -55,6 +55,7 @@ class MyProfileController extends GetxController {
     try {
       isLoading.value = true;
       await deleteAccountUseCase();
+      await profileRemoteDatasource.deleteAccount();
       final localDatasource = AuthLocalDatasourceImpl();
       await localDatasource.deleteAll();
       return true;

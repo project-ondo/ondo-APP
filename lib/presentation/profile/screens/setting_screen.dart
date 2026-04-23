@@ -103,7 +103,7 @@ class _SettingScreenState extends State<SettingScreen> {
                         if (success && context.mounted) {
                           context.go(RoutePaths.login);
                         }
-                      };
+                      },
                     ),
                   ),
                 ],

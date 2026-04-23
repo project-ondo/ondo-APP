@@ -70,8 +70,8 @@ class ChatMainController extends GetxController {
   void enterChatRoom(int index) {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
     final roomId = viewChatRoomList[index].roomId;
-    Get.lazyPut<ChatRoomController>(
-      () => ChatRoomController(chatRoomId: roomId),
+    Get.put<ChatRoomController>(
+      ChatRoomController(chatRoomId: roomId),
       tag: roomId,
     );
     Get.to(

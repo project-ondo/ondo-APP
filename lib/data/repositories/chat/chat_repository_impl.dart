@@ -31,6 +31,6 @@ class ChatRepositoryImpl extends ChatRepository {
   Future<String> createChatRoom(String usersPublicId) async {
     final json = await remoteDatasource.createChatRoom(usersPublicId);
     if (json == null) return "";
-    return json["roomId"];
+    return json["roomId"] ?? "";
   }
 }

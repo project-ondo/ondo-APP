@@ -33,4 +33,9 @@ class ChatRepositoryImpl extends ChatRepository {
     if (json == null) return "";
     return json["roomId"] ?? "";
   }
+
+  @override
+  Future<bool> blockChatRoom(String chatRoomPublicId) async {
+    return await remoteDatasource.blockChatRoom(chatRoomPublicId);
+  }
 }

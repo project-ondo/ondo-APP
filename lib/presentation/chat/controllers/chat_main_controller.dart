@@ -8,7 +8,7 @@ import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 
 class ChatMainController extends GetxController {
   final List<String> tags = <String>[].obs;
-  final RxSet<String> selectTagList = <String>{}.obs;
+  final Set<String> selectTagList = <String>{};
   final List<ChatEntity> _cacheChatRoomList = <ChatEntity>[];
   final RxList<ChatEntity> viewChatRoomList = <ChatEntity>[].obs;
 

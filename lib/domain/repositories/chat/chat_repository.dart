@@ -6,4 +6,5 @@ abstract class ChatRepository {
   Future<String> createChatRoom(String usersPublicId);
 
   Future<bool> blockChatRoom(String chatRoomPublicId);
+  Future<bool> cancelBlockChatRoom(String chatRoomPublicId);
 }

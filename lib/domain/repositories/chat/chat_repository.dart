@@ -4,4 +4,6 @@ abstract class ChatRepository {
   Future<List<ChatEntity>> loadMyChatRoomList(int size, int page);
 
   Future<String> createChatRoom(String usersPublicId);
+
+  Future<bool> blockChatRoom(String chatRoomPublicId);
 }

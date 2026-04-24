@@ -1,27 +1,61 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
+import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
+import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
 import 'package:ondo/presentation/chat/controllers/chat_review_controller.dart';
+import 'package:ondo/presentation/chat/view_models/chat_message_view_model.dart';
 import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
 
 class ChatRoomController extends GetxController {
-  final RxList<Chat> chats = <Chat>[].obs;
+  final List<ChatMessageEntity> _cacheChatList = [];
+  final RxList<ChatMessageViewModel> viewChatList =
+      <ChatMessageViewModel>[].obs;
   final TextEditingController textController = TextEditingController();
 
   final String chatRoomId;
 
-  ChatRoomController({required this.chatRoomId});
+  final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
+
+  ChatRoomController({
+    required this.chatRoomId,
+    required this.loadChatRoomMessageUseCase,
+  });
 
   @override
   void onInit() {
-    chats.assignAll(_getChatList());
+    _loadChatRoomMessages();
     super.onInit();
   }
 
-  void sendChat(String comment) {
+  Future<void> _loadChatRoomMessages() async {
+    //TODO : 정적 데이터 삭제
+    final messages = await loadChatRoomMessageUseCase.call(
+      chatRoomPublicId: chatRoomId,
+      cursor: 0,
+      size: 20,
+    );
+    _cacheChatList.assignAll(messages);
+    viewChatList.assignAll(
+      _cacheChatList.map(
+        (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+      ),
+    );
+  }
+
+  void sendChat(String content) {
     //TODO : 채팅 전송 및, 채팅 리스트에 대화 내역 추가
     textController.clear();
-    chats.add((comment: comment, isMe: true));
+    //TODO : 전송 방식 또는 data 정의가 되면 필드 추가 및 정적 데이터 삭제
+    viewChatList.add(
+      ChatMessageViewModel(
+        messageType: "TEXT",
+        content: content,
+        createdAt: DateTime.now(),
+        isMe: true,
+        profileImageKey: null,
+      ),
+    );
   }
 
   void showQuitAlert() {
@@ -40,13 +74,3 @@ class ChatRoomController extends GetxController {
     );
   }
 }
-
-List<Chat> _getChatList() => <Chat>[
-  (
-    comment: "안녕하세요 UI/UX에 관심이 많으신 것 같아서 연락드려요! 혹시 조금만 이야기 가능할까요?",
-    isMe: true,
-  ),
-  (comment: "네 당연히 가능하죠! 근데 제가 지금은 좀 바빠서 이따 다시 연락드려도 괜찮으실까요?", isMe: false),
-];
-
-typedef Chat = ({String comment, bool isMe});

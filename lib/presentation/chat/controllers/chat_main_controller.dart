@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
+import 'package:ondo/core/router/bindings/chat_room_binding.dart';
 import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
-import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 
 class ChatMainController extends GetxController {
@@ -15,6 +15,7 @@ class ChatMainController extends GetxController {
   //TODO : error 객체 정의 및 error 처리 로직 추가
   final RxString error = "".obs;
 
+  ///채팅 관련 usecase들
   final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
   final BlockChatRoomUseCase blockChatRoomUseCase;
   final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;
@@ -95,15 +96,9 @@ class ChatMainController extends GetxController {
   void enterChatRoom(int index) {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
     final roomId = viewChatRoomList[index].roomId;
-    Get.put<ChatRoomController>(
-      ChatRoomController(chatRoomId: roomId),
-      tag: roomId,
-    );
-    Get.to(
-      ChatRoomScreen(
-        roomId: roomId,
-      ),
-    );
+    ChatRoomBinding(chatRoomId: roomId).dependencies();
+    //TODO : route 정의 이후에 방식 변경
+    Get.to(ChatRoomScreen(roomId: roomId));
   }
 
   Future<void> blockingChat(int index) async {

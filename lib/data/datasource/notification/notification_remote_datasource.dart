@@ -9,7 +9,7 @@ class NotificationRemoteDatasource {
 
   NotificationRemoteDatasource({required this.client});
 
-  Future<Map?> loadMyNotificationList(BaseListRequestModel model) async {
+  Future<Map?> loadMyNotificationList(ListRequestModel model) async {
     final log = ApiConstants(logName: "내 알림 목록");
 
     try {

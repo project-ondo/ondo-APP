@@ -37,16 +37,16 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     width: double.maxFinite,
     color: AppColors.background,
     child: Obx(
-      () => controller.chats.isNotEmpty ? _chatList() : _noChatIcon(),
+      () => controller.viewChatList.isNotEmpty ? _chatList() : _noChatIcon(),
     ),
   );
 
   Widget _chatList() => ListView.builder(
     itemBuilder: (context, index) {
-      final chat = controller.chats[index];
-      return chat.isMe ? _myChat(chat.comment) : _otherChat(chat.comment);
+      final chat = controller.viewChatList[index];
+      return chat.isMe ? _myChat(chat.content) : _otherChat(chat.content);
     },
-    itemCount: controller.chats.length,
+    itemCount: controller.viewChatList.length,
   );
 
   Widget _myChat(String text) => Row(
@@ -72,11 +72,6 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
 
   Widget _noChatIcon() => Column(
     children: [
-      Placeholder(
-        child: SvgPicture.asset(
-          AppIcon.message.path,
-        ),
-      ),
       Spacer(),
       Image.asset(AppIcon.message.path),
       Text(

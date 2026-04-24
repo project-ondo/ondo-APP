@@ -15,6 +15,7 @@ class ChatMainController extends GetxController {
   //TODO : error 객체 정의 및 error 처리 로직 추가
   final RxString error = "".obs;
 
+  ///채팅 관련 usecase들
   final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
   final BlockChatRoomUseCase blockChatRoomUseCase;
   final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;

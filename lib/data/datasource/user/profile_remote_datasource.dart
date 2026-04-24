@@ -18,6 +18,7 @@ class ProfileRemoteDatasource {
       Uri.parse('${ApiConstants.users}/my/profile'),
     );
 
+    jsonDecode(res.body);
     log.statusLog(res.statusCode);
 
     try {
@@ -51,6 +52,8 @@ class ProfileRemoteDatasource {
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(model.toJson()),
     );
+
+    jsonDecode(res.body);
     log.statusLog(res.statusCode);
 
     try {
@@ -101,6 +104,7 @@ class ProfileRemoteDatasource {
       Uri.parse('${ApiConstants.users}/my'),
     );
 
+    jsonDecode(res.body);
     log.statusLog(res.statusCode);
 
     try {

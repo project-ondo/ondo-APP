@@ -1,6 +1,8 @@
 import 'package:ondo/data/models/base/request/base_list_request_model.dart';
+import 'package:ondo/data/models/chat/request/chat_message_list_request_model.dart';
 import 'package:ondo/data/models/chat/response/chat_model.dart';
 import 'package:ondo/domain/entities/chat/chat_entity.dart';
+import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 import 'package:ondo/domain/repositories/chat/chat_repository.dart';
 
 import '../../datasource/chat/chat_remote_datasource.dart';
@@ -12,7 +14,7 @@ class ChatRepositoryImpl extends ChatRepository {
 
   @override
   Future<List<ChatEntity>> loadMyChatRoomList(int size, int page) async {
-    final model = BaseListRequestModel(size: size, page: page);
+    final model = ListRequestModel(size: size, page: page);
 
     final json = await remoteDatasource.loadMyChatRoomList(model);
 
@@ -42,5 +44,27 @@ class ChatRepositoryImpl extends ChatRepository {
   @override
   Future<bool> cancelBlockChatRoom(String chatRoomPublicId) async {
     return await remoteDatasource.cancelBlockChatRoom(chatRoomPublicId);
+  }
+
+  @override
+  Future<List<ChatMessageEntity>> loadChatRoomMessages(
+    String chatRoomPublicId,
+    int cursor,
+    int size,
+  ) async {
+    final model = ChatMessageListRequestModel(size: size, cursor: cursor);
+    final json = await remoteDatasource.loadChatRoomMessages(
+      chatRoomPublicId,
+      model,
+    );
+
+    if (json == null) return [];
+
+    return (json["items"] as List?)
+            ?.map(
+              (e) => ChatMessageEntity.fromJsonChatMessageModel(e),
+            )
+            .toList() ??
+        [];
   }
 }

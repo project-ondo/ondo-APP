@@ -31,7 +31,8 @@ class ApiConstants {
 
   void statusLog(int code) => log("$logName 서버 연결 상태 : $code");
 
-  void successLog(bool success) => log("$logName 서버 성공 여부 : $success");
+  void successLog(bool? success) =>
+      log("$logName 서버 성공 여부 : ${success == true}");
 
   void messageLog(String? message) => log("$logName 서버 메세지 : $message");
 }

@@ -13,7 +13,6 @@ import 'package:ondo/presentation/profile/controllers/my_profile_controller.dart
 class ProfileBinding extends Bindings {
   @override
   void dependencies() {
-    /// AuthClient가 없으면 등록 (NavigationBinding에서 등록되어 있으면 재사용)
     if (!Get.isRegistered<AuthLocalDatasource>()) {
       Get.lazyPut<AuthLocalDatasource>(
             () => AuthLocalDatasourceImpl(),
@@ -46,9 +45,12 @@ class ProfileBinding extends Bindings {
       ),
     );
 
-    /// LogoutUseCase 등록
+    /// LogoutUseCase 등록 (localDatasource 주입)
     Get.lazyPut<LogoutUseCase>(
-          () => LogoutUseCase(repository: Get.find<AuthRepository>()),
+          () => LogoutUseCase(
+        repository: Get.find<AuthRepository>(),
+        localDatasource: Get.find<AuthLocalDatasource>(),
+      ),
     );
 
     /// 프로필 관련 datasource 등록

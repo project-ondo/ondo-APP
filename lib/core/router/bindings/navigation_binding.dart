@@ -3,6 +3,7 @@ import 'package:ondo/core/env.dart';
 import 'package:ondo/core/router/bindings/chat_binding.dart';
 import 'package:ondo/core/router/bindings/community_binding.dart';
 import 'package:ondo/core/router/bindings/home_binding.dart';
+import 'package:ondo/core/router/bindings/profile_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/core/router/bindings/notification_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
@@ -37,13 +38,13 @@ class NavigationBinding extends Bindings {
       fenix: true,
     );
 
-    ///전 화면 공통 controller 등록
+    /// 전 화면 공통 controller 등록
     Get.lazyPut<NavigationController>(() => NavigationController());
     NotificationBinding().dependencies();
     Get.lazyPut<MainTopBarSearchController>(() => MainTopBarSearchController());
     Get.lazyPut(() => PostController());
 
-    ///user 관련 dataSource, repository 등록
+    /// user 관련 dataSource, repository 등록
     Get.lazyPut<UserRemoteDatasource>(
       () => UserRemoteDatasource(client: Get.find<AuthClient>()),
     );
@@ -53,16 +54,15 @@ class NavigationBinding extends Bindings {
       ),
     );
 
-    ///user 검색 usecase 등록
+    /// user 검색 usecase 등록
     Get.lazyPut(
       () => UserSearchUseCase(repository: Get.find<UserRepositoryImpl>()),
     );
 
-    //TODO : 게시물 관련 api 등록
-
-    ///각 화면 Binding
+    /// 각 화면 Binding
     HomeBinding().dependencies();
     CommunityBinding().dependencies();
     ChatBinding().dependencies();
+    ProfileBinding().dependencies();
   }
 }

@@ -73,4 +73,17 @@ class ChatRepositoryImpl extends ChatRepository {
         .map((e) => ChatMessageEntity.fromJsonChatMessageModel(e))
         .toList();
   }
+
+  @override
+  Future<bool> readChatMessage(
+    String chatRoomPublicId,
+    num lastReadMessageId,
+  ) async {
+    final res = await remoteDatasource.readChatMessage(
+      chatRoomPublicId,
+      lastReadMessageId,
+    );
+
+    return res;
+  }
 }

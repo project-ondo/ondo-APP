@@ -90,4 +90,17 @@ class ChatRepositoryImpl extends ChatRepository {
 
     return res;
   }
+
+  @override
+  Future<bool> readChatMessage(
+    String chatRoomPublicId,
+    num lastReadMessageId,
+  ) async {
+    final res = await remoteDatasource.readChatMessage(
+      chatRoomPublicId,
+      lastReadMessageId,
+    );
+
+    return res;
+  }
 }

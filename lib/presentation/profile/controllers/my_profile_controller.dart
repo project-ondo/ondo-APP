@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
 import 'package:ondo/domain/usecases/auth/logout_usecase.dart';
@@ -50,9 +49,6 @@ class MyProfileController extends GetxController {
     try {
       isLoading.value = true;
       await deleteAccountUseCase();
-      await profileRemoteDatasource.deleteAccount();
-      final localDatasource = AuthLocalDatasourceImpl();
-      await localDatasource.deleteAll();
       return true;
     } catch (e, s) {
       debugPrint('Failed to delete account: $e\n$s');

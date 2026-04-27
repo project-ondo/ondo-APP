@@ -23,7 +23,6 @@ class _SettingScreenState extends State<SettingScreen> {
   bool isVibrationState = false;
   bool isSoundState = false;
   bool isOnLine = false;
-  bool isOptions = false;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +53,6 @@ class _SettingScreenState extends State<SettingScreen> {
                     }),
                   ),
                   AppGap.v24,
-                  //진동알람
                   BuildCustomSwitch(
                     name: 'ㄴ 진동알람',
                     value: isVibrationState,
@@ -63,7 +61,6 @@ class _SettingScreenState extends State<SettingScreen> {
                     }),
                   ),
                   AppGap.v16,
-                  //소리알람
                   BuildCustomSwitch(
                     name: 'ㄴ 소리알람',
                     value: isSoundState,
@@ -72,7 +69,6 @@ class _SettingScreenState extends State<SettingScreen> {
                     }),
                   ),
                   AppGap.v24,
-                  //온라인 표시
                   BuildCustomSwitch(
                     name: '다른 사람에게 온라인 표시',
                     value: isOnLine,

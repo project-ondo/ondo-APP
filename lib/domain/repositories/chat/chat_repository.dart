@@ -18,4 +18,6 @@ abstract class ChatRepository {
   Future<bool> cancelBlockChatRoom(String chatRoomPublicId);
 
   Future<bool> readChatMessage(String chatRoomPublicId, int lastReadMessageId);
+
+  Future<bool> deleteChatRoom(String chatRoomPublicId);
 }

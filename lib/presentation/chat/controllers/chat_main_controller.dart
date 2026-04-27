@@ -6,7 +6,7 @@ import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 
 class ChatMainController extends GetxController {
   final List<String> tags = <String>[].obs;
-  final Set<String> selectTagList = <String>{};
+  final RxSet<String> selectTagList = <String>{}.obs;
   final List<ChatEntity> _cacheChatRoomList = <ChatEntity>[];
   final RxList<ChatEntity> viewChatRoomList = <ChatEntity>[].obs;
 
@@ -70,13 +70,16 @@ class ChatMainController extends GetxController {
   void enterChatRoom(int index) {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
     final roomId = viewChatRoomList[index].roomId;
-    Get.put<ChatRoomController>(
-      ChatRoomController(chatRoomId: roomId),
-      tag: roomId,
-    );
+    //TODO : Get.to 접근 보다는 GoRoute 기법 활용
     Get.to(
       ChatRoomScreen(
         roomId: roomId,
+      ),
+      binding: BindingsBuilder(
+        () => Get.put<ChatRoomController>(
+          ChatRoomController(chatRoomId: roomId),
+          tag: roomId,
+        ),
       ),
     );
   }
@@ -91,11 +94,3 @@ List<String> _getTags() => [
   "공부인증",
   "김유찬",
 ];
-
-typedef ChatRoomInfo = ({
-  bool isBookmark,
-  String name,
-  Duration lastChatAt,
-  String lastChat,
-  int newChatCount,
-});

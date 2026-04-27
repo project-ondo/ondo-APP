@@ -13,7 +13,6 @@ class ChatInputField extends GetView<ChatRoomController> {
   final String roomId;
 
   @override
-  // TODO: implement tag
   String? get tag => roomId;
 
   @override

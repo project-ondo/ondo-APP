@@ -34,16 +34,11 @@ class MyProfileController extends GetxController {
     }
   }
 
+  /// refreshToken 분기 로직은 LogoutUseCase에서 처리
+  /// 네비게이션은 Screen에서 처리 (context.go)
   Future<void> logout(BuildContext context) async {
     try {
-      final localDatasource = AuthLocalDatasourceImpl();
-      final refreshToken = await localDatasource.getRefreshToken();
-
-      if (refreshToken != null) {
-        await logoutUseCase(refreshToken);
-      } else {
-        await localDatasource.deleteAll();
-      }
+      await logoutUseCase();
     } catch (e, s) {
       debugPrint('Failed to logout: $e\n$s');
     }

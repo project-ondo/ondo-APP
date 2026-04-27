@@ -103,4 +103,10 @@ class ChatRepositoryImpl extends ChatRepository {
 
     return res;
   }
+
+  @override
+  Future<bool> deleteChatRoom(String chatRoomPublicId) async {
+    final res = await remoteDatasource.deleteChatRoom(chatRoomPublicId);
+    return res;
+  }
 }

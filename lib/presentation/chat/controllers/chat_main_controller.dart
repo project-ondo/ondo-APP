@@ -4,6 +4,7 @@ import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
+import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 
 class ChatMainController extends GetxController {
@@ -19,11 +20,13 @@ class ChatMainController extends GetxController {
   final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
   final BlockChatRoomUseCase blockChatRoomUseCase;
   final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;
+  final ReadChatMessageUseCase readChatMessageUseCase;
 
   ChatMainController({
     required this.loadChatRoomsUseCase,
     required this.blockChatRoomUseCase,
     required this.cancelBlockChatRoomUseCase,
+    required this.readChatMessageUseCase,
   });
 
   @override
@@ -51,6 +54,19 @@ class ChatMainController extends GetxController {
     final success = await blockChatRoomUseCase.call(chatRoomPublicId);
     if (success != true) {
       error.value = "BLOCK_FAILED";
+    }
+  }
+
+  Future<void> _readChatMessage(
+    String chatRoomPublicId,
+    num lastReadMessageId,
+  ) async {
+    final success = await readChatMessageUseCase.call(
+      chatRoomPublicId,
+      lastReadMessageId,
+    );
+    if (success != true) {
+      error.value = "READ_FAILED";
     }
   }
 
@@ -93,12 +109,20 @@ class ChatMainController extends GetxController {
     _filterChatRooms();
   }
 
-  void enterChatRoom(int index) {
+  Future<void> enterChatRoom(int index) async {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
     final roomId = viewChatRoomList[index].roomId;
-    ChatRoomBinding(chatRoomId: roomId).dependencies();
     //TODO : route 정의 이후에 방식 변경
-    Get.to(ChatRoomScreen(roomId: roomId));
+    final lastMessageId = await Get.to<num>(
+      ChatRoomScreen(roomId: roomId),
+      binding: BindingsBuilder(
+        () => ChatRoomBinding(chatRoomId: roomId).dependencies(),
+      ),
+    );
+
+    if (lastMessageId == null) return;
+
+    _readChatMessage(roomId, lastMessageId);
   }
 
   Future<void> blockingChat(int index) async {

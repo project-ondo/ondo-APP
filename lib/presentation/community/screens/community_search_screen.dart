@@ -52,6 +52,7 @@ class _PostResults extends BasePostGrid {
           bookmarks: post.bookmarks,
           favorites: post.favoites,
           createAt: post.createAt,
+          isMy: false,
         );
       });
     });

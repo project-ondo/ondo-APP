@@ -21,6 +21,7 @@ class CommunityRelatedPostList extends GetView<PostViewController> {
             bookmarks: post.bookmarks,
             favorites: post.favoites,
             createAt: post.createAt,
+            isMy: false,
           );
         }).toList(),
       ),

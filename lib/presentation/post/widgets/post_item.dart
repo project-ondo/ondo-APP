@@ -10,6 +10,7 @@ import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 class PostItem extends GetView<PostController> {
   final int postId;
+  final bool isMy;
   final List<String> skills;
   final String title;
   final String author;
@@ -24,6 +25,7 @@ class PostItem extends GetView<PostController> {
   const PostItem({
     super.key,
     required this.postId,
+    required this.isMy,
     required this.skills,
     required this.title,
     required this.author,
@@ -40,7 +42,7 @@ class PostItem extends GetView<PostController> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        controller.enterPostDetail(true, postId);
+        controller.enterPostDetail(isMy, postId);
       },
       child: Container(
         padding: AppPadding.card,

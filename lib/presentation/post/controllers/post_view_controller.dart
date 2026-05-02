@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
 
@@ -37,7 +38,7 @@ class PostViewController extends GetxController {
   void onInit() {
     super.onInit();
 
-    print('[PostViewController] onInit - postId: $postId');
+    debugPrint('[PostViewController] onInit - postId: $postId');
 
     fetchPostDetail(postId);
   }
@@ -47,13 +48,13 @@ class PostViewController extends GetxController {
     errorMessage.value = '';
 
     try {
-      print('[PostViewController] API 요청 시작 - postId: $postId');
+      debugPrint('[PostViewController] API 요청 시작 - postId: $postId');
 
       final result = await _useCase(postId);
 
       post.value = result;
 
-      print(
+      debugPrint(
         '[PostViewController] API 응답 성공 - title: ${result.title}',
       );
 
@@ -65,7 +66,7 @@ class PostViewController extends GetxController {
       heartTotal.value = result.likeCount;
       commentCount.value = result.commentCount;
     } catch (e) {
-      print('[PostViewController] API 요청 실패 - error: $e');
+      debugPrint('[PostViewController] API 요청 실패 - error: $e');
       errorMessage.value = e.toString();
     } finally {
       isLoading.value = false;

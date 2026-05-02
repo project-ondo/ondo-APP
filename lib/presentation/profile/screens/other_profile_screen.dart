@@ -45,6 +45,7 @@ class OtherProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<PostItem> testPostItemList = mockPostData.map((data) {
       return PostItem(
+        postId: data['postId'],
         skills: List<String>.from(data['skills']),
         title: data['title'],
         author: data['author'],

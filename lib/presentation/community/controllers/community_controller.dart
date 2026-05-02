@@ -98,6 +98,7 @@ List<String> _getTags() => [
 List<PostInfo> _getPosts() => [
   for (int i = 0; i < 8; i++) ...{
     (
+    postId: i + 1,
       name: "김유찬",
       title: "요즘 UI UX",
       skills: ["UI/UX", "FrontEnd"],

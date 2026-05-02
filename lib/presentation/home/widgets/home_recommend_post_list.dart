@@ -17,6 +17,7 @@ class HomeRecommendPostList extends BasePostGrid {
     return _controller.viewPostList
         .map(
           (post) => PostItem(
+            postId: post.postId,
             skills: post.tags,
             title: post.title,
             author: post.authorName,

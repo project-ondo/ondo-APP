@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
@@ -10,6 +9,7 @@ import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 class PostItem extends GetView<PostController> {
+  final int postId;
   final List<String> skills;
   final String title;
   final String author;
@@ -23,6 +23,7 @@ class PostItem extends GetView<PostController> {
 
   const PostItem({
     super.key,
+    required this.postId,
     required this.skills,
     required this.title,
     required this.author,
@@ -39,8 +40,7 @@ class PostItem extends GetView<PostController> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        //TODO : 해당 Post가 나의 Post인지, 타인의 Post인지 구분 필요, Date Model 정의 요구됨
-        controller.enterPostDetail(true);
+        controller.enterPostDetail(true, postId);
       },
       child: Container(
         padding: AppPadding.card,
@@ -54,10 +54,8 @@ class PostItem extends GetView<PostController> {
           children: [
             _skillList(),
             Spacer(flex: AppSpacing.s12.toInt()),
-
             _content(),
             Spacer(flex: AppSpacing.s16.toInt()),
-
             _bottomContent(),
           ],
         ),
@@ -128,7 +126,6 @@ class PostItem extends GetView<PostController> {
           initialIsSelected: initialBookmark,
         ),
         Spacer(),
-
         Text(
           AppDateUtils.timeAgo(createAt),
           style: AppTextStyles.caption(textColor: AppColors.gray50),
@@ -136,5 +133,4 @@ class PostItem extends GetView<PostController> {
       ],
     );
   }
-
 }

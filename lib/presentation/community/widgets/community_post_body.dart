@@ -13,14 +13,16 @@ class CommunityPostBody extends GetView<PostViewController> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _top(),
-        AppGap.v16,
-        _content(),
-        AppGap.v16,
-        _buttonList(),
-      ],
+    return Obx(
+          () => Column(
+        children: [
+          _top(),
+          AppGap.v16,
+          _content(),
+          AppGap.v16,
+          _buttonList(),
+        ],
+      ),
     );
   }
 
@@ -38,8 +40,10 @@ class CommunityPostBody extends GetView<PostViewController> {
 
   Widget _content() => Text(
     controller.bodyText.value,
-    style: AppTextStyles.textMedium(textColor: AppColors.gray90),
-    textAlign: .start,
+    style: AppTextStyles.textMedium(
+      textColor: AppColors.gray90,
+    ),
+    textAlign: TextAlign.start,
   );
 
   Widget _buttonList() => Row(
@@ -50,24 +54,27 @@ class CommunityPostBody extends GetView<PostViewController> {
         totalStyle: AppTextStyles.textMedium(),
         imagePath: AppIcon.heart.path,
         action: (isSelect, total) {
-          controller.selectHeart = isSelect;
-          controller.heartTotal = total;
+          controller.selectHeart.value = isSelect;
+          controller.heartTotal.value = total;
         },
         activeColor: AppColors.red,
-        total: controller.heartTotal,
-        initialIsSelected: controller.selectHeart,
+        total: controller.heartTotal.value,
+        initialIsSelected:
+        controller.selectHeart.value,
       ),
       CustomIconButton(
         iconSize: AppSpacing.s32,
         totalStyle: AppTextStyles.textMedium(),
         imagePath: AppIcon.bookmark.path,
         action: (isSelect, total) {
-          controller.selectBookMark = isSelect;
-          controller.bookMarkTotal = total;
+          controller.selectBookMark.value =
+              isSelect;
+          controller.bookMarkTotal.value = total;
         },
         activeColor: AppColors.yellow,
-        total: controller.bookMarkTotal,
-        initialIsSelected: controller.selectBookMark,
+        total: controller.bookMarkTotal.value,
+        initialIsSelected:
+        controller.selectBookMark.value,
       ),
     ],
   );

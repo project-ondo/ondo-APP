@@ -42,7 +42,7 @@ class PostItem extends GetView<PostController> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        controller.enterPostDetail(isMy, postId);
+        controller.enterPostDetail(context, isMy, postId);
       },
       child: Container(
         padding: AppPadding.card,

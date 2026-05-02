@@ -1,4 +1,4 @@
-import 'package:ondo/data/datasource/%20post/post_remote_datasource.dart';
+import 'package:ondo/data/datasource/post/post_remote_datasource.dart';
 import '../../models/post/response/post_detail_model.dart';
 import '../../../domain/repositories/post/post_repository.dart';
 

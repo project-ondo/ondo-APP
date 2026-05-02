@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:ondo/data/datasource/%20post/post_remote_datasource.dart';
+import 'package:ondo/data/datasource/post/post_remote_datasource.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
 import '../../../data/models/post/response/post_detail_model.dart';
 import '../../../data/network/clients/auth_client.dart';

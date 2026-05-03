@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,8 +20,15 @@ class EditProfileController extends GetxController {
   final selectedInterests = <String>{}.obs;
 
   final List<String> tags = [
-    'FrontEnd', 'BackEnd', 'AI', 'devops',
-    '기획', 'UI/UX', 'Android', 'ios', 'Cloud',
+    'FrontEnd',
+    'BackEnd',
+    'AI',
+    'devops',
+    '기획',
+    'UI/UX',
+    'Android',
+    'ios',
+    'Cloud',
   ];
 
   // build() 밖에서 관리 → 리빌드 시 초기화 방지

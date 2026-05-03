@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
@@ -30,7 +29,6 @@ class MyProfileController extends GetxController {
       isLoading.value = true;
       profile.value = await profileRemoteDatasource.getMyProfile();
 
-      // 프로필 이미지 URL 변환
       final imageKey = profile.value?.profileImageKey;
       if (imageKey != null && imageKey.isNotEmpty) {
         profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
@@ -51,8 +49,7 @@ class MyProfileController extends GetxController {
   /// 네비게이션은 Screen에서 처리 (context.go)
   Future<void> logout(BuildContext context) async {
     try {
-      final localDatasource = AuthLocalDatasourceImpl();
-      await localDatasource.deleteAll();
+      await logoutUseCase();
     } catch (e, s) {
       debugPrint('Failed to logout: $e\n$s');
     }
@@ -63,10 +60,7 @@ class MyProfileController extends GetxController {
 
     try {
       isLoading.value = true;
-      await profileRemoteDatasource.deleteAccount();
       await deleteAccountUseCase();
-      final localDatasource = AuthLocalDatasourceImpl();
-      await localDatasource.deleteAll();
       return true;
     } catch (e, s) {
       debugPrint('Failed to delete account: $e\n$s');

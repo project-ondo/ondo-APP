@@ -33,12 +33,14 @@ class EditProfileScreen extends GetView<EditProfileController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Obx(() => ProfileImageSection(
-                        imagePath: controller.selectedImage.value?.path,
-                        imageUrl: controller.profileImageUrl.value,
-                        onPickImage: controller.pickImage,
-                        onRemoveImage: controller.removeImage,
-                      )),
+                      Obx(
+                        () => ProfileImageSection(
+                          imagePath: controller.selectedImage.value?.path,
+                          imageUrl: controller.profileImageUrl.value,
+                          onPickImage: controller.pickImage,
+                          onRemoveImage: controller.removeImage,
+                        ),
+                      ),
                       AppGap.v24,
 
                       LabelTextField(
@@ -57,20 +59,24 @@ class EditProfileScreen extends GetView<EditProfileController> {
                       ),
                       AppGap.v24,
 
-                      Obx(() => ProfileTagSection(
-                        title: '전공',
-                        tags: controller.tags,
-                        selectedTags: {controller.selectedMajor.value},
-                        onTagToggle: (tag) => controller.selectMajor(tag),
-                      )),
+                      Obx(
+                        () => ProfileTagSection(
+                          title: '전공',
+                          tags: controller.tags,
+                          selectedTags: {controller.selectedMajor.value},
+                          onTagToggle: (tag) => controller.selectMajor(tag),
+                        ),
+                      ),
                       AppGap.v24,
 
-                      Obx(() => ProfileTagSection(
-                        title: '관심분야',
-                        tags: controller.tags,
-                        selectedTags: controller.selectedInterests.toSet(),
-                        onTagToggle: (tag) => controller.toggleInterest(tag),
-                      )),
+                      Obx(
+                        () => ProfileTagSection(
+                          title: '관심분야',
+                          tags: controller.tags,
+                          selectedTags: controller.selectedInterests.toSet(),
+                          onTagToggle: (tag) => controller.toggleInterest(tag),
+                        ),
+                      ),
 
                       AppGap.v24,
                     ],
@@ -78,22 +84,24 @@ class EditProfileScreen extends GetView<EditProfileController> {
                 ),
               ),
             ),
-            Obx(() => Padding(
-              padding: AppPadding.settingSession,
-              child: CustomButton(
-                text: '변경 완료',
-                variant: ButtonVariant.primary,
-                enabled: !controller.isLoading.value,
-                onPressed: controller.isLoading.value
-                    ? null
-                    : () async {
-                  final success = await controller.saveProfile();
-                  if (success && context.mounted) {
-                    context.pop();
-                  }
-                },
+            Obx(
+              () => Padding(
+                padding: AppPadding.settingSession,
+                child: CustomButton(
+                  text: '변경 완료',
+                  variant: ButtonVariant.primary,
+                  enabled: !controller.isLoading.value,
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : () async {
+                          final success = await controller.saveProfile();
+                          if (success && context.mounted) {
+                            context.pop();
+                          }
+                        },
+                ),
               ),
-            )),
+            ),
           ],
         ),
       ),

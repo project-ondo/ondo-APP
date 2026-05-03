@@ -16,13 +16,6 @@ class EditProfileScreen extends GetView<EditProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    final nickNameController = TextEditingController(
-      text: controller.displayName.value,
-    );
-    final introductionController = TextEditingController(
-      text: controller.bio.value,
-    );
-
     return SafeArea(
       child: BaseScaffold(
         resizeToAvoidBottomInset: true,
@@ -50,14 +43,14 @@ class EditProfileScreen extends GetView<EditProfileController> {
 
                       LabelTextField(
                         label: '닉네임',
-                        controller: nickNameController,
+                        controller: controller.nickNameController,
                         hintText: '닉네임을 입력해주세요',
                       ),
                       AppGap.v24,
 
                       LabelTextField(
                         label: '소개글',
-                        controller: introductionController,
+                        controller: controller.introductionController,
                         hintText: '간단히 소개글을 입력해주세요',
                         minLines: 4,
                         maxLines: 4,
@@ -94,10 +87,7 @@ class EditProfileScreen extends GetView<EditProfileController> {
                 onPressed: controller.isLoading.value
                     ? null
                     : () async {
-                  final success = await controller.saveProfile(
-                    displayName: nickNameController.text.trim(),
-                    bio: introductionController.text.trim(),
-                  );
+                  final success = await controller.saveProfile();
                   if (success && context.mounted) {
                     context.pop();
                   }

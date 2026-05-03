@@ -13,7 +13,6 @@ class ChatBinding extends Bindings {
     Get.lazyPut<ChatRemoteDatasource>(
       () => ChatRemoteDatasource(client: Get.find<AuthClient>()),
     );
-
     ///chat 관련 repository 등록
     Get.lazyPut<ChatRepositoryImpl>(
       () => ChatRepositoryImpl(

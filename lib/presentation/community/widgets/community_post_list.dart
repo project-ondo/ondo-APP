@@ -26,7 +26,7 @@ class CommunityPostList extends GetView<CommunityController> {
               createAt: post.createAt,
               initialBookmark: post.isBookmark,
               initialFavorite: post.isFavorite,
-              isMy: false,
+              isMy:true,
             );
           },
         ),

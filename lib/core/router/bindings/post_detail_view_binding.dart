@@ -4,6 +4,7 @@ import '../../../data/datasource/post/post_remote_datasource.dart';
 import '../../../data/network/clients/auth_client.dart';
 import '../../../data/repositories/post/post_repository_impl.dart';
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
+import '../../../domain/usecases/post/update_post_usecase.dart';
 import '../../../presentation/post/controllers/post_view_controller.dart';
 
 class PostBinding extends Bindings {
@@ -31,10 +32,17 @@ class PostBinding extends Bindings {
       ),
     );
 
+    Get.lazyPut<UpdatePostUseCase>(
+          () => UpdatePostUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
+
     Get.put<PostViewController>(
       PostViewController(
         postId: postId,
         useCase: Get.find<GetPostDetailUseCase>(),
+        updateUseCase: Get.find<UpdatePostUseCase>(),
       ),
     );
   }

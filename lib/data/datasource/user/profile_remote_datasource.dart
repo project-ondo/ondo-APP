@@ -18,7 +18,6 @@ class ProfileRemoteDatasource {
       Uri.parse('${ApiConstants.users}/my/profile'),
     );
 
-    jsonDecode(res.body);
     log.statusLog(res.statusCode);
 
     try {
@@ -30,11 +29,11 @@ class ProfileRemoteDatasource {
         throw Exception(body['message'] ?? '내 프로필 조회 실패');
       }
 
-    final responseModel = UserProfileResponseModel.fromJson(body);
+      final responseModel = UserProfileResponseModel.fromJson(body);
 
-    if (responseModel.data == null) {
-      throw Exception('프로필 데이터가 없습니다.');
-    }
+      if (responseModel.data == null) {
+        throw Exception('프로필 데이터가 없습니다.');
+      }
 
       return responseModel.data!;
     } catch (e) {
@@ -53,7 +52,6 @@ class ProfileRemoteDatasource {
       body: jsonEncode(model.toJson()),
     );
 
-    jsonDecode(res.body);
     log.statusLog(res.statusCode);
 
     try {

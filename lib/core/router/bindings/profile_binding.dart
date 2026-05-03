@@ -8,6 +8,7 @@ import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/auth/auth_repository_impl.dart';
 import 'package:ondo/domain/repositories/auth/auth_repository.dart';
 import 'package:ondo/domain/usecases/auth/logout_usecase.dart';
+import 'package:ondo/domain/usecases/user/delete_account_usecase.dart';
 import 'package:ondo/presentation/profile/controllers/my_profile_controller.dart';
 
 class ProfileBinding extends Bindings {
@@ -57,6 +58,13 @@ class ProfileBinding extends Bindings {
     Get.lazyPut<ProfileRemoteDatasource>(
           () => ProfileRemoteDatasource(client: Get.find<AuthClient>()),
       fenix: true,
+    );
+
+    /// DeleteAccountUseCase 등록
+    Get.lazyPut<DeleteAccountUseCase>(
+          () => DeleteAccountUseCase(
+        profileRemoteDatasource: Get.find<ProfileRemoteDatasource>(),
+      ),
     );
 
     /// Controller 등록

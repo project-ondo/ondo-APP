@@ -46,6 +46,7 @@ class MyProfileScreen extends GetView<MyProfileController> {
   Widget build(BuildContext context) {
     final List<PostItem> testPostItemList = mockPostData.map((data) {
       return PostItem(
+        postId: data['postId'] ?? 0,
         skills: List<String>.from(data['skills']),
         title: data['title'],
         author: data['author'],
@@ -54,6 +55,7 @@ class MyProfileScreen extends GetView<MyProfileController> {
         createAt: DateTime.now().subtract(
           Duration(minutes: data['createMinutes']),
         ),
+        isMy: false,
       );
     }).toList();
 

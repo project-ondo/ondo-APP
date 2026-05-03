@@ -7,6 +7,8 @@ import 'package:ondo/data/network/constants/api_constants.dart';
 abstract class PostRemoteDatasource {
   Future<PostDetailModel> getPostDetail(int postId);
   Future<void> updatePost(int postId, PostUpdateRequestModel model);
+  Future<void> likePost(int postId);
+  Future<void> unlikePost(int postId);
 }
 
 class PostRemoteDatasourceImpl implements PostRemoteDatasource {
@@ -39,6 +41,46 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
         Uri.parse('${ApiConstants.posts}/$postId'),
         headers: ApiConstants.baseHeader,
         body: jsonEncode(model.toJson()),
+      );
+      final body = jsonDecode(response.body);
+      log.statusLog(response.statusCode);
+      log.successLog(body['success'] ?? false);
+      log.messageLog(body['message']);
+      if (body['success'] != true) {
+        throw Exception(body['message']);
+      }
+    } catch (e) {
+      log.errorLog(e);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> likePost(int postId) async {
+    final log = ApiConstants(logName: '게시물 좋아요');
+    try {
+      final response = await _client.post(
+        Uri.parse('${ApiConstants.posts}/$postId/like'),
+      );
+      final body = jsonDecode(response.body);
+      log.statusLog(response.statusCode);
+      log.successLog(body['success'] ?? false);
+      log.messageLog(body['message']);
+      if (body['success'] != true) {
+        throw Exception(body['message']);
+      }
+    } catch (e) {
+      log.errorLog(e);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> unlikePost(int postId) async {
+    final log = ApiConstants(logName: '게시물 좋아요 취소');
+    try {
+      final response = await _client.delete(
+        Uri.parse('${ApiConstants.posts}/$postId/like'),
       );
       final body = jsonDecode(response.body);
       log.statusLog(response.statusCode);

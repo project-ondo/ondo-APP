@@ -16,4 +16,14 @@ class PostRepositoryImpl implements PostRepository {
   Future<void> updatePost(int postId, PostUpdateRequestModel model) {
     return _remoteDatasource.updatePost(postId, model);
   }
+
+  @override
+  Future<void> likePost(int postId) {
+    return _remoteDatasource.likePost(postId);
+  }
+
+  @override
+  Future<void> unlikePost(int postId) {
+    return _remoteDatasource.unlikePost(postId);
+  }
 }

@@ -52,8 +52,7 @@ class CommunityPostBody extends GetView<PostViewController> {
         totalStyle: AppTextStyles.textMedium(),
         imagePath: AppIcon.heart.path,
         action: (isSelect, total) {
-          controller.selectHeart.value = isSelect;
-          controller.heartTotal.value = total;
+          controller.toggleLike(isSelect);
         },
         activeColor: AppColors.red,
         total: controller.heartTotal.value,

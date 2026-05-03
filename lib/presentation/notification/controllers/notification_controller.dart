@@ -1,95 +1,58 @@
 import 'package:get/get.dart';
-import 'package:ondo/domain/notification/notification_entity.dart';
+import 'package:ondo/domain/entities/notification/notification_entity.dart';
 import 'package:ondo/domain/usecases/notification/load_my_notification_list_use_case.dart';
-import 'package:ondo/presentation/notification/states/notification_state.dart';
+import 'package:ondo/domain/usecases/notification/load_unread_notification_count_use_case.dart';
+import 'package:ondo/domain/usecases/notification/read_all_notification_use_case.dart';
 
 class NotificationController extends GetxController {
-  final List<NotificationEntity> _cacheNotificationList =
-      <NotificationEntity>[].obs;
   final RxList<NotificationEntity> viewNotificationList =
       <NotificationEntity>[].obs;
 
-  final LoadMyNotificationListUseCase loadMyNotificationListUseCase;
+  final RxInt newNotificationCount = 0.obs;
 
-  NotificationController({required this.loadMyNotificationListUseCase});
+  final LoadMyNotificationListUseCase loadMyNotificationListUseCase;
+  final LoadUnreadNotificationCountUseCase loadUnreadNotificationCountUseCase;
+  final ReadAllNotificationUseCase readAllNotificationUseCase;
+
+  NotificationController({
+    required this.loadMyNotificationListUseCase,
+    required this.loadUnreadNotificationCountUseCase,
+    required this.readAllNotificationUseCase,
+  });
 
   @override
   void onInit() {
-    loadMyNotificationList();
+    _loadMyNotificationList();
+    _loadUnreadNotificationCount();
     super.onInit();
   }
 
-  Future<void> loadMyNotificationList() async {
+  Future<void> _loadMyNotificationList() async {
     //TODO : 화면 연동 과정에서 범위 맞추기
-    _cacheNotificationList.assignAll(
+    viewNotificationList.assignAll(
       await loadMyNotificationListUseCase.call(size: 20, page: 0),
     );
-    viewNotificationList.assignAll(_cacheNotificationList);
+  }
+
+  Future<void> _loadUnreadNotificationCount() async {
+    newNotificationCount.value = await loadUnreadNotificationCountUseCase
+        .call();
+  }
+
+  Future<void> _readAllNotification() async {
+    await readAllNotificationUseCase.call();
+  }
+
+  Future<void> readAll() async {
+    await _readAllNotification();
+    viewNotificationList.assignAll(
+      viewNotificationList.map((e) => e.copyWith(read: true)),
+    );
+    newNotificationCount.value = 0;
   }
 
   void clear() {
-    viewNotificationList.clear();
+    //TODO : 읽은 알림 모두 삭제 api 개발
+    viewNotificationList.removeWhere((element) => element.read == true);
   }
 }
-
-extension DummyModel on NotificationController {
-  List<NotificationItem> getNotifications() => [
-    for (int i = 0; i < 3; i++) ...{
-      (
-        type: NotificationState.newComment,
-        comment: "김유찬: ㄹㅇ 다크 패턴은 진짜 법으로 좀 쳐야 함… 탈퇴 버튼 숨겨놓는 거 볼 때마다 정 떨어짐.",
-        sendAt: Duration(),
-        profileImg: null,
-      ),
-      (
-        type: NotificationState.newComment,
-        comment: "김유찬: UI 피로도가 ㄹㅈㄷ 도대체 왜 숨기는겨",
-        sendAt: Duration(),
-        profileImg: null,
-      ),
-      (
-        type: NotificationState.newComment,
-        comment: "김유찬: ㄹㅇ 다크 패턴은 진짜 법으로 좀 쳐야 함… 탈퇴 버튼 숨겨놓는 거 볼 때마다 정 떨어짐.",
-        sendAt: Duration(),
-        profileImg: null,
-      ),
-      (
-        type: NotificationState.newComment,
-        comment: "김유찬: 진짜 ㄹㅇ 계정 탈퇴 한번 하려면 이거하고 저거하고 귀찮아 죽겠음 진짜",
-        sendAt: Duration(),
-        profileImg: null,
-      ),
-      (
-        type: NotificationState.requestChat,
-        comment: "김유찬: 진짜 ㄹㅇ계정 탈퇴 한번 하려면 이거하고 저거하고 귀찮아 죽겠음 진짜",
-        sendAt: Duration(),
-        profileImg: null,
-      ),
-      (
-        type: NotificationState.reported,
-        comment: null,
-        sendAt: null,
-        profileImg: null,
-      ),
-      (
-        type: NotificationState.newReview,
-        comment: null,
-        sendAt: Duration(),
-        profileImg: null,
-      ),
-      (
-        type: NotificationState.overHeart,
-        comment: "요즘 UI UX",
-        sendAt: Duration(),
-        profileImg: null,
-      ),
-    },
-  ];
-}
-
-typedef NotificationItem = ({
-  NotificationState type,
-  String? comment,
-  String? profileImg,
-  Duration? sendAt,
-});

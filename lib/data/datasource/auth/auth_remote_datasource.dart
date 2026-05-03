@@ -17,11 +17,11 @@ class AuthRemoteDatasource {
   Future<void> sendEmailCode(String email) async {
     final log = ApiConstants(logName: '이메일 인증코드 발송');
     final model = EmailSendRequestModel(email: email);
-    final url = Uri.parse('$baseUrl/auth/email/send');
+    final url = Uri.parse("$baseUrl/auth/email/send");
 
     final response = await http.post(
       url,
-      headers: {'Content-Type': 'application/json'},
+      headers: {"Content-Type": "application/json"},
       body: jsonEncode(model.toJson()),
     );
 
@@ -39,9 +39,11 @@ class AuthRemoteDatasource {
       }
     }
 
-    final body = jsonDecode(response.body);
-    log.successLog(body['success'] ?? true);
-    log.messageLog(body['message'] ?? '');
+    try {
+      final body = jsonDecode(response.body);
+      log.successLog(body['success'] ?? true);
+      log.messageLog(body['message'] ?? '');
+    } catch (_) {}
   }
 
   Future<String> verifyEmailCode(String email, String code) async {
@@ -58,26 +60,30 @@ class AuthRemoteDatasource {
       throw Exception(AppStrings.emailVerifyFail);
     }
 
-    final responseModel = EmailVerifyResponseModel.fromJson(
-      jsonDecode(response.body),
-    );
+    try {
+      final responseModel = EmailVerifyResponseModel.fromJson(
+        jsonDecode(response.body),
+      );
 
-    if (!responseModel.success) {
-      throw Exception(responseModel.message);
+      if (!responseModel.success) {
+        throw Exception(responseModel.message);
+      }
+
+      final token = responseModel.data.verificationToken;
+      if (token.isEmpty) {
+        throw Exception(AppStrings.verificationTokenEmpty);
+      }
+
+      return token;
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception(AppStrings.emailVerifyFail);
     }
-
-    final token = responseModel.data.verificationToken;
-
-    if (token.isEmpty) {
-      throw Exception(AppStrings.verificationTokenEmpty);
-    }
-
-    return token;
   }
 
   Future<SignupResponseModel> signup(SignupRequestModel model) async {
     final log = ApiConstants(logName: '회원가입');
-    final url = Uri.parse('$baseUrl/auth/signup');
+    final url = Uri.parse("$baseUrl/auth/signup");
 
     final response = await http.post(
       url,
@@ -99,18 +105,23 @@ class AuthRemoteDatasource {
       }
     }
 
-    final responseModel = SignupResponseModel.fromJson(
-      jsonDecode(response.body),
-    );
+    try {
+      final responseModel = SignupResponseModel.fromJson(
+        jsonDecode(response.body),
+      );
 
-    log.successLog(responseModel.success);
-    log.messageLog(responseModel.message);
+      log.successLog(responseModel.success);
+      log.messageLog(responseModel.message);
 
-    if (!responseModel.success) {
-      throw Exception(responseModel.message);
+      if (!responseModel.success) {
+        throw Exception(responseModel.message);
+      }
+
+      return responseModel;
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception(AppStrings.signupFail);
     }
-
-    return responseModel;
   }
 
   Future<Map?> signIn(SignInRequestModel model) async {
@@ -124,7 +135,7 @@ class AuthRemoteDatasource {
       );
       final body = jsonDecode(res.body);
 
-      log.successLog(body['success']);
+      log.successLog(body['success'] == true);
       log.messageLog(body['message']);
 
       if (res.statusCode == 200 && body['success'] == true) {
@@ -150,7 +161,7 @@ class AuthRemoteDatasource {
 
       final body = jsonDecode(res.body);
 
-      log.successLog(body['success']);
+      log.successLog(body['success'] == true);
       log.messageLog(body['message']);
 
       if (res.statusCode == 200 && body['success'] == true) {

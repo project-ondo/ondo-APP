@@ -46,9 +46,12 @@ class ProfileBinding extends Bindings {
       ),
     );
 
-    /// LogoutUseCase 등록
+    /// LogoutUseCase 등록 (localDatasource 주입)
     Get.lazyPut<LogoutUseCase>(
-          () => LogoutUseCase(repository: Get.find<AuthRepository>()),
+          () => LogoutUseCase(
+        repository: Get.find<AuthRepository>(),
+        localDatasource: Get.find<AuthLocalDatasource>(),
+      ),
     );
 
     /// 프로필 관련 datasource 등록

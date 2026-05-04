@@ -63,7 +63,6 @@ class CommunityController extends GetxController {
       }
     } catch (e) {
       debugPrint('[CommunityController] 좋아요 토글 실패 - error: $e');
-      // 실패시 UI 원복
       final index = viewPosts.indexWhere((p) => p.postId == postId);
       if (index != -1) {
         viewPosts[index] = viewPosts[index].copyWith(

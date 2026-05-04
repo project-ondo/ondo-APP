@@ -4,7 +4,7 @@ class PostInfo {
   final String title;
   final List<String> skills;
   final int bookmarks;
-  final int favoites;
+  final int favorites;
   final DateTime createAt;
   final bool isFavorite;
   final bool isBookmark;
@@ -15,14 +15,14 @@ class PostInfo {
     required this.title,
     required this.skills,
     required this.bookmarks,
-    required this.favoites,
+    required this.favorites,
     required this.createAt,
     required this.isFavorite,
     required this.isBookmark,
   });
 
   PostInfo copyWith({
-    int? favoites,
+    int? favorites,
     bool? isFavorite,
   }) {
     return PostInfo(
@@ -31,7 +31,7 @@ class PostInfo {
       title: title,
       skills: skills,
       bookmarks: bookmarks,
-      favoites: favoites ?? this.favoites,
+      favorites: favorites ?? this.favorites,
       createAt: createAt,
       isFavorite: isFavorite ?? this.isFavorite,
       isBookmark: isBookmark,

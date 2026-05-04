@@ -9,20 +9,20 @@ import 'package:ondo/presentation/community/controllers/community_controller.dar
 class CommunityBinding extends Bindings {
   @override
   void dependencies() {
-    Get.put<PostRemoteDatasource>(
-      PostRemoteDatasourceImpl(Get.find<AuthClient>()),
+    Get.lazyPut<PostRemoteDatasource>(
+          () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
     );
-    Get.put<PostRepositoryImpl>(
-      PostRepositoryImpl(Get.find<PostRemoteDatasource>()),
+    Get.lazyPut<PostRepositoryImpl>(
+          () => PostRepositoryImpl(Get.find<PostRemoteDatasource>()),
     );
-    Get.put<LikePostUseCase>(
-      LikePostUseCase(Get.find<PostRepositoryImpl>()),
+    Get.lazyPut<LikePostUseCase>(
+          () => LikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
-    Get.put<UnlikePostUseCase>(
-      UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
+    Get.lazyPut<UnlikePostUseCase>(
+          () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
-    Get.put<CommunityController>(
-      CommunityController(
+    Get.lazyPut<CommunityController>(
+          () => CommunityController(
         likeUseCase: Get.find<LikePostUseCase>(),
         unlikeUseCase: Get.find<UnlikePostUseCase>(),
       ),

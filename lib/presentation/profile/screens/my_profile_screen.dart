@@ -121,7 +121,9 @@ class MyProfileScreen extends GetView<MyProfileController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppGap.v12,
-            UserProfileImage(imageUrl: profile?.profileImageKey),
+            Obx(() => UserProfileImage(
+              imageUrl: controller.profileImageUrl.value,
+            )),
             UserNameAndMajor(
               name: profile?.displayName ?? '',
               major: profile?.major ?? '',

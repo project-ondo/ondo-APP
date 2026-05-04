@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
 import 'package:ondo/domain/usecases/auth/logout_usecase.dart';
@@ -7,11 +8,13 @@ import 'package:ondo/domain/usecases/user/delete_account_usecase.dart';
 
 class MyProfileController extends GetxController {
   final ProfileRemoteDatasource profileRemoteDatasource = Get.find();
+  final MediaRemoteDatasource mediaRemoteDatasource = Get.find();
   final LogoutUseCase logoutUseCase = Get.find();
   final DeleteAccountUseCase deleteAccountUseCase = Get.find();
 
   final isLoading = false.obs;
   final Rxn<UserProfileDataModel> profile = Rxn();
+  final profileImageUrl = RxnString();
 
   @override
   void onInit() {
@@ -25,6 +28,15 @@ class MyProfileController extends GetxController {
     try {
       isLoading.value = true;
       profile.value = await profileRemoteDatasource.getMyProfile();
+
+      final imageKey = profile.value?.profileImageKey;
+      if (imageKey != null && imageKey.isNotEmpty) {
+        profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
+          key: imageKey,
+        );
+      } else {
+        profileImageUrl.value = null;
+      }
     } catch (e, s) {
       debugPrint('Failed to load my profile: $e\n$s');
       Get.snackbar('오류', '프로필을 불러오지 못했습니다.');

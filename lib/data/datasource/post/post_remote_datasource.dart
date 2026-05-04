@@ -61,6 +61,7 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     try {
       final response = await _client.post(
         Uri.parse('${ApiConstants.posts}/$postId/like'),
+        headers: ApiConstants.baseHeader,
       );
       final body = jsonDecode(response.body);
       log.statusLog(response.statusCode);

@@ -88,6 +88,7 @@ class HomeSearchResultController extends GetxController {
 
 //TODO : 임시 데이터 삭제
 typedef HomeRecentPopularPostInfo = ({
+  int postId,
   String title,
   Duration creatAt,
   int favorites,
@@ -95,6 +96,7 @@ typedef HomeRecentPopularPostInfo = ({
 });
 typedef HomeProfileInfo = ({String name, String skill, int rating});
 typedef PostInfo = ({
+  int postId,
   List<String> skills,
   String title,
   String name,
@@ -108,18 +110,21 @@ typedef PostInfo = ({
 List<HomeRecentPopularPostInfo> _getRanks() => [
   for (int i = 1; i < 5; i++) ...{
     (
+      postId: i + 1,
       title: "요즘 공부 어케 하시나요 다들",
       creatAt: Duration(days: 3),
       favorites: 160 * Random().nextInt(i),
       isFavorite: i % 2 == 0,
     ),
     (
+      postId: i + 10,
       title: "10년차 개발자는 무슨 공부할까",
       creatAt: Duration(days: 5),
       favorites: 121 * Random().nextInt(i),
       isFavorite: i % 2 == 0,
     ),
     (
+      postId: i + 120,
       title: "팀장 퇴사해서 디자인빵꾸남",
       creatAt: Duration(days: 2),
       favorites: 73 * Random().nextInt(i),

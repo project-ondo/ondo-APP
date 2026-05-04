@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
@@ -13,14 +14,12 @@ import 'package:ondo/presentation/community/widgets/community_post_report_dialog
 
 class PostDetailScreen extends StatefulWidget {
   const PostDetailScreen.myPost({super.key}) : isMy = true;
-
   const PostDetailScreen.otherPost({super.key}) : isMy = false;
 
   final bool isMy;
 
   @override
-  State<PostDetailScreen> createState() =>
-      _PostDetailScreenState();
+  State<PostDetailScreen> createState() => _PostDetailScreenState();
 }
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
@@ -29,6 +28,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _controller = Get.find<PostViewController>();
   }
 
   void _showPostReportDialog() {

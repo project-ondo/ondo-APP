@@ -39,24 +39,26 @@ final List<Map<String, dynamic>> mockPostData = [
   },
 ];
 
-final List<PostItem> testPostItemList = mockPostData.map((data) {
-  return PostItem(
-    skills: List<String>.from(data['skills']),
-    title: data['title'],
-    author: data['author'],
-    bookmarks: data['bookmarks'],
-    favorites: data['favorites'],
-    createAt: DateTime.now().subtract(
-      Duration(minutes: data['createMinutes']),
-    ),
-  );
-}).toList();
-
 class MyProfileScreen extends GetView<MyProfileController> {
   const MyProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final List<PostItem> testPostItemList = mockPostData.map((data) {
+      return PostItem(
+        postId: data['postId'] ?? 0,
+        skills: List<String>.from(data['skills']),
+        title: data['title'],
+        author: data['author'],
+        bookmarks: data['bookmarks'],
+        favorites: data['favorites'],
+        createAt: DateTime.now().subtract(
+          Duration(minutes: data['createMinutes']),
+        ),
+        isMy: false,
+      );
+    }).toList();
+
     return SafeArea(
       child: BaseScaffold(
         backgroundColor: AppColors.background,

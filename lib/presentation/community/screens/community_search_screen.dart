@@ -45,12 +45,14 @@ class _PostResults extends BasePostGrid {
       return Obx(() {
         final post = _controller.viewPosts[index];
         return PostItem(
+          postId: post.postId,
           skills: post.skills,
           title: post.title,
           author: post.name,
           bookmarks: post.bookmarks,
           favorites: post.favoites,
           createAt: post.createAt,
+          isMy: false,
         );
       });
     });

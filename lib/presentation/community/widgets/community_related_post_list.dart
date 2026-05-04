@@ -14,12 +14,14 @@ class CommunityRelatedPostList extends GetView<PostViewController> {
         title: "관련 게시물",
         items: controller.postList.map((post) {
           return PostItem(
+            postId: post.postId,
             skills: post.skills,
             title: post.title,
             author: post.name,
             bookmarks: post.bookmarks,
             favorites: post.favoites,
             createAt: post.createAt,
+            isMy: false,
           );
         }).toList(),
       ),

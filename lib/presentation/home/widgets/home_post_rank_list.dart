@@ -80,7 +80,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
                   ? HomePostRankItem(
                       onTap: () {
                         //TODO : 나의 게시물인지 판단하여 넘김
-                        _postController.enterPostDetail(false);
+                        _postController.enterPostDetail(context, false, ranks[currentItemIndex].postId);
                       },
                       title: ranks[currentItemIndex].title,
                       createAgo: ranks[currentItemIndex].creatAt.inDays,

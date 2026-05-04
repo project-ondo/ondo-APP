@@ -22,7 +22,7 @@ class CommunityPostList extends GetView<CommunityController> {
               title: post.title,
               author: post.name,
               bookmarks: post.bookmarks,
-              favorites: post.favoites,
+              favorites: post.favorites,
               createAt: post.createAt,
               initialBookmark: post.isBookmark,
               initialFavorite: post.isFavorite,

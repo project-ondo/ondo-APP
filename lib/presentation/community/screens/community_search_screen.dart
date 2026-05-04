@@ -50,7 +50,7 @@ class _PostResults extends BasePostGrid {
           title: post.title,
           author: post.name,
           bookmarks: post.bookmarks,
-          favorites: post.favoites,
+          favorites: post.favorites,
           createAt: post.createAt,
           isMy: true,
         );

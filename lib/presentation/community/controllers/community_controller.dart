@@ -50,14 +50,14 @@ class CommunityController extends GetxController {
       final index = viewPosts.indexWhere((p) => p.postId == postId);
       if (index != -1) {
         viewPosts[index] = viewPosts[index].copyWith(
-          favoites: viewPosts[index].favoites + (isLiked ? 1 : -1),
+          favorites: viewPosts[index].favorites + (isLiked ? 1 : -1),
           isFavorite: isLiked,
         );
       }
       final cacheIndex = _cachePosts.indexWhere((p) => p.postId == postId);
       if (cacheIndex != -1) {
         _cachePosts[cacheIndex] = _cachePosts[cacheIndex].copyWith(
-          favoites: _cachePosts[cacheIndex].favoites + (isLiked ? 1 : -1),
+          favorites: _cachePosts[cacheIndex].favorites + (isLiked ? 1 : -1),
           isFavorite: isLiked,
         );
       }
@@ -66,7 +66,7 @@ class CommunityController extends GetxController {
       final index = viewPosts.indexWhere((p) => p.postId == postId);
       if (index != -1) {
         viewPosts[index] = viewPosts[index].copyWith(
-          favoites: viewPosts[index].favoites + (isLiked ? -1 : 1),
+          favorites: viewPosts[index].favorites + (isLiked ? -1 : 1),
           isFavorite: !isLiked,
         );
       }
@@ -77,14 +77,14 @@ class CommunityController extends GetxController {
     final index = viewPosts.indexWhere((p) => p.postId == postId);
     if (index != -1) {
       viewPosts[index] = viewPosts[index].copyWith(
-        favoites: likeCount,
+        favorites: likeCount,
         isFavorite: isFavorite,
       );
     }
     final cacheIndex = _cachePosts.indexWhere((p) => p.postId == postId);
     if (cacheIndex != -1) {
       _cachePosts[cacheIndex] = _cachePosts[cacheIndex].copyWith(
-        favoites: likeCount,
+        favorites: likeCount,
         isFavorite: isFavorite,
       );
     }
@@ -151,7 +151,7 @@ List<PostInfo> _getPosts() => [
       title: "요즘 UI UX",
       skills: ["UI/UX", "FrontEnd"],
       bookmarks: 12,
-      favoites: 12,
+      favorites: 12,
       createAt: DateTime.now(),
       isFavorite: i % 2 == 0,
       isBookmark: i % 3 == 0,

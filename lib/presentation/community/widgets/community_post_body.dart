@@ -40,9 +40,7 @@ class CommunityPostBody extends GetView<PostViewController> {
 
   Widget _content() => Text(
     controller.bodyText.value,
-    style: AppTextStyles.textMedium(
-      textColor: AppColors.gray90,
-    ),
+    style: AppTextStyles.textMedium(textColor: AppColors.gray90),
     textAlign: TextAlign.start,
   );
 
@@ -54,27 +52,23 @@ class CommunityPostBody extends GetView<PostViewController> {
         totalStyle: AppTextStyles.textMedium(),
         imagePath: AppIcon.heart.path,
         action: (isSelect, total) {
-          controller.selectHeart.value = isSelect;
-          controller.heartTotal.value = total;
+          controller.toggleLike(isSelect);
         },
         activeColor: AppColors.red,
         total: controller.heartTotal.value,
-        initialIsSelected:
-        controller.selectHeart.value,
+        initialIsSelected: controller.selectHeart.value,
       ),
       CustomIconButton(
         iconSize: AppSpacing.s32,
         totalStyle: AppTextStyles.textMedium(),
         imagePath: AppIcon.bookmark.path,
         action: (isSelect, total) {
-          controller.selectBookMark.value =
-              isSelect;
+          controller.selectBookMark.value = isSelect;
           controller.bookMarkTotal.value = total;
         },
         activeColor: AppColors.yellow,
         total: controller.bookMarkTotal.value,
-        initialIsSelected:
-        controller.selectBookMark.value,
+        initialIsSelected: controller.selectBookMark.value,
       ),
     ],
   );

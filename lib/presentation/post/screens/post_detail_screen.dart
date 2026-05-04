@@ -5,6 +5,8 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
+import 'package:ondo/presentation/community/screens/community_post_create_screen.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
 import 'package:ondo/presentation/community/widgets/community_post_body.dart';
 import 'package:ondo/presentation/community/widgets/community_post_title.dart';
@@ -54,6 +56,19 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
+  void _goToEditScreen() {
+    Get.lazyPut(
+          () => CommunityPostCreateController(
+        isEditMode: true,
+        editPostId: _controller.postId,
+        initialTitle: _controller.title.value,
+        initialContent: _controller.bodyText.value,
+        initialTags: _controller.postTags.toList(),
+      ),
+    );
+    Get.to(() => CommunityPostCreateScreen());
+  }
+
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
@@ -74,12 +89,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     CustomBackButton(
       moreOptions: true,
       itemBuilder: (context) => [
-        if (!widget.isMy)
-          _topPopupItem("게시물 신고하기", _showPostReportDialog)
-        else ...[
-          _topPopupItem("게시물 수정하기", () {}),
+        if (!widget.isMy) ...[
+          _topPopupItem("게시물 수정하기", _goToEditScreen),
           _topPopupItem("게시물 삭제하기", _showDeletePostAlertDialog),
-        ],
+        ] else
+          _topPopupItem("게시물 신고하기", _showPostReportDialog),
       ],
     ),
     CommunityPostTitle(),

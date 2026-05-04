@@ -54,7 +54,7 @@ class OtherProfileScreen extends StatelessWidget {
         createAt: DateTime.now().subtract(
           Duration(minutes: data['createMinutes']),
         ),
-        isMy: false,
+        isMy: true,
       );
     }).toList();
 

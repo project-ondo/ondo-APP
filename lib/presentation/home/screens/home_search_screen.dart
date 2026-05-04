@@ -75,7 +75,7 @@ class _PostResults extends BasePostGrid {
           bookmarks: post.likeCount,
           favorites: post.likeCount,
           createAt: post.createAt,
-          isMy: false,
+          isMy: true,
         );
       });
     });

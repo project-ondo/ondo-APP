@@ -55,7 +55,7 @@ class MyProfileScreen extends GetView<MyProfileController> {
         createAt: DateTime.now().subtract(
           Duration(minutes: data['createMinutes']),
         ),
-        isMy: false,
+        isMy: true,
       );
     }).toList();
 

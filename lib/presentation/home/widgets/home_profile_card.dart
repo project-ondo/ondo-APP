@@ -6,7 +6,6 @@ import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
-import 'package:ondo/core/router/app_router.dart';
 
 class HomeProfileCard extends StatelessWidget {
   final String publicId;
@@ -25,7 +24,10 @@ class HomeProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => context.push('${RoutePaths.profile}/user/$publicId'),
+      onTap: () => context.pushNamed(
+        'userProfile',
+        pathParameters: {'publicId': publicId},
+      ),
       child: Container(
         height: 160,
         width: 120,

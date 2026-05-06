@@ -70,12 +70,18 @@ class UserRemoteDatasource {
         Uri.parse('${ApiConstants.users}/$publicId/profile'),
       );
 
-      final body = jsonDecode(res.body);
+      // 상태 코드 먼저 확인 후 jsonDecode
       log.statusLog(res.statusCode);
+
+      if (res.statusCode != 200) {
+        throw Exception('상대 프로필 조회 실패: ${res.statusCode}');
+      }
+
+      final body = jsonDecode(res.body);
       log.successLog(body['success'] ?? false);
       log.messageLog(body['message'] ?? '');
 
-      if (res.statusCode != 200 || body['success'] != true) {
+      if (body['success'] != true) {
         throw Exception(body['message'] ?? '상대 프로필 조회 실패');
       }
 

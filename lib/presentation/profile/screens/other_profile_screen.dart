@@ -43,6 +43,7 @@ final List<Map<String, dynamic>> mockPostData = [
 
 final List<PostItem> _testPostItemList = mockPostData.map((data) {
   return PostItem(
+    postId: data['postId'] ?? 0,
     skills: List<String>.from(data['skills']),
     title: data['title'],
     author: data['author'],
@@ -51,6 +52,7 @@ final List<PostItem> _testPostItemList = mockPostData.map((data) {
     createAt: DateTime.now().subtract(
       Duration(minutes: data['createMinutes']),
     ),
+    isMy: false,
   );
 }).toList();
 

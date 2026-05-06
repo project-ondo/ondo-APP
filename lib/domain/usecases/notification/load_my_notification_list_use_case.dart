@@ -1,4 +1,4 @@
-import 'package:ondo/domain/notification/notification_entity.dart';
+import 'package:ondo/domain/entities/notification/notification_entity.dart';
 import 'package:ondo/domain/repositories/notification/notification_repository.dart';
 
 class LoadMyNotificationListUseCase {

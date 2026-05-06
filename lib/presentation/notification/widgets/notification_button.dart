@@ -18,7 +18,7 @@ class NotificationButton extends GetView<NotificationController> {
         child: Badge.count(
           padding: AppPadding.alertCount,
           backgroundColor: AppColors.deepRed,
-          count: controller.notificationCount.value,
+          count: controller.newNotificationCount.value,
           alignment: Alignment(0.28, -0.58),
           child: IconButton(
             style: IconButton.styleFrom(
@@ -26,13 +26,13 @@ class NotificationButton extends GetView<NotificationController> {
               shape: RoundedRectangleBorder(borderRadius: AppRadius.baseRadius),
               minimumSize: Size.square(AppSpacing.s44),
             ),
-            onPressed: controller.notificationCount.value > 0
+            onPressed: controller.newNotificationCount.value > 0
                 ? () => Get.to(
                     NotificationScreen(),
                   )
                 : null,
             icon: SvgPicture.asset(
-              controller.notificationCount.value > 0
+              controller.newNotificationCount.value > 0
                   ? AppIcon.alarmBrown.path
                   : AppIcon.alarmGrey.path,
               height: AppSpacing.s16,

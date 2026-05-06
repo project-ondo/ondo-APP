@@ -20,21 +20,21 @@ class ProfileBinding extends Bindings {
   void dependencies() {
     if (!Get.isRegistered<AuthLocalDatasource>()) {
       Get.lazyPut<AuthLocalDatasource>(
-        () => AuthLocalDatasourceImpl(),
+            () => AuthLocalDatasourceImpl(),
         fenix: true,
       );
     }
 
     if (!Get.isRegistered<AuthRemoteDatasource>()) {
       Get.lazyPut<AuthRemoteDatasource>(
-        () => AuthRemoteDatasource(Env.apiBaseUrl),
+            () => AuthRemoteDatasource(Env.apiBaseUrl),
         fenix: true,
       );
     }
 
     if (!Get.isRegistered<AuthClient>()) {
       Get.lazyPut<AuthClient>(
-        () => AuthClient(
+            () => AuthClient(
           localDatasource: Get.find<AuthLocalDatasource>(),
           remoteDatasource: Get.find<AuthRemoteDatasource>(),
         ),
@@ -44,26 +44,29 @@ class ProfileBinding extends Bindings {
 
     /// AuthRepository 등록 (LogoutUseCase에 필요)
     Get.lazyPut<AuthRepository>(
-      () => AuthRepositoryImpl(
+          () => AuthRepositoryImpl(
         localDatasource: Get.find<AuthLocalDatasource>(),
         remoteDatasource: Get.find<AuthRemoteDatasource>(),
       ),
     );
 
-    /// LogoutUseCase 등록
+    /// LogoutUseCase 등록 (localDatasource 주입)
     Get.lazyPut<LogoutUseCase>(
-      () => LogoutUseCase(repository: Get.find<AuthRepository>()),
+          () => LogoutUseCase(
+        repository: Get.find<AuthRepository>(),
+        localDatasource: Get.find<AuthLocalDatasource>(),
+      ),
     );
 
     /// 프로필 관련 datasource 등록
     Get.lazyPut<ProfileRemoteDatasource>(
-      () => ProfileRemoteDatasource(client: Get.find<AuthClient>()),
+          () => ProfileRemoteDatasource(client: Get.find<AuthClient>()),
       fenix: true,
     );
 
     /// 미디어 업로드/다운로드 datasource 등록
     Get.lazyPut<MediaRemoteDatasource>(
-      () => MediaRemoteDatasource(client: Get.find<AuthClient>()),
+          () => MediaRemoteDatasource(client: Get.find<AuthClient>()),
       fenix: true,
     );
 
@@ -75,19 +78,19 @@ class ProfileBinding extends Bindings {
 
     /// DeleteAccountUseCase 등록
     Get.lazyPut<DeleteAccountUseCase>(
-      () => DeleteAccountUseCase(
+          () => DeleteAccountUseCase(
         profileRemoteDatasource: Get.find<ProfileRemoteDatasource>(),
       ),
     );
 
     /// MyProfileController 등록
     Get.lazyPut<MyProfileController>(
-      () => MyProfileController(),
+          () => MyProfileController(),
     );
 
     /// EditProfileController 등록
     Get.lazyPut<EditProfileController>(
-      () => EditProfileController(),
+          () => EditProfileController(),
     );
 
     /// OtherProfileController 등록

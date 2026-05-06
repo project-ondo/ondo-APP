@@ -12,14 +12,21 @@ class OtherProfileController extends GetxController {
   final Rxn<UserProfileDataModel> profile = Rxn();
   final profileImageUrl = RxnString();
 
+  String? _currentPublicId;
+
   Future<void> loadProfile(String publicId) async {
-    if (isLoading.value) return;
+    // 동일한 publicId면 재로딩 불필요
+    if (_currentPublicId == publicId && profile.value != null) return;
 
     try {
       isLoading.value = true;
+      // 새 프로필 로딩 시 기존 데이터 초기화
+      profile.value = null;
+      profileImageUrl.value = null;
+      _currentPublicId = publicId;
+
       profile.value = await userRemoteDatasource.getOtherProfile(publicId);
 
-      // 프로필 이미지 URL 변환
       final imageKey = profile.value?.profileImageKey;
       if (imageKey != null && imageKey.isNotEmpty) {
         profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(

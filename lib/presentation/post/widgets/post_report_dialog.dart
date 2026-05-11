@@ -8,16 +8,16 @@ import 'package:ondo/core/design_system/components/custom_button.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/presentation/profile/widget/report_reason_chip.dart';
 
-class CommunityPostReportDialog extends StatefulWidget {
-  const CommunityPostReportDialog({
+class PostReportDialog extends StatefulWidget {
+  const PostReportDialog({
     super.key,
   });
 
   @override
-  State<CommunityPostReportDialog> createState() => _CommunityPostReportDialogState();
+  State<PostReportDialog> createState() => _PostReportDialogState();
 }
 
-class _CommunityPostReportDialogState extends State<CommunityPostReportDialog> {
+class _PostReportDialogState extends State<PostReportDialog> {
   final TextEditingController controller = TextEditingController();
 
   final List<String> _reasons = [

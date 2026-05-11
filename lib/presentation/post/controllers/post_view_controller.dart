@@ -13,7 +13,6 @@ import '../../../domain/usecases/post/update_post_usecase.dart';
 
 class PostViewController extends GetxController {
   final int postId;
-  // ignore: unused_field
   final GetPostDetailUseCase _useCase;
   final UpdatePostUseCase _updateUseCase;
   final LikePostUseCase _likeUseCase;
@@ -42,6 +41,7 @@ class PostViewController extends GetxController {
   final RxList<String> postTags = <String>[].obs;
   final Rx<DateTime> postAt = DateTime.now().obs;
 
+  //TODO : 현재 사용자 정보을 가진 Store 있으면 값 변경
   final RxBool isMyPost = false.obs;
 
   final RxBool selectHeart = false.obs;
@@ -56,42 +56,35 @@ class PostViewController extends GetxController {
 
   @override
   void onInit() {
-    comments.assignAll(<Comment>[
-      (author: "유찬", comment: "ㅋㅋㅋㅋㅋㅋㅋ", heartTotal: 12, isMy: false),
-      (author: "유찬", comment: "ㅋㅋㅋㅋㅋㅋㅋ", heartTotal: 12, isMy: false),
-      (author: "유찬", comment: "ㅋㅋㅋㅋㅋㅋㅋ", heartTotal: 12, isMy: false),
-      (author: "유찬", comment: "ㅋㅋㅋㅋㅋㅋㅋ", heartTotal: 12, isMy: false),
-      (author: "유찬", comment: "ㅋㅋㅋㅋㅋㅋㅋ", heartTotal: 12, isMy: false),
-    ]);
-
     super.onInit();
+    //TODO : commet리스트 불러오는 API 연동
     debugPrint('[PostViewController] onInit - postId: $postId');
     fetchPostDetail(postId);
   }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    commentController.dispose();
+  }
+
+
 
   Future<void> fetchPostDetail(int postId) async {
     isLoading.value = true;
     errorMessage.value = '';
     try {
       debugPrint('[PostViewController] API 요청 시작 - postId: $postId');
-      //final result = await _useCase(postId);
-      post.value = PostDetailModel(
-        postId: postId,
-        title: "title",
-        content: "content",
-        authorName: "author",
-        tags: ["UI", "UX", "BACKEND", "FRONTEND"],
-        viewCount: 37,
-        likeCount: 12,
-        commentCount: 12,
-      ); //result;
-      //debugPrint('[PostViewController] API 응답 성공 - title: ${result.title}');
-      title.value = post.value!.title; //result.title;
-      authorName.value = post.value!.authorName; //result.authorName;
-      bodyText.value = post.value!.content; //result.content;
-      postTags.assignAll(post.value!.tags); //.assignAll(result.tags);
-      heartTotal.value = post.value!.likeCount; //result.likeCount;
-      commentCount.value = post.value!.commentCount; //result.commentCount;
+      final result = await _useCase(postId);
+      post.value = result;
+      debugPrint('[PostViewController] API 응답 성공 - title: ${result.title}');
+      title.value = result.title;
+      authorName.value = result.authorName;
+      bodyText.value = result.content;
+      postTags.assignAll(result.tags);
+      heartTotal.value = result.likeCount;
+      commentCount.value = result.commentCount;
     } catch (e) {
       debugPrint('[PostViewController] API 요청 실패 - error: $e');
       errorMessage.value = e.toString();
@@ -187,4 +180,5 @@ class PostViewController extends GetxController {
   }
 }
 
+//TODO comment model 정의
 typedef Comment = ({String author, String comment, int heartTotal, bool isMy});

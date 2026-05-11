@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ondo/data/models/post/post_info.dart';
+import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
+import 'package:ondo/domain/entities/post/post_entity.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
 
 import '../../../data/models/post/request/post_update_request_model.dart';
@@ -12,10 +13,13 @@ import '../../../domain/usecases/post/update_post_usecase.dart';
 
 class PostViewController extends GetxController {
   final int postId;
+  // ignore: unused_field
   final GetPostDetailUseCase _useCase;
   final UpdatePostUseCase _updateUseCase;
   final LikePostUseCase _likeUseCase;
   final UnlikePostUseCase _unlikeUseCase;
+
+  final TextEditingController commentController = TextEditingController();
 
   PostViewController({
     required this.postId,
@@ -23,10 +27,10 @@ class PostViewController extends GetxController {
     required UpdatePostUseCase updateUseCase,
     required LikePostUseCase likeUseCase,
     required UnlikePostUseCase unlikeUseCase,
-  })  : _useCase = useCase,
-        _updateUseCase = updateUseCase,
-        _likeUseCase = likeUseCase,
-        _unlikeUseCase = unlikeUseCase;
+  }) : _useCase = useCase,
+       _updateUseCase = updateUseCase,
+       _likeUseCase = likeUseCase,
+       _unlikeUseCase = unlikeUseCase;
 
   final Rx<PostDetailModel?> post = Rx<PostDetailModel?>(null);
   final isLoading = false.obs;
@@ -36,7 +40,9 @@ class PostViewController extends GetxController {
   final RxString authorName = ''.obs;
   final RxString bodyText = ''.obs;
   final RxList<String> postTags = <String>[].obs;
-  final Rx<Duration> postAt = Duration.zero.obs;
+  final Rx<DateTime> postAt = DateTime.now().obs;
+
+  final RxBool isMyPost = false.obs;
 
   final RxBool selectHeart = false.obs;
   final RxBool selectBookMark = false.obs;
@@ -46,10 +52,18 @@ class PostViewController extends GetxController {
   final RxInt commentCount = 0.obs;
 
   final RxList<Comment> comments = <Comment>[].obs;
-  final RxList<PostInfo> postList = <PostInfo>[].obs;
+  final RxList<PostEntity> postList = <PostEntity>[].obs;
 
   @override
   void onInit() {
+    comments.assignAll(<Comment>[
+      (author: "유찬", comment: "ㅋㅋㅋㅋㅋㅋㅋ", heartTotal: 12, isMy: false),
+      (author: "유찬", comment: "ㅋㅋㅋㅋㅋㅋㅋ", heartTotal: 12, isMy: false),
+      (author: "유찬", comment: "ㅋㅋㅋㅋㅋㅋㅋ", heartTotal: 12, isMy: false),
+      (author: "유찬", comment: "ㅋㅋㅋㅋㅋㅋㅋ", heartTotal: 12, isMy: false),
+      (author: "유찬", comment: "ㅋㅋㅋㅋㅋㅋㅋ", heartTotal: 12, isMy: false),
+    ]);
+
     super.onInit();
     debugPrint('[PostViewController] onInit - postId: $postId');
     fetchPostDetail(postId);
@@ -60,15 +74,24 @@ class PostViewController extends GetxController {
     errorMessage.value = '';
     try {
       debugPrint('[PostViewController] API 요청 시작 - postId: $postId');
-      final result = await _useCase(postId);
-      post.value = result;
-      debugPrint('[PostViewController] API 응답 성공 - title: ${result.title}');
-      title.value = result.title;
-      authorName.value = result.authorName;
-      bodyText.value = result.content;
-      postTags.assignAll(result.tags);
-      heartTotal.value = result.likeCount;
-      commentCount.value = result.commentCount;
+      //final result = await _useCase(postId);
+      post.value = PostDetailModel(
+        postId: postId,
+        title: "title",
+        content: "content",
+        authorName: "author",
+        tags: ["UI", "UX", "BACKEND", "FRONTEND"],
+        viewCount: 37,
+        likeCount: 12,
+        commentCount: 12,
+      ); //result;
+      //debugPrint('[PostViewController] API 응답 성공 - title: ${result.title}');
+      title.value = post.value!.title; //result.title;
+      authorName.value = post.value!.authorName; //result.authorName;
+      bodyText.value = post.value!.content; //result.content;
+      postTags.assignAll(post.value!.tags); //.assignAll(result.tags);
+      heartTotal.value = post.value!.likeCount; //result.likeCount;
+      commentCount.value = post.value!.commentCount; //result.commentCount;
     } catch (e) {
       debugPrint('[PostViewController] API 요청 실패 - error: $e');
       errorMessage.value = e.toString();
@@ -130,10 +153,38 @@ class PostViewController extends GetxController {
   }
 
   void deletePostRequest() {}
+
+  void createComment(String comment) {
+    //TODO : 현재 사용자 정보을 가진 Store 있으면 값 변경
+    comments.insert(0, (
+      comment: comment,
+      author: "김유찬",
+      heartTotal: 0,
+      isMy: true,
+    ));
+    commentController.clear();
+    //TODO : comment 생성 API 연결
+  }
+
+  void deleteComment(Comment comment) {
+    Get.dialog(
+      CustomAlertDialog(
+        title: "알림",
+        comment: "정말 댓글을 삭제하시겠어요?",
+        actionLeft: () {
+          Get.back();
+        },
+        actionRight: () {
+          if (comment.isMy) {
+            comments.remove(comment);
+          }
+          //TODO :댓글 삭제 API 연결
+          Get.back();
+        },
+        rightActionText: "삭제",
+      ),
+    );
+  }
 }
 
-typedef Comment = ({
-String author,
-String comment,
-int heartTotal,
-});
+typedef Comment = ({String author, String comment, int heartTotal, bool isMy});

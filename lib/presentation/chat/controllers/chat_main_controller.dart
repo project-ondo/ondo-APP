@@ -36,13 +36,6 @@ class ChatMainController extends GetxController {
     viewChatRoomList.assignAll(_cacheChatRoomList);
   }
 
-  Future<void> _blockChatRoom(String chatRoomPublicId) async {
-    final success = await blockChatRoomUseCase.call(chatRoomPublicId);
-    if (success != true) {
-      error.value = "BLOCK_FAILED";
-    }
-  }
-
   void search(String query, List<String> tags) {
     //임시 조회 결과 객체
     final Set<ChatEntity> results = {};
@@ -101,7 +94,15 @@ class ChatMainController extends GetxController {
 
   Future<void> blockingChat(int index) async {
     final roomId = viewChatRoomList[index].roomId;
-    await _blockChatRoom(roomId);
+    final success = await blockChatRoomUseCase.call(roomId);
+    if (success == true) {
+      _cacheChatRoomList.removeWhere(
+        (room) => room.roomId == roomId,
+      );
+      viewChatRoomList.assignAll(_cacheChatRoomList);
+    } else {
+      error.value = "BLOCK_FAILED";
+    }
   }
 }
 

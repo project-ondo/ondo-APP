@@ -4,12 +4,12 @@ class ChatEntity {
   final String roomId;
   final String opponentPublicId;
   final String opponentDisplayName;
-  final String opponentProfileImageKey;
+  final String? opponentProfileImageKey;
   final bool opponentOnline;
   final int unreadCount;
   final String lastMessagePreview;
   final bool muted;
-  final DateTime lastMessageAt;
+  final DateTime? lastMessageAt;
 
   ChatEntity({
     required this.roomId,
@@ -32,6 +32,6 @@ class ChatEntity {
     unreadCount: model.unreadCount,
     lastMessagePreview: model.lastMessagePreview,
     muted: model.muted,
-    lastMessageAt: DateTime.parse(model.lastMessageAt),
+    lastMessageAt: DateTime.tryParse(model.lastMessageAt ?? ""),
   );
 }

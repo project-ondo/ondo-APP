@@ -44,13 +44,21 @@ class ChatMainController extends GetxController {
 
   void _filterChatRooms() {
     final Set<ChatEntity> result = {};
+
+    ///선택한 태그가 없을 경우, 전체 채팅 방 리스트 표시
+    if (selectTagList.isEmpty) {
+      viewChatRoomList.assignAll(_cacheChatRoomList);
+      return;
+    }
+
     result.addAll(
       _cacheChatRoomList.where(
         (room) =>
             selectTagList.any((tag) => room.opponentDisplayName.contains(tag)),
       ),
     );
-    //보여지는 채팅 방 리스트 갱신
+
+    ///보여지는 채팅 방 리스트 갱신
     viewChatRoomList.assignAll(result);
   }
 
@@ -59,10 +67,21 @@ class ChatMainController extends GetxController {
     _filterChatRooms();
   }
 
-  void enterChatRoom() {
+  void enterChatRoom(int index) {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
-    Get.put(ChatRoomController());
-    Get.to(ChatRoomScreen());
+    final roomId = viewChatRoomList[index].roomId;
+    //TODO : Get.to 접근 보다는 GoRoute 기법 활용
+    Get.to(
+      ChatRoomScreen(
+        roomId: roomId,
+      ),
+      binding: BindingsBuilder(
+        () => Get.put<ChatRoomController>(
+          ChatRoomController(chatRoomId: roomId),
+          tag: roomId,
+        ),
+      ),
+    );
   }
 }
 
@@ -75,11 +94,3 @@ List<String> _getTags() => [
   "공부인증",
   "김유찬",
 ];
-
-typedef ChatRoomInfo = ({
-  bool isBookmark,
-  String name,
-  Duration lastChatAt,
-  String lastChat,
-  int newChatCount,
-});

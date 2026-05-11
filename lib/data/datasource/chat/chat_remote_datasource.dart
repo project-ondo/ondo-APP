@@ -32,4 +32,29 @@ class ChatRemoteDatasource {
 
     return null;
   }
+
+  Future<Map?> createChatRoom(String usersPublicId) async {
+    final log = ApiConstants(logName: "채팅방 생성");
+
+    try {
+      final res = await client.post(
+        Uri.parse("${ApiConstants.chats}/rooms"),
+        headers: ApiConstants.baseHeader,
+        body: jsonEncode({"targetUserPublicId": usersPublicId}),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"] == true);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200 && body["success"] == true) {
+        return body["data"];
+      }
+      log.statusLog(res.statusCode);
+    } catch (e) {
+      log.errorLog(e);
+    }
+    return null;
+  }
 }

@@ -12,7 +12,11 @@ import 'package:ondo/presentation/chat/widgets/chat_card.dart';
 import 'package:ondo/presentation/chat/widgets/chat_input_field.dart';
 
 class ChatRoomScreen extends GetView<ChatRoomController> {
-  const ChatRoomScreen({super.key});
+  const ChatRoomScreen({super.key, required this.roomId});
+
+  @override
+  String? get tag => roomId;
+  final String roomId;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,9 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
         children: [
           _topBar(),
           Expanded(child: _body()),
-          ChatInputField(),
+          ChatInputField(
+            roomId: roomId,
+          ),
         ],
       ),
     );

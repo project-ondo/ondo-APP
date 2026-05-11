@@ -15,6 +15,7 @@ class HomeRecommendChatList extends BaseHomeProfileList {
   List<Widget> listBuilder() => _controller.viewUserList
       .map(
         (chat) => HomeProfileCard(
+          publicId: chat.publicId,
           skill: chat.interests.first,
           name: chat.displayName,
           rating: chat.ratingCount,

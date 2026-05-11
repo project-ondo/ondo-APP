@@ -69,7 +69,7 @@ class RoutePaths {
   static const String editProfile = '/profile/edit';
   static const String profileSetting = '/profile/setting';
   static const String profileTerms = '/profile/setting/terms';
-  static const String userProfile = '/profile/user/profile';
+  static const String userProfile = '/profile/user/:publicId';
 
   static const String signup = '/signup';
   static const String signupTerms = '/signup/terms';
@@ -154,8 +154,7 @@ final GoRouter appRouter = GoRouter(
           RoutePaths.passwordResetInputEmailCode,
         };
 
-        if (!flowController.isEmailVerified &&
-            !allowedPaths.contains(location)) {
+        if (!flowController.isEmailVerified && !allowedPaths.contains(location)) {
           return RoutePaths.passwordResetInputEmail;
         }
 
@@ -187,7 +186,7 @@ final GoRouter appRouter = GoRouter(
           const PasswordResetCompletedScreen(),
         ),
       ],
-    ),
+    ), // password_reset
 
     ShellRoute(
       builder: (context, state, child) {
@@ -218,14 +217,14 @@ final GoRouter appRouter = GoRouter(
               ],
             ),
             GoRoute(
-              path: 'user/profile',
+              path: 'user/:publicId',
               name: 'userProfile',
-              builder: (context, state) => const OtherProfileScreen(),
+              builder: (context, state) => OtherProfileScreen(publicId: state.pathParameters['publicId'] ?? ''),
             ),
           ],
         ),
       ],
-    ),
+    ), //profile
 
     ShellRoute(
       builder: (context, state, child) {

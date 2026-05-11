@@ -8,7 +8,12 @@ import 'package:ondo/core/design_system/components/custom_textfield.dart';
 import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
 
 class ChatInputField extends GetView<ChatRoomController> {
-  const ChatInputField({super.key});
+  const ChatInputField({super.key, required this.roomId});
+
+  final String roomId;
+
+  @override
+  String? get tag => roomId;
 
   @override
   Widget build(BuildContext context) {

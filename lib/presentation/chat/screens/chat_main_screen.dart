@@ -71,8 +71,7 @@ class ChatList extends GetView<ChatMainController> {
           final chatRoom = controller.viewChatRoomList[index];
           return ChatRoomCard(
             onTap: () {
-              //TODO : chat model 정의 후 관련 데이터 전달
-              controller.enterChatRoom();
+              controller.enterChatRoom(index);
             },
             chatInfo: chatRoom,
           );

@@ -8,17 +8,15 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
 import 'package:ondo/presentation/community/screens/community_post_create_screen.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
-import 'package:ondo/presentation/community/widgets/community_post_body.dart';
-import 'package:ondo/presentation/community/widgets/community_post_title.dart';
-import 'package:ondo/presentation/community/widgets/community_comment_list.dart';
-import 'package:ondo/presentation/community/widgets/community_related_post_list.dart';
-import 'package:ondo/presentation/community/widgets/community_post_report_dialog.dart';
+import 'package:ondo/presentation/post/widgets/post_body.dart';
+import 'package:ondo/presentation/post/widgets/post_comment_list.dart';
+
+import '../widgets/post_report_dialog.dart';
+import '../widgets/post_title.dart';
+import '../widgets/related_post_list.dart';
 
 class PostDetailScreen extends StatefulWidget {
-  const PostDetailScreen.myPost({super.key}) : isMy = true;
-  const PostDetailScreen.otherPost({super.key}) : isMy = false;
-
-  final bool isMy;
+  const PostDetailScreen({super.key});
 
   @override
   State<PostDetailScreen> createState() => _PostDetailScreenState();
@@ -36,7 +34,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   void _showPostReportDialog() {
     showDialog(
       context: context,
-      builder: (context) => CommunityPostReportDialog(),
+      builder: (context) => PostReportDialog(),
     );
   }
 
@@ -58,7 +56,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   void _goToEditScreen() {
     Get.lazyPut(
-          () => CommunityPostCreateController(
+      () => CommunityPostCreateController(
         isEditMode: true,
         editPostId: _controller.postId,
         initialTitle: _controller.title.value,
@@ -86,26 +84,29 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   List<Widget> _top() => [
-    CustomBackButton(
-      moreOptions: true,
-      itemBuilder: (context) => [
-        if (!widget.isMy) ...[
-          _topPopupItem("게시물 수정하기", _goToEditScreen),
-          _topPopupItem("게시물 삭제하기", _showDeletePostAlertDialog),
-        ] else
-          _topPopupItem("게시물 신고하기", _showPostReportDialog),
-      ],
-    ),
-    CommunityPostTitle(),
+    Obx(() {
+      final isMyPost = _controller.isMyPost.value;
+      return CustomBackButton(
+        moreOptions: true,
+        itemBuilder: (context) => [
+          if (isMyPost) ...[
+            _topPopupItem("게시물 수정하기", _goToEditScreen),
+            _topPopupItem("게시물 삭제하기", _showDeletePostAlertDialog),
+          ] else
+            _topPopupItem("게시물 신고하기", _showPostReportDialog),
+        ],
+      );
+    }),
+    PostTitle(),
   ];
 
   Widget _body() => Padding(
     padding: AppPadding.screenHorizontal,
     child: Column(
       children: [
-        CommunityPostBody(),
+        PostBody(),
         AppGap.v24,
-        CommunityCommentList(),
+        PostCommentList(),
       ],
     ),
   );
@@ -116,7 +117,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     child: Column(
       children: [
         AppGap.v16,
-        CommunityRelatedPostList(),
+        RelatedPostList(),
       ],
     ),
   );

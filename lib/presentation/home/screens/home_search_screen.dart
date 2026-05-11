@@ -47,6 +47,7 @@ class _ProfileResults extends BaseHomeProfileList {
     (index) {
       final chat = _controller.viewUserList[index];
       return HomeProfileCard(
+        publicId: chat.publicId,
         skill: chat.interests.first,
         name: chat.displayName,
         rating: chat.ratingCount,

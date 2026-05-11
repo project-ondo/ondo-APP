@@ -50,6 +50,7 @@ class EditProfileScreen extends GetView<EditProfileController> {
                       ),
                       AppGap.v24,
 
+                      //자기소개 수정 텍스트필드
                       LabelTextField(
                         label: '소개글',
                         controller: controller.introductionController,
@@ -101,7 +102,7 @@ class EditProfileScreen extends GetView<EditProfileController> {
                         },
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),

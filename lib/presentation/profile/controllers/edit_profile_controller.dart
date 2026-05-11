@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
@@ -20,15 +20,6 @@ class EditProfileController extends GetxController {
   final selectedInterests = <String>{}.obs;
 
   final List<String> tags = [
-    'FrontEnd',
-    'BackEnd',
-    'AI',
-    'devops',
-    '기획',
-    'UI/UX',
-    'Android',
-    'ios',
-    'Cloud',
   ];
 
   // build() 밖에서 관리 → 리빌드 시 초기화 방지
@@ -52,6 +43,7 @@ class EditProfileController extends GetxController {
       selectedInterests.assignAll(profile.interests);
     }
 
+    // 기존 프로필 이미지 URL 가져오기
     profileImageUrl.value = myProfileController.profileImageUrl.value;
 
     // 프로필 데이터 로드 후 TextEditingController 초기화
@@ -94,6 +86,7 @@ class EditProfileController extends GetxController {
     try {
       isLoading.value = true;
 
+      // 1. 프로필 이미지 변경 (새로 선택된 경우)
       if (selectedImage.value != null) {
         final imageKey = await mediaRemoteDatasource.uploadImage(
           imagePath: selectedImage.value!.path,
@@ -101,6 +94,7 @@ class EditProfileController extends GetxController {
         await profileRemoteDatasource.updateProfileImage(imageKey);
       }
 
+      // 2. 프로필 정보 수정
       await profileRemoteDatasource.updateProfile(
         UpdateProfileRequestModel(
           displayName: nickNameController.text.trim(),
@@ -111,6 +105,7 @@ class EditProfileController extends GetxController {
         ),
       );
 
+      // 3. MyProfileController 프로필 갱신
       await Get.find<MyProfileController>().loadProfile();
 
       Get.snackbar('완료', '프로필이 수정되었습니다.');

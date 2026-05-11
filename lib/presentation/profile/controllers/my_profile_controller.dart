@@ -29,6 +29,7 @@ class MyProfileController extends GetxController {
       isLoading.value = true;
       profile.value = await profileRemoteDatasource.getMyProfile();
 
+      // 프로필 이미지 URL 변환
       final imageKey = profile.value?.profileImageKey;
       if (imageKey != null && imageKey.isNotEmpty) {
         profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(

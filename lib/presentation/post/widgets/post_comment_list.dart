@@ -6,18 +6,19 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
-import 'package:ondo/presentation/community/widgets/community_post_comment_card.dart';
+import 'package:ondo/presentation/post/widgets/post_comment_card.dart';
+import 'package:ondo/presentation/post/widgets/post_create_field.dart';
 
-import '../../post/widgets/post_list_indicator.dart';
+import 'post_list_indicator.dart';
 
-class CommunityCommentList extends StatefulWidget {
-  const CommunityCommentList({super.key});
+class PostCommentList extends StatefulWidget {
+  const PostCommentList({super.key});
 
   @override
-  State<CommunityCommentList> createState() => _CommunityCommentListState();
+  State<PostCommentList> createState() => _PostCommentListState();
 }
 
-class _CommunityCommentListState extends State<CommunityCommentList> {
+class _PostCommentListState extends State<PostCommentList> {
   late final PageController _pageController;
   final PostViewController _controller = Get.find<PostViewController>();
 
@@ -35,22 +36,23 @@ class _CommunityCommentListState extends State<CommunityCommentList> {
     super.dispose();
   }
 
-  int _getStartIndex(int index) => index * 4;
-
-  int _getLastIndex(int index) =>
-      min(_getStartIndex(index) + 4, _controller.comments.length);
-
-  int _getTotalPage() => (_controller.comments.length / 4).ceil();
-
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 360,
+      height: 420,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.min,
         children: [
           _title(),
+          AppGap.v16,
+          PostCreateField(
+            controller: _controller.commentController,
+            authorName: "김유찬", //TODO : 앱 사용자 정보를 가지는 Store가 정의되면 불러오기
+            profileUrl: null,
+            submit: (m) {
+              _controller.createComment(m);
+            },
+          ),
           AppGap.v16,
           Expanded(
             child: Obx(
@@ -59,11 +61,25 @@ class _CommunityCommentListState extends State<CommunityCommentList> {
                 onPageChanged: (value) {
                   curIndex.value = value;
                 },
-                itemCount: _getTotalPage(),
-                itemBuilder: (context, index) => Center(
-                  child: _commentView(
-                    _getStartIndex(index),
-                    _getLastIndex(index),
+                itemCount: (_controller.comments.length / 4).ceil(),
+                itemBuilder: (context, pIndex) => Column(
+                  mainAxisSize: .min,
+                  spacing: AppSpacing.s16,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: List.generate(
+                    4,
+                    (iIndex) {
+                      final itemIndex = (pIndex * 4) + iIndex;
+                      if (itemIndex >= _controller.comments.length) {
+                        return Spacer();
+                      }
+                      final comment = _controller.comments[itemIndex];
+                      return Expanded(
+                        child: PostCommentCard(
+                          comment: comment,
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -74,7 +90,7 @@ class _CommunityCommentListState extends State<CommunityCommentList> {
             valueListenable: curIndex,
             builder: (context, value, _) => PostListIndicator(
               currentPage: value,
-              totalPage: _getTotalPage(),
+              totalPage: (_controller.comments.length / 4).ceil(),
               onTap: (value) {
                 _pageController.animateToPage(
                   value,
@@ -99,21 +115,4 @@ class _CommunityCommentListState extends State<CommunityCommentList> {
       ),
     ],
   );
-
-  Widget _commentView(int startIndex, int lastIndex) {
-    final subComments = _controller.comments.sublist(startIndex, lastIndex);
-    return Column(
-      spacing: AppSpacing.s16,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        ...subComments.map(
-          (comment) => CommunityPostCommentCard(
-            author: comment.author,
-            commentText: comment.comment,
-            heartTotal: comment.heartTotal,
-          ),
-        ),
-      ],
-    );
-  }
 }

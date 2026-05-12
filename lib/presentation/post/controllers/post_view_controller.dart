@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ondo/data/models/post/post_info.dart';
+import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
+import 'package:ondo/domain/entities/post/post_entity.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
 
 import '../../../data/models/post/request/post_update_request_model.dart';
@@ -17,16 +18,18 @@ class PostViewController extends GetxController {
   final LikePostUseCase _likeUseCase;
   final UnlikePostUseCase _unlikeUseCase;
 
+  final TextEditingController commentController = TextEditingController();
+
   PostViewController({
     required this.postId,
     required GetPostDetailUseCase useCase,
     required UpdatePostUseCase updateUseCase,
     required LikePostUseCase likeUseCase,
     required UnlikePostUseCase unlikeUseCase,
-  })  : _useCase = useCase,
-        _updateUseCase = updateUseCase,
-        _likeUseCase = likeUseCase,
-        _unlikeUseCase = unlikeUseCase;
+  }) : _useCase = useCase,
+       _updateUseCase = updateUseCase,
+       _likeUseCase = likeUseCase,
+       _unlikeUseCase = unlikeUseCase;
 
   final Rx<PostDetailModel?> post = Rx<PostDetailModel?>(null);
   final isLoading = false.obs;
@@ -36,7 +39,10 @@ class PostViewController extends GetxController {
   final RxString authorName = ''.obs;
   final RxString bodyText = ''.obs;
   final RxList<String> postTags = <String>[].obs;
-  final Rx<Duration> postAt = Duration.zero.obs;
+  final Rx<DateTime> postAt = DateTime.now().obs;
+
+  //TODO : 현재 사용자 정보을 가진 Store 있으면 값 변경
+  final RxBool isMyPost = false.obs;
 
   final RxBool selectHeart = false.obs;
   final RxBool selectBookMark = false.obs;
@@ -46,14 +52,24 @@ class PostViewController extends GetxController {
   final RxInt commentCount = 0.obs;
 
   final RxList<Comment> comments = <Comment>[].obs;
-  final RxList<PostInfo> postList = <PostInfo>[].obs;
+  final RxList<PostEntity> postList = <PostEntity>[].obs;
 
   @override
   void onInit() {
     super.onInit();
+    //TODO : commet리스트 불러오는 API 연동
     debugPrint('[PostViewController] onInit - postId: $postId');
     fetchPostDetail(postId);
   }
+
+
+  @override
+  void dispose() {
+    super.dispose();
+    commentController.dispose();
+  }
+
+
 
   Future<void> fetchPostDetail(int postId) async {
     isLoading.value = true;
@@ -130,10 +146,39 @@ class PostViewController extends GetxController {
   }
 
   void deletePostRequest() {}
+
+  void createComment(String comment) {
+    //TODO : 현재 사용자 정보을 가진 Store 있으면 값 변경
+    comments.insert(0, (
+      comment: comment,
+      author: "김유찬",
+      heartTotal: 0,
+      isMy: true,
+    ));
+    commentController.clear();
+    //TODO : comment 생성 API 연결
+  }
+
+  void deleteComment(Comment comment) {
+    Get.dialog(
+      CustomAlertDialog(
+        title: "알림",
+        comment: "정말 댓글을 삭제하시겠어요?",
+        actionLeft: () {
+          Get.back();
+        },
+        actionRight: () {
+          if (comment.isMy) {
+            comments.remove(comment);
+          }
+          //TODO :댓글 삭제 API 연결
+          Get.back();
+        },
+        rightActionText: "삭제",
+      ),
+    );
+  }
 }
 
-typedef Comment = ({
-String author,
-String comment,
-int heartTotal,
-});
+//TODO comment model 정의
+typedef Comment = ({String author, String comment, int heartTotal, bool isMy});

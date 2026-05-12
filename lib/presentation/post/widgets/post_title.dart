@@ -5,8 +5,8 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
 
-class CommunityPostTitle extends GetView<PostViewController> {
-  const CommunityPostTitle({super.key});
+class PostTitle extends GetView<PostViewController> {
+  const PostTitle({super.key});
 
   @override
   Widget build(BuildContext context) {

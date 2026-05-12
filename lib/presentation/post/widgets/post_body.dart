@@ -15,7 +15,7 @@ class PostBody extends GetView<PostViewController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => Column(
+          () => Column(
         children: [
           _top(),
           AppGap.v16,
@@ -34,7 +34,7 @@ class PostBody extends GetView<PostViewController> {
         CustomProfileCircle(radius: AppSpacing.s24),
         AppGap.h12,
         Expanded(child: Text(controller.authorName.value)),
-        Text(AppDateUtils.timeAgo(controller.postAt.value)),
+        Text(AppDateUtils.timeAgo(DateTime.now())), // TODO: API에서 날짜 받으면 수정
       ],
     ),
   );

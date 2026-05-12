@@ -33,7 +33,7 @@ class CommunitySearchScreen extends StatelessWidget {
 @immutable
 class _PostResults extends BasePostGrid {
   final CommunityResultController _controller =
-      Get.find<CommunityResultController>();
+  Get.find<CommunityResultController>();
 
   _PostResults({
     super.title = "게시물 검색 결과",
@@ -46,12 +46,12 @@ class _PostResults extends BasePostGrid {
         final post = _controller.viewPosts[index];
         return PostItem(
           postId: post.postId,
-          skills: post.skills,
+          skills: post.tags,
           title: post.title,
-          author: post.name,
-          bookmarks: post.bookmarks,
-          favorites: post.favorites,
-          createAt: post.createAt,
+          author: post.authorName,
+          bookmarks: 0,
+          favorites: post.likeCount,
+          createAt: DateTime.now(),
           isMy: true,
         );
       });

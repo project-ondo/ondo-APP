@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
-
 import '../../../data/datasource/post/post_remote_datasource.dart';
 import '../../../data/network/clients/auth_client.dart';
 import '../../../data/repositories/post/post_repository_impl.dart';
+import '../../../domain/usecases/post/create_post_usecase.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
 import '../../../domain/usecases/post/like_post_usecase.dart';
@@ -19,31 +19,27 @@ class PostBinding extends Bindings {
     Get.lazyPut<PostRemoteDatasource>(
           () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
     );
-
     Get.lazyPut<PostRepositoryImpl>(
           () => PostRepositoryImpl(Get.find<PostRemoteDatasource>()),
     );
-
     Get.lazyPut<GetPostDetailUseCase>(
           () => GetPostDetailUseCase(Get.find<PostRepositoryImpl>()),
     );
-
+    Get.lazyPut<CreatePostUseCase>(
+          () => CreatePostUseCase(Get.find<PostRepositoryImpl>()),
+    );
     Get.lazyPut<UpdatePostUseCase>(
           () => UpdatePostUseCase(Get.find<PostRepositoryImpl>()),
     );
-
     Get.lazyPut<DeletePostUseCase>(
           () => DeletePostUseCase(Get.find<PostRepositoryImpl>()),
     );
-
     Get.lazyPut<LikePostUseCase>(
           () => LikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
-
     Get.lazyPut<UnlikePostUseCase>(
           () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
-
     Get.put<PostViewController>(
       PostViewController(
         postId: postId,

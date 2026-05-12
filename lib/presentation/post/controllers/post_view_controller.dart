@@ -25,11 +25,11 @@ class PostViewController extends GetxController {
     required DeletePostUseCase deleteUseCase,
     required LikePostUseCase likeUseCase,
     required UnlikePostUseCase unlikeUseCase,
-  })  : _useCase = useCase,
-        _updateUseCase = updateUseCase,
-        _deleteUseCase = deleteUseCase,
-        _likeUseCase = likeUseCase,
-        _unlikeUseCase = unlikeUseCase;
+  }) : _useCase = useCase,
+       _updateUseCase = updateUseCase,
+       _deleteUseCase = deleteUseCase,
+       _likeUseCase = likeUseCase,
+       _unlikeUseCase = unlikeUseCase;
 
   final Rx<PostDetailModel?> post = Rx<PostDetailModel?>(null);
 
@@ -186,17 +186,15 @@ class PostViewController extends GetxController {
     }
   }
 
-  void createComment(String message) {
-    if (message.trim().isEmpty) return;
+  void createComment(String comment) {
+    if (comment.trim().isEmpty) return;
 
-    comments.add(
-      (
-      author: '김유찬',
-      comment: message,
+    comments.insert(0, (
+      comment: comment,
+      author: "김유찬",
       heartTotal: 0,
       isMy: true,
-      ),
-    );
+    ));
 
     commentController.clear();
   }
@@ -207,8 +205,8 @@ class PostViewController extends GetxController {
 }
 
 typedef Comment = ({
-String author,
-String comment,
-int heartTotal,
-bool isMy,
+  String author,
+  String comment,
+  int heartTotal,
+  bool isMy,
 });

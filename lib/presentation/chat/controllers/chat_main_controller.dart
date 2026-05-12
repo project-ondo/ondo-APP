@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:ondo/domain/entities/chat/chat_entity.dart';
+import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
 import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
@@ -10,18 +11,25 @@ class ChatMainController extends GetxController {
   final List<ChatEntity> _cacheChatRoomList = <ChatEntity>[];
   final RxList<ChatEntity> viewChatRoomList = <ChatEntity>[].obs;
 
-  final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
+  //TODO : error 객체 정의 및 error 처리 로직 추가
+  final RxString error = "".obs;
 
-  ChatMainController({required this.loadChatRoomsUseCase});
+  final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
+  final BlockChatRoomUseCase blockChatRoomUseCase;
+
+  ChatMainController({
+    required this.loadChatRoomsUseCase,
+    required this.blockChatRoomUseCase,
+  });
 
   @override
   void onInit() {
     tags.addAll(_getTags());
-    loadChatRooms();
+    _loadChatRooms();
     super.onInit();
   }
 
-  Future<void> loadChatRooms() async {
+  Future<void> _loadChatRooms() async {
     _cacheChatRoomList.assignAll(
       await loadChatRoomsUseCase.call(page: 0, size: 10),
     );
@@ -82,6 +90,19 @@ class ChatMainController extends GetxController {
         ),
       ),
     );
+  }
+
+  Future<void> blockingChat(int index) async {
+    final roomId = viewChatRoomList[index].roomId;
+    final success = await blockChatRoomUseCase.call(roomId);
+    if (success == true) {
+      _cacheChatRoomList.removeWhere(
+        (room) => room.roomId == roomId,
+      );
+      viewChatRoomList.assignAll(_cacheChatRoomList);
+    } else {
+      error.value = "BLOCK_FAILED";
+    }
   }
 }
 

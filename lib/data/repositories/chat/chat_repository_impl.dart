@@ -38,4 +38,9 @@ class ChatRepositoryImpl extends ChatRepository {
   Future<bool> blockChatRoom(String chatRoomPublicId) async {
     return await remoteDatasource.blockChatRoom(chatRoomPublicId);
   }
+
+  @override
+  Future<bool> cancelBlockChatRoom(String chatRoomPublicId) async {
+    return await remoteDatasource.cancelBlockChatRoom(chatRoomPublicId);
+  }
 }

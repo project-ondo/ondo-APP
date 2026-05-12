@@ -82,4 +82,29 @@ class ChatRemoteDatasource {
 
     return false;
   }
+
+  Future<bool> cancelBlockChatRoom(String chatRoomPublicId) async {
+    final log = ApiConstants(logName: "채팅방 차단 해제");
+
+    try {
+      final res = await client.delete(
+        Uri.parse("${ApiConstants.chats}/rooms/$chatRoomPublicId/block"),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"] == true);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200 && body["success"] == true) {
+        return true;
+      }
+
+      log.statusLog(res.statusCode);
+    } catch (e) {
+      log.errorLog(e);
+    }
+
+    return false;
+  }
 }

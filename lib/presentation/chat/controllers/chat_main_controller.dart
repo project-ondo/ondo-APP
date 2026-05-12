@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
+import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
 import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
@@ -16,10 +17,12 @@ class ChatMainController extends GetxController {
 
   final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
   final BlockChatRoomUseCase blockChatRoomUseCase;
+  final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;
 
   ChatMainController({
     required this.loadChatRoomsUseCase,
     required this.blockChatRoomUseCase,
+    required this.cancelBlockChatRoomUseCase,
   });
 
   @override
@@ -34,6 +37,13 @@ class ChatMainController extends GetxController {
       await loadChatRoomsUseCase.call(page: 0, size: 10),
     );
     viewChatRoomList.assignAll(_cacheChatRoomList);
+  }
+
+  Future<void> _cancelBlockChatRoom(String chatRoomPublicId) async {
+    final success = await cancelBlockChatRoomUseCase.call(chatRoomPublicId);
+    if (success != true) {
+      error.value = "CANCEL_BLOCK_FAILED";
+    }
   }
 
   void search(String query, List<String> tags) {
@@ -103,6 +113,11 @@ class ChatMainController extends GetxController {
     } else {
       error.value = "BLOCK_FAILED";
     }
+  }
+
+  Future<void> cancelBlockingChat(int index) async {
+    final roomId = viewChatRoomList[index].roomId;
+    await _cancelBlockChatRoom(roomId);
   }
 }
 

@@ -6,15 +6,16 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_icon_button.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
+import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
 
-class CommunityPostBody extends GetView<PostViewController> {
-  const CommunityPostBody({super.key});
+class PostBody extends GetView<PostViewController> {
+  const PostBody({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Obx(
-          () => Column(
+      () => Column(
         children: [
           _top(),
           AppGap.v16,
@@ -33,7 +34,7 @@ class CommunityPostBody extends GetView<PostViewController> {
         CustomProfileCircle(radius: AppSpacing.s24),
         AppGap.h12,
         Expanded(child: Text(controller.authorName.value)),
-        Text("${controller.postAt.value.inMinutes}분전"),
+        Text(AppDateUtils.timeAgo(controller.postAt.value)),
       ],
     ),
   );

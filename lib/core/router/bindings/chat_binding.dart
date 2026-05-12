@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:ondo/data/datasource/chat/chat_remote_datasource.dart';
 import 'package:ondo/data/repositories/chat/chat_repository_impl.dart';
+import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/create_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
 import 'package:ondo/presentation/chat/controllers/chat_main_controller.dart';
@@ -30,10 +31,14 @@ class ChatBinding extends Bindings {
     Get.lazyPut<CreateChatRoomUseCase>(
       () => CreateChatRoomUseCase(repository: Get.find<ChatRepositoryImpl>()),
     );
+    Get.lazyPut<BlockChatRoomUseCase>(
+      () => BlockChatRoomUseCase(repository: Get.find<ChatRepositoryImpl>()),
+    );
 
     ///chat controller 등록
     Get.lazyPut(
       () => ChatMainController(
+        blockChatRoomUseCase: Get.find<BlockChatRoomUseCase>(),
         loadChatRoomsUseCase: Get.find<LoadMyChatRoomListUseCase>(),
       ),
     );

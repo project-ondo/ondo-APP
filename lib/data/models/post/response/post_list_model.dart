@@ -38,6 +38,7 @@ class PostContentModel {
   final int viewCount;
   final int likeCount;
   final int commentCount;
+  final bool isFavorite;
 
   PostContentModel({
     required this.postId,
@@ -47,6 +48,7 @@ class PostContentModel {
     required this.viewCount,
     required this.likeCount,
     required this.commentCount,
+    this.isFavorite = false,
   });
 
   factory PostContentModel.fromJson(Map<String, dynamic> json) {
@@ -58,6 +60,23 @@ class PostContentModel {
       viewCount: json['viewCount'] ?? 0,
       likeCount: json['likeCount'] ?? 0,
       commentCount: json['commentCount'] ?? 0,
+      isFavorite: json['isFavorite'] ?? false,
+    );
+  }
+
+  PostContentModel copyWith({
+    int? likeCount,
+    bool? isFavorite,
+  }) {
+    return PostContentModel(
+      postId: postId,
+      title: title,
+      authorName: authorName,
+      tags: tags,
+      viewCount: viewCount,
+      likeCount: likeCount ?? this.likeCount,
+      commentCount: commentCount,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 }

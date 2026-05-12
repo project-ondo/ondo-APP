@@ -99,37 +99,28 @@ class PostViewController extends GetxController {
   }
 
   Future<void> toggleLike(bool isLiked) async {
+    // UI에서 이미 카운트 변경했으니 컨트롤러에서는 상태만 업데이트
+    selectHeart.value = isLiked;
+    heartTotal.value = isLiked ? heartTotal.value + 1 : heartTotal.value - 1;
+
     try {
       if (isLiked) {
-        debugPrint('[PostViewController] 좋아요 요청 - postId: $postId');
-
         await _likeUseCase(postId);
-
-        heartTotal.value += 1;
-        selectHeart.value = true;
-
-        debugPrint('[PostViewController] 좋아요 성공');
       } else {
-        debugPrint('[PostViewController] 좋아요 취소 요청 - postId: $postId');
-
         await _unlikeUseCase(postId);
-
-        heartTotal.value -= 1;
-        selectHeart.value = false;
-
-        debugPrint('[PostViewController] 좋아요 취소 성공');
       }
-
-      Get.find<CommunityController>().updatePostLike(
-        postId,
-        heartTotal.value,
-        isLiked,
-      );
+      if (Get.isRegistered<CommunityController>()) {
+        Get.find<CommunityController>().updatePostLike(
+          postId,
+          heartTotal.value,
+          isLiked,
+        );
+      }
     } catch (e) {
       debugPrint('[PostViewController] 좋아요 토글 실패 - error: $e');
-
+      // 실패시 롤백
       selectHeart.value = !isLiked;
-      heartTotal.value += isLiked ? -1 : 1;
+      heartTotal.value = isLiked ? heartTotal.value - 1 : heartTotal.value + 1;
     }
   }
 

@@ -4,7 +4,6 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
-import 'package:ondo/core/design_system/components/custom_icon_button.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
 import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
@@ -34,7 +33,7 @@ class PostBody extends GetView<PostViewController> {
         CustomProfileCircle(radius: AppSpacing.s24),
         AppGap.h12,
         Expanded(child: Text(controller.authorName.value)),
-        Text(AppDateUtils.timeAgo(DateTime.now())), // TODO: API에서 날짜 받으면 수정
+        Text(AppDateUtils.timeAgo(DateTime.now())),
       ],
     ),
   );
@@ -48,29 +47,57 @@ class PostBody extends GetView<PostViewController> {
   Widget _buttonList() => Row(
     spacing: AppSpacing.s16,
     children: [
-      CustomIconButton(
-        iconSize: AppSpacing.s32,
-        totalStyle: AppTextStyles.textMedium(),
-        imagePath: AppIcon.heart.path,
-        action: (isSelect, total) {
-          controller.toggleLike(isSelect);
-        },
-        activeColor: AppColors.red,
-        total: controller.heartTotal.value,
-        initialIsSelected: controller.selectHeart.value,
-      ),
-      CustomIconButton(
-        iconSize: AppSpacing.s32,
-        totalStyle: AppTextStyles.textMedium(),
-        imagePath: AppIcon.bookmark.path,
-        action: (isSelect, total) {
-          controller.selectBookMark.value = isSelect;
-          controller.bookMarkTotal.value = total;
-        },
-        activeColor: AppColors.yellow,
-        total: controller.bookMarkTotal.value,
-        initialIsSelected: controller.selectBookMark.value,
-      ),
+      _heartButton(),
+      _bookmarkButton(),
     ],
+  );
+
+  Widget _heartButton() => GestureDetector(
+    onTap: () => controller.toggleLike(!controller.selectHeart.value),
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(
+          AppIcon.heart.path,
+          color: controller.selectHeart.value
+              ? AppColors.red
+              : AppColors.gray50,
+          height: AppSpacing.s32,
+          width: AppSpacing.s32,
+        ),
+        AppGap.h4,
+        Text(
+          '${controller.heartTotal.value}',
+          style: AppTextStyles.textMedium(),
+        ),
+      ],
+    ),
+  );
+
+  Widget _bookmarkButton() => GestureDetector(
+    onTap: () {
+      controller.selectBookMark.value = !controller.selectBookMark.value;
+      controller.selectBookMark.value
+          ? controller.bookMarkTotal.value += 1
+          : controller.bookMarkTotal.value -= 1;
+    },
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset(
+          AppIcon.bookmark.path,
+          color: controller.selectBookMark.value
+              ? AppColors.yellow
+              : AppColors.gray50,
+          height: AppSpacing.s32,
+          width: AppSpacing.s32,
+        ),
+        AppGap.h4,
+        Text(
+          '${controller.bookMarkTotal.value}',
+          style: AppTextStyles.textMedium(),
+        ),
+      ],
+    ),
   );
 }

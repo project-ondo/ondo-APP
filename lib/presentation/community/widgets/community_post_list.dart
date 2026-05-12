@@ -25,7 +25,7 @@ class CommunityPostList extends GetView<CommunityController> {
               favorites: post.likeCount,
               createAt: DateTime.now(),
               initialBookmark: false,
-              initialFavorite: false,
+              initialFavorite: post.isFavorite,
               isMy: true,
               heartAction: (isLiked, total) {
                 controller.toggleLike(post.postId, isLiked);

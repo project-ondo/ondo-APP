@@ -1,5 +1,6 @@
 import 'package:ondo/data/models/base/request/base_list_request_model.dart';
 import 'package:ondo/data/models/chat/request/chat_message_list_request_model.dart';
+import 'package:ondo/data/models/chat/response/chat_message_model.dart';
 import 'package:ondo/data/models/chat/response/chat_model.dart';
 import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
@@ -60,11 +61,16 @@ class ChatRepositoryImpl extends ChatRepository {
 
     if (json == null) return [];
 
-    return (json["items"] as List?)
+    final dataModelList =
+        (json["items"] as List?)
             ?.map(
-              (e) => ChatMessageEntity.fromJsonChatMessageModel(e),
+              (e) => ChatMessageModel.fromJson(e),
             )
             .toList() ??
         [];
+
+    return dataModelList
+        .map((e) => ChatMessageEntity.fromJsonChatMessageModel(e))
+        .toList();
   }
 }

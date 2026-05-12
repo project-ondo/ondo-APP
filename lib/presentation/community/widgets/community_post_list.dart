@@ -18,14 +18,14 @@ class CommunityPostList extends GetView<CommunityController> {
             final post = controller.viewPosts[index];
             return PostItem(
               postId: post.postId,
-              skills: post.skills,
+              skills: post.tags,
               title: post.title,
-              author: post.name,
-              bookmarks: post.bookmarks,
-              favorites: post.favorites,
-              createAt: post.createAt,
-              initialBookmark: post.isBookmark,
-              initialFavorite: post.isFavorite,
+              author: post.authorName,
+              bookmarks: 0,
+              favorites: post.likeCount,
+              createAt: DateTime.now(),
+              initialBookmark: false,
+              initialFavorite: false,
               isMy: true,
               heartAction: (isLiked, total) {
                 controller.toggleLike(post.postId, isLiked);

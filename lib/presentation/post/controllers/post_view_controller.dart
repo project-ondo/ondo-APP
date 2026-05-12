@@ -5,6 +5,7 @@ import 'package:ondo/presentation/community/controllers/community_controller.dar
 
 import '../../../data/models/post/request/post_update_request_model.dart';
 import '../../../data/models/post/response/post_detail_model.dart';
+import '../../../domain/usecases/post/delete_post_usecase.dart'; // 👈 추가
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
 import '../../../domain/usecases/post/like_post_usecase.dart';
 import '../../../domain/usecases/post/unlike_post_usecase.dart';
@@ -14,6 +15,7 @@ class PostViewController extends GetxController {
   final int postId;
   final GetPostDetailUseCase _useCase;
   final UpdatePostUseCase _updateUseCase;
+  final DeletePostUseCase _deleteUseCase;
   final LikePostUseCase _likeUseCase;
   final UnlikePostUseCase _unlikeUseCase;
 
@@ -21,10 +23,12 @@ class PostViewController extends GetxController {
     required this.postId,
     required GetPostDetailUseCase useCase,
     required UpdatePostUseCase updateUseCase,
+    required DeletePostUseCase deleteUseCase,
     required LikePostUseCase likeUseCase,
     required UnlikePostUseCase unlikeUseCase,
   })  : _useCase = useCase,
         _updateUseCase = updateUseCase,
+        _deleteUseCase = deleteUseCase,
         _likeUseCase = likeUseCase,
         _unlikeUseCase = unlikeUseCase;
 
@@ -93,7 +97,6 @@ class PostViewController extends GetxController {
         debugPrint('[PostViewController] 좋아요 취소 성공');
       }
 
-      // 커뮤니티 화면 동기화
       Get.find<CommunityController>().updatePostLike(
         postId,
         heartTotal.value,
@@ -129,7 +132,22 @@ class PostViewController extends GetxController {
     }
   }
 
-  void deletePostRequest() {}
+  Future<void> deletePost() async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      debugPrint('[PostViewController] 게시물 삭제 요청 - postId: $postId');
+      await _deleteUseCase(postId);
+      debugPrint('[PostViewController] 게시물 삭제 성공');
+      Get.find<CommunityController>().removePost(postId);
+      Get.back();
+    } catch (e) {
+      debugPrint('[PostViewController] 게시물 삭제 실패 - error: $e');
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
 }
 
 typedef Comment = ({

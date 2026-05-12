@@ -90,14 +90,19 @@ class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
                   enabled: controller.isFormValid.value,
                   onPressed: controller.isFormValid.value
                       ? () async {
+                    final inputTags =
+                    Get.find<TagInputController>().tags.toList();
                     if (controller.isEditMode) {
-                      final postViewController = Get.find<PostViewController>();
+                      final postViewController =
+                      Get.find<PostViewController>();
                       await postViewController.updatePost(
                         title: controller.titleController.text,
                         content: controller.contentController.text,
-                        tags: Get.find<TagInputController>().tags.toList(),
+                        tags: inputTags,
                       );
                       Get.back();
+                    } else {
+                      await controller.submit(inputTags);
                     }
                   }
                       : null,

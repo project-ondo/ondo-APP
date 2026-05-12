@@ -1,67 +1,120 @@
-import 'package:get/get.dart';
 import 'package:flutter/material.dart';
-import 'package:ondo/presentation/community/controllers/tag_input_field_controller.dart';
+import 'package:get/get.dart';
+import 'package:ondo/data/models/post/request/post_create_request_model.dart';
+import 'package:ondo/data/models/post/request/post_update_request_model.dart';
+import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
+import 'package:ondo/presentation/community/controllers/community_controller.dart';
 
 class CommunityPostCreateController extends GetxController {
-  final titleController = TextEditingController();
-  final contentController = TextEditingController();
+  final CreatePostUseCase _createUseCase;
+  final UpdatePostUseCase _updateUseCase;
 
-  final contentLength = 0.obs;
-  final isFormValid = false.obs;
-
-  // 수정 모드
   final bool isEditMode;
   final int? editPostId;
+  final String initialTitle;
+  final String initialContent;
+  final List<String> initialTags;
 
   CommunityPostCreateController({
+    required CreatePostUseCase createUseCase,
+    required UpdatePostUseCase updateUseCase,
     this.isEditMode = false,
     this.editPostId,
-    String initialTitle = '',
-    String initialContent = '',
-    List<String> initialTags = const [],
-  }) {
-    titleController.text = initialTitle;
-    contentController.text = initialContent;
-    _initialTags = initialTags;
-  }
+    this.initialTitle = '',
+    this.initialContent = '',
+    this.initialTags = const [],
+  })  : _createUseCase = createUseCase,
+        _updateUseCase = updateUseCase;
 
-  List<String> _initialTags = [];
-  late final TagInputController _tagController;
+  late final TextEditingController titleController;
+  late final TextEditingController contentController;
+
+  final RxList<String> tags = <String>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
+  final RxInt contentLength = 0.obs;
+  final RxBool isFormValid = false.obs;
 
   @override
   void onInit() {
     super.onInit();
-    _tagController = Get.find<TagInputController>();
-
-    // 수정 모드일 때 태그 초기값 세팅
-    if (_initialTags.isNotEmpty) {
-      _tagController.tags.assignAll(_initialTags);
-    }
-
-    titleController.addListener(_validateForm);
+    titleController = TextEditingController(text: initialTitle);
+    contentController = TextEditingController(text: initialContent);
+    tags.assignAll(initialTags);
+    titleController.addListener(_validate);
     contentController.addListener(() {
       contentLength.value = contentController.text.length;
-      _validateForm();
+      _validate();
     });
-    ever(_tagController.tags, (_) => _validateForm());
-
-    // 수정 모드일 때 초기 길이 세팅
-    contentLength.value = contentController.text.length;
-    _validateForm();
+    _validate();
   }
 
-  void _validateForm() {
+  void _validate() {
     isFormValid.value =
-        titleController.text.isNotEmpty &&
-            contentController.text.isNotEmpty &&
-            _tagController.tags.isNotEmpty;
+        titleController.text.trim().isNotEmpty &&
+            contentController.text.trim().isNotEmpty;
+  }
+
+  void addTag(String tag) {
+    if (!tags.contains(tag)) tags.add(tag);
+  }
+
+  void removeTag(String tag) => tags.remove(tag);
+
+  Future<void> submit(List<String> inputTags) async {
+    if (isEditMode) {
+      await _updatePost(inputTags);
+    } else {
+      await _createPost(inputTags);
+    }
+  }
+
+  Future<void> _createPost(List<String> inputTags) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      await _createUseCase(
+        PostCreateRequestModel(
+          title: titleController.text,
+          content: contentController.text,
+          tags: inputTags,
+        ),
+      );
+      Get.find<CommunityController>().refreshPosts();
+      Get.back();
+    } catch (e) {
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> _updatePost(List<String> inputTags) async {
+    if (editPostId == null) return;
+    isLoading.value = true;
+    errorMessage.value = '';
+    try {
+      await _updateUseCase(
+        editPostId!,
+        PostUpdateRequestModel(
+          title: titleController.text,
+          content: contentController.text,
+          tags: inputTags,
+        ),
+      );
+      Get.back();
+    } catch (e) {
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   @override
   void onClose() {
     titleController.dispose();
     contentController.dispose();
-    Get.delete<TagInputController>();
     super.onClose();
   }
 }

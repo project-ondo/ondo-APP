@@ -5,6 +5,8 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
 import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
 import 'package:ondo/presentation/community/screens/community_post_create_screen.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
@@ -48,8 +50,8 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         comment: "정말 게시물 삭제하시겠어요?",
         actionLeft: () => Navigator.pop(context),
         actionRight: () {
-          _controller.deletePostRequest();
           Navigator.pop(context);
+          _controller.deletePost();
         },
         rightActionText: "삭제",
       ),
@@ -57,8 +59,11 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   void _goToEditScreen() {
+    Get.delete<CommunityPostCreateController>(force: true);
     Get.lazyPut(
           () => CommunityPostCreateController(
+        createUseCase: Get.find<CreatePostUseCase>(),
+        updateUseCase: Get.find<UpdatePostUseCase>(),
         isEditMode: true,
         editPostId: _controller.postId,
         initialTitle: _controller.title.value,

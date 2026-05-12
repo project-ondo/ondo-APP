@@ -10,7 +10,7 @@ class RelatedPostList extends GetView<PostViewController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => IndicatorPostPageList(
+          () => IndicatorPostPageList(
         title: "관련 게시물",
         items: controller.postList.map((post) {
           return PostItem(
@@ -18,10 +18,10 @@ class RelatedPostList extends GetView<PostViewController> {
             skills: post.tags,
             title: post.title,
             author: post.authorName,
-            bookmarks: post.bookmarkCount,
+            bookmarks: 0,
             favorites: post.likeCount,
-            createAt: post.createAt,
-            isMy: true, //TODO: Store에서 현재 유저 ID와 비교하여 설정
+            createAt: DateTime.now(),
+            isMy: true,
           );
         }).toList(),
       ),

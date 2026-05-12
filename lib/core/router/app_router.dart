@@ -132,7 +132,7 @@ final GoRouter appRouter = GoRouter(
 
         PostBinding(postId).dependencies();
 
-        return const PostDetailScreen();
+        return PostDetailScreen();
       },
     ),
 

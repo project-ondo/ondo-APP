@@ -92,19 +92,6 @@ class ChatRepositoryImpl extends ChatRepository {
   }
 
   @override
-  Future<bool> readChatMessage(
-    String chatRoomPublicId,
-    num lastReadMessageId,
-  ) async {
-    final res = await remoteDatasource.readChatMessage(
-      chatRoomPublicId,
-      lastReadMessageId,
-    );
-
-    return res;
-  }
-
-  @override
   Future<bool> deleteChatRoom(String chatRoomPublicId) async {
     final res = await remoteDatasource.deleteChatRoom(chatRoomPublicId);
     return res;

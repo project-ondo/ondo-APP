@@ -4,7 +4,6 @@ import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
-import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 
 class ChatMainController extends GetxController {
@@ -20,13 +19,11 @@ class ChatMainController extends GetxController {
   final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
   final BlockChatRoomUseCase blockChatRoomUseCase;
   final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;
-  final ReadChatMessageUseCase readChatMessageUseCase;
 
   ChatMainController({
     required this.loadChatRoomsUseCase,
     required this.blockChatRoomUseCase,
     required this.cancelBlockChatRoomUseCase,
-    required this.readChatMessageUseCase,
   });
 
   @override
@@ -37,6 +34,7 @@ class ChatMainController extends GetxController {
   }
 
   Future<void> _loadChatRooms() async {
+    //TODO 구조 변경
     _cacheChatRoomList.assignAll(
       await loadChatRoomsUseCase.call(page: 0, size: 10),
     );
@@ -47,19 +45,6 @@ class ChatMainController extends GetxController {
     final success = await cancelBlockChatRoomUseCase.call(chatRoomPublicId);
     if (success != true) {
       error.value = "CANCEL_BLOCK_FAILED";
-    }
-  }
-
-  Future<void> _readChatMessage(
-    String chatRoomPublicId,
-    num lastReadMessageId,
-  ) async {
-    final success = await readChatMessageUseCase.call(
-      chatRoomPublicId,
-      lastReadMessageId,
-    );
-    if (success != true) {
-      error.value = "READ_FAILED";
     }
   }
 
@@ -106,14 +91,13 @@ class ChatMainController extends GetxController {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
     final roomId = viewChatRoomList[index].roomId;
     //TODO : route 정의 이후에 방식 변경
-    final lastMessageId = await Get.to<num>(
-      ChatRoomScreen(roomId: roomId),
-      binding: ChatRoomBinding(chatRoomId: roomId)
-    );
-
-    if (lastMessageId == null) return;
-
-    _readChatMessage(roomId, lastMessageId);
+    viewChatRoomList[index].read =
+        await Get.to<bool>(
+          ChatRoomScreen(roomId: roomId),
+          binding: ChatRoomBinding(chatRoomId: roomId),
+        ) ??
+        false;
+    viewChatRoomList.refresh();
   }
 
   Future<void> blockingChat(int index) async {

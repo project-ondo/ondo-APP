@@ -15,12 +15,14 @@ class CustomBackButton extends StatelessWidget {
     this.useUserProfile = false,
     this.userInfo,
     this.itemBuilder,
+    this.backAction,
   });
 
   final bool moreOptions;
   final bool useUserProfile;
   final (Widget profile, String name)? userInfo;
   final PopupMenuItemBuilder<String>? itemBuilder;
+  final VoidCallback? backAction;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +47,7 @@ class CustomBackButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: Get.back,
+                onTap: backAction ?? Get.back,
                 child: SvgPicture.asset(AppIcon.arrowLeft.path),
               ),
               if (!useUserProfile) _text() else _profile(),

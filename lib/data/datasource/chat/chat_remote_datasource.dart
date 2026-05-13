@@ -140,7 +140,7 @@ class ChatRemoteDatasource {
 
   Future<bool> readChatMessage(
     String chatRoomPublicId,
-    num lastReadMessageId,
+    int lastReadMessageId,
   ) async {
     final log = ApiConstants(logName: "채팅방 읽음 처리");
 

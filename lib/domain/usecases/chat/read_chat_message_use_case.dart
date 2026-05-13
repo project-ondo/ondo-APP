@@ -5,7 +5,7 @@ class ReadChatMessageUseCase {
 
   ReadChatMessageUseCase({required this.repository});
 
-  Future<bool> call(String chatRoomPublicId, num lastReadMessageId) async {
+  Future<bool> call(String chatRoomPublicId, int lastReadMessageId) async {
     return await repository.readChatMessage(
       chatRoomPublicId,
       lastReadMessageId,

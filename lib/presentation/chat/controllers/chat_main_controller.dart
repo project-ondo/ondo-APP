@@ -50,13 +50,6 @@ class ChatMainController extends GetxController {
     }
   }
 
-  Future<void> _blockChatRoom(String chatRoomPublicId) async {
-    final success = await blockChatRoomUseCase.call(chatRoomPublicId);
-    if (success != true) {
-      error.value = "BLOCK_FAILED";
-    }
-  }
-
   Future<void> _readChatMessage(
     String chatRoomPublicId,
     num lastReadMessageId,

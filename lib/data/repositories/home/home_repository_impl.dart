@@ -13,7 +13,7 @@ class HomeRepositoryImpl extends HomeRepository {
     required int page,
     required int size,
   }) async {
-    final model = BaseListRequestModel(size: size, page: page);
+    final model = ListRequestModel(size: size, page: page);
 
     final json = await datasource.loadRecommendPostList(model);
     if (json != null) {

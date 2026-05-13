@@ -1,9 +1,9 @@
 import 'package:get/get.dart';
+import 'package:ondo/core/router/bindings/chat_room_binding.dart';
 import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
-import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 
 class ChatMainController extends GetxController {
@@ -15,6 +15,7 @@ class ChatMainController extends GetxController {
   //TODO : error 객체 정의 및 error 처리 로직 추가
   final RxString error = "".obs;
 
+  ///채팅 관련 usecase들
   final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
   final BlockChatRoomUseCase blockChatRoomUseCase;
   final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;
@@ -93,12 +94,7 @@ class ChatMainController extends GetxController {
       ChatRoomScreen(
         roomId: roomId,
       ),
-      binding: BindingsBuilder(
-        () => Get.put<ChatRoomController>(
-          ChatRoomController(chatRoomId: roomId),
-          tag: roomId,
-        ),
-      ),
+      binding: ChatRoomBinding(chatRoomId: roomId),
     );
   }
 

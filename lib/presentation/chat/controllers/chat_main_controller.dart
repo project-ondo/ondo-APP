@@ -9,7 +9,7 @@ import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 
 class ChatMainController extends GetxController {
   final List<String> tags = <String>[].obs;
-  final Set<String> selectTagList = <String>{};
+  final RxSet<String> selectTagList = <String>{}.obs;
   final List<ChatEntity> _cacheChatRoomList = <ChatEntity>[];
   final RxList<ChatEntity> viewChatRoomList = <ChatEntity>[].obs;
 
@@ -50,7 +50,6 @@ class ChatMainController extends GetxController {
       error.value = "CANCEL_BLOCK_FAILED";
     }
   }
-
 
   void search(String query, List<String> tags) {
     //임시 조회 결과 객체

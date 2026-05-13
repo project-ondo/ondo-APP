@@ -137,4 +137,32 @@ class ChatRemoteDatasource {
 
     return null;
   }
+
+  Future<bool> readChatMessage(
+    String chatRoomPublicId,
+    int lastReadMessageId,
+  ) async {
+    final log = ApiConstants(logName: "채팅방 읽음 처리");
+
+    try {
+      final res = await client.patch(
+        Uri.parse(
+          "${ApiConstants.chats}/rooms/$chatRoomPublicId/read?lastReadMessageId=$lastReadMessageId",
+        ),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"] == true);
+      log.messageLog(body["message"]);
+      if (res.statusCode == 200 && body["success"] == true) {
+        return true;
+      }
+      log.statusLog(res.statusCode);
+    } catch (e) {
+      log.errorLog(e);
+    }
+
+    return false;
+  }
 }

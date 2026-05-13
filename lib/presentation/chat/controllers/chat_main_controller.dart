@@ -34,6 +34,7 @@ class ChatMainController extends GetxController {
   }
 
   Future<void> _loadChatRooms() async {
+    //TODO 구조 변경
     _cacheChatRoomList.assignAll(
       await loadChatRoomsUseCase.call(page: 0, size: 10),
     );
@@ -86,16 +87,17 @@ class ChatMainController extends GetxController {
     _filterChatRooms();
   }
 
-  void enterChatRoom(int index) {
+  Future<void> enterChatRoom(int index) async {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
     final roomId = viewChatRoomList[index].roomId;
-    //TODO : Get.to 접근 보다는 GoRoute 기법 활용
-    Get.to(
-      ChatRoomScreen(
-        roomId: roomId,
-      ),
-      binding: ChatRoomBinding(chatRoomId: roomId),
-    );
+    //TODO : route 정의 이후에 방식 변경
+    viewChatRoomList[index].read =
+        await Get.to<bool>(
+          ChatRoomScreen(roomId: roomId),
+          binding: ChatRoomBinding(chatRoomId: roomId),
+        ) ??
+        false;
+    viewChatRoomList.refresh();
   }
 
   Future<void> blockingChat(int index) async {

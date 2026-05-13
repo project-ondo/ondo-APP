@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
+import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
 import 'package:ondo/presentation/chat/controllers/chat_review_controller.dart';
 import 'package:ondo/presentation/chat/view_models/chat_message_view_model.dart';
 import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
@@ -16,31 +17,42 @@ class ChatRoomController extends GetxController {
   final String chatRoomId;
 
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
+  final ReadChatMessageUseCase readChatMessageUseCase;
+
+  int lastMessageId = 0;
 
   ChatRoomController({
     required this.chatRoomId,
     required this.loadChatRoomMessageUseCase,
+    required this.readChatMessageUseCase,
   });
 
   @override
   void onInit() {
-    _loadChatRoomMessages();
+    _initLoadChatRoomMessages();
     super.onInit();
   }
 
-  Future<void> _loadChatRoomMessages() async {
-    //TODO : 정적 데이터 삭제
-    final messages = await loadChatRoomMessageUseCase.call(
-      chatRoomPublicId: chatRoomId,
-      cursor: 0,
-      size: 20,
-    );
-    _cacheChatList.assignAll(messages);
-    viewChatList.assignAll(
-      _cacheChatList.map(
-        (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
-      ),
-    );
+  Future _initLoadChatRoomMessages() async {
+    int? next = 0;
+    while (next != null) {
+      final res = await loadChatRoomMessageUseCase.call(
+        chatRoomPublicId: chatRoomId,
+        cursor: next,
+        size: 10,
+      );
+      _cacheChatList.addAll(res.pages);
+      next = res.nextCursor;
+    }
+
+    if (_cacheChatList.isNotEmpty) {
+      viewChatList.assignAll(
+        _cacheChatList.reversed.map(
+          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+        ),
+      );
+      lastMessageId = _cacheChatList.last.messageId;
+    }
   }
 
   void sendChat(String content) {
@@ -58,7 +70,13 @@ class ChatRoomController extends GetxController {
     );
   }
 
-  void showQuitAlert() {
+  Future backChatRoom() async {
+    Get.back<bool>(
+      result: await readChatMessageUseCase.call(chatRoomId, lastMessageId),
+    );
+  }
+
+  void quitChatRoom() {
     Get.dialog(
       CustomAlertDialog(
         title: "커피챗 종료",

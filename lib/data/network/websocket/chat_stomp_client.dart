@@ -54,6 +54,7 @@ class ChatStompClient {
   /// 토큰이 없으면 연결하지 않음.
   Future<void> connect() async {
     if (_isConnected) return;
+    if (_connectCompleter != null) return _connectCompleter!.future;
 
     final token = await _localDatasource.getAccessToken();
     if (token == null) {
@@ -218,6 +219,12 @@ class ChatStompClient {
     log('[STOMP] WebSocket 에러: $error');
     _isConnected = false;
     _stopPing();
+    _streamSubscription?.cancel();
+    _streamSubscription = null;
+    _channel?.sink.close();
+    _channel = null;
+    _connectCompleter?.completeError(error);
+    _connectCompleter = null;
     _scheduleReconnect();
   }
 
@@ -225,6 +232,11 @@ class ChatStompClient {
     log('[STOMP] WebSocket 연결 종료');
     _isConnected = false;
     _stopPing();
+    _streamSubscription?.cancel();
+    _streamSubscription = null;
+    _channel = null;
+    _connectCompleter?.completeError(StateError('WebSocket 연결 종료'));
+    _connectCompleter = null;
     if (!_isPaused) _scheduleReconnect();
   }
 

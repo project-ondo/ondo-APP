@@ -28,8 +28,6 @@ class ChatRoomController extends GetxController {
   int lastMessageId = 0;
 
   /// /topic/chat.rooms.{chatRoomPublicId} 구독 ID
-  /// #165 퇴장 시 unsubscribe에 사용
-  // ignore: unused_field
   String? _messageSubscriptionId;
 
   ChatRoomController({
@@ -44,6 +42,21 @@ class ChatRoomController extends GetxController {
     _initLoadChatRoomMessages();
     _connectAndEnter();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    // 구독 해제
+    if (_messageSubscriptionId != null) {
+      stompClient.unsubscribe(_messageSubscriptionId!);
+    }
+    // 채팅방 퇴장 이벤트 발행
+    stompClient.publish(
+      '/pub/chat.room.leave',
+      body: jsonEncode({'chatRoomPublicId': chatRoomId}),
+    );
+    textController.dispose();
+    super.onClose();
   }
 
   /// WebSocket 연결 → 채팅방 입장 이벤트 발행 → 메시지 토픽 구독 시작
@@ -61,7 +74,7 @@ class ChatRoomController extends GetxController {
     // 실제 수신 처리는 #163에서 구현 예정
     _messageSubscriptionId = stompClient.subscribe(
       '/topic/chat.rooms.$chatRoomId',
-      (frame) {
+          (frame) {
         // TODO #163: 실시간 메시지 수신 처리
         log('[ChatRoom] 메시지 수신 (미처리): ${frame.body}');
       },
@@ -84,7 +97,7 @@ class ChatRoomController extends GetxController {
     if (_cacheChatList.isNotEmpty) {
       viewChatList.assignAll(
         _cacheChatList.reversed.map(
-          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+              (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
         ),
       );
       lastMessageId = _cacheChatList.last.messageId;
@@ -120,7 +133,7 @@ class ChatRoomController extends GetxController {
         actionLeft: () => Get.back(),
         actionRight: () {
           Get.lazyPut(
-            () => ChatReviewController(
+                () => ChatReviewController(
               deleteChatRoomUseCase: Get.find<DeleteChatRoomUseCase>(),
               chatRoomId: chatRoomId,
             ),

@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/data/network/websocket/chat_stomp_client.dart';
+import 'package:ondo/data/network/websocket/stomp_frame.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
 import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
@@ -26,9 +27,7 @@ class ChatRoomController extends GetxController {
 
   int lastMessageId = 0;
 
-  /// /topic/chat.rooms.{chatRoomPublicId} 구독 ID
-  /// #165 퇴장 시 unsubscribe에 사용
-  // ignore: unused_field
+  /// /topic/chat.rooms.{chatRoomPublicId} 구독 ID (onClose 시 해제)
   String? _messageSubscriptionId;
 
   ChatRoomController({
@@ -57,15 +56,38 @@ class ChatRoomController extends GetxController {
     log('[ChatRoom] 채팅방 입장: $chatRoomId');
 
     // 메시지 토픽 구독 시작
-    // 실제 수신 처리는 #163에서 구현 예정
     _messageSubscriptionId = stompClient.subscribe(
       '/topic/chat.rooms.$chatRoomId',
-      (frame) {
-        // TODO #163: 실시간 메시지 수신 처리
-        log('[ChatRoom] 메시지 수신 (미처리): ${frame.body}');
-      },
+      _onMessageReceived,
     );
     log('[ChatRoom] 메시지 구독 시작: /topic/chat.rooms.$chatRoomId');
+  }
+
+  /// 실시간 메시지 수신 핸들러
+  ///
+  /// 서버로부터 MESSAGE 프레임이 오면 호출됨.
+  /// body를 파싱하여 [viewChatList] 끝에 추가.
+  void _onMessageReceived(StompFrame frame) {
+    if (frame.body == null) return;
+    try {
+      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final viewModel = ChatMessageViewModel.fromJson(json);
+      viewChatList.add(viewModel);
+      // 마지막 읽은 메시지 ID 갱신 (읽음 처리에 활용)
+      lastMessageId = (json['messageId'] as num?)?.toInt() ?? lastMessageId;
+      log('[ChatRoom] 메시지 수신: ${viewModel.content}');
+    } catch (e) {
+      log('[ChatRoom] 메시지 파싱 실패: $e / body: ${frame.body}');
+    }
+  }
+
+  @override
+  void onClose() {
+    if (_messageSubscriptionId != null) {
+      stompClient.unsubscribe(_messageSubscriptionId!);
+      log('[ChatRoom] 메시지 구독 해제: $_messageSubscriptionId');
+    }
+    super.onClose();
   }
 
   Future _initLoadChatRoomMessages() async {

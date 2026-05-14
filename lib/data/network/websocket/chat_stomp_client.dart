@@ -6,6 +6,8 @@ import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/network/websocket/stomp_frame.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+// ignore_for_file: unused_field
+
 /// STOMP over WebSocket 클라이언트
 ///
 /// 역할:
@@ -23,6 +25,7 @@ class ChatStompClient {
   WebSocketChannel? _channel;
   StreamSubscription? _streamSubscription;
   bool _isConnected = false;
+  Completer<void>? _connectCompleter;
 
   bool get isConnected => _isConnected;
 
@@ -46,7 +49,8 @@ class ChatStompClient {
 
   /// WebSocket 연결 및 STOMP CONNECT 전송
   ///
-  /// 이미 연결된 경우 무시.
+  /// 서버로부터 CONNECTED 프레임을 수신할 때까지 await.
+  /// 이미 연결된 경우 즉시 반환.
   /// 토큰이 없으면 연결하지 않음.
   Future<void> connect() async {
     if (_isConnected) return;
@@ -60,6 +64,8 @@ class ChatStompClient {
     try {
       final wsUrl = Env.wsBaseUrl;
       log('[STOMP] 연결 시도: $wsUrl');
+
+      _connectCompleter = Completer<void>();
 
       _channel = WebSocketChannel.connect(Uri.parse(wsUrl));
 
@@ -78,8 +84,12 @@ class ChatStompClient {
         },
       ));
       log('[STOMP] CONNECT 프레임 전송');
+
+      // CONNECTED 수신까지 대기
+      await _connectCompleter!.future;
     } catch (e) {
       log('[STOMP] 연결 실패: $e');
+      _connectCompleter = null;
       _scheduleReconnect();
     }
   }
@@ -189,6 +199,8 @@ class ChatStompClient {
         _isConnected = true;
         _reconnectAttempts = 0;
         if (!_isPaused) _startPing();
+        _connectCompleter?.complete();
+        _connectCompleter = null;
         log('[STOMP] 연결 성공');
 
       case 'MESSAGE':

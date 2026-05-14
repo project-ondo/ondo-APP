@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/data/network/websocket/chat_stomp_client.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
+import 'package:ondo/domain/usecases/chat/delete_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
 import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
 import 'package:ondo/presentation/chat/controllers/chat_review_controller.dart';
@@ -118,7 +119,12 @@ class ChatRoomController extends GetxController {
         comment: "정말 커피챗을 종료하시겠어요?",
         actionLeft: () => Get.back(),
         actionRight: () {
-          Get.lazyPut(() => ChatReviewController());
+          Get.lazyPut(
+            () => ChatReviewController(
+              deleteChatRoomUseCase: Get.find<DeleteChatRoomUseCase>(),
+              chatRoomId: chatRoomId,
+            ),
+          );
           Get.back();
           Get.dialog(ChatReviewDialog());
         },

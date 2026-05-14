@@ -33,7 +33,7 @@ class ChatReviewDialog extends GetView<ChatReviewController> {
               _reviewCategoryList(),
               AppGap.v16,
               CustomTextField(
-                controller: controller.textController,
+                controller: controller.commentController,
                 hintText: "상세 내용을 입력해 주세요",
                 maxLines: null,
                 minLines: 4,
@@ -68,7 +68,7 @@ class ChatReviewDialog extends GetView<ChatReviewController> {
     children: List.generate(
       controller.baseCategories.length,
       (index) => CustomTagCard(
-        onTap: (isSelect) => controller.onCategoryChange(
+        onTap: (isSelect) => controller.selectReviewTag(
           controller.baseCategories[index],
           isSelect,
         ),

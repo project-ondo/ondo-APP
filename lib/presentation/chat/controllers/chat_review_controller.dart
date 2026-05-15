@@ -1,38 +1,53 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:ondo/domain/usecases/chat/delete_chat_room_use_case.dart';
 
 class ChatReviewController extends GetxController {
   final RxBool enableSubmit = false.obs;
-  final RxSet<String> viewCategories = <String>{}.obs;
-  final Rx<String> detailReview = "".obs;
+  final RxSet<String> reviewTags = <String>{}.obs;
   final RxInt star = 5.obs;
 
-  final TextEditingController textController = TextEditingController();
+  //TODO : error 처리 UI 반영
+  RxString error = ''.obs;
 
-  @override
-  void onInit() {
-    textController.addListener(() => setDetailReview(textController.text));
-    super.onInit();
+  final TextEditingController commentController = TextEditingController();
+
+  final DeleteChatRoomUseCase deleteChatRoomUseCase;
+  final String chatRoomId;
+
+  ChatReviewController({
+    required this.deleteChatRoomUseCase,
+    required this.chatRoomId,
+  });
+
+  Future<void> _deleteChatRoom() async {
+    final res = await deleteChatRoomUseCase.call(chatRoomId);
+    if (res != true) error.value = "DELETE_ERROR";
   }
 
   @override
   void onClose() {
-    textController.removeListener(() => setDetailReview(textController.text));
+    commentController.dispose();
     super.onClose();
   }
 
-  void onCategoryChange(String category, bool isSelect) {
-    isSelect ? viewCategories.add(category) : viewCategories.remove(category);
+  void selectReviewTag(String tag, bool isSelect) {
+    isSelect ? reviewTags.add(tag) : reviewTags.remove(tag);
     checkEnableSubmit();
   }
 
-  void checkEnableSubmit() => enableSubmit.value = viewCategories.isNotEmpty;
+  void checkEnableSubmit() => enableSubmit.value = reviewTags.isNotEmpty;
 
   set star(int index) => star.value = index + 1;
 
-  void setDetailReview(String review) => detailReview.value = review;
+  Future<void> submitReview() async {
+    await _deleteChatRoom();
+    //TODO : 채팅방 평점 등록 api 연결
 
-  void submitReview() {}
+    if (error.isEmpty) {
+      Get.back<num>(closeOverlays: true, result: -1);
+    }
+  }
 
   final List<String> baseCategories = [
     "질문에 대한 답변이 빨라요",

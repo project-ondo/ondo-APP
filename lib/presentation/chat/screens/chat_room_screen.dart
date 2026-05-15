@@ -102,6 +102,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
       ),
       _customPopupMenu(
         "신고하기",
+        //신고 기능
         () {
           //TODO : 신고 기능
         },

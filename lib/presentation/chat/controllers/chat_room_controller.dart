@@ -119,18 +119,37 @@ class ChatRoomController extends GetxController {
     }
   }
 
+  /// 텍스트 메시지 전송
+  ///
+  /// - 빈 문자열이면 전송하지 않음
+  /// - WebSocket으로 /pub/chat.send 발행
+  /// - 내가 보낸 메시지 즉시 UI 반영 (isMe: true)
+  /// - IMAGE 타입은 추후 구현 예정
   void sendChat(String content) {
-    //TODO : 채팅 전송 및, 채팅 리스트에 대화 내역 추가
-    textController.clear();
-    viewChatList.insert(0,
+    final trimmed = content.trim();
+    if (trimmed.isEmpty) return;
+
+    stompClient.publish(
+      '/pub/chat.send',
+      body: jsonEncode({
+        'chatRoomPublicId': chatRoomId,
+        'messageType': 'TEXT',
+        'content': trimmed,
+      }),
+    );
+
+    viewChatList.insert(
+      0,
       ChatMessageViewModel(
-        messageType: "TEXT",
-        content: content,
+        messageType: 'TEXT',
+        content: trimmed,
         createdAt: DateTime.now(),
         isMe: true,
         profileImageKey: null,
       ),
     );
+
+    textController.clear();
   }
 
   Future backChatRoom() async {

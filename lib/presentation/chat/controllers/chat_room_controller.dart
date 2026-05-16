@@ -28,7 +28,7 @@ class ChatRoomController extends GetxController {
 
   int lastMessageId = 0;
 
-  /// /topic/chat.rooms.{chatRoomPublicId} 구독 ID (onClose 시 해제)
+  /// /topic/chat.rooms.{chatRoomPublicId} 구독 ID
   String? _messageSubscriptionId;
 
   ChatRoomController({
@@ -43,6 +43,22 @@ class ChatRoomController extends GetxController {
     _initLoadChatRoomMessages();
     _connectAndEnter();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    // 구독 해제
+    if (_messageSubscriptionId != null) {
+      stompClient.unsubscribe(_messageSubscriptionId!);
+      log('[ChatRoom] 메시지 구독 해제: $_messageSubscriptionId');
+    }
+    // 채팅방 퇴장 이벤트 발행
+    stompClient.publish(
+      '/pub/chat.room.leave',
+      body: jsonEncode({'chatRoomPublicId': chatRoomId}),
+    );
+    textController.dispose();
+    super.onClose();
   }
 
   /// WebSocket 연결 → 채팅방 입장 이벤트 발행 → 메시지 토픽 구독 시작
@@ -65,30 +81,17 @@ class ChatRoomController extends GetxController {
   }
 
   /// 실시간 메시지 수신 핸들러
-  ///
-  /// 서버로부터 MESSAGE 프레임이 오면 호출됨.
-  /// body를 파싱하여 [viewChatList] 끝에 추가.
   void _onMessageReceived(StompFrame frame) {
     if (frame.body == null) return;
     try {
       final json = jsonDecode(frame.body!) as Map<String, dynamic>;
       final viewModel = ChatMessageViewModel.fromJson(json);
       viewChatList.add(viewModel);
-      // 마지막 읽은 메시지 ID 갱신 (읽음 처리에 활용)
       lastMessageId = (json['messageId'] as num?)?.toInt() ?? lastMessageId;
       log('[ChatRoom] 메시지 수신: ${viewModel.content}');
     } catch (e) {
       log('[ChatRoom] 메시지 파싱 실패: $e / body: ${frame.body}');
     }
-  }
-
-  @override
-  void onClose() {
-    if (_messageSubscriptionId != null) {
-      stompClient.unsubscribe(_messageSubscriptionId!);
-      log('[ChatRoom] 메시지 구독 해제: $_messageSubscriptionId');
-    }
-    super.onClose();
   }
 
   Future _initLoadChatRoomMessages() async {
@@ -106,7 +109,7 @@ class ChatRoomController extends GetxController {
     if (_cacheChatList.isNotEmpty) {
       viewChatList.assignAll(
         _cacheChatList.reversed.map(
-          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+              (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
         ),
       );
       lastMessageId = _cacheChatList.last.messageId;
@@ -116,7 +119,6 @@ class ChatRoomController extends GetxController {
   void sendChat(String content) {
     //TODO : 채팅 전송 및, 채팅 리스트에 대화 내역 추가
     textController.clear();
-    //TODO : 전송 방식 또는 data 정의가 되면 필드 추가 및 정적 데이터 삭제
     viewChatList.add(
       ChatMessageViewModel(
         messageType: "TEXT",
@@ -137,12 +139,12 @@ class ChatRoomController extends GetxController {
   void quitChatRoom() {
     Get.dialog(
       CustomAlertDialog(
-        title: "커피챗 종료",
-        comment: "정말 커피챗을 종료하시겠어요?",
+        title: '커피챗 종료',
+        comment: '정말 커피챗을 종료하시겠어요?',
         actionLeft: () => Get.back(),
         actionRight: () {
           Get.lazyPut(
-            () => ChatReviewController(
+                () => ChatReviewController(
               deleteChatRoomUseCase: Get.find<DeleteChatRoomUseCase>(),
               chatRoomId: chatRoomId,
             ),
@@ -150,7 +152,7 @@ class ChatRoomController extends GetxController {
           Get.back();
           Get.dialog(ChatReviewDialog());
         },
-        rightActionText: "다음",
+        rightActionText: '다음',
       ),
     );
   }

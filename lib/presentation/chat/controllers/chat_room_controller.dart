@@ -86,8 +86,11 @@ class ChatRoomController extends GetxController {
     try {
       final json = jsonDecode(frame.body!) as Map<String, dynamic>;
       final viewModel = ChatMessageViewModel.fromJson(json);
-      viewChatList.add(viewModel);
-      lastMessageId = (json['messageId'] as num?)?.toInt() ?? lastMessageId;
+      viewChatList.insert(0, viewModel);
+      final receivedId = (json['messageId'] as num?)?.toInt();
+      if (receivedId != null && receivedId > lastMessageId) {
+        lastMessageId = receivedId;
+      }
       log('[ChatRoom] 메시지 수신: ${viewModel.content}');
     } catch (e) {
       log('[ChatRoom] 메시지 파싱 실패: $e / body: ${frame.body}');
@@ -119,7 +122,7 @@ class ChatRoomController extends GetxController {
   void sendChat(String content) {
     //TODO : 채팅 전송 및, 채팅 리스트에 대화 내역 추가
     textController.clear();
-    viewChatList.add(
+    viewChatList.insert(0,
       ChatMessageViewModel(
         messageType: "TEXT",
         content: content,

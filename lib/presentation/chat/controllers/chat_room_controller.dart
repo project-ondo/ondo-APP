@@ -1,6 +1,10 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
+import 'package:ondo/data/network/websocket/chat_stomp_client.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 import 'package:ondo/domain/usecases/chat/delete_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
@@ -19,19 +23,63 @@ class ChatRoomController extends GetxController {
 
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
   final ReadChatMessageUseCase readChatMessageUseCase;
+  final ChatStompClient stompClient;
 
   int lastMessageId = 0;
+
+  /// /topic/chat.rooms.{chatRoomPublicId} 구독 ID
+  String? _messageSubscriptionId;
 
   ChatRoomController({
     required this.chatRoomId,
     required this.loadChatRoomMessageUseCase,
     required this.readChatMessageUseCase,
+    required this.stompClient,
   });
 
   @override
   void onInit() {
     _initLoadChatRoomMessages();
+    _connectAndEnter();
     super.onInit();
+  }
+
+  @override
+  void onClose() {
+    // 구독 해제
+    if (_messageSubscriptionId != null) {
+      stompClient.unsubscribe(_messageSubscriptionId!);
+    }
+    // 채팅방 퇴장 이벤트 발행
+    stompClient.publish(
+      '/pub/chat.room.leave',
+      body: jsonEncode({'chatRoomPublicId': chatRoomId}),
+    );
+    textController.dispose();
+    super.onClose();
+  }
+
+  /// WebSocket 연결 → 채팅방 입장 이벤트 발행 → 메시지 토픽 구독 시작
+  Future<void> _connectAndEnter() async {
+    await stompClient.connect();
+
+    // 채팅방 입장 이벤트 발행
+    stompClient.publish(
+      '/pub/chat.room.enter',
+      body: jsonEncode({'chatRoomPublicId': chatRoomId}),
+    );
+    log('[ChatRoom] 채팅방 입장: $chatRoomId');
+
+    // 메시지 토픽 구독 시작
+    // 실제 수신 처리는 #163에서 구현 예정
+    _messageSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId',
+          (frame) {
+        // TODO #163: 실시간 메시지 수신 처리
+        log('[ChatRoom] 메시지 수신 (미처리): ${frame.body}');
+      },
+    );
+    log('[ChatRoom] 메시지 구독 시작: /topic/chat.rooms.$chatRoomId');
   }
 
   Future _initLoadChatRoomMessages() async {
@@ -49,7 +97,7 @@ class ChatRoomController extends GetxController {
     if (_cacheChatList.isNotEmpty) {
       viewChatList.assignAll(
         _cacheChatList.reversed.map(
-          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+              (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
         ),
       );
       lastMessageId = _cacheChatList.last.messageId;
@@ -85,7 +133,7 @@ class ChatRoomController extends GetxController {
         actionLeft: () => Get.back(),
         actionRight: () {
           Get.lazyPut(
-            () => ChatReviewController(
+                () => ChatReviewController(
               deleteChatRoomUseCase: Get.find<DeleteChatRoomUseCase>(),
               chatRoomId: chatRoomId,
             ),

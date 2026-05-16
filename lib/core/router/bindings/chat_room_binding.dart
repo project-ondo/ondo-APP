@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ondo/data/network/websocket/chat_stomp_client.dart';
 import 'package:ondo/data/repositories/chat/chat_repository_impl.dart';
 import 'package:ondo/domain/usecases/chat/delete_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
@@ -29,8 +30,9 @@ class ChatRoomBinding extends Bindings {
     Get.put<ChatRoomController>(
       ChatRoomController(
         chatRoomId: chatRoomId,
-        readChatMessageUseCase: Get.find<ReadChatMessageUseCase>(),
         loadChatRoomMessageUseCase: Get.find<LoadChatRoomMessageUseCase>(),
+        readChatMessageUseCase: Get.find<ReadChatMessageUseCase>(),
+        stompClient: Get.find<ChatStompClient>(),
       ),
       tag: chatRoomId,
     );

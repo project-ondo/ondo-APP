@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
+import 'package:ondo/core/router/bindings/chat_rating_binding.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
-import 'package:ondo/presentation/chat/controllers/chat_review_controller.dart';
 import 'package:ondo/presentation/chat/view_models/chat_message_view_model.dart';
 import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
 
@@ -58,16 +58,16 @@ class ChatRoomController extends GetxController {
     );
   }
 
-  void showQuitAlert() {
+  Future<void> quitChat() async {
     Get.dialog(
       CustomAlertDialog(
         title: "커피챗 종료",
         comment: "정말 커피챗을 종료하시겠어요?",
         actionLeft: () => Get.back(),
-        actionRight: () {
-          Get.lazyPut(() => ChatReviewController());
+        actionRight: () async {
           Get.back();
-          Get.dialog(ChatReviewDialog());
+          ChatRatingBinding(chatRoomId: chatRoomId).dependencies();
+          await Get.dialog(ChatReviewDialog());
         },
         rightActionText: "다음",
       ),

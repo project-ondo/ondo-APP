@@ -17,7 +17,7 @@ class RatingRemoteDatasource {
 
     try {
       final res = await client.post(
-        Uri.parse("${ApiConstants.chats}/rating/rooms/$chatRoomPublicId"),
+        Uri.parse("${ApiConstants.rating}/rooms/$chatRoomPublicId"),
         headers: ApiConstants.baseHeader,
         body: jsonEncode(model.toJson()),
       );

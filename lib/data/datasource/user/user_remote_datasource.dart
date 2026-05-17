@@ -17,7 +17,7 @@ class UserRemoteDatasource {
 
     try {
       final res = await client.get(
-        Uri.parse("${ApiConstants.users}/search?${model.toQueryString()}"),
+        Uri.parse("${ApiConstants.user}/search?${model.toQueryString()}"),
       );
 
       final body = jsonDecode(res.body);
@@ -43,7 +43,7 @@ class UserRemoteDatasource {
 
     try {
       final res = await client.get(
-        Uri.parse("${ApiConstants.users}/recommend${model.toQueryParameter()}"),
+        Uri.parse("${ApiConstants.user}/recommend${model.toQueryParameter()}"),
       );
       final body = jsonDecode(res.body);
 
@@ -67,7 +67,7 @@ class UserRemoteDatasource {
 
     try {
       final res = await client.get(
-        Uri.parse('${ApiConstants.users}/$publicId/profile'),
+        Uri.parse('${ApiConstants.user}/$publicId/profile'),
       );
 
       // 상태 코드 먼저 확인 후 jsonDecode

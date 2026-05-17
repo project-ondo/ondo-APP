@@ -14,7 +14,7 @@ class RatingRepositoryImpl extends RatingRepository {
     String comment,
     List<String> tags,
   ) async {
-    final model = RatingChatRequestModel(star: star, comment: comment, tags: tags);
+    final model = RatingChatRequestModel(stars: star, comment: comment, tags: tags);
     final res = await remoteDatasource.ratingChatRoom(
       chatRoomPublicId,
       model,

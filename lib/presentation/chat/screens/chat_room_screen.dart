@@ -86,6 +86,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
   Widget _topBar() => CustomBackButton(
     moreOptions: true,
     useUserProfile: true,
+    backAction: controller.backChatRoom,
     userInfo: (
       SvgPicture.asset(
         AppIcon.defaultProfile.path,
@@ -95,8 +96,9 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     itemBuilder: (context) => [
       _customPopupMenu(
         "커피챗 종료하기",
-        //종료 알림창 표시
-        controller.showQuitAlert,
+
+        ///종료 알림창 표시
+        controller.quitChat,
       ),
       _customPopupMenu(
         "신고하기",

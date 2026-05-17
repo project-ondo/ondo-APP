@@ -1,26 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
+import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
+import 'package:ondo/presentation/community/screens/community_post_create_screen.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
-import 'package:ondo/presentation/community/widgets/community_post_body.dart';
-import 'package:ondo/presentation/community/widgets/community_post_title.dart';
-import 'package:ondo/presentation/community/widgets/community_comment_list.dart';
-import 'package:ondo/presentation/community/widgets/community_related_post_list.dart';
-import 'package:ondo/presentation/community/widgets/community_post_report_dialog.dart';
+import 'package:ondo/presentation/post/widgets/post_body.dart';
+import 'package:ondo/presentation/post/widgets/post_comment_list.dart';
+import 'package:ondo/presentation/post/widgets/post_title.dart';
+import 'package:ondo/presentation/post/widgets/related_post_list.dart';
+import 'package:ondo/presentation/post/widgets/post_report_dialog.dart';
 
 class PostDetailScreen extends StatefulWidget {
-  const PostDetailScreen.myPost({super.key}) : isMy = true;
-
-  const PostDetailScreen.otherPost({super.key}) : isMy = false;
-
-  final bool isMy;
+  const PostDetailScreen({super.key});
 
   @override
-  State<PostDetailScreen> createState() =>
-      _PostDetailScreenState();
+  State<PostDetailScreen> createState() => _PostDetailScreenState();
 }
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
@@ -29,12 +29,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   @override
   void initState() {
     super.initState();
+    _controller = Get.find<PostViewController>();
   }
 
   void _showPostReportDialog() {
     showDialog(
       context: context,
-      builder: (context) => CommunityPostReportDialog(),
+      builder: (context) => PostReportDialog(),
     );
   }
 
@@ -46,12 +47,28 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         comment: "정말 게시물 삭제하시겠어요?",
         actionLeft: () => Navigator.pop(context),
         actionRight: () {
-          _controller.deletePostRequest();
           Navigator.pop(context);
+          _controller.deletePost();
         },
         rightActionText: "삭제",
       ),
     );
+  }
+
+  void _goToEditScreen() {
+    Get.delete<CommunityPostCreateController>(force: true);
+    Get.lazyPut(
+          () => CommunityPostCreateController(
+        createUseCase: Get.find<CreatePostUseCase>(),
+        updateUseCase: Get.find<UpdatePostUseCase>(),
+        isEditMode: true,
+        editPostId: _controller.postId,
+        initialTitle: _controller.title.value,
+        initialContent: _controller.bodyText.value,
+        initialTags: _controller.postTags.toList(),
+      ),
+    );
+    Get.to(() => CommunityPostCreateScreen());
   }
 
   @override
@@ -74,24 +91,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     CustomBackButton(
       moreOptions: true,
       itemBuilder: (context) => [
-        if (!widget.isMy)
-          _topPopupItem("게시물 신고하기", _showPostReportDialog)
-        else ...[
-          _topPopupItem("게시물 수정하기", () {}),
-          _topPopupItem("게시물 삭제하기", _showDeletePostAlertDialog),
-        ],
+        _topPopupItem("게시물 수정하기", _goToEditScreen),
+        _topPopupItem("게시물 삭제하기", _showDeletePostAlertDialog),
+        _topPopupItem("게시물 신고하기", _showPostReportDialog),
       ],
     ),
-    CommunityPostTitle(),
+    PostTitle(),
   ];
 
   Widget _body() => Padding(
     padding: AppPadding.screenHorizontal,
     child: Column(
       children: [
-        CommunityPostBody(),
+        PostBody(),
         AppGap.v24,
-        CommunityCommentList(),
+        PostCommentList(),
       ],
     ),
   );
@@ -102,7 +116,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     child: Column(
       children: [
         AppGap.v16,
-        CommunityRelatedPostList(),
+        RelatedPostList(),
       ],
     ),
   );

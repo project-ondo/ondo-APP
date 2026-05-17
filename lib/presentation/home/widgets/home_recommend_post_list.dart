@@ -17,6 +17,7 @@ class HomeRecommendPostList extends BasePostGrid {
     return _controller.viewPostList
         .map(
           (post) => PostItem(
+            postId: post.postId,
             skills: post.tags,
             title: post.title,
             author: post.authorName,
@@ -32,6 +33,7 @@ class HomeRecommendPostList extends BasePostGrid {
             //TODO : 서버에서 북마크, 좋아요 표시 값 전송시, 변경
             initialBookmark: false,
             initialFavorite: false,
+            isMy: true,
           ),
         )
         .toList();

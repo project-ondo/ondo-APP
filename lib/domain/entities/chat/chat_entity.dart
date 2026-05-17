@@ -10,6 +10,7 @@ class ChatEntity {
   final String lastMessagePreview;
   final bool muted;
   final DateTime? lastMessageAt;
+  late bool read = unreadCount > 0;
 
   ChatEntity({
     required this.roomId,

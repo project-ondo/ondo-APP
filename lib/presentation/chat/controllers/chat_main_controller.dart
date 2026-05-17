@@ -6,10 +6,11 @@ import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
 import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
+import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 
 class ChatMainController extends GetxController {
   final List<String> tags = <String>[].obs;
-  final Set<String> selectTagList = <String>{};
+  final RxSet<String> selectTagList = <String>{}.obs;
   final List<ChatEntity> _cacheChatRoomList = <ChatEntity>[];
   final RxList<ChatEntity> viewChatRoomList = <ChatEntity>[].obs;
 
@@ -20,13 +21,11 @@ class ChatMainController extends GetxController {
   final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
   final BlockChatRoomUseCase blockChatRoomUseCase;
   final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;
-  final ReadChatMessageUseCase readChatMessageUseCase;
 
   ChatMainController({
     required this.loadChatRoomsUseCase,
     required this.blockChatRoomUseCase,
     required this.cancelBlockChatRoomUseCase,
-    required this.readChatMessageUseCase,
   });
 
   @override
@@ -47,26 +46,6 @@ class ChatMainController extends GetxController {
     final success = await cancelBlockChatRoomUseCase.call(chatRoomPublicId);
     if (success != true) {
       error.value = "CANCEL_BLOCK_FAILED";
-    }
-  }
-
-  Future<void> _blockChatRoom(String chatRoomPublicId) async {
-    final success = await blockChatRoomUseCase.call(chatRoomPublicId);
-    if (success != true) {
-      error.value = "BLOCK_FAILED";
-    }
-  }
-
-  Future<void> _readChatMessage(
-    String chatRoomPublicId,
-    num lastReadMessageId,
-  ) async {
-    final success = await readChatMessageUseCase.call(
-      chatRoomPublicId,
-      lastReadMessageId,
-    );
-    if (success != true) {
-      error.value = "READ_FAILED";
     }
   }
 
@@ -95,8 +74,9 @@ class ChatMainController extends GetxController {
 
     result.addAll(
       _cacheChatRoomList.where(
-        (room) =>
-            selectTagList.any((tag) => room.opponentDisplayName.contains(tag)),
+        (room) => selectTagList.any(
+          (tag) => room.opponentDisplayName.contains(tag),
+        ),
       ),
     );
 
@@ -111,23 +91,44 @@ class ChatMainController extends GetxController {
 
   Future<void> enterChatRoom(int index) async {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
-    final roomId = viewChatRoomList[index].roomId;
+    final chat = viewChatRoomList[index];
     //TODO : route 정의 이후에 방식 변경
-    final lastMessageId = await Get.to<num>(
-      ChatRoomScreen(roomId: roomId),
-      binding: BindingsBuilder(
-        () => ChatRoomBinding(chatRoomId: roomId).dependencies(),
-      ),
+    final result = await Get.to<ChatRoomBackResult>(
+      ChatRoomScreen(roomId: chat.roomId),
+      binding: ChatRoomBinding(chatRoomId: chat.roomId),
     );
 
-    if (lastMessageId == null) return;
+    switch (result) {
+      case ChatRoomReadResult():
+        _cacheChatRoomList
+                .firstWhereOrNull((room) => room.roomId == chat.roomId)
+                ?.read =
+            true;
+        viewChatRoomList.assignAll(_cacheChatRoomList);
+        break;
+      case ChatRoomQuitResult():
+        _cacheChatRoomList.removeWhere(
+          (room) => room.roomId == chat.roomId,
+        );
+        viewChatRoomList.assignAll(_cacheChatRoomList);
+        break;
+      case null:
+    }
 
-    _readChatMessage(roomId, lastMessageId);
+    viewChatRoomList.refresh();
   }
 
   Future<void> blockingChat(int index) async {
     final roomId = viewChatRoomList[index].roomId;
-    await _blockChatRoom(roomId);
+    final success = await blockChatRoomUseCase.call(roomId);
+    if (success == true) {
+      _cacheChatRoomList.removeWhere(
+        (room) => room.roomId == roomId,
+      );
+      viewChatRoomList.assignAll(_cacheChatRoomList);
+    } else {
+      error.value = "BLOCK_FAILED";
+    }
   }
 
   Future<void> cancelBlockingChat(int index) async {

@@ -1,103 +1,203 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ondo/presentation/home/controllers/home_controller.dart';
+import 'package:ondo/presentation/community/controllers/community_controller.dart';
+
+import '../../../data/models/post/request/post_update_request_model.dart';
+import '../../../data/models/post/response/post_detail_model.dart';
+import '../../../domain/usecases/post/delete_post_usecase.dart';
+import '../../../domain/usecases/post/get_post_detail_usecase.dart';
+import '../../../domain/usecases/post/like_post_usecase.dart';
+import '../../../domain/usecases/post/unlike_post_usecase.dart';
+import '../../../domain/usecases/post/update_post_usecase.dart';
 
 class PostViewController extends GetxController {
-  RxString title = "".obs;
-  RxString authorName = "".obs;
-  Rx<Duration> postAt = Duration().obs;
-  bool selectHeart = false;
-  bool selectBookMark = false;
-  int heartTotal = 0;
-  int bookMarkTotal = 0;
-  RxList<String> postTags = <String>[].obs;
-  RxString bodyText = "".obs;
-  RxList<Comment> comments = <Comment>[].obs;
-  RxList<PostInfo> postList = <PostInfo>[].obs;
+  final int postId;
+  final GetPostDetailUseCase _useCase;
+  final UpdatePostUseCase _updateUseCase;
+  final DeletePostUseCase _deleteUseCase;
+  final LikePostUseCase _likeUseCase;
+  final UnlikePostUseCase _unlikeUseCase;
+
+  PostViewController({
+    required this.postId,
+    required GetPostDetailUseCase useCase,
+    required UpdatePostUseCase updateUseCase,
+    required DeletePostUseCase deleteUseCase,
+    required LikePostUseCase likeUseCase,
+    required UnlikePostUseCase unlikeUseCase,
+  }) : _useCase = useCase,
+       _updateUseCase = updateUseCase,
+       _deleteUseCase = deleteUseCase,
+       _likeUseCase = likeUseCase,
+       _unlikeUseCase = unlikeUseCase;
+
+  final Rx<PostDetailModel?> post = Rx<PostDetailModel?>(null);
+
+  final RxList<PostDetailModel> postList = <PostDetailModel>[].obs;
+
+  final isLoading = false.obs;
+  final errorMessage = ''.obs;
+
+  final RxString title = ''.obs;
+  final RxString authorName = ''.obs;
+  final RxString bodyText = ''.obs;
+  final RxList<String> postTags = <String>[].obs;
+  final Rx<DateTime> postAt = DateTime.now().obs;
+
+  final RxBool selectHeart = false.obs;
+  final RxBool selectBookMark = false.obs;
+
+  final RxInt heartTotal = 0.obs;
+  final RxInt bookMarkTotal = 0.obs;
+  final RxInt commentCount = 0.obs;
+
+  final RxList<Comment> comments = <Comment>[].obs;
+
+  late final TextEditingController commentController;
 
   @override
   void onInit() {
-    title.value = getTitle();
-    authorName.value = getAuthor();
-    postAt.value = getPostAt();
-    selectHeart = getSelectHeart();
-    selectBookMark = getSelectBookMark();
-    heartTotal = getHeartTotal();
-    bookMarkTotal = getBookMarkTotal();
-    postTags.value = getPostTags();
-    bodyText.value = getBodyText();
-    comments.value = getComments();
-    postList.value = _getPosts();
-
     super.onInit();
+    commentController = TextEditingController();
+    debugPrint('[PostViewController] onInit - postId: $postId');
+    fetchPostDetail(postId);
   }
 
-  void deletePostRequest() {}
+  @override
+  void onClose() {
+    commentController.dispose();
+    super.onClose();
+  }
+
+  Future<void> fetchPostDetail(int postId) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+      debugPrint('[PostViewController] API 요청 시작 - postId: $postId');
+
+      final result = await _useCase(postId);
+
+      post.value = result;
+      postList.assignAll([result]);
+
+      debugPrint('[PostViewController] API 응답 성공 - title: ${result.title}');
+
+      title.value = result.title;
+      authorName.value = result.authorName;
+      bodyText.value = result.content;
+      postTags.assignAll(result.tags);
+
+      heartTotal.value = result.likeCount;
+      commentCount.value = result.commentCount;
+    } catch (e) {
+      debugPrint('[PostViewController] API 요청 실패 - error: $e');
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> toggleLike(bool isLiked) async {
+    // UI에서 이미 카운트 변경했으니 컨트롤러에서는 상태만 업데이트
+    selectHeart.value = isLiked;
+    heartTotal.value = isLiked ? heartTotal.value + 1 : heartTotal.value - 1;
+
+    try {
+      if (isLiked) {
+        await _likeUseCase(postId);
+      } else {
+        await _unlikeUseCase(postId);
+      }
+      if (Get.isRegistered<CommunityController>()) {
+        Get.find<CommunityController>().updatePostLike(
+          postId,
+          heartTotal.value,
+          isLiked,
+        );
+      }
+    } catch (e) {
+      debugPrint('[PostViewController] 좋아요 토글 실패 - error: $e');
+      // 실패시 롤백
+      selectHeart.value = !isLiked;
+      heartTotal.value = isLiked ? heartTotal.value - 1 : heartTotal.value + 1;
+    }
+  }
+
+  Future<void> updatePost({
+    required String title,
+    required String content,
+    required List<String> tags,
+  }) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+      debugPrint('[PostViewController] 게시물 수정 요청 - postId: $postId');
+
+      await _updateUseCase(
+        postId,
+        PostUpdateRequestModel(
+          title: title,
+          content: content,
+          tags: tags,
+        ),
+      );
+
+      debugPrint('[PostViewController] 게시물 수정 성공');
+
+      await fetchPostDetail(postId);
+    } catch (e) {
+      debugPrint('[PostViewController] 게시물 수정 실패 - error: $e');
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> deletePost() async {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+      debugPrint('[PostViewController] 게시물 삭제 요청 - postId: $postId');
+
+      await _deleteUseCase(postId);
+
+      debugPrint('[PostViewController] 게시물 삭제 성공');
+
+      Get.find<CommunityController>().removePost(postId);
+
+      Get.back();
+    } catch (e) {
+      debugPrint('[PostViewController] 게시물 삭제 실패 - error: $e');
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  void createComment(String comment) {
+    if (comment.trim().isEmpty) return;
+
+    comments.insert(0, (
+      comment: comment,
+      author: "김유찬",
+      heartTotal: 0,
+      isMy: true,
+    ));
+
+    commentController.clear();
+  }
+
+  void deleteComment(Comment comment) {
+    comments.remove(comment);
+  }
 }
 
-extension DummyData on PostViewController {
-  String getTitle() => "요즘 UI UX";
-
-  String getAuthor() => "김유찬";
-
-  Duration getPostAt() => Duration(minutes: 4);
-
-  bool getSelectHeart() => false;
-
-  bool getSelectBookMark() => true;
-
-  int getHeartTotal() => 12;
-
-  int getBookMarkTotal() => 12;
-
-  List<String> getPostTags() => ["#UI/UX", "#FrontEnd"];
-
-  String getBodyText() => """요즘 UI·UX 이슈 보면, 기술은 엄청 발전했는데 사용자 입장은 좀 
-애매해짐. AI 추천이니 자동 생성이니 많아졌는데, 솔직히 왜 그게 뜨는지 모르겠음. 내가 선택한 건지, 그냥 떠밀린 건지 경계가 흐려짐.
-
-개인화도 마찬가지임. 처음엔 편한데 쓰다 보면 피곤함. 설정 건드릴 
-여지도 없고, 앱이 “너 이거 좋아하잖아” 하고 단정 짓는 느낌 듦. 다크 
-패턴은 말할 것도 없고, 가입은 한 번에 되는데 탈퇴는 왜 이렇게 
-숨겨놓는지 아직도 이해 안 감.
-
-접근성도 형식만 맞춘 경우 많음. 체크리스트는 통과했는데 실제로 써보면 불편함. 애니메이션, 효과 잔뜩 넣은 UI도 처음엔 와 소리 나오는데, 정보 찾으려면 오히려 방해됨.
-
-결국 요즘 UX 문제는 기술 부족이 아니라 태도 문제 같음. 사용자를 배려한다면서 사실은 컨트롤하려는 설계. 이제는 “얼마나 오래 쓰게 만드나” 말고 “얼마나 덜 스트레스 받게 하나”로 가야 하지 않나 싶음.""";
-
-  List<Comment> getComments() => [
-    for (int i = 0; i < 3; i++) ...{
-      (
-        author: "김유찬",
-        heartTotal: 12,
-        comment: "ㄹㅇ 다크 패턴은 진짜 법으로 좀 쳐야 함… 탈퇴 버튼 숨겨놓는 거 볼 때마다 정 떨어짐.",
-      ),
-      (author: "김유찬", heartTotal: 12, comment: "UI 피로도가 ㄹㅈㄷ 도대체 왜 숨기는겨"),
-      (
-        author: "김유찬",
-        heartTotal: 16,
-        comment: "ㄹㅇ 다크 패턴은 진짜 법으로 좀 쳐야 함… 탈퇴 버튼 숨겨놓는 거 볼 때마다 정 떨어짐.",
-      ),
-      (
-        author: "김유찬",
-        heartTotal: 12,
-        comment: "진짜 ㄹㅇ 계정 탈퇴 한번 하려면 이거하고 저거하고 귀찮아 죽겠음 진짜",
-      ),
-    },
-  ];
-
-  List<PostInfo> _getPosts() => [
-    for (int i = 0; i < 8; i++) ...{
-      (
-        name: "김유찬",
-        title: "요즘 UI UX",
-        skills: ["UI/UX", "FrontEnd"],
-        bookmarks: 12,
-        favoites: 12,
-        createAt: DateTime.now(),
-        isFavorite: i % 2 == 0,
-        isBookmark: i % 3 == 0,
-      ),
-    },
-  ];
-}
-
-typedef Comment = ({String author, String comment, int heartTotal});
+typedef Comment = ({
+  String author,
+  String comment,
+  int heartTotal,
+  bool isMy,
+});

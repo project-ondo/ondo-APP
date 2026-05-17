@@ -1,6 +1,8 @@
 import 'package:ondo/data/models/base/request/base_list_request_model.dart';
 import 'package:ondo/data/models/chat/request/chat_message_list_request_model.dart';
+import 'package:ondo/data/models/chat/response/chat_message_model.dart';
 import 'package:ondo/data/models/chat/response/chat_model.dart';
+import 'package:ondo/domain/entities/base/pageable_wrapper.dart';
 import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 import 'package:ondo/domain/repositories/chat/chat_repository.dart';
@@ -47,7 +49,7 @@ class ChatRepositoryImpl extends ChatRepository {
   }
 
   @override
-  Future<List<ChatMessageEntity>> loadChatRoomMessages(
+  Future<PageableWrapper<ChatMessageEntity>> loadChatRoomMessages(
     String chatRoomPublicId,
     int cursor,
     int size,
@@ -58,26 +60,40 @@ class ChatRepositoryImpl extends ChatRepository {
       model,
     );
 
-    if (json == null) return [];
+    if (json == null) return PageableWrapper(pages: [], nextCursor: null);
 
-    return (json["items"] as List?)
+    final dataModelList =
+        (json["items"] as List?)
             ?.map(
-              (e) => ChatMessageEntity.fromJsonChatMessageModel(e),
+              (e) => ChatMessageModel.fromJson(e),
             )
             .toList() ??
         [];
+
+    return PageableWrapper(
+      pages: dataModelList
+          .map((e) => ChatMessageEntity.fromJsonChatMessageModel(e))
+          .toList(),
+      nextCursor: json["nextCursor"],
+    );
   }
 
   @override
   Future<bool> readChatMessage(
     String chatRoomPublicId,
-    num lastReadMessageId,
+    int lastReadMessageId,
   ) async {
     final res = await remoteDatasource.readChatMessage(
       chatRoomPublicId,
       lastReadMessageId,
     );
 
+    return res;
+  }
+
+  @override
+  Future<bool> deleteChatRoom(String chatRoomPublicId) async {
+    final res = await remoteDatasource.deleteChatRoom(chatRoomPublicId);
     return res;
   }
 }

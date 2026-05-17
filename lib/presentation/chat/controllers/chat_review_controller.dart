@@ -30,7 +30,10 @@ class ChatReviewController extends GetxController {
   }
 
   Future<void> _ratingChatRoom() async {
-    if (star.value < 1 || star.value > 5) return;
+    if (star.value < 1 || star.value > 5) {
+      error.value = "RATING_ERROR";
+      return;
+    }
 
     final res = await ratingChatRoomUseCase.call(
       chatRoomPublicId: chatRoomId,

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
@@ -11,32 +10,7 @@ import 'package:ondo/presentation/home/screens/home_screen.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
 import 'package:ondo/presentation/profile/screens/my_profile_screen.dart';
 
-import '../../../core/router/bindings/login_binding.dart';
-import '../../../core/router/bindings/navigation_binding.dart';
-import '../../../data/network/constants/api_constants.dart';
-import '../../../domain/usecases/auth/sign_in_use_case.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await dotenv.load(fileName: '.env');
-
-  LoginBinding().dependencies();
-
-  //TODO : 임시 login 로직 삭제
-  await Get.find<SignInUseCase>().call(
-    loginId: ApiConstants.loginId,
-    password: ApiConstants.loginPassword,
-  );
-
-  NavigationBinding().dependencies();
-
-  runApp(
-    GetMaterialApp(
-      home: NavigationScreen(),
-    ),
-  );
-}
 
 class NavigationScreen extends GetView<NavigationController> {
   const NavigationScreen({super.key});

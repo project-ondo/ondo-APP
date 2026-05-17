@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:ondo/domain/usecases/chat/delete_chat_room_use_case.dart';
-import 'package:ondo/domain/usecases/chat/delete_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/rating/rating_chat_room_use_case.dart';
+import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 
 class ChatReviewController extends GetxController {
   final RxBool enableSubmit = false.obs;
@@ -30,7 +30,7 @@ class ChatReviewController extends GetxController {
   }
 
   Future<void> _ratingChatRoom() async {
-    if (star.value > 1 || star.value < 5) return;
+    if (star.value < 1 || star.value > 5) return;
 
     final res = await ratingChatRoomUseCase.call(
       chatRoomPublicId: chatRoomId,
@@ -59,11 +59,16 @@ class ChatReviewController extends GetxController {
   Future submitReview() async {
     if (enableSubmit.value) {
       await _deleteChatRoom();
-      await _ratingChatRoom();
-
+      //TODO : error state 정의
       if (error.isEmpty) {
-        Get.back<bool>(closeOverlays: true, result: true);
+        await _ratingChatRoom();
       }
+
+      Get.back<ChatRoomQuitResult>(
+        closeOverlays: true,
+        //TODO : error state 정의 후 state delete error가 아닐 경우만 true 설장
+        result: ChatRoomQuitResult(success: error.isEmpty),
+      );
     }
   }
 

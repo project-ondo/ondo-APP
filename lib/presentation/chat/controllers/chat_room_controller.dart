@@ -9,6 +9,7 @@ import 'package:ondo/data/network/websocket/stomp_frame.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
 import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
+import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 import 'package:ondo/presentation/chat/view_models/chat_message_view_model.dart';
 import 'package:ondo/core/router/bindings/chat_rating_binding.dart';
 import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
@@ -111,7 +112,7 @@ class ChatRoomController extends GetxController {
     if (_cacheChatList.isNotEmpty) {
       viewChatList.assignAll(
         _cacheChatList.reversed.map(
-              (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
         ),
       );
       lastMessageId = _cacheChatList.last.messageId;
@@ -152,8 +153,10 @@ class ChatRoomController extends GetxController {
   }
 
   Future backChatRoom() async {
-    Get.back<bool>(
-      result: await readChatMessageUseCase.call(chatRoomId, lastMessageId),
+    Get.back<ChatRoomReadResult>(
+      result: ChatRoomReadResult(
+        success: await readChatMessageUseCase.call(chatRoomId, lastMessageId),
+      ),
     );
   }
 

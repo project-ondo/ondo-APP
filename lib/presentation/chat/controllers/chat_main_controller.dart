@@ -4,7 +4,6 @@ import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
-import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 
@@ -100,17 +99,21 @@ class ChatMainController extends GetxController {
 
     switch (result) {
       case ChatRoomReadResult():
-        _cacheChatRoomList
-                .firstWhereOrNull((room) => room.roomId == chat.roomId)
-                ?.read =
-            true;
-        viewChatRoomList.assignAll(_cacheChatRoomList);
+        if (result.success) {
+          _cacheChatRoomList
+                  .firstWhereOrNull((room) => room.roomId == chat.roomId)
+                  ?.read =
+              true;
+          viewChatRoomList.assignAll(_cacheChatRoomList);
+        }
         break;
       case ChatRoomQuitResult():
-        _cacheChatRoomList.removeWhere(
-          (room) => room.roomId == chat.roomId,
-        );
-        viewChatRoomList.assignAll(_cacheChatRoomList);
+        if (result.success) {
+          _cacheChatRoomList.removeWhere(
+            (room) => room.roomId == chat.roomId,
+          );
+          viewChatRoomList.assignAll(_cacheChatRoomList);
+        }
         break;
       case null:
     }

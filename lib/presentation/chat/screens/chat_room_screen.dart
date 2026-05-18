@@ -44,15 +44,22 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
   Widget _chatList() => ListView.builder(
     itemBuilder: (context, index) {
       final chat = controller.viewChatList[index];
-      return chat.isMe ? _myChat(chat.content) : _otherChat(chat.content);
+      if (chat.isMe) {
+        return Obx(() {
+          final isRead = chat.messageId != null &&
+              chat.messageId! <= controller.opponentLastReadMessageId.value;
+          return _myChat(chat.content, isRead: isRead);
+        });
+      }
+      return _otherChat(chat.content);
     },
     itemCount: controller.viewChatList.length,
   );
 
-  Widget _myChat(String text) => Row(
+  Widget _myChat(String text, {bool isRead = false}) => Row(
     mainAxisAlignment: MainAxisAlignment.end,
     children: [
-      ChatCard(isMe: true, text: text),
+      ChatCard(isMe: true, text: text, isRead: isRead),
     ],
   );
 

@@ -1,6 +1,7 @@
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 
 class ChatMessageViewModel {
+  final int? messageId;
   final bool isMe;
   final String? profileImageKey;
   final String messageType;
@@ -8,6 +9,7 @@ class ChatMessageViewModel {
   final DateTime createdAt;
 
   ChatMessageViewModel({
+    this.messageId,
     required this.messageType,
     required this.content,
     required this.createdAt,
@@ -19,6 +21,7 @@ class ChatMessageViewModel {
   factory ChatMessageViewModel.fromJsonChatMessageEntity(
     ChatMessageEntity entity,
   ) => ChatMessageViewModel(
+    messageId: entity.messageId,
     messageType: entity.messageType,
     content: entity.content,
     createdAt: entity.createdAt,
@@ -36,6 +39,7 @@ class ChatMessageViewModel {
   /// ```
   factory ChatMessageViewModel.fromJson(Map<String, dynamic> json) =>
       ChatMessageViewModel(
+        messageId: (json['messageId'] as num?)?.toInt(),
         messageType: json['messageType'] as String? ?? 'TEXT',
         content: json['content'] as String? ?? '',
         createdAt:

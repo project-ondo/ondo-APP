@@ -2,9 +2,8 @@ import 'dart:math';
 import 'package:get/get.dart';
 import 'package:ondo/domain/entities/post/post_entity.dart';
 import 'package:ondo/domain/entities/user/user_entity.dart';
-import 'package:ondo/domain/usecases/home/load_recommend_posts_use_case.dart';
-import 'package:ondo/domain/usecases/home/load_recommend_users_use_case.dart';
-import 'package:ondo/domain/usecases/search/user_search_use_case.dart';
+import 'package:ondo/domain/usecases/post/get_recommend_posts_usecase.dart';
+import 'package:ondo/domain/usecases/user/load_recommend_users_use_case.dart';
 
 class HomeController extends GetxController {
   final RxList<HomeRecentPopularPostInfo> ranks =
@@ -15,22 +14,17 @@ class HomeController extends GetxController {
   final List<UserEntity> _cacheProfileList = [];
 
   ///usecase 모음
-  final LoadRecommendPostsUseCase recommendPostsUseCase;
+  final GetRecommendPostsUseCase recommendPostsUseCase;
   final LoadRecommendUsersUseCase recommendUsersUseCase;
-  final UserSearchUseCase userSearchUseCase;
-
-  final searchResultController = HomeSearchResultController();
 
   HomeController({
     required this.recommendPostsUseCase,
     required this.recommendUsersUseCase,
-    required this.userSearchUseCase,
   });
 
   @override
   void onInit() async {
     super.onInit();
-    Get.put(searchResultController);
     //TODO : ranking 게시물 불러오기
     _sortRating(ranks..addAll(_getRanks()));
     await loadRecommendPosts();
@@ -39,7 +33,8 @@ class HomeController extends GetxController {
 
   Future<void> loadRecommendPosts() async {
     _cachePostList.clear();
-    _cachePostList.addAll(await recommendPostsUseCase.call());
+    //TODO : post 로직 변경
+    //_cachePostList.addAll();
     viewPostList.assignAll(_cachePostList);
   }
 
@@ -52,38 +47,6 @@ class HomeController extends GetxController {
   void _sortRating(RxList<HomeRecentPopularPostInfo>? list) => list == null
       ? ranks.sort((a, b) => (b.favorites - a.favorites))
       : list.sort((a, b) => b.favorites - a.favorites);
-
-  void search({required String query, required List<String> tags}) async {
-    final Set<UserEntity> userRes = {};
-    final Set<PostEntity> postRes = {};
-
-    ///서버 유저 검색 api에서 user결과 실시간 표시
-    userRes.addAll(
-      await userSearchUseCase.call(interests: tags, keyword: query),
-    );
-
-    //TODO : 서버 게시물 검색 api 개발 이후 구현
-
-    ///홈 검색 결과 표시 controller
-    searchResultController.updateResult(
-      postRes,
-      userRes,
-    );
-  }
-}
-
-class HomeSearchResultController extends GetxController {
-  final RxList<UserEntity> viewUserList = <UserEntity>[].obs;
-  final RxList<PostEntity> viewPostList = <PostEntity>[].obs;
-
-  ///홈 검색 결과 업데이트
-  void updateResult(
-    Iterable<PostEntity> posts,
-    Iterable<UserEntity> profiles,
-  ) {
-    viewUserList.assignAll(profiles);
-    viewPostList.assignAll(posts);
-  }
 }
 
 //TODO : 임시 데이터 삭제

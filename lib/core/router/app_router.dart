@@ -93,7 +93,7 @@ class RoutePaths {
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: Get.key,
-  initialLocation: RoutePaths.splash,
+  initialLocation: RoutePaths.home,
   routes: [
     GoRoute(
       path: RoutePaths.splash,

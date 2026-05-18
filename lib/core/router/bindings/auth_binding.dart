@@ -9,20 +9,20 @@ import '../../env.dart';
 class AuthBinding extends Bindings {
   @override
   void dependencies() {
-    if (Get.isRegistered<AuthRemoteDatasource>()) {
+    if (!Get.isRegistered<AuthRemoteDatasource>()) {
       Get.lazyPut<AuthRemoteDatasource>(
         () => AuthRemoteDatasource(Env.apiBaseUrl),
         fenix: true,
       );
     }
-    if (Get.isRegistered<AuthLocalDatasource>()) {
+    if (!Get.isRegistered<AuthLocalDatasource>()) {
       Get.lazyPut<AuthLocalDatasource>(
         () => AuthLocalDatasourceImpl(),
         fenix: true,
       );
     }
 
-    if (Get.isRegistered<AuthClient>()) {
+    if (!Get.isRegistered<AuthClient>()) {
       Get.lazyPut(
         () => AuthClient(
           localDatasource: Get.find<AuthLocalDatasource>(),

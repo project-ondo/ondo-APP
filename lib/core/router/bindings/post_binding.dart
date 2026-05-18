@@ -41,7 +41,6 @@ class PostBinding extends Bindings {
     Get.lazyPut<UnlikePostUseCase>(
       () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
-    //TODO : tag가 메모리에 남는 경우 delete 로직 추가
     Get.put<PostViewController>(
       tag: postId.toString(),
       PostViewController(

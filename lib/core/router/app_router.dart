@@ -138,8 +138,12 @@ final GoRouter appRouter = GoRouter(
           path: RoutePaths.postDetail,
           builder: (context, state) {
             final postId = int.parse(state.pathParameters['postId']!);
-            PostBinding(postId, state.extra as bool? ?? false).dependencies();
-            return PostDetailScreen(postId: postId,);
+            if (!Get.isRegistered<PostViewController>(tag: postId.toString())) {
+              PostBinding(postId, state.extra as bool? ?? false).dependencies();
+            }
+            return PostDetailScreen(
+              postId: postId,
+            );
           },
           onExit: (context, state) {
             final postId = int.parse(state.pathParameters['postId']!);

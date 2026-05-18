@@ -12,6 +12,7 @@ import '../../../domain/usecases/post/update_post_usecase.dart';
 
 class PostViewController extends GetxController {
   final int postId;
+  final bool initialIsFavorite;
   final GetPostDetailUseCase _useCase;
   final UpdatePostUseCase _updateUseCase;
   final DeletePostUseCase _deleteUseCase;
@@ -20,19 +21,19 @@ class PostViewController extends GetxController {
 
   PostViewController({
     required this.postId,
+    this.initialIsFavorite = false,
     required GetPostDetailUseCase useCase,
     required UpdatePostUseCase updateUseCase,
     required DeletePostUseCase deleteUseCase,
     required LikePostUseCase likeUseCase,
     required UnlikePostUseCase unlikeUseCase,
   }) : _useCase = useCase,
-       _updateUseCase = updateUseCase,
-       _deleteUseCase = deleteUseCase,
-       _likeUseCase = likeUseCase,
-       _unlikeUseCase = unlikeUseCase;
+        _updateUseCase = updateUseCase,
+        _deleteUseCase = deleteUseCase,
+        _likeUseCase = likeUseCase,
+        _unlikeUseCase = unlikeUseCase;
 
   final Rx<PostDetailModel?> post = Rx<PostDetailModel?>(null);
-
   final RxList<PostDetailModel> postList = <PostDetailModel>[].obs;
 
   final isLoading = false.obs;
@@ -59,7 +60,9 @@ class PostViewController extends GetxController {
   void onInit() {
     super.onInit();
     commentController = TextEditingController();
-    debugPrint('[PostViewController] onInit - postId: $postId');
+    // 목록에서 전달받은 isFavorite으로 초기 상태 설정
+    selectHeart.value = initialIsFavorite;
+    debugPrint('[PostViewController] onInit - postId: $postId, initialIsFavorite: $initialIsFavorite');
     fetchPostDetail(postId);
   }
 
@@ -99,7 +102,6 @@ class PostViewController extends GetxController {
   }
 
   Future<void> toggleLike(bool isLiked) async {
-    // UI에서 이미 카운트 변경했으니 컨트롤러에서는 상태만 업데이트
     selectHeart.value = isLiked;
     heartTotal.value = isLiked ? heartTotal.value + 1 : heartTotal.value - 1;
 
@@ -118,7 +120,6 @@ class PostViewController extends GetxController {
       }
     } catch (e) {
       debugPrint('[PostViewController] 좋아요 토글 실패 - error: $e');
-      // 실패시 롤백
       selectHeart.value = !isLiked;
       heartTotal.value = isLiked ? heartTotal.value - 1 : heartTotal.value + 1;
     }
@@ -181,10 +182,10 @@ class PostViewController extends GetxController {
     if (comment.trim().isEmpty) return;
 
     comments.insert(0, (
-      comment: comment,
-      author: "김유찬",
-      heartTotal: 0,
-      isMy: true,
+    comment: comment,
+    author: "김유찬",
+    heartTotal: 0,
+    isMy: true,
     ));
 
     commentController.clear();
@@ -196,8 +197,8 @@ class PostViewController extends GetxController {
 }
 
 typedef Comment = ({
-  String author,
-  String comment,
-  int heartTotal,
-  bool isMy,
+String author,
+String comment,
+int heartTotal,
+bool isMy,
 });

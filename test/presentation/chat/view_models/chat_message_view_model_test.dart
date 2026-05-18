@@ -84,6 +84,7 @@ void main() {
     });
 
     test('createdAt 잘못된 형식 → 현재 시각으로 대체 (예외 없음)', () {
+      final before = DateTime.now();
       final json = {
         'messageId': 6,
         'roomId': 'room-uuid',
@@ -93,7 +94,11 @@ void main() {
         'createdAt': 'invalid-date',
       };
 
-      expect(() => ChatMessageViewModel.fromJson(json), returnsNormally);
+      final vm = ChatMessageViewModel.fromJson(json);
+      final after = DateTime.now();
+
+      expect(vm.createdAt.isAfter(before) || vm.createdAt.isAtSameMomentAs(before), true);
+      expect(vm.createdAt.isBefore(after) || vm.createdAt.isAtSameMomentAs(after), true);
     });
 
     test('isMe는 항상 false (senderId 비교 미구현)', () {
@@ -129,7 +134,9 @@ void main() {
     });
 
     test('빈 문자열 content는 전송하지 않아야 함 (trim 검증)', () {
-      // sendChat()의 trimmed.isEmpty 분기를 검증
+      // ChatRoomController.sendChat()은 content.trim().isEmpty이면
+      // stompClient.publish를 호출하지 않아야 함
+      // (단위 테스트는 ChatRoomController mock 테스트에서 검증)
       const raw = '   ';
       expect(raw.trim().isEmpty, true);
     });

@@ -17,19 +17,21 @@ import 'package:ondo/presentation/post/widgets/related_post_list.dart';
 import 'package:ondo/presentation/post/widgets/post_report_dialog.dart';
 
 class PostDetailScreen extends StatefulWidget {
-  const PostDetailScreen({super.key});
+  const PostDetailScreen({super.key, required this.postId});
+
+  final int postId;
 
   @override
   State<PostDetailScreen> createState() => _PostDetailScreenState();
 }
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
-  late final PostViewController _controller;
+  late final PostViewController controller;
 
   @override
   void initState() {
     super.initState();
-    _controller = Get.find<PostViewController>();
+    controller = Get.find<PostViewController>(tag: widget.postId.toString());
   }
 
   void _showPostReportDialog() {
@@ -48,7 +50,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         actionLeft: () => Navigator.pop(context),
         actionRight: () {
           Navigator.pop(context);
-          _controller.deletePost();
+          controller.deletePost();
         },
         rightActionText: "삭제",
       ),
@@ -58,14 +60,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   void _goToEditScreen() {
     Get.delete<CommunityPostCreateController>(force: true);
     Get.lazyPut(
-          () => CommunityPostCreateController(
+      () => CommunityPostCreateController(
         createUseCase: Get.find<CreatePostUseCase>(),
         updateUseCase: Get.find<UpdatePostUseCase>(),
         isEditMode: true,
-        editPostId: _controller.postId,
-        initialTitle: _controller.title.value,
-        initialContent: _controller.bodyText.value,
-        initialTags: _controller.postTags.toList(),
+        editPostId: controller.postId,
+        initialTitle: controller.title.value,
+        initialContent: controller.bodyText.value,
+        initialTags: controller.postTags.toList(),
       ),
     );
     Get.to(() => CommunityPostCreateScreen());

@@ -7,11 +7,11 @@ import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/data/network/websocket/chat_stomp_client.dart';
 import 'package:ondo/data/network/websocket/stomp_frame.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
-import 'package:ondo/domain/usecases/chat/delete_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
 import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
-import 'package:ondo/presentation/chat/controllers/chat_review_controller.dart';
+import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 import 'package:ondo/presentation/chat/view_models/chat_message_view_model.dart';
+import 'package:ondo/core/router/bindings/chat_rating_binding.dart';
 import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
 
 class ChatRoomController extends GetxController {
@@ -112,7 +112,7 @@ class ChatRoomController extends GetxController {
     if (_cacheChatList.isNotEmpty) {
       viewChatList.assignAll(
         _cacheChatList.reversed.map(
-              (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
         ),
       );
       lastMessageId = _cacheChatList.last.messageId;
@@ -153,25 +153,22 @@ class ChatRoomController extends GetxController {
   }
 
   Future backChatRoom() async {
-    Get.back<bool>(
-      result: await readChatMessageUseCase.call(chatRoomId, lastMessageId),
+    Get.back<ChatRoomReadResult>(
+      result: ChatRoomReadResult(
+        success: await readChatMessageUseCase.call(chatRoomId, lastMessageId),
+      ),
     );
   }
 
-  void quitChatRoom() {
+  Future quitChat() async {
     Get.dialog(
       CustomAlertDialog(
         title: '커피챗 종료',
         comment: '정말 커피챗을 종료하시겠어요?',
         actionLeft: () => Get.back(),
         actionRight: () {
-          Get.lazyPut(
-                () => ChatReviewController(
-              deleteChatRoomUseCase: Get.find<DeleteChatRoomUseCase>(),
-              chatRoomId: chatRoomId,
-            ),
-          );
           Get.back();
+          ChatRatingBinding(chatRoomId: chatRoomId).dependencies();
           Get.dialog(ChatReviewDialog());
         },
         rightActionText: '다음',

@@ -25,7 +25,7 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     final log = ApiConstants(logName: '추천 게시물 조회');
     try {
       final uri = Uri.parse(
-        '${ApiConstants.posts}/recommend',
+        '${ApiConstants.post}/recommend',
       ).replace(queryParameters: {'page': '$page'});
       final response = await _client.get(uri);
       final body = jsonDecode(response.body);
@@ -47,7 +47,7 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     final log = ApiConstants(logName: '게시물 상세 조회');
     try {
       final response = await _client.get(
-        Uri.parse('${ApiConstants.posts}/$postId'),
+        Uri.parse('${ApiConstants.post}/$postId'),
       );
       final body = jsonDecode(response.body);
       log.statusLog(response.statusCode);
@@ -65,7 +65,7 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     final log = ApiConstants(logName: '게시물 생성');
     try {
       final response = await _client.post(
-        Uri.parse(ApiConstants.posts),
+        Uri.parse(ApiConstants.post),
         headers: ApiConstants.baseHeader,
         body: jsonEncode(model.toJson()),
       );
@@ -88,7 +88,7 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     final log = ApiConstants(logName: '게시물 수정');
     try {
       final response = await _client.patch(
-        Uri.parse('${ApiConstants.posts}/$postId'),
+        Uri.parse('${ApiConstants.post}/$postId'),
         headers: ApiConstants.baseHeader,
         body: jsonEncode(model.toJson()),
       );
@@ -110,7 +110,7 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     final log = ApiConstants(logName: '게시물 삭제');
     try {
       final response = await _client.delete(
-        Uri.parse('${ApiConstants.posts}/$postId'),
+        Uri.parse('${ApiConstants.post}/$postId'),
       );
       final body = jsonDecode(response.body);
       log.statusLog(response.statusCode);
@@ -130,7 +130,7 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     final log = ApiConstants(logName: '게시물 좋아요');
     try {
       final response = await _client.post(
-        Uri.parse('${ApiConstants.posts}/$postId/like'),
+        Uri.parse('${ApiConstants.post}/$postId/like'),
         headers: ApiConstants.baseHeader,
       );
       final body = jsonDecode(response.body);
@@ -151,7 +151,7 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     final log = ApiConstants(logName: '게시물 좋아요 취소');
     try {
       final response = await _client.delete(
-        Uri.parse('${ApiConstants.posts}/$postId/like'),
+        Uri.parse('${ApiConstants.post}/$postId/like'),
       );
       final body = jsonDecode(response.body);
       log.statusLog(response.statusCode);

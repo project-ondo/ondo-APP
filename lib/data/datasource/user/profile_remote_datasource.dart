@@ -15,7 +15,7 @@ class ProfileRemoteDatasource {
     final log = ApiConstants(logName: '내 프로필 조회');
 
     final res = await client.get(
-      Uri.parse('${ApiConstants.users}/my/profile'),
+      Uri.parse('${ApiConstants.user}/my/profile'),
     );
 
     log.statusLog(res.statusCode);
@@ -47,7 +47,7 @@ class ProfileRemoteDatasource {
     final log = ApiConstants(logName: '프로필 수정');
 
     final res = await client.patch(
-      Uri.parse('${ApiConstants.users}/my/profile'),
+      Uri.parse('${ApiConstants.user}/my/profile'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(model.toJson()),
     );
@@ -73,7 +73,7 @@ class ProfileRemoteDatasource {
     final log = ApiConstants(logName: '프로필 이미지 변경');
 
     final res = await client.put(
-      Uri.parse('${ApiConstants.users}/my/profile/image'),
+      Uri.parse('${ApiConstants.user}/my/profile/image'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'key': imageKey}),
     );
@@ -99,7 +99,7 @@ class ProfileRemoteDatasource {
     final log = ApiConstants(logName: '회원탈퇴');
 
     final res = await client.delete(
-      Uri.parse('${ApiConstants.users}/my'),
+      Uri.parse('${ApiConstants.user}/my'),
     );
 
     log.statusLog(res.statusCode);

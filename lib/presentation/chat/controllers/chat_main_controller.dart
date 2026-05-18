@@ -4,8 +4,8 @@ import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
-import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
+import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 
 class ChatMainController extends GetxController {
   final List<String> tags = <String>[].obs;
@@ -20,13 +20,11 @@ class ChatMainController extends GetxController {
   final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
   final BlockChatRoomUseCase blockChatRoomUseCase;
   final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;
-  final ReadChatMessageUseCase readChatMessageUseCase;
 
   ChatMainController({
     required this.loadChatRoomsUseCase,
     required this.blockChatRoomUseCase,
     required this.cancelBlockChatRoomUseCase,
-    required this.readChatMessageUseCase,
   });
 
   @override
@@ -37,7 +35,6 @@ class ChatMainController extends GetxController {
   }
 
   Future<void> _loadChatRooms() async {
-    //TODO 구조 변경
     _cacheChatRoomList.assignAll(
       await loadChatRoomsUseCase.call(page: 0, size: 10),
     );
@@ -76,8 +73,9 @@ class ChatMainController extends GetxController {
 
     result.addAll(
       _cacheChatRoomList.where(
-        (room) =>
-            selectTagList.any((tag) => room.opponentDisplayName.contains(tag)),
+        (room) => selectTagList.any(
+          (tag) => room.opponentDisplayName.contains(tag),
+        ),
       ),
     );
 
@@ -92,14 +90,34 @@ class ChatMainController extends GetxController {
 
   Future<void> enterChatRoom(int index) async {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
-    final roomId = viewChatRoomList[index].roomId;
+    final chat = viewChatRoomList[index];
     //TODO : route 정의 이후에 방식 변경
-    viewChatRoomList[index].read =
-        await Get.to<bool>(
-          ChatRoomScreen(roomId: roomId),
-          binding: ChatRoomBinding(chatRoomId: roomId),
-        ) ??
-        false;
+    final result = await Get.to<ChatRoomBackResult>(
+      ChatRoomScreen(roomId: chat.roomId),
+      binding: ChatRoomBinding(chatRoomId: chat.roomId),
+    );
+
+    switch (result) {
+      case ChatRoomReadResult():
+        if (result.success) {
+          _cacheChatRoomList
+                  .firstWhereOrNull((room) => room.roomId == chat.roomId)
+                  ?.read =
+              true;
+          viewChatRoomList.assignAll(_cacheChatRoomList);
+        }
+        break;
+      case ChatRoomQuitResult():
+        if (result.success) {
+          _cacheChatRoomList.removeWhere(
+            (room) => room.roomId == chat.roomId,
+          );
+          viewChatRoomList.assignAll(_cacheChatRoomList);
+        }
+        break;
+      case null:
+    }
+
     viewChatRoomList.refresh();
   }
 

@@ -6,9 +6,9 @@ class PostController extends GetxController {
   void enterPostDetail(
       BuildContext context,
       bool isMy,
-      int postId,
-      ) {
-    //TODO: Store 생기면 isMy를 PostViewController.isMyPost에 전달
-    context.push('/post/$postId');
+      int postId, {
+        bool isFavorite = false,
+      }) {
+    context.push('/post/$postId', extra: isFavorite);
   }
 }

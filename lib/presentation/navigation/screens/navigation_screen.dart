@@ -1,11 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
 import '../../../core/router/app_router.dart';
+import '../../../core/router/bindings/login_binding.dart';
+import '../../../core/router/bindings/navigation_binding.dart';
+import '../../../data/network/constants/api_constants.dart';
+import '../../../domain/usecases/auth/sign_in_use_case.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: '.env');
+
+  LoginBinding().dependencies();
+
+  //TODO : 임시 login 로직 삭제
+  await Get.find<SignInUseCase>().call(
+    loginId: ApiConstants.loginId,
+    password: ApiConstants.loginPassword,
+  );
+
+  NavigationBinding().dependencies();
+
+  runApp(
+    MaterialApp.router(
+      routerConfig: appRouter,
+    ),
+  );
+}
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key, required this.child});
@@ -43,7 +72,9 @@ class _NavigationScreenState extends State<NavigationScreen> {
   };
 
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
     /// 매 navigation내 page 이동 마다 path 게산
     final location = GoRouterState.of(context).uri.path;
 
@@ -56,6 +87,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
     if (currentIndex >= 0) {
       _lastIndex = currentIndex;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: widget.child,
       bottomNavigationBar: _buildBottomNavigationBar(),

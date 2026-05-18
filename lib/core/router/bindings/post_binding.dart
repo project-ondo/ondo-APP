@@ -12,8 +12,8 @@ import '../../../presentation/post/controllers/post_view_controller.dart';
 
 class PostBinding extends Bindings {
   final int postId;
-
-  PostBinding(this.postId);
+  final bool isFavorite;
+  PostBinding(this.postId, [this.isFavorite = false]);
 
   @override
   void dependencies() {
@@ -46,6 +46,7 @@ class PostBinding extends Bindings {
       tag: postId.toString(),
       PostViewController(
         postId: postId,
+        initialIsFavorite: isFavorite,
         useCase: Get.find<GetPostDetailUseCase>(),
         updateUseCase: Get.find<UpdatePostUseCase>(),
         deleteUseCase: Get.find<DeletePostUseCase>(),

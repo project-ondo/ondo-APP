@@ -93,7 +93,7 @@ class RoutePaths {
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: Get.key,
-  initialLocation: RoutePaths.home,
+  initialLocation: RoutePaths.splash,
   routes: [
     GoRoute(
       path: RoutePaths.splash,
@@ -138,7 +138,7 @@ final GoRouter appRouter = GoRouter(
           path: RoutePaths.postDetail,
           builder: (context, state) {
             final postId = int.parse(state.pathParameters['postId']!);
-            PostBinding(postId).dependencies();
+            PostBinding(postId, state.extra as bool? ?? false).dependencies();
             return PostDetailScreen(postId: postId,);
           },
           onExit: (context, state) {

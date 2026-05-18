@@ -10,13 +10,15 @@ class ApiConstants {
   //.env 파일에서 설정한 환경 변수 불러오기
   static String get domain => Env.apiBaseUrl;
 
-  static String get posts => "${Env.apiBaseUrl}/posts";
+  static String get post => "${Env.apiBaseUrl}/posts";
 
-  static String get users => "${Env.apiBaseUrl}/users";
+  static String get user => "${Env.apiBaseUrl}/users";
 
   static String get auth => "${Env.apiBaseUrl}/auth";
 
-  static String get chats => "${Env.apiBaseUrl}/chat";
+  static String get chat => "${Env.apiBaseUrl}/chat";
+
+  static String get rating => "${Env.apiBaseUrl}/rating";
 
   static String get notification => "${Env.apiBaseUrl}/notifications";
 

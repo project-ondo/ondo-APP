@@ -1,38 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
-import 'package:ondo/core/router/app_router.dart';
-import '../../../core/router/bindings/login_binding.dart';
-import '../../../core/router/bindings/navigation_binding.dart';
-import '../../../data/network/constants/api_constants.dart';
-import '../../../domain/usecases/auth/sign_in_use_case.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await dotenv.load(fileName: '.env');
-
-  LoginBinding().dependencies();
-
-  //TODO : 임시 login 로직 삭제
-  await Get.find<SignInUseCase>().call(
-    loginId: ApiConstants.loginId,
-    password: ApiConstants.loginPassword,
-  );
-
-  NavigationBinding().dependencies();
-
-  runApp(
-    MaterialApp.router(
-      routerConfig: appRouter,
-    ),
-  );
-}
+import '../../../core/router/app_router.dart';
 
 class NavigationScreen extends StatefulWidget {
   const NavigationScreen({super.key, required this.child});

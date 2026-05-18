@@ -10,12 +10,12 @@ class ChatRemoteDatasource {
 
   ChatRemoteDatasource({required this.client});
 
-  Future<Map?> loadMyChatRoomList(BaseListRequestModel model) async {
+  Future<Map?> loadMyChatRoomList(ListRequestModel model) async {
     final log = ApiConstants(logName: "내 채팅 목록");
 
     try {
       final res = await client.get(
-        Uri.parse("${ApiConstants.chats}/rooms${model.toQueryParameter()}"),
+        Uri.parse("${ApiConstants.chat}/rooms${model.toQueryParameter()}"),
       );
 
       final body = jsonDecode(res.body);
@@ -39,7 +39,7 @@ class ChatRemoteDatasource {
 
     try {
       final res = await client.post(
-        Uri.parse("${ApiConstants.chats}/rooms"),
+        Uri.parse("${ApiConstants.chat}/rooms"),
         headers: ApiConstants.baseHeader,
         body: jsonEncode({"targetUserPublicId": usersPublicId}),
       );
@@ -64,7 +64,7 @@ class ChatRemoteDatasource {
 
     try {
       final res = await client.put(
-        Uri.parse("${ApiConstants.chats}/rooms/$chatRoomPublicId/block"),
+        Uri.parse("${ApiConstants.chat}/rooms/$chatRoomPublicId/block"),
       );
 
       final body = jsonDecode(res.body);
@@ -89,7 +89,7 @@ class ChatRemoteDatasource {
 
     try {
       final res = await client.delete(
-        Uri.parse("${ApiConstants.chats}/rooms/$chatRoomPublicId/block"),
+        Uri.parse("${ApiConstants.chat}/rooms/$chatRoomPublicId/block"),
       );
 
       final body = jsonDecode(res.body);
@@ -118,7 +118,7 @@ class ChatRemoteDatasource {
     try {
       final res = await client.get(
         Uri.parse(
-          "${ApiConstants.chats}/rooms/$chatRoomPublicId/messages${model.toQueryParameter()}",
+          "${ApiConstants.chat}/rooms/$chatRoomPublicId/messages${model.toQueryParameter()}",
         ),
       );
 
@@ -147,7 +147,7 @@ class ChatRemoteDatasource {
     try {
       final res = await client.patch(
         Uri.parse(
-          "${ApiConstants.chats}/rooms/$chatRoomPublicId/read?lastReadMessageId=$lastReadMessageId",
+          "${ApiConstants.chat}/rooms/$chatRoomPublicId/read?lastReadMessageId=$lastReadMessageId",
         ),
       );
 
@@ -171,7 +171,7 @@ class ChatRemoteDatasource {
 
     try {
       final res = await client.delete(
-        Uri.parse("${ApiConstants.chats}/rooms/$chatRoomPublicId"),
+        Uri.parse("${ApiConstants.chat}/rooms/$chatRoomPublicId"),
       );
 
       final body = jsonDecode(res.body);

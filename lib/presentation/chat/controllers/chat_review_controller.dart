@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:ondo/domain/usecases/chat/delete_chat_room_use_case.dart';
+import 'package:ondo/domain/usecases/rating/rating_chat_room_use_case.dart';
+import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 
 class ChatReviewController extends GetxController {
   final RxBool enableSubmit = false.obs;
@@ -13,16 +15,33 @@ class ChatReviewController extends GetxController {
   final TextEditingController commentController = TextEditingController();
 
   final DeleteChatRoomUseCase deleteChatRoomUseCase;
+  final RatingChatRoomUseCase ratingChatRoomUseCase;
   final String chatRoomId;
 
   ChatReviewController({
     required this.deleteChatRoomUseCase,
     required this.chatRoomId,
+    required this.ratingChatRoomUseCase,
   });
 
   Future<void> _deleteChatRoom() async {
     final res = await deleteChatRoomUseCase.call(chatRoomId);
     if (res != true) error.value = "DELETE_ERROR";
+  }
+
+  Future<void> _ratingChatRoom() async {
+    if (star.value < 1 || star.value > 5) {
+      error.value = "RATING_ERROR";
+      return;
+    }
+
+    final res = await ratingChatRoomUseCase.call(
+      chatRoomPublicId: chatRoomId,
+      star: star.value,
+      comment: commentController.text,
+      tags: reviewTags.toList(),
+    );
+    if (res != true) error.value = "RATING_ERROR";
   }
 
   @override
@@ -40,12 +59,19 @@ class ChatReviewController extends GetxController {
 
   set star(int index) => star.value = index + 1;
 
-  Future<void> submitReview() async {
-    await _deleteChatRoom();
-    //TODO : 채팅방 평점 등록 api 연결
+  Future submitReview() async {
+    if (enableSubmit.value) {
+      await _deleteChatRoom();
+      //TODO : error state 정의
+      if (error.isEmpty) {
+        await _ratingChatRoom();
+      }
 
-    if (error.isEmpty) {
-      Get.back<num>(closeOverlays: true, result: -1);
+      Get.back<ChatRoomQuitResult>(
+        closeOverlays: true,
+        //TODO : error state 정의 후 state delete error가 아닐 경우만 true 설장
+        result: ChatRoomQuitResult(success: error.isEmpty),
+      );
     }
   }
 

@@ -54,8 +54,6 @@ class ChatReviewDialog extends GetView<ChatReviewController> {
       onPressed: () {
         //TODO : 리뷰를 서버에 전송하는 로직
         controller.submitReview();
-        Get.back();
-        Get.back();
       },
       enabled: controller.enableSubmit.value,
     ),

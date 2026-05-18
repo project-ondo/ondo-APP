@@ -98,7 +98,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
         "커피챗 종료하기",
 
         ///종료 알림창 표시
-        controller.quitChatRoom,
+        controller.quitChat,
       ),
       _customPopupMenu(
         "신고하기",

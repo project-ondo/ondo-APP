@@ -20,6 +20,9 @@ class ChatRoomController extends GetxController {
       <ChatMessageViewModel>[].obs;
   final TextEditingController textController = TextEditingController();
 
+  /// 상대방이 마지막으로 읽은 메시지 ID (읽음 이벤트 수신 시 갱신)
+  final RxInt opponentLastReadMessageId = 0.obs;
+
   final String chatRoomId;
 
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
@@ -30,6 +33,9 @@ class ChatRoomController extends GetxController {
 
   /// /topic/chat.rooms.{chatRoomPublicId} 구독 ID
   String? _messageSubscriptionId;
+
+  /// /topic/chat.rooms.{chatRoomPublicId}.read 구독 ID
+  String? _readSubscriptionId;
 
   ChatRoomController({
     required this.chatRoomId,
@@ -53,6 +59,10 @@ class ChatRoomController extends GetxController {
       stompClient.unsubscribe(_messageSubscriptionId!);
       log('[ChatRoom] 메시지 구독 해제: $_messageSubscriptionId');
     }
+    if (_readSubscriptionId != null) {
+      stompClient.unsubscribe(_readSubscriptionId!);
+      log('[ChatRoom] 읽음 이벤트 구독 해제: $_readSubscriptionId');
+    }
     // 모든 퇴장 시나리오에서 읽음 처리 보장 (뒤로가기 제스처 등 포함)
     sendReadEvent();
     // 채팅방 퇴장 이벤트 발행
@@ -64,7 +74,7 @@ class ChatRoomController extends GetxController {
     super.onClose();
   }
 
-  /// WebSocket 연결 → 채팅방 입장 이벤트 발행 → 메시지 토픽 구독 시작
+  /// WebSocket 연결 → 채팅방 입장 이벤트 발행 → 메시지/읽음 토픽 구독 시작
   Future<void> _connectAndEnter() async {
     await stompClient.connect();
 
@@ -81,6 +91,13 @@ class ChatRoomController extends GetxController {
       _onMessageReceived,
     );
     log('[ChatRoom] 메시지 구독 시작: /topic/chat.rooms.$chatRoomId');
+
+    // 읽음 이벤트 토픽 구독 시작
+    _readSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId.read',
+      _onReadEventReceived,
+    );
+    log('[ChatRoom] 읽음 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.read');
   }
 
   /// 읽음 처리 이벤트 전송
@@ -98,6 +115,26 @@ class ChatRoomController extends GetxController {
       }),
     );
     log('[ChatRoom] 읽음 처리 전송: lastMessageId=$lastMessageId');
+  }
+
+  /// 읽음 이벤트 수신 핸들러
+  ///
+  /// Payload: { chatRoomPublicId, readerPublicId, lastReadMessageId, at }
+  /// lastReadMessageId 이하의 내 메시지에 "읽음" 표시를 반영한다.
+  void _onReadEventReceived(StompFrame frame) {
+    if (frame.body == null) return;
+    try {
+      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final readerPublicId = json['readerPublicId'] as String?;
+      final lastReadMessageId = (json['lastReadMessageId'] as num?)?.toInt();
+      log('[ChatRoom] 읽음 이벤트 수신: readerPublicId=$readerPublicId, lastReadMessageId=$lastReadMessageId');
+      if (lastReadMessageId != null &&
+          lastReadMessageId > opponentLastReadMessageId.value) {
+        opponentLastReadMessageId.value = lastReadMessageId;
+      }
+    } catch (e) {
+      log('[ChatRoom] 읽음 이벤트 파싱 실패: $e / body: ${frame.body}');
+    }
   }
 
   /// 실시간 메시지 수신 핸들러

@@ -15,6 +15,7 @@ void main() {
 
       final vm = ChatMessageViewModel.fromJson(json);
 
+      expect(vm.messageId, 1);
       expect(vm.messageType, 'TEXT');
       expect(vm.content, '안녕하세요');
       expect(vm.createdAt, DateTime.parse('2026-03-16T12:00:00'));
@@ -115,10 +116,24 @@ void main() {
 
       expect(vm.isMe, false);
     });
+
+    test('messageId 누락 → null', () {
+      final json = {
+        'roomId': 'room-uuid',
+        'senderId': 42,
+        'messageType': 'TEXT',
+        'content': '내용',
+        'createdAt': '2026-03-16T12:00:00',
+      };
+
+      final vm = ChatMessageViewModel.fromJson(json);
+
+      expect(vm.messageId, isNull);
+    });
   });
 
   group('ChatMessageViewModel 직접 생성 (내가 보낸 메시지)', () {
-    test('sendChat 즉시 반영용 ViewModel - isMe: true', () {
+    test('sendChat 즉시 반영용 ViewModel - isMe: true, messageId: null', () {
       final vm = ChatMessageViewModel(
         messageType: 'TEXT',
         content: '안녕하세요',
@@ -127,6 +142,7 @@ void main() {
         profileImageKey: null,
       );
 
+      expect(vm.messageId, isNull);
       expect(vm.isMe, true);
       expect(vm.messageType, 'TEXT');
       expect(vm.content, '안녕하세요');

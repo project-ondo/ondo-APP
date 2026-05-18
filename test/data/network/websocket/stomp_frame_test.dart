@@ -19,7 +19,6 @@ void main() {
       expect(result, endsWith('\x00'));
     });
     test('SEND 프레임 - body 포함', () {
-
       final frame = StompFrame(
         command: 'SEND',
         headers: {
@@ -30,9 +29,12 @@ void main() {
       );
       final result = frame.serialize();
 
+      // 전체 구조 엄격 검증 (커맨드\n헤더\n\n바디\x00)
       expect(result, startsWith('SEND\n'));
       expect(result, contains('destination:/pub/chat.send\n'));
-      expect(result, contains('{"chatRoomPublicId":"uuid"'));
+      expect(result, contains('content-type:application/json\n'));
+      expect(result, contains('\n\n')); // 헤더-바디 구분자
+      expect(result, contains('{"chatRoomPublicId":"uuid","messageType":"TEXT","content":"hello"}'));
       expect(result, endsWith('\x00'));
     });
 

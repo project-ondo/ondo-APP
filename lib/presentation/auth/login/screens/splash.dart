@@ -16,7 +16,7 @@ class SplashScreen extends GetView<SplashController> {
       (callback) {
         if (callback && context.mounted) {
           context.go(
-            controller.isLogin.value ? RoutePaths.navigation : RoutePaths.login,
+            controller.isLogin.value ? RoutePaths.home : RoutePaths.login,
           );
         }
       },

@@ -137,6 +137,23 @@ class ChatRoomController extends GetxController {
     }
   }
 
+  /// 읽음 처리 이벤트 전송
+  ///
+  /// - lastMessageId가 0이면 전송하지 않음 (읽을 메시지 없음)
+  /// - 채팅방 진입 시 및 나갈 때 호출
+  void sendReadEvent() {
+    if (lastMessageId == 0) return;
+
+    stompClient.publish(
+      '/pub/chat.read',
+      body: jsonEncode({
+        'chatRoomPublicId': chatRoomId,
+        'lastReadMessageId': lastMessageId,
+      }),
+    );
+    log('[ChatRoom] 읽음 처리 전송: lastMessageId=$lastMessageId');
+  }
+
   /// 실시간 메시지 수신 핸들러
   ///
   /// 수신 즉시 읽음 처리하여 상대방에게 읽음 상태 즉시 반영

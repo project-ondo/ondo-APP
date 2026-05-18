@@ -8,6 +8,7 @@ class ChatCard extends StatelessWidget {
     super.key,
     required this.isMe,
     required this.text,
+    this.isRead = false,
     this.sendAt,
     this.otherName,
     this.otherProfile,
@@ -15,6 +16,9 @@ class ChatCard extends StatelessWidget {
 
   final bool isMe;
   final String text;
+
+  /// 내가 보낸 메시지가 상대방에게 읽혔는지 여부 (isMe == true 일 때만 사용)
+  final bool isRead;
   final Widget? otherProfile;
   final String? otherName;
   final Duration? sendAt;
@@ -23,9 +27,25 @@ class ChatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: AppPadding.chatMargin,
-      child: isMe ? _card() : _otherCard(),
+      child: isMe ? _myCard() : _otherCard(),
     );
   }
+
+  Widget _myCard() => Row(
+    mainAxisSize: MainAxisSize.min,
+    crossAxisAlignment: CrossAxisAlignment.end,
+    children: [
+      if (isRead)
+        Padding(
+          padding: const EdgeInsets.only(right: 4),
+          child: Text(
+            '읽음',
+            style: AppTextStyles.caption(textColor: AppColors.primary),
+          ),
+        ),
+      _card(),
+    ],
+  );
 
   Widget _otherCard() => Row(
     mainAxisSize: MainAxisSize.min,

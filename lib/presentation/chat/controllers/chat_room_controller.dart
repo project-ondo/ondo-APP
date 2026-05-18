@@ -78,6 +78,26 @@ class ChatRoomController extends GetxController {
       _onMessageReceived,
     );
     log('[ChatRoom] 메시지 구독 시작: /topic/chat.rooms.$chatRoomId');
+
+    // 채팅방 진입 시 자동 읽음 처리
+    sendReadEvent();
+  }
+
+  /// 읽음 처리 이벤트 전송
+  ///
+  /// - lastMessageId가 0이면 전송하지 않음 (읽을 메시지 없음)
+  /// - 채팅방 진입 시 및 나갈 때 호출
+  void sendReadEvent() {
+    if (lastMessageId == 0) return;
+
+    stompClient.publish(
+      '/pub/chat.read',
+      body: jsonEncode({
+        'chatRoomPublicId': chatRoomId,
+        'lastReadMessageId': lastMessageId,
+      }),
+    );
+    log('[ChatRoom] 읽음 처리 전송: lastMessageId=$lastMessageId');
   }
 
   /// 실시간 메시지 수신 핸들러
@@ -153,6 +173,9 @@ class ChatRoomController extends GetxController {
   }
 
   Future backChatRoom() async {
+    // WebSocket 읽음 이벤트 전송
+    sendReadEvent();
+    // HTTP 읽음 처리 유지
     Get.back<ChatRoomReadResult>(
       result: ChatRoomReadResult(
         success: await readChatMessageUseCase.call(chatRoomId, lastMessageId),

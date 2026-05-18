@@ -40,7 +40,8 @@ class ChatRoomController extends GetxController {
 
   @override
   void onInit() {
-    _initLoadChatRoomMessages();
+    // 메시지 내역 로드 완료 후 읽음 처리 보장 (레이스 컨디션 방지)
+    _initLoadChatRoomMessages().then((_) => sendReadEvent());
     _connectAndEnter();
     super.onInit();
   }
@@ -52,6 +53,8 @@ class ChatRoomController extends GetxController {
       stompClient.unsubscribe(_messageSubscriptionId!);
       log('[ChatRoom] 메시지 구독 해제: $_messageSubscriptionId');
     }
+    // 모든 퇴장 시나리오에서 읽음 처리 보장 (뒤로가기 제스처 등 포함)
+    sendReadEvent();
     // 채팅방 퇴장 이벤트 발행
     stompClient.publish(
       '/pub/chat.room.leave',
@@ -78,9 +81,6 @@ class ChatRoomController extends GetxController {
       _onMessageReceived,
     );
     log('[ChatRoom] 메시지 구독 시작: /topic/chat.rooms.$chatRoomId');
-
-    // 채팅방 진입 시 자동 읽음 처리
-    sendReadEvent();
   }
 
   /// 읽음 처리 이벤트 전송
@@ -101,6 +101,8 @@ class ChatRoomController extends GetxController {
   }
 
   /// 실시간 메시지 수신 핸들러
+  ///
+  /// 수신 즉시 읽음 처리하여 상대방에게 읽음 상태 즉시 반영
   void _onMessageReceived(StompFrame frame) {
     if (frame.body == null) return;
     try {
@@ -112,6 +114,8 @@ class ChatRoomController extends GetxController {
         lastMessageId = receivedId;
       }
       log('[ChatRoom] 메시지 수신: ${viewModel.content}');
+      // 수신 즉시 읽음 처리 (채팅방에 머무는 동안 상대방에게 읽음 상태 반영)
+      sendReadEvent();
     } catch (e) {
       log('[ChatRoom] 메시지 파싱 실패: $e / body: ${frame.body}');
     }

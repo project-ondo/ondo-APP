@@ -67,4 +67,31 @@ class RatingRemoteDatasource {
 
     return {};
   }
+
+  Future<Map> getMyRatingList(
+    ListRequestModelBaseCursor model,
+  ) async {
+    final log = ApiConstants(logName: "내가 받은 평가 목록 조회 서버");
+
+    try {
+      final res = await client.get(
+        Uri.parse(
+          "${ApiConstants.rating}/me${model.toQueryParameter()}",
+        ),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"]);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200) {
+        return body["data"] ?? {};
+      }
+    } catch (e) {
+      log.errorLog(e);
+    }
+
+    return {};
+  }
 }

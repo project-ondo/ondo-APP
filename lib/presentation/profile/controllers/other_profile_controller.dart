@@ -3,27 +3,43 @@ import 'package:get/get.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
+import 'package:ondo/domain/entities/rating/rating_entity.dart';
+import 'package:ondo/domain/usecases/rating/load_other_rating_list_use_case.dart';
 
 class OtherProfileController extends GetxController {
   final UserRemoteDatasource userRemoteDatasource = Get.find();
   final MediaRemoteDatasource mediaRemoteDatasource = Get.find();
+  final LoadOtherRatingListUseCase loadOtherRatingListUseCase;
+
+  final List<RatingEntity> _cacheRatingList = [];
+
+  OtherProfileController({
+    required this.loadOtherRatingListUseCase,
+  });
 
   final isLoading = false.obs;
   final Rxn<UserProfileDataModel> profile = Rxn();
   final profileImageUrl = RxnString();
 
-  String? _currentPublicId;
+  //TODO : userPublicId 생성자로 할당
+  String? userPublicId;
+
+  @override
+  void onInit() {
+    _initLoadRatingList();
+    super.onInit();
+  }
 
   Future<void> loadProfile(String publicId) async {
     // 동일한 publicId면 재로딩 불필요
-    if (_currentPublicId == publicId && profile.value != null) return;
+    if (userPublicId == publicId && profile.value != null) return;
 
     try {
       isLoading.value = true;
       // 새 프로필 로딩 시 기존 데이터 초기화
       profile.value = null;
       profileImageUrl.value = null;
-      _currentPublicId = publicId;
+      userPublicId = publicId;
 
       profile.value = await userRemoteDatasource.getOtherProfile(publicId);
 
@@ -41,5 +57,16 @@ class OtherProfileController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  //TODO : 구조 변경
+  Future _initLoadRatingList() async {
+    _cacheRatingList.assignAll(
+      await loadOtherRatingListUseCase.call(
+        userPublicId: userPublicId ?? "",
+        cursor: 0,
+        size: 20,
+      ),
+    );
   }
 }

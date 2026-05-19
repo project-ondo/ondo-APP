@@ -14,7 +14,7 @@ class NotificationRepositoryImpl extends NotificationRepository {
     int size,
     int page,
   ) async {
-    final ListRequestModel model = ListRequestModel(
+    final ListRequestModelBasePage model = ListRequestModelBasePage(
       size: size,
       page: page,
     );

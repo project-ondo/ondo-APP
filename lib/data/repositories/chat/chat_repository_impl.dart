@@ -16,7 +16,7 @@ class ChatRepositoryImpl extends ChatRepository {
 
   @override
   Future<List<ChatEntity>> loadMyChatRoomList(int size, int page) async {
-    final model = ListRequestModel(size: size, page: page);
+    final model = ListRequestModelBasePage(size: size, page: page);
 
     final json = await remoteDatasource.loadMyChatRoomList(model);
 

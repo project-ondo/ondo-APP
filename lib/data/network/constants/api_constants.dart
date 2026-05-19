@@ -22,7 +22,10 @@ class ApiConstants {
 
   static String get notification => "${Env.apiBaseUrl}/notifications";
 
+  static String get comment => "${Env.apiBaseUrl}/comments";
+
   static const baseHeader = {"Content-Type": "application/json"};
+
 
   //TODO : 임시 로그인 데이터
   static String get loginId => Env.loginId;

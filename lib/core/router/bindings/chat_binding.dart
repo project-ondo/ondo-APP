@@ -50,13 +50,11 @@ class ChatBinding extends Bindings {
         repository: Get.find<ChatRepositoryImpl>(),
       ),
     );
-    if (!Get.isRegistered<TurnOnChatNotificationUseCase>()) {
-      Get.lazyPut(
-        () => TurnOnChatNotificationUseCase(
-          repository: Get.find<ChatRepositoryImpl>(),
-        ),
-      );
-    }
+    Get.lazyPut(
+      () => TurnOnChatNotificationUseCase(
+        repository: Get.find<ChatRepositoryImpl>(),
+      ),
+    );
 
     ///chat controller 등록
     Get.lazyPut(

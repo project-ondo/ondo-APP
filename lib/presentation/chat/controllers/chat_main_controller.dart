@@ -37,21 +37,22 @@ class ChatMainController extends GetxController {
     super.onInit();
   }
 
-  Future _loadChatRooms() async {
+  Future<void> _loadChatRooms() async {
     _cacheChatRoomList.assignAll(
       await loadChatRoomsUseCase.call(page: 0, size: 10),
     );
     viewChatRoomList.assignAll(_cacheChatRoomList);
   }
 
-  Future _cancelBlockChatRoom(String chatRoomPublicId) async {
+  Future<void> _cancelBlockChatRoom(String chatRoomPublicId) async {
     final success = await cancelBlockChatRoomUseCase.call(chatRoomPublicId);
     if (success != true) {
       error.value = "CANCEL_BLOCK_FAILED";
     }
   }
 
-  Future turnOnNotification(ChatEntity chat) async {
+  //TODO : 디자인에서 해당 알림 설정을 어떻게 할 건지 정의되면 구조 변경
+  Future<void> turnOnNotification(ChatEntity chat) async {
     await turnOnChatNotificationUseCase.call(chat.roomId);
   }
 
@@ -95,7 +96,7 @@ class ChatMainController extends GetxController {
     _filterChatRooms();
   }
 
-  Future enterChatRoom(int index) async {
+  Future<void> enterChatRoom(int index) async {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
     final chat = viewChatRoomList[index];
     //TODO : route 정의 이후에 방식 변경
@@ -128,7 +129,7 @@ class ChatMainController extends GetxController {
     viewChatRoomList.refresh();
   }
 
-  Future blockingChat(int index) async {
+  Future<void> blockingChat(int index) async {
     final roomId = viewChatRoomList[index].roomId;
     final success = await blockChatRoomUseCase.call(roomId);
     if (success == true) {
@@ -141,7 +142,7 @@ class ChatMainController extends GetxController {
     }
   }
 
-  Future cancelBlockingChat(int index) async {
+  Future<void> cancelBlockingChat(int index) async {
     final roomId = viewChatRoomList[index].roomId;
     await _cancelBlockChatRoom(roomId);
   }

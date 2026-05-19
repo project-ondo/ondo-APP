@@ -9,6 +9,7 @@ import '../../../domain/usecases/post/get_post_detail_usecase.dart';
 import '../../../domain/usecases/post/like_post_usecase.dart';
 import '../../../domain/usecases/post/unlike_post_usecase.dart';
 import '../../../domain/usecases/post/update_post_usecase.dart';
+import '../../../domain/usecases/comment/comment_usecases.dart';
 
 class PostViewController extends GetxController {
   final int postId;
@@ -18,6 +19,9 @@ class PostViewController extends GetxController {
   final DeletePostUseCase _deleteUseCase;
   final LikePostUseCase _likeUseCase;
   final UnlikePostUseCase _unlikeUseCase;
+  final GetCommentsUseCase _getCommentsUseCase;
+  final CreateCommentUseCase _createCommentUseCase;
+  final DeleteCommentUseCase _deleteCommentUseCase;
 
   PostViewController({
     required this.postId,
@@ -27,11 +31,17 @@ class PostViewController extends GetxController {
     required DeletePostUseCase deleteUseCase,
     required LikePostUseCase likeUseCase,
     required UnlikePostUseCase unlikeUseCase,
-  }) : _useCase = useCase,
+    required GetCommentsUseCase getCommentsUseCase,
+    required CreateCommentUseCase createCommentUseCase,
+    required DeleteCommentUseCase deleteCommentUseCase,
+  })  : _useCase = useCase,
         _updateUseCase = updateUseCase,
         _deleteUseCase = deleteUseCase,
         _likeUseCase = likeUseCase,
-        _unlikeUseCase = unlikeUseCase;
+        _unlikeUseCase = unlikeUseCase,
+        _getCommentsUseCase = getCommentsUseCase,
+        _createCommentUseCase = createCommentUseCase,
+        _deleteCommentUseCase = deleteCommentUseCase;
 
   final Rx<PostDetailModel?> post = Rx<PostDetailModel?>(null);
   final RxList<PostDetailModel> postList = <PostDetailModel>[].obs;
@@ -60,10 +70,10 @@ class PostViewController extends GetxController {
   void onInit() {
     super.onInit();
     commentController = TextEditingController();
-    // 목록에서 전달받은 isFavorite으로 초기 상태 설정
     selectHeart.value = initialIsFavorite;
-    debugPrint('[PostViewController] onInit - postId: $postId, initialIsFavorite: $initialIsFavorite');
+    debugPrint('[PostViewController] onInit - postId: $postId');
     fetchPostDetail(postId);
+    fetchComments();
   }
 
   @override
@@ -99,6 +109,57 @@ class PostViewController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<void> fetchComments() async {
+    debugPrint('[PostViewController] 댓글 조회 시작 - postId: $postId');
+
+    final result = await _getCommentsUseCase(postId);
+    result.fold(
+          (error) => debugPrint('[PostViewController] 댓글 조회 실패 - $error'),
+          (data) {
+        debugPrint('[PostViewController] 댓글 조회 성공 - ${data.length}개');
+        comments.assignAll(data.map((e) => (
+        id: e.id,
+        author: e.author ?? '', // TODO: API에 author 필드 추가되면 정상 동작
+        comment: e.content,
+        heartTotal: 0,
+        isMy: true, // TODO: 로그인 유저 id와 비교해서 처리
+        )));
+      },
+    );
+  }
+
+  Future<void> createComment(String content) async {
+    if (content.trim().isEmpty) return;
+
+    debugPrint('[PostViewController] 댓글 작성 시작 - content: $content');
+
+    final result = await _createCommentUseCase(
+      postId: postId,
+      content: content,
+    );
+    result.fold(
+          (error) => debugPrint('[PostViewController] 댓글 작성 실패 - $error'),
+          (_) {
+        debugPrint('[PostViewController] 댓글 작성 성공');
+        commentController.clear();
+        fetchComments();
+      },
+    );
+  }
+
+  Future<void> deleteComment(Comment comment) async {
+    debugPrint('[PostViewController] 댓글 삭제 시작 - id: ${comment.id}');
+
+    final result = await _deleteCommentUseCase(comment.id);
+    result.fold(
+          (error) => debugPrint('[PostViewController] 댓글 삭제 실패 - $error'),
+          (_) {
+        debugPrint('[PostViewController] 댓글 삭제 성공');
+        fetchComments();
+      },
+    );
   }
 
   Future<void> toggleLike(bool isLiked) async {
@@ -146,7 +207,6 @@ class PostViewController extends GetxController {
       );
 
       debugPrint('[PostViewController] 게시물 수정 성공');
-
       await fetchPostDetail(postId);
     } catch (e) {
       debugPrint('[PostViewController] 게시물 수정 실패 - error: $e');
@@ -168,7 +228,6 @@ class PostViewController extends GetxController {
       debugPrint('[PostViewController] 게시물 삭제 성공');
 
       Get.find<CommunityController>().removePost(postId);
-
       Get.back();
     } catch (e) {
       debugPrint('[PostViewController] 게시물 삭제 실패 - error: $e');
@@ -177,26 +236,10 @@ class PostViewController extends GetxController {
       isLoading.value = false;
     }
   }
-
-  void createComment(String comment) {
-    if (comment.trim().isEmpty) return;
-
-    comments.insert(0, (
-    comment: comment,
-    author: "김유찬",
-    heartTotal: 0,
-    isMy: true,
-    ));
-
-    commentController.clear();
-  }
-
-  void deleteComment(Comment comment) {
-    comments.remove(comment);
-  }
 }
 
 typedef Comment = ({
+int id,
 String author,
 String comment,
 int heartTotal,

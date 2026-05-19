@@ -4,6 +4,7 @@ import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
+import 'package:ondo/domain/usecases/chat/turn_on_chat_notification_use_case.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 
@@ -20,11 +21,13 @@ class ChatMainController extends GetxController {
   final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
   final BlockChatRoomUseCase blockChatRoomUseCase;
   final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;
+  final TurnOnChatNotificationUseCase turnOnChatNotificationUseCase;
 
   ChatMainController({
     required this.loadChatRoomsUseCase,
     required this.blockChatRoomUseCase,
     required this.cancelBlockChatRoomUseCase,
+    required this.turnOnChatNotificationUseCase,
   });
 
   @override
@@ -34,18 +37,22 @@ class ChatMainController extends GetxController {
     super.onInit();
   }
 
-  Future<void> _loadChatRooms() async {
+  Future _loadChatRooms() async {
     _cacheChatRoomList.assignAll(
       await loadChatRoomsUseCase.call(page: 0, size: 10),
     );
     viewChatRoomList.assignAll(_cacheChatRoomList);
   }
 
-  Future<void> _cancelBlockChatRoom(String chatRoomPublicId) async {
+  Future _cancelBlockChatRoom(String chatRoomPublicId) async {
     final success = await cancelBlockChatRoomUseCase.call(chatRoomPublicId);
     if (success != true) {
       error.value = "CANCEL_BLOCK_FAILED";
     }
+  }
+
+  Future turnOnNotification(ChatEntity chat) async {
+    await turnOnChatNotificationUseCase.call(chat.roomId);
   }
 
   void search(String query, List<String> tags) {
@@ -88,7 +95,7 @@ class ChatMainController extends GetxController {
     _filterChatRooms();
   }
 
-  Future<void> enterChatRoom(int index) async {
+  Future enterChatRoom(int index) async {
     //TODO : 웹소켓 연결, 채팅 방 접근에 대한 필요 정보를 전달히여 채팅 방 UI 생성
     final chat = viewChatRoomList[index];
     //TODO : route 정의 이후에 방식 변경
@@ -121,7 +128,7 @@ class ChatMainController extends GetxController {
     viewChatRoomList.refresh();
   }
 
-  Future<void> blockingChat(int index) async {
+  Future blockingChat(int index) async {
     final roomId = viewChatRoomList[index].roomId;
     final success = await blockChatRoomUseCase.call(roomId);
     if (success == true) {
@@ -134,7 +141,7 @@ class ChatMainController extends GetxController {
     }
   }
 
-  Future<void> cancelBlockingChat(int index) async {
+  Future cancelBlockingChat(int index) async {
     final roomId = viewChatRoomList[index].roomId;
     await _cancelBlockChatRoom(roomId);
   }

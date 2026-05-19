@@ -13,4 +13,9 @@ abstract class RatingRepository {
     int cursor,
     int size,
   );
+
+  Future<List<RatingEntity>> loadMyRatingList(
+    int cursor,
+    int size,
+  );
 }

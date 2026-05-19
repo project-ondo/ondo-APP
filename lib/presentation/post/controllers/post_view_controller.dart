@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ondo/data/models/comment/response/comment.dart';
+import 'package:ondo/data/models/comment/response/comment_model.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
 
 import '../../../data/models/post/request/post_update_request_model.dart';
@@ -63,7 +63,7 @@ class PostViewController extends GetxController {
   final RxInt bookMarkTotal = 0.obs;
   final RxInt commentCount = 0.obs;
 
-  final RxList<Comment> comments = <Comment>[].obs;
+  final RxList<CommentModel> comments = <CommentModel>[].obs;
 
   late final TextEditingController commentController;
 
@@ -144,7 +144,7 @@ class PostViewController extends GetxController {
     );
   }
 
-  Future<void> deleteComment(Comment comment) async {
+  Future<void> deleteComment(CommentModel comment) async {
     debugPrint('[PostViewController] 댓글 삭제 시작 - id: ${comment.id}');
 
     final result = await _deleteCommentUseCase(comment.id);

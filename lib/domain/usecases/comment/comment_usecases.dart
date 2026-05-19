@@ -1,12 +1,12 @@
 import 'package:dartz/dartz.dart';
-import 'package:ondo/data/models/comment/response/comment.dart';
+import 'package:ondo/data/models/comment/response/comment_model.dart';
 import 'package:ondo/domain/repositories/comment/comment_repository.dart';
 
 class GetCommentsUseCase {
   final CommentRepository repository;
   GetCommentsUseCase(this.repository);
 
-  Future<Either<String, List<Comment>>> call(int postId) =>
+  Future<Either<String, List<CommentModel>>> call(int postId) =>
       repository.getComments(postId);
 }
 

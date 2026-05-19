@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:ondo/data/datasource/comment/comment_remote_datasource.dart';
-import 'package:ondo/data/models/comment/response/comment.dart';
+import 'package:ondo/data/models/comment/response/comment_model.dart';
 import 'package:ondo/domain/repositories/comment/comment_repository.dart';
 
 class CommentRepositoryImpl implements CommentRepository {
@@ -9,7 +9,7 @@ class CommentRepositoryImpl implements CommentRepository {
   CommentRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<Either<String, List<Comment>>> getComments(int postId) async {
+  Future<Either<String, List<CommentModel>>> getComments(int postId) async {
     try {
       final comments = await remoteDataSource.getComments(postId);
       return Right(comments);

@@ -1,11 +1,14 @@
-import 'package:ondo/data/models/comment/response/comment.dart';
+class CommentModel {
+  final int id;
+  final int postId;
+  final String content;
+  final String? author;
 
-class CommentModel extends Comment {
   const CommentModel({
-    required super.id,
-    required super.postId,
-    required super.content,
-    super.author,
+    required this.id,
+    required this.postId,
+    required this.content,
+    this.author,
   });
 
   factory CommentModel.fromJson(Map<String, dynamic> json) => CommentModel(

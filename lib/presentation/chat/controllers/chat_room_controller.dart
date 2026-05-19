@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:developer';
 
@@ -20,6 +22,12 @@ class ChatRoomController extends GetxController {
       <ChatMessageViewModel>[].obs;
   final TextEditingController textController = TextEditingController();
 
+  /// 상대방이 마지막으로 읽은 메시지 ID (읽음 이벤트 수신 시 갱신)
+  final RxInt opponentLastReadMessageId = 0.obs;
+
+  /// 상대방 타이핑 여부 (타이핑 이벤트 수신 시 갱신)
+  final RxBool isOpponentTyping = false.obs;
+
   final String chatRoomId;
 
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
@@ -31,6 +39,20 @@ class ChatRoomController extends GetxController {
   /// /topic/chat.rooms.{chatRoomPublicId} 구독 ID
   String? _messageSubscriptionId;
 
+  /// /topic/chat.rooms.{chatRoomPublicId}.read 구독 ID
+  String? _readSubscriptionId;
+
+  /// /topic/chat.rooms.{chatRoomPublicId}.typing 구독 ID
+  String? _typingSubscriptionId;
+
+  /// 타이핑 중지 감지용 디바운스 타이머 (2초 후 typing: false 전송)
+  Timer? _typingTimer;
+
+  /// sendChat()으로 전송했지만 아직 서버 echo를 받지 못한 메시지 내용 (순서 보장)
+  ///
+  /// echo 수신 시 로컬 메시지와 매칭하여 messageId를 업데이트하고 중복 삽입을 방지한다.
+  final Queue<String> _pendingSentContents = Queue<String>();
+
   ChatRoomController({
     required this.chatRoomId,
     required this.loadChatRoomMessageUseCase,
@@ -40,8 +62,11 @@ class ChatRoomController extends GetxController {
 
   @override
   void onInit() {
-    _initLoadChatRoomMessages();
-    _connectAndEnter();
+    // 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장 (레이스 컨디션 방지)
+    _initLoadChatRoomMessages().then((_) {
+      sendReadEvent();
+      _connectAndEnter();
+    });
     super.onInit();
   }
 
@@ -52,6 +77,22 @@ class ChatRoomController extends GetxController {
       stompClient.unsubscribe(_messageSubscriptionId!);
       log('[ChatRoom] 메시지 구독 해제: $_messageSubscriptionId');
     }
+    if (_readSubscriptionId != null) {
+      stompClient.unsubscribe(_readSubscriptionId!);
+      log('[ChatRoom] 읽음 이벤트 구독 해제: $_readSubscriptionId');
+    }
+    if (_typingSubscriptionId != null) {
+      stompClient.unsubscribe(_typingSubscriptionId!);
+      log('[ChatRoom] 타이핑 이벤트 구독 해제: $_typingSubscriptionId');
+    }
+    // 타이핑 중이었다면 타이머 취소 후 typing: false 전송
+    if (_typingTimer != null) {
+      _typingTimer?.cancel();
+      _typingTimer = null;
+      sendTypingEvent(false);
+    }
+    // 모든 퇴장 시나리오에서 읽음 처리 보장 (뒤로가기 제스처 등 포함)
+    sendReadEvent();
     // 채팅방 퇴장 이벤트 발행
     stompClient.publish(
       '/pub/chat.room.leave',
@@ -61,7 +102,7 @@ class ChatRoomController extends GetxController {
     super.onClose();
   }
 
-  /// WebSocket 연결 → 채팅방 입장 이벤트 발행 → 메시지 토픽 구독 시작
+  /// WebSocket 연결 → 채팅방 입장 이벤트 발행 → 메시지/읽음 토픽 구독 시작
   Future<void> _connectAndEnter() async {
     await stompClient.connect();
 
@@ -78,20 +119,160 @@ class ChatRoomController extends GetxController {
       _onMessageReceived,
     );
     log('[ChatRoom] 메시지 구독 시작: /topic/chat.rooms.$chatRoomId');
+
+    // 읽음 이벤트 토픽 구독 시작
+    _readSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId.read',
+      _onReadEventReceived,
+    );
+    log('[ChatRoom] 읽음 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.read');
+
+    // 타이핑 이벤트 토픽 구독 시작
+    _typingSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId.typing',
+      _onTypingEventReceived,
+    );
+    log('[ChatRoom] 타이핑 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.typing');
+  }
+
+  /// 읽음 처리 이벤트 전송
+  ///
+  /// - lastMessageId가 0이면 전송하지 않음 (읽을 메시지 없음)
+  /// - 채팅방 진입 시 및 나갈 때 호출
+  void sendReadEvent() {
+    if (lastMessageId == 0) return;
+
+    stompClient.publish(
+      '/pub/chat.read',
+      body: jsonEncode({
+        'chatRoomPublicId': chatRoomId,
+        'lastReadMessageId': lastMessageId,
+      }),
+    );
+    log('[ChatRoom] 읽음 처리 전송: lastMessageId=$lastMessageId');
+  }
+
+  /// 타이핑 이벤트 전송
+  ///
+  /// [typing] true: 입력 중, false: 입력 중지
+  void sendTypingEvent(bool typing) {
+    stompClient.publish(
+      '/pub/chat.typing',
+      body: jsonEncode({
+        'chatRoomPublicId': chatRoomId,
+        'typing': typing,
+      }),
+    );
+    log('[ChatRoom] 타이핑 이벤트 전송: typing=$typing');
+  }
+
+  /// 텍스트 입력 변경 시 호출 — 타이핑 이벤트 디바운스 처리
+  ///
+  /// - 입력값이 비어있으면 즉시 typing: false 전송 (전송 버튼으로 메시지 전송 후 clear 포함)
+  /// - 타이머가 없는 상태(최초 입력)에서만 typing: true 전송 (불필요한 트래픽 방지)
+  /// - 2초간 추가 입력이 없으면 typing: false 자동 전송
+  void onTypingChanged(String text) {
+    if (text.isEmpty) {
+      _typingTimer?.cancel();
+      _typingTimer = null;
+      sendTypingEvent(false);
+      return;
+    }
+
+    if (_typingTimer == null) {
+      sendTypingEvent(true);
+    }
+    _typingTimer?.cancel();
+    _typingTimer = Timer(
+      const Duration(seconds: 2),
+      () {
+        sendTypingEvent(false);
+        _typingTimer = null;
+      },
+    );
+  }
+
+  /// 타이핑 이벤트 수신 핸들러
+  ///
+  /// Payload: { chatRoomPublicId, userPublicId, typing, at }
+  /// isOpponentTyping 상태를 갱신하여 UI 타이핑 인디케이터에 반영한다.
+  /// TODO: userPublicId와 내 ID 비교로 본인 이벤트 필터링 예정
+  void _onTypingEventReceived(StompFrame frame) {
+    if (frame.body == null) return;
+    try {
+      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final userPublicId = json['userPublicId'] as String?;
+      final typing = json['typing'] as bool? ?? false;
+      log('[ChatRoom] 타이핑 이벤트 수신: userPublicId=$userPublicId, typing=$typing');
+      isOpponentTyping.value = typing;
+    } catch (e) {
+      log('[ChatRoom] 타이핑 이벤트 파싱 실패: $e / body: ${frame.body}');
+    }
+  }
+
+  /// 읽음 이벤트 수신 핸들러
+  ///
+  /// Payload: { chatRoomPublicId, readerPublicId, lastReadMessageId, at }
+  /// lastReadMessageId 이하의 내 메시지에 "읽음" 표시를 반영한다.
+  void _onReadEventReceived(StompFrame frame) {
+    if (frame.body == null) return;
+    try {
+      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final readerPublicId = json['readerPublicId'] as String?;
+      final lastReadMessageId = (json['lastReadMessageId'] as num?)?.toInt();
+      log(
+        '[ChatRoom] 읽음 이벤트 수신: readerPublicId=$readerPublicId, lastReadMessageId=$lastReadMessageId',
+      );
+      if (lastReadMessageId != null &&
+          lastReadMessageId > opponentLastReadMessageId.value) {
+        opponentLastReadMessageId.value = lastReadMessageId;
+      }
+    } catch (e) {
+      log('[ChatRoom] 읽음 이벤트 파싱 실패: $e / body: ${frame.body}');
+    }
   }
 
   /// 실시간 메시지 수신 핸들러
+  ///
+  /// - 내가 보낸 메시지의 서버 echo인 경우: 로컬 메시지의 messageId를 갱신하고 중복 삽입을 방지
+  /// - 상대방 메시지인 경우: 리스트 앞에 삽입 후 즉시 읽음 처리
   void _onMessageReceived(StompFrame frame) {
     if (frame.body == null) return;
     try {
       final json = jsonDecode(frame.body!) as Map<String, dynamic>;
-      final viewModel = ChatMessageViewModel.fromJson(json);
-      viewChatList.insert(0, viewModel);
       final receivedId = (json['messageId'] as num?)?.toInt();
+      final content = json['content'] as String? ?? '';
+
+      if (_pendingSentContents.isNotEmpty &&
+          _pendingSentContents.first == content) {
+        // 내가 보낸 메시지의 서버 echo → 로컬 메시지 messageId 업데이트
+        _pendingSentContents.removeFirst();
+        final localIndex = viewChatList.indexWhere(
+          (vm) => vm.isMe && vm.messageId == null && vm.content == content,
+        );
+        if (localIndex != -1 && receivedId != null) {
+          viewChatList[localIndex] = ChatMessageViewModel(
+            messageId: receivedId,
+            messageType: viewChatList[localIndex].messageType,
+            content: content,
+            createdAt: viewChatList[localIndex].createdAt,
+            isMe: true,
+            profileImageKey: null,
+          );
+          log('[ChatRoom] 로컬 메시지 messageId 업데이트: $receivedId');
+        }
+      } else {
+        // 상대방 메시지 → 리스트 앞에 삽입
+        final viewModel = ChatMessageViewModel.fromJson(json);
+        viewChatList.insert(0, viewModel);
+        log('[ChatRoom] 메시지 수신: $content');
+      }
+
       if (receivedId != null && receivedId > lastMessageId) {
         lastMessageId = receivedId;
       }
-      log('[ChatRoom] 메시지 수신: ${viewModel.content}');
+      // 수신 즉시 읽음 처리 (채팅방에 머무는 동안 상대방에게 읽음 상태 반영)
+      sendReadEvent();
     } catch (e) {
       log('[ChatRoom] 메시지 파싱 실패: $e / body: ${frame.body}');
     }
@@ -123,7 +304,8 @@ class ChatRoomController extends GetxController {
   ///
   /// - 빈 문자열이면 전송하지 않음
   /// - WebSocket으로 /pub/chat.send 발행
-  /// - 내가 보낸 메시지 즉시 UI 반영 (isMe: true)
+  /// - 내가 보낸 메시지 즉시 UI 반영 (isMe: true, messageId: null)
+  /// - 서버 echo 수신 시 _onMessageReceived에서 messageId가 업데이트된다
   /// - IMAGE 타입은 추후 구현 예정
   void sendChat(String content) {
     final trimmed = content.trim();
@@ -137,6 +319,9 @@ class ChatRoomController extends GetxController {
         'content': trimmed,
       }),
     );
+
+    // pending 큐에 등록하여 서버 echo와 매칭
+    _pendingSentContents.add(trimmed);
 
     viewChatList.insert(
       0,
@@ -153,6 +338,9 @@ class ChatRoomController extends GetxController {
   }
 
   Future backChatRoom() async {
+    // WebSocket 읽음 이벤트 전송
+    sendReadEvent();
+    // HTTP 읽음 처리 유지
     Get.back<ChatRoomReadResult>(
       result: ChatRoomReadResult(
         success: await readChatMessageUseCase.call(chatRoomId, lastMessageId),

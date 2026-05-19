@@ -36,23 +36,44 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
   Widget _body() => Container(
     width: double.maxFinite,
     color: AppColors.background,
-    child: Obx(
-      () => controller.viewChatList.isNotEmpty ? _chatList() : _noChatIcon(),
+    child: Column(
+      children: [
+        Expanded(
+          child: Obx(
+            () => controller.viewChatList.isNotEmpty
+                ? _chatList()
+                : _noChatIcon(),
+          ),
+        ),
+        Obx(
+          () => controller.isOpponentTyping.value
+              ? _typingIndicator()
+              : const SizedBox.shrink(),
+        ),
+      ],
     ),
   );
 
   Widget _chatList() => ListView.builder(
     itemBuilder: (context, index) {
       final chat = controller.viewChatList[index];
-      return chat.isMe ? _myChat(chat.content) : _otherChat(chat.content);
+      if (chat.isMe) {
+        return Obx(() {
+          final isRead =
+              chat.messageId != null &&
+              chat.messageId! <= controller.opponentLastReadMessageId.value;
+          return _myChat(chat.content, isRead: isRead);
+        });
+      }
+      return _otherChat(chat.content);
     },
     itemCount: controller.viewChatList.length,
   );
 
-  Widget _myChat(String text) => Row(
+  Widget _myChat(String text, {bool isRead = false}) => Row(
     mainAxisAlignment: MainAxisAlignment.end,
     children: [
-      ChatCard(isMe: true, text: text),
+      ChatCard(isMe: true, text: text, isRead: isRead),
     ],
   );
 
@@ -68,6 +89,18 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
         sendAt: Duration(hours: 3),
       ),
     ],
+  );
+
+  Widget _typingIndicator() => Padding(
+    padding: AppPadding.chatMargin,
+    child: Row(
+      children: [
+        Text(
+          '상대방이 입력 중...',
+          style: AppTextStyles.caption(textColor: AppColors.gray60),
+        ),
+      ],
+    ),
   );
 
   Widget _noChatIcon() => Column(

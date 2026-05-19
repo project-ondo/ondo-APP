@@ -19,6 +19,7 @@ void main() {
       expect(result, endsWith('\x00'));
     });
     test('SEND 프레임 - body 포함', () {
+
       final frame = StompFrame(
         command: 'SEND',
         headers: {

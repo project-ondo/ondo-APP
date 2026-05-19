@@ -1,17 +1,14 @@
 
 import 'package:get/get.dart';
 import '../../../data/datasource/post/post_remote_datasource.dart';
-import '../../../data/datasource/comment/comment_remote_datasource.dart';
 import '../../../data/network/clients/auth_client.dart';
 import '../../../data/repositories/post/post_repository_impl.dart';
-import '../../../data/repositories/comment/comment_repository_impl.dart';
 import '../../../domain/usecases/post/create_post_usecase.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
 import '../../../domain/usecases/post/like_post_usecase.dart';
 import '../../../domain/usecases/post/unlike_post_usecase.dart';
 import '../../../domain/usecases/post/update_post_usecase.dart';
-import '../../../domain/usecases/comment/comment_usecases.dart';
 import '../../../presentation/post/controllers/post_view_controller.dart';
 
 class PostBinding extends Bindings {
@@ -45,24 +42,6 @@ class PostBinding extends Bindings {
     Get.lazyPut<UnlikePostUseCase>(
           () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
-
-    // Comment
-    Get.lazyPut<CommentRemoteDataSource>(
-          () => CommentRemoteDataSourceImpl(Get.find<AuthClient>()),
-    );
-    Get.lazyPut<CommentRepositoryImpl>(
-          () => CommentRepositoryImpl(remoteDataSource: Get.find<CommentRemoteDataSource>()),
-    );
-    Get.lazyPut<GetCommentsUseCase>(
-          () => GetCommentsUseCase(Get.find<CommentRepositoryImpl>()),
-    );
-    Get.lazyPut<CreateCommentUseCase>(
-          () => CreateCommentUseCase(Get.find<CommentRepositoryImpl>()),
-    );
-    Get.lazyPut<DeleteCommentUseCase>(
-          () => DeleteCommentUseCase(Get.find<CommentRepositoryImpl>()),
-    );
-
     Get.put<PostViewController>(
       PostViewController(
         postId: postId,
@@ -72,9 +51,6 @@ class PostBinding extends Bindings {
         deleteUseCase: Get.find<DeletePostUseCase>(),
         likeUseCase: Get.find<LikePostUseCase>(),
         unlikeUseCase: Get.find<UnlikePostUseCase>(),
-        getCommentsUseCase: Get.find<GetCommentsUseCase>(),
-        createCommentUseCase: Get.find<CreateCommentUseCase>(),
-        deleteCommentUseCase: Get.find<DeleteCommentUseCase>(),
       ),
     );
   }

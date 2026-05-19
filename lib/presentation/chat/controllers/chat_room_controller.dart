@@ -75,9 +75,12 @@ class ChatRoomController extends GetxController {
       stompClient.unsubscribe(_readSubscriptionId!);
       log('[ChatRoom] 읽음 이벤트 구독 해제: $_readSubscriptionId');
     }
-    // 타이핑 타이머 취소 후 typing: false 전송
-    _typingTimer?.cancel();
-    sendTypingEvent(false);
+    // 타이핑 중이었다면 타이머 취소 후 typing: false 전송
+    if (_typingTimer != null) {
+      _typingTimer?.cancel();
+      _typingTimer = null;
+      sendTypingEvent(false);
+    }
     // 모든 퇴장 시나리오에서 읽음 처리 보장 (뒤로가기 제스처 등 포함)
     sendReadEvent();
     // 채팅방 퇴장 이벤트 발행
@@ -148,14 +151,27 @@ class ChatRoomController extends GetxController {
 
   /// 텍스트 입력 변경 시 호출 — 타이핑 이벤트 디바운스 처리
   ///
-  /// - 입력 시작 시 typing: true 전송
+  /// - 입력값이 비어있으면 즉시 typing: false 전송 (전송 버튼으로 메시지 전송 후 clear 포함)
+  /// - 타이머가 없는 상태(최초 입력)에서만 typing: true 전송 (불필요한 트래픽 방지)
   /// - 2초간 추가 입력이 없으면 typing: false 자동 전송
   void onTypingChanged(String text) {
-    sendTypingEvent(true);
+    if (text.isEmpty) {
+      _typingTimer?.cancel();
+      _typingTimer = null;
+      sendTypingEvent(false);
+      return;
+    }
+
+    if (_typingTimer == null) {
+      sendTypingEvent(true);
+    }
     _typingTimer?.cancel();
     _typingTimer = Timer(
       const Duration(seconds: 2),
-      () => sendTypingEvent(false),
+      () {
+        sendTypingEvent(false);
+        _typingTimer = null;
+      },
     );
   }
 

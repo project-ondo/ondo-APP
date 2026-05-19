@@ -39,24 +39,26 @@ final List<Map<String, dynamic>> mockPostData = [
   },
 ];
 
+final List<PostItem> testPostItemList = mockPostData.map((data) {
+  return PostItem(
+    postId: data['postId'] ?? 0,
+    skills: List<String>.from(data['skills']),
+    title: data['title'],
+    author: data['author'],
+    bookmarks: data['bookmarks'],
+    favorites: data['favorites'],
+    createAt: DateTime.now().subtract(
+      Duration(minutes: data['createMinutes']),
+    ),
+    isMy: true,
+  );
+}).toList();
+
 class MyProfileScreen extends GetView<MyProfileController> {
   const MyProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<PostItem> testPostItemList = mockPostData.map((data) {
-      return PostItem(
-        skills: List<String>.from(data['skills']),
-        title: data['title'],
-        author: data['author'],
-        bookmarks: data['bookmarks'],
-        favorites: data['favorites'],
-        createAt: DateTime.now().subtract(
-          Duration(minutes: data['createMinutes']),
-        ),
-      );
-    }).toList();
-
     return SafeArea(
       child: BaseScaffold(
         backgroundColor: AppColors.background,
@@ -119,7 +121,9 @@ class MyProfileScreen extends GetView<MyProfileController> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AppGap.v12,
-            UserProfileImage(imageUrl: profile?.profileImageKey),
+            Obx(() => UserProfileImage(
+              imageUrl: controller.profileImageUrl.value,
+            )),
             UserNameAndMajor(
               name: profile?.displayName ?? '',
               major: profile?.major ?? '',

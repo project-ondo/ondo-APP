@@ -61,7 +61,6 @@ class MediaRemoteDatasource {
     final file = File(imagePath);
     final bytes = await file.readAsBytes();
 
-    // S3 presign URL은 인증 헤더 없이 직접 PUT
     final res = await http.put(
       Uri.parse(presignUrl),
       headers: {'Content-Type': contentType},
@@ -82,13 +81,12 @@ class MediaRemoteDatasource {
     required String imagePath,
     String category = 'PROFILE',
   }) async {
-    // path 패키지로 파일명에서만 확장자 추출 (디렉토리 경로의 점 영향 없음)
     final ext = p.extension(imagePath).replaceFirst('.', '').toLowerCase();
     final contentType = switch (ext) {
       'png' => 'image/png',
       'webp' => 'image/webp',
       'jpg' || 'jpeg' => 'image/jpeg',
-      _ => 'image/jpeg', // 확장자 없거나 알 수 없는 경우 기본값
+      _ => 'image/jpeg',
     };
 
     final presignData = await getPresignUrl(
@@ -103,5 +101,38 @@ class MediaRemoteDatasource {
     );
 
     return presignData.key;
+  }
+
+  /// 다운로드용 URL 생성 POST /media/presign/download?key={key}
+  Future<String> getDownloadUrl({required String key}) async {
+    final log = ApiConstants(logName: '이미지 다운로드 URL 생성');
+
+    final res = await client.post(
+      Uri.parse('${ApiConstants.domain}/media/presign/download?key=$key'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({}),
+    );
+
+    log.statusLog(res.statusCode);
+
+    try {
+      final body = jsonDecode(res.body);
+      log.successLog(body['success'] ?? false);
+      log.messageLog(body['message'] ?? '');
+
+      if (res.statusCode != 200 || body['success'] != true) {
+        throw Exception(body['message'] ?? '다운로드 URL 생성 실패');
+      }
+
+      final getUrl = body['data']?['getUrl'];
+      if (getUrl == null || getUrl.isEmpty) {
+        throw Exception('다운로드 URL이 없습니다.');
+      }
+
+      return getUrl;
+    } catch (e) {
+      if (e is Exception) rethrow;
+      throw Exception('다운로드 URL 생성 중 오류가 발생했습니다.');
+    }
   }
 }

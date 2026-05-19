@@ -12,6 +12,7 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/community/controllers/tag_input_field_controller.dart';
 import 'package:ondo/presentation/community/widgets/tag_input_field.dart';
 import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
+import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
 
 class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
   static const _contentMinLength = 10;
@@ -61,7 +62,7 @@ class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
                         ),
                         AppGap.v4,
                         Obx(
-                          () => Text(
+                              () => Text(
                             '${controller.contentLength.value}/3000',
                             style: AppTextStyles.caption(
                               textColor: controller.contentLength.value >= 3000
@@ -77,18 +78,34 @@ class CommunityPostCreateScreen extends GetView<CommunityPostCreateController> {
               ),
             ),
           ),
-
-          // 하단 고정 버튼
           Padding(
             padding: AppPadding.textField,
             child: SizedBox(
               height: AppSpacing.s52,
               width: double.infinity,
               child: Obx(
-                () => CustomButton(
-                  text: '커뮤니티에 게시',
+                    () => CustomButton(
+                  text: controller.isEditMode ? '게시물 수정' : '커뮤니티에 게시',
                   variant: ButtonVariant.primary,
                   enabled: controller.isFormValid.value,
+                  onPressed: controller.isFormValid.value
+                      ? () async {
+                    final inputTags =
+                    Get.find<TagInputController>().tags.toList();
+                    if (controller.isEditMode) {
+                      final postViewController =
+                      Get.find<PostViewController>();
+                      await postViewController.updatePost(
+                        title: controller.titleController.text,
+                        content: controller.contentController.text,
+                        tags: inputTags,
+                      );
+                      Get.back();
+                    } else {
+                      await controller.submit(inputTags);
+                    }
+                  }
+                      : null,
                 ),
               ),
             ),

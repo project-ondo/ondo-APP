@@ -10,13 +10,15 @@ class ApiConstants {
   //.env 파일에서 설정한 환경 변수 불러오기
   static String get domain => Env.apiBaseUrl;
 
-  static String get posts => "${Env.apiBaseUrl}/posts";
+  static String get post => "${Env.apiBaseUrl}/posts";
 
-  static String get users => "${Env.apiBaseUrl}/users";
+  static String get user => "${Env.apiBaseUrl}/users";
 
   static String get auth => "${Env.apiBaseUrl}/auth";
 
-  static String get chats => "${Env.apiBaseUrl}/chat";
+  static String get chat => "${Env.apiBaseUrl}/chat";
+
+  static String get rating => "${Env.apiBaseUrl}/rating";
 
   static String get notification => "${Env.apiBaseUrl}/notifications";
 
@@ -31,7 +33,8 @@ class ApiConstants {
 
   void statusLog(int code) => log("$logName 서버 연결 상태 : $code");
 
-  void successLog(bool success) => log("$logName 서버 성공 여부 : $success");
+  void successLog(bool? success) =>
+      log("$logName 서버 성공 여부 : ${success == true}");
 
   void messageLog(String? message) => log("$logName 서버 메세지 : $message");
 }

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:go_router/go_router.dart';
 
 // bindings
 import 'package:ondo/core/router/bindings/login_binding.dart';
 import 'package:ondo/core/router/bindings/navigation_binding.dart';
 import 'package:ondo/core/router/bindings/password_reset_binding.dart';
+import 'package:ondo/core/router/bindings/post_binding.dart';
+import 'package:ondo/core/router/bindings/profile_binding.dart';
 import 'package:ondo/core/router/bindings/signup_binding.dart';
 import 'package:ondo/core/router/bindings/splash_binding.dart';
 
@@ -20,6 +21,7 @@ import 'package:ondo/presentation/auth/password_reset/screens/password_reset_pas
 import 'package:ondo/presentation/auth/password_reset/screens/password_reset_password_screen.dart';
 
 // signup screens
+import 'package:ondo/presentation/auth/signup/screens/signup_complete_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_email_code_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_email_input_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_introduction_input_screen.dart';
@@ -27,7 +29,6 @@ import 'package:ondo/presentation/auth/signup/screens/signup_major_interest_setu
 import 'package:ondo/presentation/auth/signup/screens/signup_nickname_setup_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_password_setup_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_profile_image_setup_screen.dart';
-import 'package:ondo/presentation/auth/signup/screens/signup_complete_screen.dart';
 import 'package:ondo/presentation/auth/signup/screens/signup_terms_agreement_screen.dart';
 
 // auth / home
@@ -37,6 +38,10 @@ import 'package:ondo/presentation/home/screens/home_screen.dart';
 
 // navigation
 import 'package:ondo/presentation/navigation/screens/navigation_screen.dart';
+import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
+
+// post
+import 'package:ondo/presentation/post/screens/post_detail_screen.dart';
 
 // profile
 import 'package:ondo/presentation/profile/screens/edit_profile_screen.dart';
@@ -52,10 +57,11 @@ class RoutePaths {
   static const String home = '/home';
   static const String login = '/login';
 
+  static const String postDetail = '/post/:postId';
+
   static const String passwordReset = '/password_reset';
   static const String passwordResetInputEmail = '/password_reset/email';
-  static const String passwordResetInputEmailCode =
-      '/password_reset/email-code';
+  static const String passwordResetInputEmailCode = '/password_reset/email-code';
   static const String passwordResetInputPassword = '/password_reset/password';
   static const String passwordResetComplete = '/password_reset/complete';
 
@@ -63,7 +69,7 @@ class RoutePaths {
   static const String editProfile = '/profile/edit';
   static const String profileSetting = '/profile/setting';
   static const String profileTerms = '/profile/setting/terms';
-  static const String userProfile = 'user/profile';
+  static const String userProfile = '/profile/user/:publicId';
 
   static const String signup = '/signup';
   static const String signupTerms = '/signup/terms';
@@ -86,33 +92,49 @@ final GoRouter appRouter = GoRouter(
       name: 'splash',
       builder: (context, state) {
         SplashBinding().dependencies();
-        return SplashScreen();
+        return const SplashScreen();
       },
-    ), //splash
+    ),
 
     GoRoute(
       path: RoutePaths.navigation,
       name: 'navigation',
       builder: (context, state) {
         NavigationBinding().dependencies();
-        return NavigationScreen();
+        return const NavigationScreen();
       },
-    ), //navigation
+    ),
 
     GoRoute(
       path: RoutePaths.home,
       name: 'home',
-      builder: (context, state) => HomeScreen(),
-    ), //home
+      builder: (context, state) => const HomeScreen(),
+    ),
 
     GoRoute(
       path: RoutePaths.login,
       name: 'login',
       builder: (context, state) {
         LoginBinding().dependencies();
-        return LoginScreen();
+        return const LoginScreen();
       },
-    ), //login
+    ),
+
+    GoRoute(
+      path: RoutePaths.postDetail,
+      name: 'postDetail',
+      builder: (context, state) {
+        final postId = int.parse(state.pathParameters['postId']!);
+
+        if (Get.isRegistered<PostViewController>()) {
+          Get.delete<PostViewController>(force: true);
+        }
+
+        PostBinding(postId, state.extra as bool? ?? false).dependencies();
+
+        return PostDetailScreen();
+      },
+    ),
 
     ShellRoute(
       builder: (context, state, child) {
@@ -132,8 +154,7 @@ final GoRouter appRouter = GoRouter(
           RoutePaths.passwordResetInputEmailCode,
         };
 
-        if (!flowController.isEmailVerified &&
-            !allowedPaths.contains(location)) {
+        if (!flowController.isEmailVerified && !allowedPaths.contains(location)) {
           return RoutePaths.passwordResetInputEmail;
         }
 
@@ -143,52 +164,64 @@ final GoRouter appRouter = GoRouter(
         GoRoute(
           path: RoutePaths.passwordResetInputEmail,
           name: 'passwordResetInputEmail',
-          builder: (context, state) => PasswordResetEmailInputScreen(),
+          builder: (context, state) =>
+          const PasswordResetEmailInputScreen(),
         ),
         GoRoute(
           path: RoutePaths.passwordResetInputEmailCode,
           name: 'passwordResetInputEmailCode',
-          builder: (context, state) => PasswordResetEmailCodeInputScreen(),
+          builder: (context, state) =>
+          const PasswordResetEmailCodeInputScreen(),
         ),
         GoRoute(
           path: RoutePaths.passwordResetInputPassword,
           name: 'passwordResetInputPassword',
-          builder: (context, state) => PasswordResetPasswordScreen(),
+          builder: (context, state) =>
+          const PasswordResetPasswordScreen(),
         ),
         GoRoute(
           path: RoutePaths.passwordResetComplete,
           name: 'passwordResetComplete',
-          builder: (context, state) => PasswordResetCompletedScreen(),
+          builder: (context, state) =>
+          const PasswordResetCompletedScreen(),
         ),
       ],
     ), // password_reset
 
-    GoRoute(
-      path: RoutePaths.profile,
-      name: 'profile',
-      builder: (context, state) => MyProfileScreen(),
+    ShellRoute(
+      builder: (context, state, child) {
+        ProfileBinding().dependencies();
+        return child;
+      },
       routes: [
         GoRoute(
-          path: RoutePaths.editProfile,
-          name: 'editProfile',
-          builder: (context, state) => EditProfileScreen(),
-        ),
-        GoRoute(
-          path: RoutePaths.profileSetting,
-          name: 'profileSetting',
-          builder: (context, state) => SettingScreen(),
+          path: RoutePaths.profile,
+          name: 'profile',
+          builder: (context, state) => const MyProfileScreen(),
           routes: [
             GoRoute(
-              path: RoutePaths.profileTerms,
-              name: 'profileTerms',
-              builder: (context, state) => TermsScreen(),
+              path: 'edit',
+              name: 'editProfile',
+              builder: (context, state) => const EditProfileScreen(),
+            ),
+            GoRoute(
+              path: 'setting',
+              name: 'profileSetting',
+              builder: (context, state) => const SettingScreen(),
+              routes: [
+                GoRoute(
+                  path: 'terms',
+                  name: 'profileTerms',
+                  builder: (context, state) => const TermsScreen(),
+                ),
+              ],
+            ),
+            GoRoute(
+              path: 'user/:publicId',
+              name: 'userProfile',
+              builder: (context, state) => OtherProfileScreen(publicId: state.pathParameters['publicId'] ?? ''),
             ),
           ],
-        ),
-        GoRoute(
-          path: RoutePaths.userProfile,
-          name: 'userProfile',
-          builder: (context, state) => OtherProfileScreen(),
         ),
       ],
     ), //profile
@@ -207,53 +240,62 @@ final GoRouter appRouter = GoRouter(
       routes: [
         GoRoute(
           path: RoutePaths.signupTerms,
-          name: "signupTerms",
-          builder: (context, state) => SignupTermsAgreementScreen(),
+          name: 'signupTerms',
+          builder: (context, state) =>
+          const SignupTermsAgreementScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupEmail,
-          name: "signupEmail",
-          builder: (context, state) => SignupEmailInputScreen(),
+          name: 'signupEmail',
+          builder: (context, state) =>
+          const SignupEmailInputScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupEmailCode,
-          name: "signupEmailCode",
-          builder: (context, state) => SignupEmailCodeInputScreen(),
+          name: 'signupEmailCode',
+          builder: (context, state) =>
+          const SignupEmailCodeInputScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupPassword,
-          name: "signupPassword",
-          builder: (context, state) => SignupPasswordSetupScreen(),
+          name: 'signupPassword',
+          builder: (context, state) =>
+          const SignupPasswordSetupScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupNickname,
-          name: "signupNickname",
-          builder: (context, state) => SignupNicknameSetupScreen(),
+          name: 'signupNickname',
+          builder: (context, state) =>
+          const SignupNicknameSetupScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupProfileImage,
-          name: "signupProfileImage",
-          builder: (context, state) => SignupProfileImageSetupScreen(),
+          name: 'signupProfileImage',
+          builder: (context, state) =>
+          const SignupProfileImageSetupScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupIntroduction,
-          name: "signupIntroduction",
-          builder: (context, state) => SignupIntroductionInputScreen(),
+          name: 'signupIntroduction',
+          builder: (context, state) =>
+          const SignupIntroductionInputScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupMajorInterest,
-          name: "signupMajorInterest",
-          builder: (context, state) => SignupMajorInterestSetupScreen(),
+          name: 'signupMajorInterest',
+          builder: (context, state) =>
+          const SignupMajorInterestSetupScreen(),
         ),
         GoRoute(
           path: RoutePaths.signupComplete,
-          name: "signupComplete",
-          builder: (context, state) => SignupCompleteScreen(),
+          name: 'signupComplete',
+          builder: (context, state) =>
+          const SignupCompleteScreen(),
         ),
       ],
-    ), //signup
+    ),
   ],
-  errorBuilder: (context, state) => Scaffold(
+  errorBuilder: (context, state) => const Scaffold(
     body: Center(
       child: Text('페이지를 찾을 수 없습니다.'),
     ),

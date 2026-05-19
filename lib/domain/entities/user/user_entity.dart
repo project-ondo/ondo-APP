@@ -3,7 +3,7 @@ import 'package:ondo/data/models/user/response/user_model.dart';
 class UserEntity {
   final String publicId;
   final String displayName;
-  final String gender;
+  final String? gender;
   final String major;
   final List<String> interests;
   final String? profileImageKey;

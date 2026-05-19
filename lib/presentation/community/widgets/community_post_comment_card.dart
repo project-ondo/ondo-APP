@@ -23,7 +23,7 @@ class CommunityPostCommentCard extends StatelessWidget {
     return IntrinsicHeight(
       child: Row(
         children: [
-          Align(
+          Align( 
             alignment: .topLeft,
             child: CustomProfileCircle(radius: AppSpacing.s24),
           ),

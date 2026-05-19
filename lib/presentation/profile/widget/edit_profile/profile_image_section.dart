@@ -2,67 +2,56 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
-class ProfileImageSection extends StatefulWidget {
-  const ProfileImageSection({super.key});
+class ProfileImageSection extends StatelessWidget {
+  const ProfileImageSection({
+    super.key,
+    this.imagePath,
+    this.imageUrl,
+    required this.onPickImage,
+    required this.onRemoveImage,
+  });
 
-  @override
-  State<ProfileImageSection> createState() => _ProfileImageSectionState();
-}
-
-class _ProfileImageSectionState extends State<ProfileImageSection> {
-  final ImagePicker _picker = ImagePicker();
-  XFile? _image;
-
-  Future<void> _pickImage() async {
-    final picked = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 70,
-    );
-    if (picked != null) {
-      setState(() {
-        _image = picked;
-      });
-    }
-  }
+  final String? imagePath;   // 로컬에서 선택한 이미지 경로
+  final String? imageUrl;    // 서버 이미지 URL
+  final VoidCallback onPickImage;
+  final VoidCallback onRemoveImage;
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
-        profileImageView(),
-        cameraButton(),
+        _profileImageView(),
+        _cameraButton(context),
       ],
     );
   }
 
-  Widget profileImageView() {
+  Widget _profileImageView() {
     return Container(
       width: 180,
       height: 180,
       padding: AppPadding.userCard,
-      decoration: BoxDecoration(shape: BoxShape.circle),
-      child: _image != null
-          ? ClipOval(
-              child: Image.file(
-                File(_image!.path),
-                fit: BoxFit.cover,
-              ),
-            )
-          : SvgPicture.asset(
-              AppIcon.defaultProfile.path,
-              fit: BoxFit.cover,
-            ),
+      decoration: const BoxDecoration(shape: BoxShape.circle),
+      child: ClipOval(
+        child: imagePath != null
+            ? Image.file(File(imagePath!), fit: BoxFit.cover)
+            : imageUrl != null && imageUrl!.isNotEmpty
+            ? Image.network(imageUrl!, fit: BoxFit.cover)
+            : SvgPicture.asset(
+          AppIcon.defaultProfile.path,
+          fit: BoxFit.cover,
+        ),
+      ),
     );
   }
 
-  Widget cameraButton() {
+  Widget _cameraButton(BuildContext context) {
     return Container(
       width: 38,
       height: 38,
@@ -73,36 +62,32 @@ class _ProfileImageSectionState extends State<ProfileImageSection> {
       ),
       child: PopupMenuButton<String>(
         color: AppColors.white,
-        offset: Offset(-19, 19),
-        onSelected: (value) async {
+        offset: const Offset(-19, 19),
+        onSelected: (value) {
           if (value == 'default') {
-            setState(() {
-              _image = null;
-            });
+            onRemoveImage();
           } else if (value == 'gallery') {
-            await _pickImage();
+            onPickImage();
           }
         },
         itemBuilder: (context) => [
           PopupMenuItem(
             padding: AppPadding.settingSession,
-            value: "gallery",
+            value: 'gallery',
             child: Center(
               child: Text(
-                "앨범에서 사진 선택",
+                '앨범에서 사진 선택',
                 style: AppTextStyles.caption(textColor: AppColors.gray90),
-                textAlign: TextAlign.start,
               ),
             ),
           ),
           PopupMenuItem(
             padding: AppPadding.settingSession,
-            value: "default",
+            value: 'default',
             child: Center(
               child: Text(
-                "기본 프로필 적용",
+                '기본 프로필 적용',
                 style: AppTextStyles.caption(textColor: AppColors.gray90),
-                textAlign: TextAlign.start,
               ),
             ),
           ),

@@ -9,12 +9,12 @@ class HomeRemoteDatasource {
 
   HomeRemoteDatasource({required this.client});
 
-  Future<Map?> loadRecommendPostList(BaseListRequestModel model) async {
+  Future<Map?> loadRecommendPostList(ListRequestModel model) async {
     final log = ApiConstants(logName: "홈 추천 게시물 조회");
 
     try {
       final res = await client.get(
-        Uri.parse("${ApiConstants.posts}/recommend${model.toQueryParameter()}"),
+        Uri.parse("${ApiConstants.post}/recommend${model.toQueryParameter()}"),
       );
 
       final body = jsonDecode(res.body);

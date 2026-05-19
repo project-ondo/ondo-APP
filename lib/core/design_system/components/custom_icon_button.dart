@@ -35,10 +35,20 @@ class _CustomIconButtonState extends State<CustomIconButton> {
 
   @override
   void initState() {
+    super.initState();
     total = widget.total;
     isSelect = widget.initialIsSelected;
+  }
 
-    super.initState();
+  @override
+  void didUpdateWidget(CustomIconButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.total != widget.total) {
+      total = widget.total;
+    }
+    if (oldWidget.initialIsSelected != widget.initialIsSelected) {
+      isSelect = widget.initialIsSelected;
+    }
   }
 
   @override

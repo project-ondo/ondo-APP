@@ -12,7 +12,11 @@ import 'package:ondo/presentation/chat/widgets/chat_card.dart';
 import 'package:ondo/presentation/chat/widgets/chat_input_field.dart';
 
 class ChatRoomScreen extends GetView<ChatRoomController> {
-  const ChatRoomScreen({super.key});
+  const ChatRoomScreen({super.key, required this.roomId});
+
+  @override
+  String? get tag => roomId;
+  final String roomId;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +25,9 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
         children: [
           _topBar(),
           Expanded(child: _body()),
-          ChatInputField(),
+          ChatInputField(
+            roomId: roomId,
+          ),
         ],
       ),
     );
@@ -31,22 +37,29 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     width: double.maxFinite,
     color: AppColors.background,
     child: Obx(
-      () => controller.chats.isNotEmpty ? _chatList() : _noChatIcon(),
+      () => controller.viewChatList.isNotEmpty ? _chatList() : _noChatIcon(),
     ),
   );
 
   Widget _chatList() => ListView.builder(
     itemBuilder: (context, index) {
-      final chat = controller.chats[index];
-      return chat.isMe ? _myChat(chat.comment) : _otherChat(chat.comment);
+      final chat = controller.viewChatList[index];
+      if (chat.isMe) {
+        return Obx(() {
+          final isRead = chat.messageId != null &&
+              chat.messageId! <= controller.opponentLastReadMessageId.value;
+          return _myChat(chat.content, isRead: isRead);
+        });
+      }
+      return _otherChat(chat.content);
     },
-    itemCount: controller.chats.length,
+    itemCount: controller.viewChatList.length,
   );
 
-  Widget _myChat(String text) => Row(
+  Widget _myChat(String text, {bool isRead = false}) => Row(
     mainAxisAlignment: MainAxisAlignment.end,
     children: [
-      ChatCard(isMe: true, text: text),
+      ChatCard(isMe: true, text: text, isRead: isRead),
     ],
   );
 
@@ -66,11 +79,6 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
 
   Widget _noChatIcon() => Column(
     children: [
-      Placeholder(
-        child: SvgPicture.asset(
-          AppIcon.message.path,
-        ),
-      ),
       Spacer(),
       Image.asset(AppIcon.message.path),
       Text(
@@ -85,6 +93,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
   Widget _topBar() => CustomBackButton(
     moreOptions: true,
     useUserProfile: true,
+    backAction: controller.backChatRoom,
     userInfo: (
       SvgPicture.asset(
         AppIcon.defaultProfile.path,
@@ -94,8 +103,9 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     itemBuilder: (context) => [
       _customPopupMenu(
         "커피챗 종료하기",
-        //종료 알림창 표시
-        controller.showQuitAlert,
+
+        ///종료 알림창 표시
+        controller.quitChat,
       ),
       _customPopupMenu(
         "신고하기",

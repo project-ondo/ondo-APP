@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
@@ -7,12 +8,14 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
 
 class HomeProfileCard extends StatelessWidget {
+  final String publicId;
   final String name;
   final String skill;
   final int rating;
 
   const HomeProfileCard({
     super.key,
+    required this.publicId,
     required this.skill,
     required this.name,
     required this.rating,
@@ -20,22 +23,28 @@ class HomeProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 160,
-      width: 120,
-      padding: AppPadding.card,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: AppRadius.userCardRadius,
+    return GestureDetector(
+      onTap: () => context.pushNamed(
+        'userProfile',
+        pathParameters: {'publicId': publicId},
       ),
-      child: Column(
-        children: [
-          _profile(),
-          AppGap.v8,
-          _content(),
-          AppGap.v8,
-          _stars(),
-        ],
+      child: Container(
+        height: 160,
+        width: 120,
+        padding: AppPadding.card,
+        decoration: BoxDecoration(
+          color: AppColors.white,
+          borderRadius: AppRadius.userCardRadius,
+        ),
+        child: Column(
+          children: [
+            _profile(),
+            AppGap.v8,
+            _content(),
+            AppGap.v8,
+            _stars(),
+          ],
+        ),
       ),
     );
   }
@@ -55,7 +64,6 @@ class HomeProfileCard extends StatelessWidget {
             child: CustomProfileCircle(radius: AppSpacing.s48),
           ),
         ),
-
         Positioned(
           right: 0,
           bottom: 0,

@@ -1,5 +1,7 @@
 class AppDateUtils {
-  static String timeAgo(DateTime dateTime) {
+  static String timeAgo(DateTime? dateTime) {
+    if (dateTime == null) return "";
+
     final diff = DateTime.now().difference(dateTime);
 
     if (diff.inMinutes < 60) {
@@ -11,5 +13,5 @@ class AppDateUtils {
     } else {
       return '${diff.inDays ~/ 365}년 전';
     }
-}
+  }
 }

@@ -4,6 +4,7 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
+import 'package:ondo/data/models/comment/response/comment.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
 
 class PostCommentCard extends GetView<PostViewController> {
@@ -25,16 +26,16 @@ class PostCommentCard extends GetView<PostViewController> {
         AppGap.h12,
         Expanded(child: _body()),
         AppGap.h6,
-        if (comment.isMy)
-          GestureDetector(
-            onTap: () {
-              controller.deleteComment(comment);
-            },
-            child: Text(
-              "삭제",
-              style: AppTextStyles.caption(textColor: AppColors.red),
-            ),
+        // TODO: 로그인 유저 id와 비교해서 본인 댓글만 삭제 버튼 노출
+        GestureDetector(
+          onTap: () {
+            controller.deleteComment(comment);
+          },
+          child: Text(
+            "삭제",
+            style: AppTextStyles.caption(textColor: AppColors.red),
           ),
+        ),
       ],
     );
   }
@@ -44,12 +45,12 @@ class PostCommentCard extends GetView<PostViewController> {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
-        comment.author,
+        comment.author ?? '',
         style: AppTextStyles.caption(textColor: AppColors.gray60),
       ),
       AppGap.v6,
       Text(
-        comment.comment,
+        comment.content,
         style: AppTextStyles.caption(textColor: AppColors.gray90),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,

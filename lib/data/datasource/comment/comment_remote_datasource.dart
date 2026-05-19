@@ -20,8 +20,11 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       final response = await _client.get(
         Uri.parse('${ApiConstants.comment}/$postId'),
       );
-      final body = jsonDecode(response.body);
       log.statusLog(response.statusCode);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception('댓글 조회 실패 (${response.statusCode})');
+      }
+      final body = jsonDecode(response.body);
       log.successLog(body['success'] ?? false);
       log.messageLog(body['message']);
       if (body['success'] != true) {
@@ -49,8 +52,11 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
         headers: ApiConstants.baseHeader,
         body: jsonEncode({'content': content}),
       );
-      final body = jsonDecode(response.body);
       log.statusLog(response.statusCode);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception('댓글 작성 실패 (${response.statusCode})');
+      }
+      final body = jsonDecode(response.body);
       log.successLog(body['success'] ?? false);
       log.messageLog(body['message']);
       if (body['success'] != true) {
@@ -69,8 +75,11 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       final response = await _client.delete(
         Uri.parse('${ApiConstants.comment}/$commentId'),
       );
-      final body = jsonDecode(response.body);
       log.statusLog(response.statusCode);
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw Exception('댓글 삭제 실패 (${response.statusCode})');
+      }
+      final body = jsonDecode(response.body);
       log.successLog(body['success'] ?? false);
       log.messageLog(body['message']);
       if (body['success'] != true) {

@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/community/controllers/community_controller.dart';
+import 'package:ondo/presentation/community/controllers/community_search_controller.dart';
 import 'package:ondo/presentation/post/widgets/base_post_list.dart';
 import 'package:ondo/presentation/post/widgets/post_item.dart';
 
@@ -32,8 +32,8 @@ class CommunitySearchScreen extends StatelessWidget {
 
 @immutable
 class _PostResults extends BasePostGrid {
-  final CommunityResultController _controller =
-  Get.find<CommunityResultController>();
+  final CommunitySearchController controller =
+      Get.find<CommunitySearchController>();
 
   _PostResults({
     super.title = "게시물 검색 결과",
@@ -41,9 +41,9 @@ class _PostResults extends BasePostGrid {
 
   @override
   List<Widget> listBuilder() {
-    return List.generate(_controller.viewPosts.length, (index) {
+    return List.generate(controller.viewPostList.length, (index) {
       return Obx(() {
-        final post = _controller.viewPosts[index];
+        final post = controller.viewPostList[index];
         return PostItem(
           postId: post.postId,
           skills: post.tags,

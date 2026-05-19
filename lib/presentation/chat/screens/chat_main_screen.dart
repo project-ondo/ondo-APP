@@ -15,8 +15,7 @@ class ChatMainScreen extends GetView<ChatMainController> {
   Widget build(BuildContext context) {
     return BaseScaffold(
       body: MainTopSearchBar(
-        pageId: "chat",
-        mainPage: Container(
+        child: Container(
           color: AppColors.background,
           padding: AppPadding.screenHorizontal,
           child: Column(
@@ -29,11 +28,6 @@ class ChatMainScreen extends GetView<ChatMainController> {
             ],
           ),
         ),
-        resultPageBuilder: (state) {
-          if (state.query.isEmpty || state.tags.isEmpty) return;
-          controller.search(state.query, state.tags.toList());
-          return null;
-        },
       ),
     );
   }

@@ -18,30 +18,31 @@ class PostBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<PostRemoteDatasource>(
-          () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
+      () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
     );
     Get.lazyPut<PostRepositoryImpl>(
-          () => PostRepositoryImpl(Get.find<PostRemoteDatasource>()),
+      () => PostRepositoryImpl(Get.find<PostRemoteDatasource>()),
     );
     Get.lazyPut<GetPostDetailUseCase>(
-          () => GetPostDetailUseCase(Get.find<PostRepositoryImpl>()),
+      () => GetPostDetailUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<CreatePostUseCase>(
-          () => CreatePostUseCase(Get.find<PostRepositoryImpl>()),
+      () => CreatePostUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<UpdatePostUseCase>(
-          () => UpdatePostUseCase(Get.find<PostRepositoryImpl>()),
+      () => UpdatePostUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<DeletePostUseCase>(
-          () => DeletePostUseCase(Get.find<PostRepositoryImpl>()),
+      () => DeletePostUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<LikePostUseCase>(
-          () => LikePostUseCase(Get.find<PostRepositoryImpl>()),
+      () => LikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<UnlikePostUseCase>(
-          () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
+      () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.put<PostViewController>(
+      tag: postId.toString(),
       PostViewController(
         postId: postId,
         initialIsFavorite: isFavorite,

@@ -8,9 +8,7 @@ import 'package:ondo/presentation/search/controllers/main_top_bar_search_control
 
 @immutable
 class SearchPopup extends StatelessWidget {
-  const SearchPopup({super.key, required this.pageId});
-
-  final String pageId;
+  const SearchPopup({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,11 +21,9 @@ class SearchPopup extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _Tags(
-              pageId: pageId,
-            ),
+            _Tags(),
             AppGap.v16,
-            _Tips(pageId: pageId),
+            _Tips(),
           ],
         ),
       ),
@@ -39,13 +35,6 @@ class SearchPopup extends StatelessWidget {
 class _Tags extends GetView<MainTopBarSearchController> {
   final SearchPopupController popupController =
       Get.find<SearchPopupController>();
-
-  final String pageId;
-
-  _Tags({required this.pageId});
-
-  @override
-  String? get tag => pageId;
 
   @override
   Widget build(BuildContext context) {
@@ -72,13 +61,6 @@ class _Tips extends GetView<MainTopBarSearchController> {
   final SearchPopupController popupController =
       Get.find<SearchPopupController>();
 
-  final String pageId;
-
-  _Tips({required this.pageId});
-
-  @override
-  String? get tag => pageId;
-
   @override
   Widget build(BuildContext context) {
     return Obx(
@@ -87,17 +69,17 @@ class _Tips extends GetView<MainTopBarSearchController> {
         spacing: AppSpacing.s16,
         children: List.generate(
           popupController.viewTips.length,
-          (index) => _tipTile(popupController.viewTips[index]),
+          (index) => _tipTile(context, popupController.viewTips[index]),
         ),
       ),
     );
   }
 
-  Widget _tipTile(String tip) {
+  Widget _tipTile(BuildContext context, String tip) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => controller.onSubmitTip(tip),
+        onTap: () => controller.onSubmit(context, keyword: tip),
         child: SizedBox(
           width: double.maxFinite,
           child: Text(

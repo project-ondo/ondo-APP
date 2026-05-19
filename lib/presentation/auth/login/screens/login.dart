@@ -70,7 +70,7 @@ class LoginScreen extends GetView<LoginController> {
                 if (!context.mounted) return;
 
                 if (success) {
-                  context.go(RoutePaths.navigation);
+                  context.go(RoutePaths.home);
                 }
               },
             ),

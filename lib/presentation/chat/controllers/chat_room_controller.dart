@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:developer';
@@ -24,6 +25,9 @@ class ChatRoomController extends GetxController {
   /// 상대방이 마지막으로 읽은 메시지 ID (읽음 이벤트 수신 시 갱신)
   final RxInt opponentLastReadMessageId = 0.obs;
 
+  /// 상대방 타이핑 여부 (타이핑 이벤트 수신 시 갱신)
+  final RxBool isOpponentTyping = false.obs;
+
   final String chatRoomId;
 
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
@@ -37,6 +41,12 @@ class ChatRoomController extends GetxController {
 
   /// /topic/chat.rooms.{chatRoomPublicId}.read 구독 ID
   String? _readSubscriptionId;
+
+  /// /topic/chat.rooms.{chatRoomPublicId}.typing 구독 ID
+  String? _typingSubscriptionId;
+
+  /// 타이핑 중지 감지용 디바운스 타이머 (2초 후 typing: false 전송)
+  Timer? _typingTimer;
 
   /// sendChat()으로 전송했지만 아직 서버 echo를 받지 못한 메시지 내용 (순서 보장)
   ///
@@ -70,6 +80,16 @@ class ChatRoomController extends GetxController {
     if (_readSubscriptionId != null) {
       stompClient.unsubscribe(_readSubscriptionId!);
       log('[ChatRoom] 읽음 이벤트 구독 해제: $_readSubscriptionId');
+    }
+    if (_typingSubscriptionId != null) {
+      stompClient.unsubscribe(_typingSubscriptionId!);
+      log('[ChatRoom] 타이핑 이벤트 구독 해제: $_typingSubscriptionId');
+    }
+    // 타이핑 중이었다면 타이머 취소 후 typing: false 전송
+    if (_typingTimer != null) {
+      _typingTimer?.cancel();
+      _typingTimer = null;
+      sendTypingEvent(false);
     }
     // 모든 퇴장 시나리오에서 읽음 처리 보장 (뒤로가기 제스처 등 포함)
     sendReadEvent();
@@ -106,6 +126,13 @@ class ChatRoomController extends GetxController {
       _onReadEventReceived,
     );
     log('[ChatRoom] 읽음 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.read');
+
+    // 타이핑 이벤트 토픽 구독 시작
+    _typingSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId.typing',
+      _onTypingEventReceived,
+    );
+    log('[ChatRoom] 타이핑 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.typing');
   }
 
   /// 읽음 처리 이벤트 전송
@@ -125,6 +152,64 @@ class ChatRoomController extends GetxController {
     log('[ChatRoom] 읽음 처리 전송: lastMessageId=$lastMessageId');
   }
 
+  /// 타이핑 이벤트 전송
+  ///
+  /// [typing] true: 입력 중, false: 입력 중지
+  void sendTypingEvent(bool typing) {
+    stompClient.publish(
+      '/pub/chat.typing',
+      body: jsonEncode({
+        'chatRoomPublicId': chatRoomId,
+        'typing': typing,
+      }),
+    );
+    log('[ChatRoom] 타이핑 이벤트 전송: typing=$typing');
+  }
+
+  /// 텍스트 입력 변경 시 호출 — 타이핑 이벤트 디바운스 처리
+  ///
+  /// - 입력값이 비어있으면 즉시 typing: false 전송 (전송 버튼으로 메시지 전송 후 clear 포함)
+  /// - 타이머가 없는 상태(최초 입력)에서만 typing: true 전송 (불필요한 트래픽 방지)
+  /// - 2초간 추가 입력이 없으면 typing: false 자동 전송
+  void onTypingChanged(String text) {
+    if (text.isEmpty) {
+      _typingTimer?.cancel();
+      _typingTimer = null;
+      sendTypingEvent(false);
+      return;
+    }
+
+    if (_typingTimer == null) {
+      sendTypingEvent(true);
+    }
+    _typingTimer?.cancel();
+    _typingTimer = Timer(
+      const Duration(seconds: 2),
+      () {
+        sendTypingEvent(false);
+        _typingTimer = null;
+      },
+    );
+  }
+
+  /// 타이핑 이벤트 수신 핸들러
+  ///
+  /// Payload: { chatRoomPublicId, userPublicId, typing, at }
+  /// isOpponentTyping 상태를 갱신하여 UI 타이핑 인디케이터에 반영한다.
+  /// TODO: userPublicId와 내 ID 비교로 본인 이벤트 필터링 예정
+  void _onTypingEventReceived(StompFrame frame) {
+    if (frame.body == null) return;
+    try {
+      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final userPublicId = json['userPublicId'] as String?;
+      final typing = json['typing'] as bool? ?? false;
+      log('[ChatRoom] 타이핑 이벤트 수신: userPublicId=$userPublicId, typing=$typing');
+      isOpponentTyping.value = typing;
+    } catch (e) {
+      log('[ChatRoom] 타이핑 이벤트 파싱 실패: $e / body: ${frame.body}');
+    }
+  }
+
   /// 읽음 이벤트 수신 핸들러
   ///
   /// Payload: { chatRoomPublicId, readerPublicId, lastReadMessageId, at }
@@ -135,7 +220,9 @@ class ChatRoomController extends GetxController {
       final json = jsonDecode(frame.body!) as Map<String, dynamic>;
       final readerPublicId = json['readerPublicId'] as String?;
       final lastReadMessageId = (json['lastReadMessageId'] as num?)?.toInt();
-      log('[ChatRoom] 읽음 이벤트 수신: readerPublicId=$readerPublicId, lastReadMessageId=$lastReadMessageId');
+      log(
+        '[ChatRoom] 읽음 이벤트 수신: readerPublicId=$readerPublicId, lastReadMessageId=$lastReadMessageId',
+      );
       if (lastReadMessageId != null &&
           lastReadMessageId > opponentLastReadMessageId.value) {
         opponentLastReadMessageId.value = lastReadMessageId;

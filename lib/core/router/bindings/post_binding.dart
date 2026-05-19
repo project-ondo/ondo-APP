@@ -1,3 +1,4 @@
+
 import 'package:get/get.dart';
 import '../../../data/datasource/post/post_remote_datasource.dart';
 import '../../../data/datasource/comment/comment_remote_datasource.dart';
@@ -78,3 +79,4 @@ class PostBinding extends Bindings {
     );
   }
 }
+

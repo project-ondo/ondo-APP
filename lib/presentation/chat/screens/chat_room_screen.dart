@@ -36,8 +36,21 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
   Widget _body() => Container(
     width: double.maxFinite,
     color: AppColors.background,
-    child: Obx(
-      () => controller.viewChatList.isNotEmpty ? _chatList() : _noChatIcon(),
+    child: Column(
+      children: [
+        Expanded(
+          child: Obx(
+            () => controller.viewChatList.isNotEmpty
+                ? _chatList()
+                : _noChatIcon(),
+          ),
+        ),
+        Obx(
+          () => controller.isOpponentTyping.value
+              ? _typingIndicator()
+              : const SizedBox.shrink(),
+        ),
+      ],
     ),
   );
 
@@ -46,7 +59,8 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
       final chat = controller.viewChatList[index];
       if (chat.isMe) {
         return Obx(() {
-          final isRead = chat.messageId != null &&
+          final isRead =
+              chat.messageId != null &&
               chat.messageId! <= controller.opponentLastReadMessageId.value;
           return _myChat(chat.content, isRead: isRead);
         });
@@ -75,6 +89,18 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
         sendAt: Duration(hours: 3),
       ),
     ],
+  );
+
+  Widget _typingIndicator() => Padding(
+    padding: AppPadding.chatMargin,
+    child: Row(
+      children: [
+        Text(
+          '상대방이 입력 중...',
+          style: AppTextStyles.caption(textColor: AppColors.gray60),
+        ),
+      ],
+    ),
   );
 
   Widget _noChatIcon() => Column(

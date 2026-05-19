@@ -50,10 +50,14 @@ class NotificationController extends GetxController {
     return await readNotificationUseCase.call(id);
   }
 
-  Future<void> read(int index) async {
-    final notification = viewNotificationList[index];
+  Future<void> read(NotificationEntity notification) async {
     if (await _readNotification(notification.id)) {
-      viewNotificationList[index] = notification.copyWith(read: true);
+      final index = viewNotificationList.indexWhere(
+        (e) => e.id == notification.id,
+      );
+      if (index >= 0) {
+        viewNotificationList[index] = notification.copyWith(read: true);
+      }
     }
   }
 

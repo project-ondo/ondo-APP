@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/data/models/comment/response/comment.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
 
 import '../../../data/models/post/request/post_update_request_model.dart';
@@ -119,13 +120,7 @@ class PostViewController extends GetxController {
           (error) => debugPrint('[PostViewController] 댓글 조회 실패 - $error'),
           (data) {
         debugPrint('[PostViewController] 댓글 조회 성공 - ${data.length}개');
-        comments.assignAll(data.map((e) => (
-        id: e.id,
-        author: e.author ?? '', // TODO: API에 author 필드 추가되면 정상 동작
-        comment: e.content,
-        heartTotal: 0,
-        isMy: true, // TODO: 로그인 유저 id와 비교해서 처리
-        )));
+        comments.assignAll(data);
       },
     );
   }
@@ -237,11 +232,3 @@ class PostViewController extends GetxController {
     }
   }
 }
-
-typedef Comment = ({
-int id,
-String author,
-String comment,
-int heartTotal,
-bool isMy,
-});

@@ -11,6 +11,7 @@ import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/auth/auth_repository_impl.dart';
 import 'package:ondo/domain/repositories/auth/auth_repository.dart';
 import 'package:ondo/domain/usecases/auth/logout_usecase.dart';
+import 'package:ondo/domain/usecases/rating/load_my_rating_list_use_case.dart';
 import 'package:ondo/domain/usecases/rating/load_other_rating_list_use_case.dart';
 import 'package:ondo/domain/usecases/user/delete_account_usecase.dart';
 import 'package:ondo/presentation/profile/controllers/edit_profile_controller.dart';
@@ -85,17 +86,19 @@ class ProfileBinding extends Bindings {
       ),
     );
 
-    /// MyProfileController 등록
-    Get.lazyPut<MyProfileController>(
-      () => MyProfileController(),
-    );
-
     /// EditProfileController 등록
     Get.lazyPut<EditProfileController>(
       () => EditProfileController(),
     );
 
     LoadRatingBinding().dependencies();
+
+    /// MyProfileController 등록
+    Get.lazyPut<MyProfileController>(
+      () => MyProfileController(
+        loadMyRatingListUseCase: Get.find<LoadMyRatingListUseCase>()
+      ),
+    );
 
     /// OtherProfileController 등록
     Get.lazyPut<OtherProfileController>(

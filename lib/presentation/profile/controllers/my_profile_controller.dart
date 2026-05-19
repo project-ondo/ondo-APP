@@ -3,10 +3,19 @@ import 'package:get/get.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
+import 'package:ondo/domain/entities/rating/rating_entity.dart';
 import 'package:ondo/domain/usecases/auth/logout_usecase.dart';
+import 'package:ondo/domain/usecases/rating/load_my_rating_list_use_case.dart';
 import 'package:ondo/domain/usecases/user/delete_account_usecase.dart';
 
 class MyProfileController extends GetxController {
+  final LoadMyRatingListUseCase loadMyRatingListUseCase;
+
+  MyProfileController({required this.loadMyRatingListUseCase});
+
+  final List<RatingEntity> _cacheRatingList = [];
+
+  //TODO : 생성자 객체 할당 방식으로 변경
   final ProfileRemoteDatasource profileRemoteDatasource = Get.find();
   final MediaRemoteDatasource mediaRemoteDatasource = Get.find();
   final LogoutUseCase logoutUseCase = Get.find();
@@ -18,8 +27,9 @@ class MyProfileController extends GetxController {
 
   @override
   void onInit() {
-    super.onInit();
+    _initLoadMyRatingList();
     loadProfile();
+    super.onInit();
   }
 
   Future<void> loadProfile() async {
@@ -70,5 +80,10 @@ class MyProfileController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  //TODO : 구조 변경
+  Future _initLoadMyRatingList() async {
+    _cacheRatingList.assignAll(await loadMyRatingListUseCase.call(0, 20));
   }
 }

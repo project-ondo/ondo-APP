@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:ondo/data/datasource/rating/rating_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/rating/rating_repository_impl.dart';
+import 'package:ondo/domain/usecases/rating/load_my_rating_list_use_case.dart';
 import 'package:ondo/domain/usecases/rating/load_other_rating_list_use_case.dart';
 
 class LoadRatingBinding extends Bindings {
@@ -25,6 +26,14 @@ class LoadRatingBinding extends Bindings {
     if (!Get.isRegistered<LoadOtherRatingListUseCase>()) {
       Get.lazyPut(
         () => LoadOtherRatingListUseCase(
+          repository: Get.find<RatingRepositoryImpl>(),
+        ),
+      );
+    }
+
+    if (!Get.isRegistered<LoadMyRatingListUseCase>()) {
+      Get.lazyPut(
+        () => LoadMyRatingListUseCase(
           repository: Get.find<RatingRepositoryImpl>(),
         ),
       );

@@ -32,7 +32,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       }
       final data = body['data'];
       if (data == null) return [];
-      final list = data['content'] as List;
+      final list = (data['content'] as List?) ?? [];
       return list.map((e) => CommentModel.fromJson(e)).toList();
     } catch (e) {
       log.errorLog(e);

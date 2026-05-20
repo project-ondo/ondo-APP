@@ -14,6 +14,10 @@ abstract class AuthLocalDatasource {
     required String refreshTokenExpiration,
   });
 
+  Future<void> saveMyPublicId(String publicId);
+
+  Future<String?> getMyPublicId();
+
   Future<void> deleteAll();
 
   Future<void> deleteAccessToken();

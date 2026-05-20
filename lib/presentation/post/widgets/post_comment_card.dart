@@ -4,8 +4,8 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
+import 'package:ondo/domain/entities/comment/comment_entity.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
-import 'package:ondo/data/models/comment/response/comment_model.dart';
 
 class PostCommentCard extends GetView<PostViewController> {
   const PostCommentCard({
@@ -13,7 +13,7 @@ class PostCommentCard extends GetView<PostViewController> {
     required this.comment,
   });
 
-  final CommentModel comment;
+  final CommentEntity comment;
 
   @override
   Widget build(BuildContext context) {

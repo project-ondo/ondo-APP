@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/domain/entities/comment/comment_entity.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
 
-import '../../../data/models/comment/response/comment_model.dart';
 import '../../../data/models/post/request/post_update_request_model.dart';
 import '../../../data/models/post/response/post_detail_model.dart';
 import '../../../domain/usecases/comment/comment_usecase.dart';
@@ -63,7 +63,7 @@ class PostViewController extends GetxController {
   final RxInt bookMarkTotal = 0.obs;
   final RxInt commentCount = 0.obs;
 
-  final RxList<CommentModel> comments = <CommentModel>[].obs;
+  final RxList<CommentEntity> comments = <CommentEntity>[].obs; // CommentModel → CommentEntity
 
   late final TextEditingController commentController;
 
@@ -116,13 +116,13 @@ class PostViewController extends GetxController {
     try {
       debugPrint('[PostViewController] 댓글 조회 요청 - postId: $postId');
       final result = await _getCommentsUseCase(postId);
-      comments.assignAll(result);
+      comments.assignAll(
+        result.map((e) => e.toEntity(currentUserId: null)).toList(), // toEntity 변환
+      );
       debugPrint('[PostViewController] 댓글 조회 성공 - count: ${result.length}');
     } catch (e) {
       debugPrint('[PostViewController] 댓글 조회 실패 - error: $e');
       errorMessage.value = e.toString();
-    } finally {
-      isLoading.value = false;
     }
   }
 
@@ -216,7 +216,7 @@ class PostViewController extends GetxController {
     }
   }
 
-  Future<void> deleteComment(CommentModel comment) async {
+  Future<void> deleteComment(CommentEntity comment) async {
     try {
       debugPrint('[PostViewController] 댓글 삭제 요청 - commentId: ${comment.id}');
       await _deleteCommentUseCase(comment.id);

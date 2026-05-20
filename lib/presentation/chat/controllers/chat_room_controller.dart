@@ -28,6 +28,12 @@ class ChatRoomController extends GetxController {
   /// 상대방 타이핑 여부 (타이핑 이벤트 수신 시 갱신)
   final RxBool isOpponentTyping = false.obs;
 
+  /// 상대방 온라인 여부 (프레즌스 이벤트 수신 시 갱신)
+  final RxBool isOpponentOnline = false.obs;
+
+  /// 상대방이 현재 이 채팅방을 보고 있는지 여부
+  final RxBool isOpponentViewing = false.obs;
+
   final String chatRoomId;
 
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
@@ -44,6 +50,9 @@ class ChatRoomController extends GetxController {
 
   /// /topic/chat.rooms.{chatRoomPublicId}.typing 구독 ID
   String? _typingSubscriptionId;
+
+  /// /topic/chat.rooms.{chatRoomPublicId}.presence 구독 ID
+  String? _presenceSubscriptionId;
 
   /// 타이핑 중지 감지용 디바운스 타이머 (2초 후 typing: false 전송)
   Timer? _typingTimer;
@@ -84,6 +93,10 @@ class ChatRoomController extends GetxController {
     if (_typingSubscriptionId != null) {
       stompClient.unsubscribe(_typingSubscriptionId!);
       log('[ChatRoom] 타이핑 이벤트 구독 해제: $_typingSubscriptionId');
+    }
+    if (_presenceSubscriptionId != null) {
+      stompClient.unsubscribe(_presenceSubscriptionId!);
+      log('[ChatRoom] 프레즌스 이벤트 구독 해제: $_presenceSubscriptionId');
     }
     // 타이핑 중이었다면 타이머 취소 후 typing: false 전송
     if (_typingTimer != null) {
@@ -133,6 +146,13 @@ class ChatRoomController extends GetxController {
       _onTypingEventReceived,
     );
     log('[ChatRoom] 타이핑 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.typing');
+
+    // 프레즌스 이벤트 토픽 구독 시작
+    _presenceSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId.presence',
+      _onPresenceEventReceived,
+    );
+    log('[ChatRoom] 프레즌스 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.presence');
   }
 
   /// 읽음 처리 이벤트 전송
@@ -207,6 +227,28 @@ class ChatRoomController extends GetxController {
       isOpponentTyping.value = typing;
     } catch (e) {
       log('[ChatRoom] 타이핑 이벤트 파싱 실패: $e / body: ${frame.body}');
+    }
+  }
+
+  /// 프레즌스 이벤트 수신 핸들러
+  ///
+  /// Payload: { userPublicId, online, viewingChatRoomPublicId, at }
+  /// 상대방 온라인 여부 및 현재 이 채팅방 열람 여부를 갱신한다.
+  /// TODO: userPublicId와 내 ID 비교로 본인 이벤트 필터링 예정
+  void _onPresenceEventReceived(StompFrame frame) {
+    if (frame.body == null) return;
+    try {
+      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final userPublicId = json['userPublicId'] as String?;
+      final online = json['online'] as bool? ?? false;
+      final viewingChatRoomPublicId = json['viewingChatRoomPublicId'] as String?;
+      log(
+        '[ChatRoom] 프레즌스 이벤트 수신: userPublicId=$userPublicId, online=$online, viewing=$viewingChatRoomPublicId',
+      );
+      isOpponentOnline.value = online;
+      isOpponentViewing.value = viewingChatRoomPublicId == chatRoomId;
+    } catch (e) {
+      log('[ChatRoom] 프레즌스 이벤트 파싱 실패: $e / body: ${frame.body}');
     }
   }
 

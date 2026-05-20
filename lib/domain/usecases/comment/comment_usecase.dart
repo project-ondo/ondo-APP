@@ -7,11 +7,7 @@ class GetCommentsUseCase {
   GetCommentsUseCase(this.repository);
 
   Future<List<CommentModel>> call(int postId) async {
-    try {
-      return await repository.getComments(postId);
-    } catch (e) {
-      throw Exception('댓글 조회 실패: $e');
-    }
+    return await repository.getComments(postId);
   }
 }
 

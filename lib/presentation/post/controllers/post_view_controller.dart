@@ -120,6 +120,9 @@ class PostViewController extends GetxController {
       debugPrint('[PostViewController] 댓글 조회 성공 - count: ${result.length}');
     } catch (e) {
       debugPrint('[PostViewController] 댓글 조회 실패 - error: $e');
+      errorMessage.value = e.toString();
+    } finally {
+      isLoading.value = false;
     }
   }
 

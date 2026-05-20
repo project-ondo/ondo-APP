@@ -33,23 +33,23 @@ class NotificationController extends GetxController {
     super.onInit();
   }
 
-  Future _loadMyNotificationList() async {
+  Future<void> _loadMyNotificationList() async {
     //TODO : 화면 연동 과정에서 범위 맞추기
     viewNotificationList.assignAll(
       await loadMyNotificationListUseCase.call(size: 20, page: 0),
     );
   }
 
-  Future _loadUnreadNotificationCount() async {
+  Future<void> _loadUnreadNotificationCount() async {
     newNotificationCount.value = await loadUnreadNotificationCountUseCase
         .call();
   }
 
-  Future _readAllNotification() async {
+  Future<void> _readAllNotification() async {
     await readAllNotificationUseCase.call();
   }
 
-  Future _readNotification(int id) async {
+  Future<bool> _readNotification(int id) async {
     return await readNotificationUseCase.call(id);
   }
 
@@ -57,7 +57,7 @@ class NotificationController extends GetxController {
     return deleteAllReadNotificationsUseCase.call();
   }
 
-  Future read(NotificationEntity notification) async {
+  Future<void> read(NotificationEntity notification) async {
     if (await _readNotification(notification.id)) {
       final index = viewNotificationList.indexWhere(
         (e) => e.id == notification.id,
@@ -68,7 +68,7 @@ class NotificationController extends GetxController {
     }
   }
 
-  Future readAll() async {
+  Future<void> readAll() async {
     await _readAllNotification();
     viewNotificationList.assignAll(
       viewNotificationList.map((e) => e.copyWith(read: true)),
@@ -76,7 +76,7 @@ class NotificationController extends GetxController {
     newNotificationCount.value = 0;
   }
 
-  Future clear() async {
+  Future<void> clear() async {
     if (await _deleteAllReadNotification()) {
       viewNotificationList.removeWhere(
         (notification) => notification.read == true,

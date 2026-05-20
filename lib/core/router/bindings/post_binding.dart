@@ -1,6 +1,8 @@
 
 import 'package:get/get.dart';
-import 'package:ondo/domain/usecases/comment/comment_usecase.dart';
+import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
+import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
+import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
 import '../../../data/datasource/post/post_remote_datasource.dart';
 import '../../../data/datasource/comment/comment_remote_datasource.dart';
 import '../../../data/network/clients/auth_client.dart';

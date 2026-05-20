@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/domain/entities/comment/comment_entity.dart';
+import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
+import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
+import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
-
 import '../../../data/models/post/request/post_update_request_model.dart';
 import '../../../data/models/post/response/post_detail_model.dart';
-import '../../../domain/usecases/comment/comment_usecase.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
 import '../../../domain/usecases/post/like_post_usecase.dart';

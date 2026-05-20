@@ -94,7 +94,7 @@ class NotificationRemoteDatasource {
       log.successLog(body["success"]);
       log.messageLog(body["message"]);
 
-      if (res.statusCode == 200) {
+      if (res.statusCode == 200 && body["success"] == true) {
         return true;
       }
 

@@ -13,6 +13,17 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   final AuthClient _client;
   CommentRemoteDataSourceImpl(this._client);
 
+  Map<String, dynamic> _parseBody(String responseBody, String logName) {
+    if (responseBody.isEmpty) {
+      throw Exception('[$logName] 응답 바디가 비어있습니다.');
+    }
+    try {
+      return jsonDecode(responseBody) as Map<String, dynamic>;
+    } catch (e) {
+      throw Exception('[$logName] JSON 파싱 실패: $e');
+    }
+  }
+
   @override
   Future<List<CommentModel>> getComments(int postId) async {
     final log = ApiConstants(logName: '댓글 조회');
@@ -21,17 +32,22 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
         Uri.parse('${ApiConstants.comment}/$postId'),
       );
       log.statusLog(response.statusCode);
+
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw Exception('댓글 조회 실패 (${response.statusCode})');
       }
-      final body = jsonDecode(response.body);
+
+      final body = _parseBody(response.body, '댓글 조회');
       log.successLog(body['success'] ?? false);
       log.messageLog(body['message']);
+
       if (body['success'] != true) {
         throw Exception(body['message']);
       }
+
       final data = body['data'];
       if (data == null) return [];
+
       final list = (data['content'] as List?) ?? [];
       return list.map((e) => CommentModel.fromJson(e)).toList();
     } catch (e) {
@@ -53,12 +69,15 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
         body: jsonEncode({'content': content}),
       );
       log.statusLog(response.statusCode);
+
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw Exception('댓글 작성 실패 (${response.statusCode})');
       }
-      final body = jsonDecode(response.body);
+
+      final body = _parseBody(response.body, '댓글 작성');
       log.successLog(body['success'] ?? false);
       log.messageLog(body['message']);
+
       if (body['success'] != true) {
         throw Exception(body['message']);
       }
@@ -76,14 +95,19 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
         Uri.parse('${ApiConstants.comment}/$commentId'),
       );
       log.statusLog(response.statusCode);
+
       if (response.statusCode < 200 || response.statusCode >= 300) {
         throw Exception('댓글 삭제 실패 (${response.statusCode})');
       }
-      final body = jsonDecode(response.body);
-      log.successLog(body['success'] ?? false);
-      log.messageLog(body['message']);
-      if (body['success'] != true) {
-        throw Exception(body['message']);
+
+      if (response.body.isNotEmpty) {
+        final body = _parseBody(response.body, '댓글 삭제');
+        log.successLog(body['success'] ?? false);
+        log.messageLog(body['message']);
+
+        if (body['success'] != true) {
+          throw Exception(body['message']);
+        }
       }
     } catch (e) {
       log.errorLog(e);

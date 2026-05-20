@@ -28,9 +28,9 @@ class PostCommentCard extends GetView<PostViewController> {
           child: _body(),
         ),
         AppGap.h6,
+        if(comment.isMy)
         GestureDetector(
           onTap: () {
-            // comment_id가 필요할 수 있으니 확인해 보세요!
             controller.deleteComment(comment);
           },
           child: Text(

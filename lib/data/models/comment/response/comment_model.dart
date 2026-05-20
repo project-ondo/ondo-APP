@@ -3,12 +3,14 @@ class CommentModel {
   final int postId;
   final String content;
   final String? author;
+  final bool isMy;
 
   const CommentModel({
     required this.id,
     required this.postId,
     required this.content,
     this.author,
+    this.isMy = true,
   });
 
   factory CommentModel.fromJson(Map<String, dynamic> json) => CommentModel(
@@ -16,6 +18,7 @@ class CommentModel {
     postId: json['postId'] ?? 0,
     content: json['content'],
     author: json['authorName'],
+    isMy: json['isMY'] ?? false,
   );
 
   Map<String, dynamic> toJson() => {
@@ -23,5 +26,6 @@ class CommentModel {
     'postId': postId,
     'content': content,
     'authorName': author,
+    'isMy': isMy,
   };
 }

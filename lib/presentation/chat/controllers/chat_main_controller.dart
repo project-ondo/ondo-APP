@@ -4,6 +4,7 @@ import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
+import 'package:ondo/domain/usecases/chat/turn_off_chat_notification_use_case.dart';
 import 'package:ondo/domain/usecases/chat/turn_on_chat_notification_use_case.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
@@ -22,12 +23,14 @@ class ChatMainController extends GetxController {
   final BlockChatRoomUseCase blockChatRoomUseCase;
   final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;
   final TurnOnChatNotificationUseCase turnOnChatNotificationUseCase;
+  final TurnOffChatNotificationUseCase turnOffChatNotificationUseCase;
 
   ChatMainController({
     required this.loadChatRoomsUseCase,
     required this.blockChatRoomUseCase,
     required this.cancelBlockChatRoomUseCase,
     required this.turnOnChatNotificationUseCase,
+    required this.turnOffChatNotificationUseCase,
   });
 
   @override
@@ -53,7 +56,13 @@ class ChatMainController extends GetxController {
 
   //TODO : 디자인에서 해당 알림 설정을 어떻게 할 건지 정의되면 구조 변경
   Future<void> turnOnNotification(ChatEntity chat) async {
-    await turnOnChatNotificationUseCase.call(chat.roomId);
+    final success = await turnOnChatNotificationUseCase.call(chat.roomId);
+    if (!success) error.value = "TURN_ON_NOTIFICATION_FAILED";
+  }
+
+  Future<void> turnOffNotification(ChatEntity chat) async {
+    final success = await turnOffChatNotificationUseCase.call(chat.roomId);
+    if (!success) error.value = "TURN_OFF_NOTIFICATION_FAILED";
   }
 
   void search(String query, List<String> tags) {

@@ -116,10 +116,16 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
   );
 
   //TODO : chat model 정의 후, 데이터 변경
-  Widget _topBar() => CustomBackButton(
+  Widget _topBar() => Obx(
+    () => CustomBackButton(
     moreOptions: true,
     useUserProfile: true,
     backAction: controller.backChatRoom,
+    subtitle: controller.isOpponentViewing.value
+        ? '채팅 중'
+        : controller.isOpponentOnline.value
+            ? '온라인'
+            : null,
     userInfo: (
       SvgPicture.asset(
         AppIcon.defaultProfile.path,
@@ -141,6 +147,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
         },
       ),
     ],
+  ),
   );
 
   PopupMenuEntry<String> _customPopupMenu(

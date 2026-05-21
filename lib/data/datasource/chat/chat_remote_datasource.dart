@@ -187,4 +187,29 @@ class ChatRemoteDatasource {
     }
     return false;
   }
+
+  Future<bool> turnOnChatNotification(String chatRoomPublicId) async {
+    final log = ApiConstants(logName: "채팅방 알림 켜기");
+
+    try {
+      final res = await client.delete(
+        Uri.parse("${ApiConstants.chat}/rooms/$chatRoomPublicId/mute"),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"]);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200) {
+        return true;
+      }
+
+      log.statusLog(res.statusCode);
+    } catch (e) {
+      log.errorLog(e);
+    }
+
+    return false;
+  }
 }

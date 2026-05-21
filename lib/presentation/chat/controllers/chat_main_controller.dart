@@ -4,6 +4,7 @@ import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/load_my_chat_room_list_use_case.dart';
+import 'package:ondo/domain/usecases/chat/turn_on_chat_notification_use_case.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 
@@ -20,11 +21,13 @@ class ChatMainController extends GetxController {
   final LoadMyChatRoomListUseCase loadChatRoomsUseCase;
   final BlockChatRoomUseCase blockChatRoomUseCase;
   final CancelBlockChatRoomUseCase cancelBlockChatRoomUseCase;
+  final TurnOnChatNotificationUseCase turnOnChatNotificationUseCase;
 
   ChatMainController({
     required this.loadChatRoomsUseCase,
     required this.blockChatRoomUseCase,
     required this.cancelBlockChatRoomUseCase,
+    required this.turnOnChatNotificationUseCase,
   });
 
   @override
@@ -46,6 +49,11 @@ class ChatMainController extends GetxController {
     if (success != true) {
       error.value = "CANCEL_BLOCK_FAILED";
     }
+  }
+
+  //TODO : 디자인에서 해당 알림 설정을 어떻게 할 건지 정의되면 구조 변경
+  Future<void> turnOnNotification(ChatEntity chat) async {
+    await turnOnChatNotificationUseCase.call(chat.roomId);
   }
 
   void search(String query, List<String> tags) {

@@ -10,6 +10,7 @@ abstract class NotificationRepository {
 
   Future<bool> readNotification(int id);
 
+  Future<bool> deleteAllReadNotifications();
   // ─── 로컬 알림 발송 ────────────────────────────────────────────
   Future<void> showLocalNotification({
     required int id,

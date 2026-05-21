@@ -58,6 +58,12 @@ class NotificationRepositoryImpl extends NotificationRepository {
     return remoteDatasource.readNotification(id);
   }
 
+  @override
+  Future<bool> deleteAllReadNotifications() async {
+    final res = await remoteDatasource.deleteAllReadNotifications();
+    return res;
+  }
+
   // ─── 로컬 알림 발송 ────────────────────────────────────────────
 
   @override

@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/data/datasource/notification/notification_local_datasource.dart';
 import 'package:ondo/data/datasource/notification/notification_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
@@ -8,7 +10,6 @@ import 'package:ondo/domain/usecases/notification/load_unread_notification_count
 import 'package:ondo/domain/usecases/notification/read_all_notification_use_case.dart';
 import 'package:ondo/domain/usecases/notification/read_notification_use_case.dart';
 import 'package:ondo/presentation/notification/controllers/notification_controller.dart';
-import 'package:ondo/presentation/notification/screens/notification_screen.dart';
 
 class NotificationBinding extends Bindings {
 
@@ -69,9 +70,18 @@ class NotificationBinding extends Bindings {
       ),
     );
 
-    /// localDatasource 초기화 (알림 권한 요청 + 탭 시 라우팅 설정)
+    /// localDatasource 초기화 (알림 권한 요청 + 탭 시 GoRouter 라우팅 설정)
+    ///
+    /// init()은 비동기지만 dependencies()는 동기 메서드이므로 fire-and-forget으로 호출한다.
+    /// 권한 요청 및 플러그인 초기화가 완료되기 전에 알림이 발송될 가능성이 낮으므로
+    /// 현재 구조에서는 허용 가능한 트레이드오프다.
     Get.find<NotificationLocalDatasource>().init(
-      onNotificationTap: () => Get.to(() => const NotificationScreen()),
+      onNotificationTap: () {
+        final context = Get.key.currentContext;
+        if (context != null) {
+          GoRouter.of(context).push(RoutePaths.notification);
+        }
+      },
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/notification/notification_local_datasource.dart';
+import 'package:ondo/data/datasource/notification/notification_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
@@ -100,7 +101,7 @@ class ProfileBinding extends Bindings {
     if (!Get.isRegistered<NotificationRepositoryImpl>()) {
       Get.lazyPut<NotificationRepositoryImpl>(
             () => NotificationRepositoryImpl(
-          remoteDatasource: Get.find(),
+          remoteDatasource: Get.find<NotificationRemoteDatasource>(),
           localDatasource: Get.find<NotificationLocalDatasource>(),
         ),
         fenix: true,

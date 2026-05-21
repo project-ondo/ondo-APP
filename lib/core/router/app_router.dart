@@ -43,6 +43,10 @@ import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
 // post
 import 'package:ondo/presentation/post/screens/post_detail_screen.dart';
 
+// notification
+import 'package:ondo/core/router/bindings/notification_binding.dart';
+import 'package:ondo/presentation/notification/screens/notification_screen.dart';
+
 // profile
 import 'package:ondo/presentation/profile/screens/edit_profile_screen.dart';
 import 'package:ondo/presentation/profile/screens/my_profile_screen.dart';
@@ -65,6 +69,8 @@ class RoutePaths {
       '/password_reset/email-code';
   static const String passwordResetInputPassword = '/password_reset/password';
   static const String passwordResetComplete = '/password_reset/complete';
+
+  static const String notification = '/notification';
 
   static const String profile = '/profile';
   static const String editProfile = '/profile/edit';
@@ -185,6 +191,15 @@ final GoRouter appRouter = GoRouter(
         ),
       ],
     ), // password_reset
+
+    GoRoute(
+      path: RoutePaths.notification,
+      name: 'notification',
+      builder: (context, state) {
+        NotificationBinding().dependencies();
+        return const NotificationScreen();
+      },
+    ),
 
     ShellRoute(
       builder: (context, state, child) {

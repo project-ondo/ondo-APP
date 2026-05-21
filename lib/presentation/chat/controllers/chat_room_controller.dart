@@ -338,15 +338,17 @@ class ChatRoomController extends GetxController {
   }
 
   Future _initLoadChatRoomMessages() async {
-    int? next = 0;
-    while (next != null) {
+    int cursor = 0;
+    bool hasNext = true;
+    while (hasNext) {
       final res = await loadChatRoomMessageUseCase.call(
         chatRoomPublicId: chatRoomId,
-        cursor: next,
+        cursor: cursor,
         size: 10,
       );
       _cacheChatList.addAll(res.pages);
-      next = res.nextCursor;
+      hasNext = res.hasNext;
+      cursor = res.nextCursor ?? 0;
     }
 
     if (_cacheChatList.isNotEmpty) {

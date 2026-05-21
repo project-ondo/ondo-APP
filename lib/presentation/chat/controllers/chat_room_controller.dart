@@ -253,7 +253,8 @@ class ChatRoomController extends GetxController {
       final json = jsonDecode(frame.body!) as Map<String, dynamic>;
       final userPublicId = json['userPublicId'] as String?;
       final online = json['online'] as bool? ?? false;
-      final viewingChatRoomPublicId = json['viewingChatRoomPublicId'] as String?;
+      final viewingChatRoomPublicId =
+          json['viewingChatRoomPublicId'] as String?;
       log(
         '[ChatRoom] 프레즌스 이벤트 수신: userPublicId=$userPublicId, online=$online, viewing=$viewingChatRoomPublicId',
       );
@@ -338,17 +339,17 @@ class ChatRoomController extends GetxController {
   }
 
   Future _initLoadChatRoomMessages() async {
-    int cursor = 0;
+    int? cursor = 0;
     bool hasNext = true;
-    while (hasNext) {
+    while (hasNext && cursor != null) {
       final res = await loadChatRoomMessageUseCase.call(
         chatRoomPublicId: chatRoomId,
         cursor: cursor,
-        size: 10,
+        size: 50,
       );
       _cacheChatList.addAll(res.pages);
       hasNext = res.hasNext;
-      cursor = res.nextCursor ?? 0;
+      cursor = res.nextCursor;
     }
 
     if (_cacheChatList.isNotEmpty) {

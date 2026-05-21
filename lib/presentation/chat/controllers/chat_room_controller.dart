@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/data/network/websocket/chat_stomp_client.dart';
@@ -11,6 +12,7 @@ import 'package:ondo/data/network/websocket/stomp_frame.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
 import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
+import 'package:ondo/domain/usecases/notification/show_local_notification_setting_use_case.dart';
 import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 import 'package:ondo/presentation/chat/view_models/chat_message_view_model.dart';
 import 'package:ondo/core/router/bindings/chat_rating_binding.dart';
@@ -39,6 +41,7 @@ class ChatRoomController extends GetxController {
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
   final ReadChatMessageUseCase readChatMessageUseCase;
   final ChatStompClient stompClient;
+  final ShowLocalNotificationUseCase showLocalNotificationUseCase;
 
   int lastMessageId = 0;
 
@@ -67,6 +70,7 @@ class ChatRoomController extends GetxController {
     required this.loadChatRoomMessageUseCase,
     required this.readChatMessageUseCase,
     required this.stompClient,
+    required this.showLocalNotificationUseCase,
   });
 
   @override
@@ -308,6 +312,17 @@ class ChatRoomController extends GetxController {
         final viewModel = ChatMessageViewModel.fromJson(json);
         viewChatList.insert(0, viewModel);
         log('[ChatRoom] 메시지 수신: $content');
+
+        // 앱이 백그라운드 상태일 때 로컬 알림 발송
+        final lifecycle = WidgetsBinding.instance.lifecycleState;
+        if (lifecycle != AppLifecycleState.resumed) {
+          showLocalNotificationUseCase.call(
+            id: receivedId ?? DateTime.now().millisecondsSinceEpoch % 100000,
+            title: '새 메시지',
+            body: content,
+          );
+          log('[ChatRoom] 백그라운드 알림 발송: $content');
+        }
       }
 
       if (receivedId != null && receivedId > lastMessageId) {

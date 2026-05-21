@@ -1,10 +1,13 @@
 import 'package:get/get.dart';
+import 'package:ondo/data/datasource/post/post_local_datasource.dart';
 import 'package:ondo/data/datasource/post/post_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/post/post_repository_impl.dart';
 import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
 import 'package:ondo/domain/usecases/post/get_recommend_posts_usecase.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
@@ -33,11 +36,27 @@ class CommunityBinding extends Bindings {
     Get.lazyPut<UnlikePostUseCase>(
           () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
+
+    /// 로컬 좋아요 캐시 관련 의존성
+    Get.lazyPut<PostLocalDatasource>(() => PostLocalDatasource());
+    Get.lazyPut<SavePostLikeLocalUseCase>(
+          () => SavePostLikeLocalUseCase(
+        datasource: Get.find<PostLocalDatasource>(),
+      ),
+    );
+    Get.lazyPut<GetCachedLikedPostIdsUseCase>(
+          () => GetCachedLikedPostIdsUseCase(
+        datasource: Get.find<PostLocalDatasource>(),
+      ),
+    );
+
     Get.lazyPut<CommunityController>(
           () => CommunityController(
         likeUseCase: Get.find<LikePostUseCase>(),
         unlikeUseCase: Get.find<UnlikePostUseCase>(),
         getRecommendPostsUseCase: Get.find<GetRecommendPostsUseCase>(),
+        savePostLikeLocalUseCase: Get.find<SavePostLikeLocalUseCase>(),
+        getCachedLikedPostIdsUseCase: Get.find<GetCachedLikedPostIdsUseCase>(),
       ),
     );
   }

@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -19,7 +19,7 @@ class NotificationLocalDatasource {
   static const String _channelSilent = 'ondo_silent';
 
   /// 앱 시작 시 초기화
-  Future<void> init(GlobalKey<NavigatorState> navigatorKey) async {
+  Future<void> init() async {
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
@@ -35,7 +35,8 @@ class NotificationLocalDatasource {
         iOS: iosSettings,
       ),
       onDidReceiveNotificationResponse: (response) {
-        final context = navigatorKey.currentContext;
+        // GoRouter는 Get.key(navigatorKey)를 사용하므로 Get.context로 접근
+        final context = Get.context;
         if (context != null) {
           GoRouter.of(context).push('/notification');
         }

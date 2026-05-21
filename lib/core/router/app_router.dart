@@ -102,7 +102,7 @@ final GoRouter appRouter = GoRouter(
       path: RoutePaths.navigation,
       name: 'navigation',
       builder: (context, state) {
-        NavigationBinding(navigatorKey: navigatorKey).dependencies();
+        NavigationBinding().dependencies();
         return const NavigationScreen();
       },
     ),

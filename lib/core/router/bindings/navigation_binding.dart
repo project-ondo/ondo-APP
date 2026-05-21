@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/env.dart';
 import 'package:ondo/core/router/bindings/chat_binding.dart';
@@ -18,9 +17,6 @@ import 'package:ondo/presentation/post/controllers/post_controller.dart';
 import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
 
 class NavigationBinding extends Bindings {
-  final GlobalKey<NavigatorState> navigatorKey;
-
-  NavigationBinding({required this.navigatorKey});
 
   @override
   void dependencies() {
@@ -44,7 +40,7 @@ class NavigationBinding extends Bindings {
 
     /// 전 화면 공통 controller 등록
     Get.lazyPut<NavigationController>(() => NavigationController());
-    NotificationBinding(navigatorKey: navigatorKey).dependencies();
+    NotificationBinding().dependencies();
     Get.lazyPut<MainTopBarSearchController>(() => MainTopBarSearchController());
     Get.lazyPut(() => PostController());
 

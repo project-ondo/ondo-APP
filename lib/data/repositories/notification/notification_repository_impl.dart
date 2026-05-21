@@ -35,7 +35,7 @@ class NotificationRepositoryImpl extends NotificationRepository {
     return res.content
         .map(
           (e) => NotificationEntity.fromNotificationModel(e),
-    )
+        )
         .toList();
   }
 
@@ -57,7 +57,6 @@ class NotificationRepositoryImpl extends NotificationRepository {
   Future<bool> readNotification(int id) {
     return remoteDatasource.readNotification(id);
   }
-}
 
   // ─── 로컬 알림 발송 ────────────────────────────────────────────
 

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/data/datasource/notification/notification_local_datasource.dart';
 import 'package:ondo/data/datasource/notification/notification_remote_datasource.dart';
@@ -12,9 +11,6 @@ import 'package:ondo/domain/usecases/notification/read_notification_use_case.dar
 import '../../../presentation/notification/controllers/notification_controller.dart';
 
 class NotificationBinding extends Bindings {
-  final GlobalKey<NavigatorState> navigatorKey;
-
-  NotificationBinding({required this.navigatorKey});
 
   @override
   void dependencies() {
@@ -74,6 +70,6 @@ class NotificationBinding extends Bindings {
     );
 
     /// localDatasource 초기화 (알림 권한 요청 + 탭 시 라우팅 설정)
-    Get.find<NotificationLocalDatasource>().init(navigatorKey);
+    Get.find<NotificationLocalDatasource>().init();
   }
 }

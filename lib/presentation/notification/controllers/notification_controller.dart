@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:ondo/domain/entities/notification/notification_entity.dart';
+import 'package:ondo/domain/usecases/notification/delete_all_read_notifications_use_case.dart';
 import 'package:ondo/domain/usecases/notification/load_my_notification_list_use_case.dart';
 import 'package:ondo/domain/usecases/notification/load_unread_notification_count_use_case.dart';
 import 'package:ondo/domain/usecases/notification/read_all_notification_use_case.dart';
@@ -15,12 +16,14 @@ class NotificationController extends GetxController {
   final LoadUnreadNotificationCountUseCase loadUnreadNotificationCountUseCase;
   final ReadAllNotificationUseCase readAllNotificationUseCase;
   final ReadNotificationUseCase readNotificationUseCase;
+  final DeleteAllReadNotificationsUseCase deleteAllReadNotificationsUseCase;
 
   NotificationController({
     required this.loadMyNotificationListUseCase,
     required this.loadUnreadNotificationCountUseCase,
     required this.readAllNotificationUseCase,
     required this.readNotificationUseCase,
+    required this.deleteAllReadNotificationsUseCase,
   });
 
   @override
@@ -50,6 +53,10 @@ class NotificationController extends GetxController {
     return await readNotificationUseCase.call(id);
   }
 
+  Future<bool> _deleteAllReadNotification() async {
+    return deleteAllReadNotificationsUseCase.call();
+  }
+
   Future<void> read(NotificationEntity notification) async {
     if (await _readNotification(notification.id)) {
       final index = viewNotificationList.indexWhere(
@@ -69,8 +76,11 @@ class NotificationController extends GetxController {
     newNotificationCount.value = 0;
   }
 
-  void clear() {
-    //TODO : 읽은 알림 모두 삭제 api 개발
-    viewNotificationList.removeWhere((element) => element.read == true);
+  Future<void> clear() async {
+    if (await _deleteAllReadNotification()) {
+      viewNotificationList.removeWhere(
+        (notification) => notification.read == true,
+      );
+    }
   }
 }

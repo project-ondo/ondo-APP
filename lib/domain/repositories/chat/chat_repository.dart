@@ -20,4 +20,7 @@ abstract class ChatRepository {
   Future<bool> readChatMessage(String chatRoomPublicId, int lastReadMessageId);
 
   Future<bool> deleteChatRoom(String chatRoomPublicId);
+
+  Future<bool> turnOnChatNotification(String chatRoomPublicId);
+
 }

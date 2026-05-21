@@ -7,8 +7,8 @@ import 'package:ondo/domain/usecases/notification/load_my_notification_list_use_
 import 'package:ondo/domain/usecases/notification/load_unread_notification_count_use_case.dart';
 import 'package:ondo/domain/usecases/notification/read_all_notification_use_case.dart';
 import 'package:ondo/domain/usecases/notification/read_notification_use_case.dart';
-
-import '../../../presentation/notification/controllers/notification_controller.dart';
+import 'package:ondo/presentation/notification/controllers/notification_controller.dart';
+import 'package:ondo/presentation/notification/screens/notification_screen.dart';
 
 class NotificationBinding extends Bindings {
 
@@ -70,6 +70,8 @@ class NotificationBinding extends Bindings {
     );
 
     /// localDatasource 초기화 (알림 권한 요청 + 탭 시 라우팅 설정)
-    Get.find<NotificationLocalDatasource>().init();
+    Get.find<NotificationLocalDatasource>().init(
+      onNotificationTap: () => Get.to(() => const NotificationScreen()),
+    );
   }
 }

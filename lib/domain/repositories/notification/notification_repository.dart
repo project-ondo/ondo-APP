@@ -9,4 +9,5 @@ abstract class NotificationRepository {
 
   Future<bool> readNotification(int id);
 
+  Future<bool> deleteAllReadNotifications();
 }

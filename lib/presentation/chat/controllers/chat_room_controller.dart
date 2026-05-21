@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
+import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/network/websocket/chat_stomp_client.dart';
 import 'package:ondo/data/network/websocket/stomp_frame.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
@@ -42,6 +43,10 @@ class ChatRoomController extends GetxController {
   final ReadChatMessageUseCase readChatMessageUseCase;
   final ChatStompClient stompClient;
   final ShowLocalNotificationUseCase showLocalNotificationUseCase;
+  final AuthLocalDatasource authLocalDatasource;
+
+  /// 내 publicId — 이벤트 본인 필터링에 사용
+  String? _myPublicId;
 
   int lastMessageId = 0;
 
@@ -71,11 +76,16 @@ class ChatRoomController extends GetxController {
     required this.readChatMessageUseCase,
     required this.stompClient,
     required this.showLocalNotificationUseCase,
+    required this.authLocalDatasource,
   });
 
   @override
   void onInit() {
-    // 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장 (레이스 컨디션 방지)
+    // 내 publicId 로드 → 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장
+    authLocalDatasource.getMyPublicId().then((id) {
+      _myPublicId = id;
+      log('[ChatRoom] myPublicId: $_myPublicId');
+    });
     _initLoadChatRoomMessages().then((_) {
       sendReadEvent();
       _connectAndEnter();
@@ -220,7 +230,7 @@ class ChatRoomController extends GetxController {
   ///
   /// Payload: { chatRoomPublicId, userPublicId, typing, at }
   /// isOpponentTyping 상태를 갱신하여 UI 타이핑 인디케이터에 반영한다.
-  /// TODO: userPublicId와 내 ID 비교로 본인 이벤트 필터링 예정
+  /// 내가 보낸 타이핑 이벤트는 본인 필터링으로 무시한다.
   void _onTypingEventReceived(StompFrame frame) {
     if (frame.body == null) return;
     try {
@@ -228,6 +238,8 @@ class ChatRoomController extends GetxController {
       final userPublicId = json['userPublicId'] as String?;
       final typing = json['typing'] as bool? ?? false;
       log('[ChatRoom] 타이핑 이벤트 수신: userPublicId=$userPublicId, typing=$typing');
+      // 내가 보낸 이벤트는 무시
+      if (userPublicId != null && userPublicId == _myPublicId) return;
       isOpponentTyping.value = typing;
     } catch (e) {
       log('[ChatRoom] 타이핑 이벤트 파싱 실패: $e / body: ${frame.body}');
@@ -238,7 +250,7 @@ class ChatRoomController extends GetxController {
   ///
   /// Payload: { userPublicId, online, viewingChatRoomPublicId, at }
   /// 상대방 온라인 여부 및 현재 이 채팅방 열람 여부를 갱신한다.
-  /// TODO: userPublicId와 내 ID 비교로 본인 이벤트 필터링 예정
+  /// 내가 발생시킨 프레즌스 이벤트는 본인 필터링으로 무시한다.
   void _onPresenceEventReceived(StompFrame frame) {
     if (frame.body == null) return;
     try {
@@ -249,6 +261,8 @@ class ChatRoomController extends GetxController {
       log(
         '[ChatRoom] 프레즌스 이벤트 수신: userPublicId=$userPublicId, online=$online, viewing=$viewingChatRoomPublicId',
       );
+      // 내가 발생시킨 이벤트는 무시
+      if (userPublicId != null && userPublicId == _myPublicId) return;
       isOpponentOnline.value = online;
       isOpponentViewing.value = viewingChatRoomPublicId == chatRoomId;
     } catch (e) {
@@ -260,6 +274,7 @@ class ChatRoomController extends GetxController {
   ///
   /// Payload: { chatRoomPublicId, readerPublicId, lastReadMessageId, at }
   /// lastReadMessageId 이하의 내 메시지에 "읽음" 표시를 반영한다.
+  /// 내가 보낸 읽음 이벤트(본인 읽음)는 무시한다.
   void _onReadEventReceived(StompFrame frame) {
     if (frame.body == null) return;
     try {
@@ -269,6 +284,8 @@ class ChatRoomController extends GetxController {
       log(
         '[ChatRoom] 읽음 이벤트 수신: readerPublicId=$readerPublicId, lastReadMessageId=$lastReadMessageId',
       );
+      // 내가 보낸 읽음 이벤트는 무시 (상대방의 읽음만 반영)
+      if (readerPublicId != null && readerPublicId == _myPublicId) return;
       if (lastReadMessageId != null &&
           lastReadMessageId > opponentLastReadMessageId.value) {
         opponentLastReadMessageId.value = lastReadMessageId;

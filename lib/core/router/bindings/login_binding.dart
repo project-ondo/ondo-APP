@@ -57,6 +57,7 @@ class LoginBinding extends Bindings {
     Get.lazyPut<LoginController>(
           () => LoginController(
         signInUseCase: Get.find<SignInUseCase>(),
+        authLocalDatasource: Get.find<AuthLocalDatasource>(),
         mediaRemoteDatasource: Get.find<MediaRemoteDatasource>(),
         profileRemoteDatasource: Get.find<ProfileRemoteDatasource>(),
       ),

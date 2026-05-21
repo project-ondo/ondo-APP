@@ -18,6 +18,10 @@ class ChatMessageViewModel {
   });
 
   /// HTTP 히스토리 메시지 → ViewModel
+  ///
+  /// TODO: senderId(int)와 myPublicId(String UUID)는 타입이 달라 직접 비교 불가.
+  ///       서버가 senderPublicId(String)를 응답에 추가하거나, myUserId(int)를 별도
+  ///       저장하는 후속 작업(#200 이후) 시 isMe 처리 완성 예정.
   factory ChatMessageViewModel.fromJsonChatMessageEntity(
     ChatMessageEntity entity,
   ) => ChatMessageViewModel(
@@ -26,9 +30,7 @@ class ChatMessageViewModel {
     content: entity.content,
     createdAt: entity.createdAt,
     isMe: false,
-    //TODO : 내 프로필 정보을 저장한 storage를 두고 비교하여 구분
-    profileImageKey:
-        null, //TODO : 내 프로필 정보를 저장한 storage를 두고 key를 불러오거나, sendorId를 가지고 이미지를 조회하여 불러옴,
+    profileImageKey: null, //TODO : senderId로 프로필 이미지 조회 예정
   );
 
   /// WebSocket 실시간 수신 메시지 → ViewModel
@@ -37,6 +39,8 @@ class ChatMessageViewModel {
   /// ```json
   /// { "messageId", "roomId", "senderId", "messageType", "content", "createdAt" }
   /// ```
+  /// 내가 보낸 메시지는 ChatRoomController의 echo 감지(_pendingSentContents)로
+  /// 처리되므로 이 factory는 상대방 메시지에만 호출된다 → isMe: false 고정.
   factory ChatMessageViewModel.fromJson(Map<String, dynamic> json) =>
       ChatMessageViewModel(
         messageId: (json['messageId'] as num?)?.toInt(),
@@ -45,7 +49,7 @@ class ChatMessageViewModel {
         createdAt:
             DateTime.tryParse(json['createdAt'] as String? ?? '') ??
             DateTime.now(),
-        isMe: false, // TODO: senderId와 내 ID 비교로 구분 예정
+        isMe: false,
         profileImageKey: null, // TODO: senderId로 프로필 이미지 조회 예정
       );
 }

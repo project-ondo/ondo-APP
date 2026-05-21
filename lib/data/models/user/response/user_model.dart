@@ -43,7 +43,7 @@ class UserDataModel extends BaseDataModel<UserModel> {
 class UserModel extends BaseModel {
   final String publicId;
   final String displayName;
-  final String gender;
+  final String? gender;
   final String major;
   final List<String> interests;
   final String? profileImageKey;

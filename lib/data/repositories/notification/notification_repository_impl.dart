@@ -18,10 +18,10 @@ class NotificationRepositoryImpl extends NotificationRepository {
 
   @override
   Future<List<NotificationEntity>> loadMyNotificationModel(
-      int size,
-      int page,
-      ) async {
-    final BaseListRequestModel model = BaseListRequestModel(
+    int size,
+    int page,
+  ) async {
+    final ListRequestModel model = ListRequestModel(
       size: size,
       page: page,
     );
@@ -52,6 +52,12 @@ class NotificationRepositoryImpl extends NotificationRepository {
     if (res == null) return 0;
     return res;
   }
+
+  @override
+  Future<bool> readNotification(int id) {
+    return remoteDatasource.readNotification(id);
+  }
+}
 
   // ─── 로컬 알림 발송 ────────────────────────────────────────────
 

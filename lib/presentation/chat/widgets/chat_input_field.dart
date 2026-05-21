@@ -27,6 +27,7 @@ class ChatInputField extends GetView<ChatRoomController> {
               controller: controller.textController,
               hintText: "메세지 내용을 입력해 주세요",
               maxLines: 2,
+              onChanged: controller.onTypingChanged,
               onSubmitted: controller.sendChat,
             ),
           ),

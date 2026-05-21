@@ -1,38 +1,79 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
+import 'package:ondo/domain/usecases/chat/delete_chat_room_use_case.dart';
+import 'package:ondo/domain/usecases/rating/rating_chat_room_use_case.dart';
+import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 
 class ChatReviewController extends GetxController {
   final RxBool enableSubmit = false.obs;
-  final RxSet<String> viewCategories = <String>{}.obs;
-  final Rx<String> detailReview = "".obs;
+  final RxSet<String> reviewTags = <String>{}.obs;
   final RxInt star = 5.obs;
 
-  final TextEditingController textController = TextEditingController();
+  //TODO : error 처리 UI 반영
+  RxString error = ''.obs;
 
-  @override
-  void onInit() {
-    textController.addListener(() => setDetailReview(textController.text));
-    super.onInit();
+  final TextEditingController commentController = TextEditingController();
+
+  final DeleteChatRoomUseCase deleteChatRoomUseCase;
+  final RatingChatRoomUseCase ratingChatRoomUseCase;
+  final String chatRoomId;
+
+  ChatReviewController({
+    required this.deleteChatRoomUseCase,
+    required this.chatRoomId,
+    required this.ratingChatRoomUseCase,
+  });
+
+  Future<void> _deleteChatRoom() async {
+    final res = await deleteChatRoomUseCase.call(chatRoomId);
+    if (res != true) error.value = "DELETE_ERROR";
+  }
+
+  Future<void> _ratingChatRoom() async {
+    if (star.value < 1 || star.value > 5) {
+      error.value = "RATING_ERROR";
+      return;
+    }
+
+    final res = await ratingChatRoomUseCase.call(
+      chatRoomPublicId: chatRoomId,
+      star: star.value,
+      comment: commentController.text,
+      tags: reviewTags.toList(),
+    );
+    if (res != true) error.value = "RATING_ERROR";
   }
 
   @override
   void onClose() {
-    textController.removeListener(() => setDetailReview(textController.text));
+    commentController.dispose();
     super.onClose();
   }
 
-  void onCategoryChange(String category, bool isSelect) {
-    isSelect ? viewCategories.add(category) : viewCategories.remove(category);
+  void selectReviewTag(String tag, bool isSelect) {
+    isSelect ? reviewTags.add(tag) : reviewTags.remove(tag);
     checkEnableSubmit();
   }
 
-  void checkEnableSubmit() => enableSubmit.value = viewCategories.isNotEmpty;
+  void checkEnableSubmit() => enableSubmit.value = reviewTags.isNotEmpty;
 
   set star(int index) => star.value = index + 1;
 
-  void setDetailReview(String review) => detailReview.value = review;
+  Future submitReview() async {
+    if (enableSubmit.value) {
+      await _deleteChatRoom();
+      //TODO : error state 정의
+      if (error.isEmpty) {
+        await _ratingChatRoom();
+      }
 
-  void submitReview() {}
+      Get.back<ChatRoomQuitResult>(
+        closeOverlays: true,
+        //TODO : error state 정의 후 state delete error가 아닐 경우만 true 설장
+        result: ChatRoomQuitResult(success: error.isEmpty),
+      );
+    }
+  }
 
   final List<String> baseCategories = [
     "질문에 대한 답변이 빨라요",

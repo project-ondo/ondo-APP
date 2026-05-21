@@ -14,13 +14,17 @@ class CustomBackButton extends StatelessWidget {
     required this.moreOptions,
     this.useUserProfile = false,
     this.userInfo,
+    this.subtitle,
     this.itemBuilder,
+    this.backAction,
   });
 
   final bool moreOptions;
   final bool useUserProfile;
   final (Widget profile, String name)? userInfo;
+  final String? subtitle;
   final PopupMenuItemBuilder<String>? itemBuilder;
+  final VoidCallback? backAction;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +49,7 @@ class CustomBackButton extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               GestureDetector(
-                onTap: Get.back,
+                onTap: backAction ?? Get.back,
                 child: SvgPicture.asset(AppIcon.arrowLeft.path),
               ),
               if (!useUserProfile) _text() else _profile(),
@@ -83,9 +87,20 @@ class CustomBackButton extends StatelessWidget {
         child: userInfo!.$1,
       ),
       AppGap.h12,
-      Text(
-        userInfo!.$2,
-        style: AppTextStyles.textMedium(textColor: AppColors.gray90),
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            userInfo!.$2,
+            style: AppTextStyles.textMedium(textColor: AppColors.gray90),
+          ),
+          if (subtitle != null)
+            Text(
+              subtitle!,
+              style: AppTextStyles.caption(textColor: AppColors.gray60),
+            ),
+        ],
       ),
     ],
   );

@@ -8,6 +8,8 @@ abstract class NotificationRepository {
 
   Future<int> readAllNotification();
 
+  Future<bool> readNotification(int id);
+
   // ─── 로컬 알림 발송 ────────────────────────────────────────────
   Future<void> showLocalNotification({
     required int id,

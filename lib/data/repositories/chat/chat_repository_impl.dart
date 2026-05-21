@@ -75,7 +75,7 @@ class ChatRepositoryImpl extends ChatRepository {
           .map((e) => ChatMessageEntity.fromJsonChatMessageModel(e))
           .toList(),
       nextCursor: json["nextCursor"],
-      hasNext: json["hasNext"] as bool? ?? false,
+      hasNext: json["hasNext"] == true,
     );
   }
 

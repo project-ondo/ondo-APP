@@ -12,13 +12,13 @@ class RatingDataModel {
   });
 
   factory RatingDataModel.fromJson(Map json) => RatingDataModel(
-    items: (json["items"] as List)
+    items: (json["items"] as List? ?? [])
         .map(
-          (e) => RatingModel.fromJson(e),
+          (e) => RatingModel.fromJson(e as Map),
         )
         .toList(),
-    nextCursor: json["nextCursor"],
-    hasNext: json["hasNext"],
+    nextCursor: json["nextCursor"] as int?,
+    hasNext: json["hasNext"] ?? false,
   );
 }
 
@@ -41,7 +41,7 @@ class RatingModel extends BaseModel {
     id: json["id"],
     stars: json["stars"],
     comment: json["comment"],
-    tags: (json["tags"] as List)
+    tags: (json["tags"] as List? ?? [])
         .map(
           (e) => e.toString(),
         )

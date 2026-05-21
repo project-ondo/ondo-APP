@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/data/models/post/response/post_list_model.dart';
 import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
 import 'package:ondo/domain/usecases/post/get_recommend_posts_usecase.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
 import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
@@ -13,14 +15,20 @@ class CommunityController extends GetxController {
   final LikePostUseCase _likeUseCase;
   final UnlikePostUseCase _unlikeUseCase;
   final GetRecommendPostsUseCase _getRecommendPostsUseCase;
+  final SavePostLikeLocalUseCase _savePostLikeLocalUseCase;
+  final GetCachedLikedPostIdsUseCase _getCachedLikedPostIdsUseCase;
 
   CommunityController({
     required LikePostUseCase likeUseCase,
     required UnlikePostUseCase unlikeUseCase,
     required GetRecommendPostsUseCase getRecommendPostsUseCase,
+    required SavePostLikeLocalUseCase savePostLikeLocalUseCase,
+    required GetCachedLikedPostIdsUseCase getCachedLikedPostIdsUseCase,
   })  : _likeUseCase = likeUseCase,
         _unlikeUseCase = unlikeUseCase,
-        _getRecommendPostsUseCase = getRecommendPostsUseCase;
+        _getRecommendPostsUseCase = getRecommendPostsUseCase,
+        _savePostLikeLocalUseCase = savePostLikeLocalUseCase,
+        _getCachedLikedPostIdsUseCase = getCachedLikedPostIdsUseCase;
 
   final List<String> tags = <String>[].obs;
   final RxSet<String> selectTagList = <String>{}.obs;
@@ -31,12 +39,18 @@ class CommunityController extends GetxController {
   final RxBool isLastPage = false.obs;
 
   int _currentPage = 0;
+  Set<int> _cachedLikedIds = {};
 
   @override
   void onInit() {
     super.onInit();
     tags.addAll(_getTags());
-    fetchRecommendPosts();
+    _loadCacheAndFetch();
+  }
+
+  Future<void> _loadCacheAndFetch() async {
+    _cachedLikedIds = await _getCachedLikedPostIdsUseCase();
+    await fetchRecommendPosts();
   }
 
   @override
@@ -62,7 +76,19 @@ class CommunityController extends GetxController {
         page: _currentPage,
       );
 
-      _cachePosts.addAll(result.content);
+      // 로컬 캐시 기반으로 isFavorite 덮어쓰기 (앱 재시작 후에도 유지)
+      final applied = result.content.map((post) {
+        if (_cachedLikedIds.contains(post.postId)) {
+          return post.copyWith(isFavorite: true);
+        }
+        // API가 이미 좋아요 상태를 반환한 경우 캐시에도 반영
+        if (post.isFavorite) {
+          _cachedLikedIds.add(post.postId);
+        }
+        return post;
+      }).toList();
+
+      _cachePosts.addAll(applied);
 
       viewPosts.assignAll(_cachePosts);
 
@@ -106,6 +132,14 @@ class CommunityController extends GetxController {
       } else {
         await _unlikeUseCase(postId);
       }
+
+      // 로컬 캐시 갱신 및 영속화
+      if (isLiked) {
+        _cachedLikedIds.add(postId);
+      } else {
+        _cachedLikedIds.remove(postId);
+      }
+      await _savePostLikeLocalUseCase(postId, isLiked);
 
       _updatePostLikeInList(
         postId,
@@ -160,6 +194,14 @@ class CommunityController extends GetxController {
       int likeCount,
       bool isFavorite,
       ) {
+    // 로컬 캐시 동기화 (PostViewController → CommunityController 방향)
+    if (isFavorite) {
+      _cachedLikedIds.add(postId);
+    } else {
+      _cachedLikedIds.remove(postId);
+    }
+    _savePostLikeLocalUseCase(postId, isFavorite);
+
     final index =
     viewPosts.indexWhere((p) => p.postId == postId);
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
+import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/domain/usecases/auth/sign_in_use_case.dart';
@@ -8,11 +9,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
   final SignInUseCase signInUseCase;
+  final AuthLocalDatasource authLocalDatasource;
   final MediaRemoteDatasource mediaRemoteDatasource;
   final ProfileRemoteDatasource profileRemoteDatasource;
 
   LoginController({
     required this.signInUseCase,
+    required this.authLocalDatasource,
     required this.mediaRemoteDatasource,
     required this.profileRemoteDatasource,
   });
@@ -78,6 +81,9 @@ class LoginController extends GetxController {
 
       generalError.value = null;
 
+      // 로그인 성공 후 내 publicId 저장
+      await _saveMyPublicId();
+
       // 로그인 성공 후 대기 중인 프로필 이미지 업로드 처리
       await _uploadPendingProfileImage();
 
@@ -87,6 +93,18 @@ class LoginController extends GetxController {
       return false;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  /// 로그인 성공 후 내 publicId를 FlutterSecureStorage에 저장
+  Future<void> _saveMyPublicId() async {
+    try {
+      final profile = await profileRemoteDatasource.getMyProfile();
+      await authLocalDatasource.saveMyPublicId(profile.publicId);
+      debugPrint('[LoginController] myPublicId 저장 완료: ${profile.publicId}');
+    } catch (e) {
+      // publicId 저장 실패해도 로그인은 성공으로 처리
+      debugPrint('[LoginController] myPublicId 저장 실패 (무시): $e');
     }
   }
 

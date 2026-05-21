@@ -28,6 +28,6 @@ class PostLocalDatasource {
   Future<Set<int>> getLikedPostIds() async {
     final prefs = await _getPrefs();
     final ids = prefs.getStringList(_likedPostsKey);
-    return ids?.map((id) => int.parse(id)).toSet() ?? {};
+    return (ids ?? []).map((id) => int.tryParse(id)).whereType<int>().toSet();
   }
 }

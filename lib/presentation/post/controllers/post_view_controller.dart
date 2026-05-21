@@ -140,7 +140,7 @@ class PostViewController extends GetxController {
         await _unlikeUseCase(postId);
       }
       if (Get.isRegistered<CommunityController>()) {
-        Get.find<CommunityController>().updatePostLike(
+        await Get.find<CommunityController>().updatePostLike(
           postId,
           heartTotal.value,
           isLiked,

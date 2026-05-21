@@ -189,18 +189,18 @@ class CommunityController extends GetxController {
     }
   }
 
-  void updatePostLike(
+  Future<void> updatePostLike(
       int postId,
       int likeCount,
       bool isFavorite,
-      ) {
+      ) async {
     // 로컬 캐시 동기화 (PostViewController → CommunityController 방향)
     if (isFavorite) {
       _cachedLikedIds.add(postId);
     } else {
       _cachedLikedIds.remove(postId);
     }
-    _savePostLikeLocalUseCase(postId, isFavorite);
+    await _savePostLikeLocalUseCase(postId, isFavorite);
 
     final index =
     viewPosts.indexWhere((p) => p.postId == postId);

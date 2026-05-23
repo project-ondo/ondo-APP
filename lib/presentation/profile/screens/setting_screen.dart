@@ -6,27 +6,19 @@ import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/profile/controllers/my_profile_controller.dart';
+import 'package:ondo/presentation/profile/controllers/setting_controller.dart';
 import 'package:ondo/presentation/profile/widget/build_app_version_session.dart';
 import 'package:ondo/presentation/profile/widget/build_custom_switch.dart';
 import 'package:ondo/presentation/profile/widget/custom_setting_item.dart';
 import 'package:ondo/presentation/profile/widget/user_delete_popup.dart';
 
-class SettingScreen extends StatefulWidget {
+class SettingScreen extends StatelessWidget {
   const SettingScreen({super.key});
-
-  @override
-  State<SettingScreen> createState() => _SettingScreenState();
-}
-
-class _SettingScreenState extends State<SettingScreen> {
-  bool isPushState = false;
-  bool isVibrationState = false;
-  bool isSoundState = false;
-  bool isOnLine = false;
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<MyProfileController>();
+    final settingController = Get.find<SettingController>();
 
     return SafeArea(
       child: BaseScaffold(
@@ -38,48 +30,38 @@ class _SettingScreenState extends State<SettingScreen> {
               child: const CustomBackButton(moreOptions: false),
             ),
             AppGap.v16,
-            Container(
-              width: MediaQuery.of(context).size.width,
-              padding: AppPadding.settingSession,
-              child: Column(
-                children: [
-                  BuildCustomSwitch(
-                    name: '푸시알람',
-                    value: isPushState,
-                    onChanged: (value) => setState(() {
-                      isPushState = !isPushState;
-                      isVibrationState = false;
-                      isSoundState = false;
-                    }),
-                  ),
-                  AppGap.v24,
-                  //진동알람
-                  BuildCustomSwitch(
-                    name: 'ㄴ 진동알람',
-                    value: isVibrationState,
-                    onChanged: (value) => setState(() {
-                      isVibrationState = !isVibrationState;
-                    }),
-                  ),
-                  AppGap.v16,
-                  //소리알람
-                  BuildCustomSwitch(
-                    name: 'ㄴ 소리알람',
-                    value: isSoundState,
-                    onChanged: (value) => setState(() {
-                      isSoundState = !isSoundState;
-                    }),
-                  ),
-                  AppGap.v24,
-                  //온라인 표시
-                  BuildCustomSwitch(
-                    name: '다른 사람에게 온라인 표시',
-                    value: isOnLine,
-                    onChanged: (value) => setState(() {
-                      isOnLine = !isOnLine;
-                    }),
-                  ),
-                ],
+            Obx(
+              () => Container(
+                width: MediaQuery.of(context).size.width,
+                padding: AppPadding.settingSession,
+                child: Column(
+                  children: [
+                    BuildCustomSwitch(
+                      name: '푸시알람',
+                      value: settingController.isPush.value,
+                      onChanged: settingController.togglePush,
+                    ),
+                    AppGap.v24,
+                    BuildCustomSwitch(
+                      name: 'ㄴ 진동알람',
+                      value: settingController.isVibration.value,
+                      onChanged: settingController.toggleVibration,
+                    ),
+                    AppGap.v16,
+                    BuildCustomSwitch(
+                      name: 'ㄴ 소리알람',
+                      value: settingController.isSound.value,
+                      onChanged: settingController.toggleSound,
+                    ),
+                    AppGap.v24,
+                    // TODO: 온라인 표시 기능 API 연동 시 추가
+                    BuildCustomSwitch(
+                      name: '다른 사람에게 온라인 표시',
+                      value: false,
+                      onChanged: (_) {},
+                    ),
+                  ],
+                ),
               ),
             ),
             AppGap.v16,

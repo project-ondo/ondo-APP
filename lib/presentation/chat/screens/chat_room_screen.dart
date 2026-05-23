@@ -36,8 +36,21 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
   Widget _body() => Container(
     width: double.maxFinite,
     color: AppColors.background,
-    child: Obx(
-      () => controller.viewChatList.isNotEmpty ? _chatList() : _noChatIcon(),
+    child: Column(
+      children: [
+        Expanded(
+          child: Obx(
+            () => controller.viewChatList.isNotEmpty
+                ? _chatList()
+                : _noChatIcon(),
+          ),
+        ),
+        Obx(
+          () => controller.isOpponentTyping.value
+              ? _typingIndicator()
+              : const SizedBox.shrink(),
+        ),
+      ],
     ),
   );
 
@@ -46,7 +59,8 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
       final chat = controller.viewChatList[index];
       if (chat.isMe) {
         return Obx(() {
-          final isRead = chat.messageId != null &&
+          final isRead =
+              chat.messageId != null &&
               chat.messageId! <= controller.opponentLastReadMessageId.value;
           return _myChat(chat.content, isRead: isRead);
         });
@@ -77,6 +91,18 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     ],
   );
 
+  Widget _typingIndicator() => Padding(
+    padding: AppPadding.chatMargin,
+    child: Row(
+      children: [
+        Text(
+          '상대방이 입력 중...',
+          style: AppTextStyles.caption(textColor: AppColors.gray60),
+        ),
+      ],
+    ),
+  );
+
   Widget _noChatIcon() => Column(
     children: [
       Spacer(),
@@ -90,10 +116,16 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
   );
 
   //TODO : chat model 정의 후, 데이터 변경
-  Widget _topBar() => CustomBackButton(
+  Widget _topBar() => Obx(
+    () => CustomBackButton(
     moreOptions: true,
     useUserProfile: true,
     backAction: controller.backChatRoom,
+    subtitle: controller.isOpponentViewing.value
+        ? '채팅 중'
+        : controller.isOpponentOnline.value
+            ? '온라인'
+            : null,
     userInfo: (
       SvgPicture.asset(
         AppIcon.defaultProfile.path,
@@ -115,6 +147,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
         },
       ),
     ],
+  ),
   );
 
   PopupMenuEntry<String> _customPopupMenu(

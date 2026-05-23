@@ -4,13 +4,16 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
+import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/network/websocket/chat_stomp_client.dart';
 import 'package:ondo/data/network/websocket/stomp_frame.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 import 'package:ondo/domain/usecases/chat/load_chat_room_message_use_case.dart';
 import 'package:ondo/domain/usecases/chat/read_chat_message_use_case.dart';
+import 'package:ondo/domain/usecases/notification/show_local_notification_setting_use_case.dart';
 import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 import 'package:ondo/presentation/chat/view_models/chat_message_view_model.dart';
 import 'package:ondo/core/router/bindings/chat_rating_binding.dart';
@@ -25,11 +28,25 @@ class ChatRoomController extends GetxController {
   /// 상대방이 마지막으로 읽은 메시지 ID (읽음 이벤트 수신 시 갱신)
   final RxInt opponentLastReadMessageId = 0.obs;
 
+  /// 상대방 타이핑 여부 (타이핑 이벤트 수신 시 갱신)
+  final RxBool isOpponentTyping = false.obs;
+
+  /// 상대방 온라인 여부 (프레즌스 이벤트 수신 시 갱신)
+  final RxBool isOpponentOnline = false.obs;
+
+  /// 상대방이 현재 이 채팅방을 보고 있는지 여부
+  final RxBool isOpponentViewing = false.obs;
+
   final String chatRoomId;
 
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
   final ReadChatMessageUseCase readChatMessageUseCase;
   final ChatStompClient stompClient;
+  final ShowLocalNotificationUseCase showLocalNotificationUseCase;
+  final AuthLocalDatasource authLocalDatasource;
+
+  /// 내 publicId — 이벤트 본인 필터링에 사용
+  String? _myPublicId;
 
   int lastMessageId = 0;
 
@@ -38,6 +55,12 @@ class ChatRoomController extends GetxController {
 
   /// /topic/chat.rooms.{chatRoomPublicId}.read 구독 ID
   String? _readSubscriptionId;
+
+  /// /topic/chat.rooms.{chatRoomPublicId}.typing 구독 ID
+  String? _typingSubscriptionId;
+
+  /// /topic/chat.rooms.{chatRoomPublicId}.presence 구독 ID
+  String? _presenceSubscriptionId;
 
   /// 타이핑 중지 감지용 디바운스 타이머 (2초 후 typing: false 전송)
   Timer? _typingTimer;
@@ -52,11 +75,17 @@ class ChatRoomController extends GetxController {
     required this.loadChatRoomMessageUseCase,
     required this.readChatMessageUseCase,
     required this.stompClient,
+    required this.showLocalNotificationUseCase,
+    required this.authLocalDatasource,
   });
 
   @override
   void onInit() {
-    // 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장 (레이스 컨디션 방지)
+    // 내 publicId 로드 → 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장
+    authLocalDatasource.getMyPublicId().then((id) {
+      _myPublicId = id;
+      log('[ChatRoom] myPublicId: $_myPublicId');
+    });
     _initLoadChatRoomMessages().then((_) {
       sendReadEvent();
       _connectAndEnter();
@@ -74,6 +103,14 @@ class ChatRoomController extends GetxController {
     if (_readSubscriptionId != null) {
       stompClient.unsubscribe(_readSubscriptionId!);
       log('[ChatRoom] 읽음 이벤트 구독 해제: $_readSubscriptionId');
+    }
+    if (_typingSubscriptionId != null) {
+      stompClient.unsubscribe(_typingSubscriptionId!);
+      log('[ChatRoom] 타이핑 이벤트 구독 해제: $_typingSubscriptionId');
+    }
+    if (_presenceSubscriptionId != null) {
+      stompClient.unsubscribe(_presenceSubscriptionId!);
+      log('[ChatRoom] 프레즌스 이벤트 구독 해제: $_presenceSubscriptionId');
     }
     // 타이핑 중이었다면 타이머 취소 후 typing: false 전송
     if (_typingTimer != null) {
@@ -116,6 +153,20 @@ class ChatRoomController extends GetxController {
       _onReadEventReceived,
     );
     log('[ChatRoom] 읽음 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.read');
+
+    // 타이핑 이벤트 토픽 구독 시작
+    _typingSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId.typing',
+      _onTypingEventReceived,
+    );
+    log('[ChatRoom] 타이핑 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.typing');
+
+    // 프레즌스 이벤트 토픽 구독 시작
+    _presenceSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId.presence',
+      _onPresenceEventReceived,
+    );
+    log('[ChatRoom] 프레즌스 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.presence');
   }
 
   /// 읽음 처리 이벤트 전송
@@ -175,17 +226,67 @@ class ChatRoomController extends GetxController {
     );
   }
 
+  /// 타이핑 이벤트 수신 핸들러
+  ///
+  /// Payload: { chatRoomPublicId, userPublicId, typing, at }
+  /// isOpponentTyping 상태를 갱신하여 UI 타이핑 인디케이터에 반영한다.
+  /// 내가 보낸 타이핑 이벤트는 본인 필터링으로 무시한다.
+  void _onTypingEventReceived(StompFrame frame) {
+    if (frame.body == null) return;
+    try {
+      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final userPublicId = json['userPublicId'] as String?;
+      final typing = json['typing'] as bool? ?? false;
+      log('[ChatRoom] 타이핑 이벤트 수신: userPublicId=$userPublicId, typing=$typing');
+      // 내가 보낸 이벤트는 무시
+      if (userPublicId != null && userPublicId == _myPublicId) return;
+      isOpponentTyping.value = typing;
+    } catch (e) {
+      log('[ChatRoom] 타이핑 이벤트 파싱 실패: $e / body: ${frame.body}');
+    }
+  }
+
+  /// 프레즌스 이벤트 수신 핸들러
+  ///
+  /// Payload: { userPublicId, online, viewingChatRoomPublicId, at }
+  /// 상대방 온라인 여부 및 현재 이 채팅방 열람 여부를 갱신한다.
+  /// 내가 발생시킨 프레즌스 이벤트는 본인 필터링으로 무시한다.
+  void _onPresenceEventReceived(StompFrame frame) {
+    if (frame.body == null) return;
+    try {
+      final json = jsonDecode(frame.body!) as Map<String, dynamic>;
+      final userPublicId = json['userPublicId'] as String?;
+      final online = json['online'] as bool? ?? false;
+      final viewingChatRoomPublicId =
+          json['viewingChatRoomPublicId'] as String?;
+      log(
+        '[ChatRoom] 프레즌스 이벤트 수신: userPublicId=$userPublicId, online=$online, viewing=$viewingChatRoomPublicId',
+      );
+      // 내가 발생시킨 이벤트는 무시
+      if (userPublicId != null && userPublicId == _myPublicId) return;
+      isOpponentOnline.value = online;
+      isOpponentViewing.value = viewingChatRoomPublicId == chatRoomId;
+    } catch (e) {
+      log('[ChatRoom] 프레즌스 이벤트 파싱 실패: $e / body: ${frame.body}');
+    }
+  }
+
   /// 읽음 이벤트 수신 핸들러
   ///
   /// Payload: { chatRoomPublicId, readerPublicId, lastReadMessageId, at }
   /// lastReadMessageId 이하의 내 메시지에 "읽음" 표시를 반영한다.
+  /// 내가 보낸 읽음 이벤트(본인 읽음)는 무시한다.
   void _onReadEventReceived(StompFrame frame) {
     if (frame.body == null) return;
     try {
       final json = jsonDecode(frame.body!) as Map<String, dynamic>;
       final readerPublicId = json['readerPublicId'] as String?;
       final lastReadMessageId = (json['lastReadMessageId'] as num?)?.toInt();
-      log('[ChatRoom] 읽음 이벤트 수신: readerPublicId=$readerPublicId, lastReadMessageId=$lastReadMessageId');
+      log(
+        '[ChatRoom] 읽음 이벤트 수신: readerPublicId=$readerPublicId, lastReadMessageId=$lastReadMessageId',
+      );
+      // 내가 보낸 읽음 이벤트는 무시 (상대방의 읽음만 반영)
+      if (readerPublicId != null && readerPublicId == _myPublicId) return;
       if (lastReadMessageId != null &&
           lastReadMessageId > opponentLastReadMessageId.value) {
         opponentLastReadMessageId.value = lastReadMessageId;
@@ -229,6 +330,17 @@ class ChatRoomController extends GetxController {
         final viewModel = ChatMessageViewModel.fromJson(json);
         viewChatList.insert(0, viewModel);
         log('[ChatRoom] 메시지 수신: $content');
+
+        // 앱이 백그라운드 상태일 때 로컬 알림 발송
+        final lifecycle = WidgetsBinding.instance.lifecycleState;
+        if (lifecycle != AppLifecycleState.resumed) {
+          showLocalNotificationUseCase.call(
+            id: receivedId ?? DateTime.now().millisecondsSinceEpoch % 100000,
+            title: '새 메시지',
+            body: content,
+          );
+          log('[ChatRoom] 백그라운드 알림 발송: $content');
+        }
       }
 
       if (receivedId != null && receivedId > lastMessageId) {
@@ -242,15 +354,17 @@ class ChatRoomController extends GetxController {
   }
 
   Future _initLoadChatRoomMessages() async {
-    int? next = 0;
-    while (next != null) {
+    int? cursor = 0;
+    bool hasNext = true;
+    while (hasNext && cursor != null) {
       final res = await loadChatRoomMessageUseCase.call(
         chatRoomPublicId: chatRoomId,
-        cursor: next,
-        size: 10,
+        cursor: cursor,
+        size: 50,
       );
       _cacheChatList.addAll(res.pages);
-      next = res.nextCursor;
+      hasNext = res.hasNext;
+      cursor = res.nextCursor;
     }
 
     if (_cacheChatList.isNotEmpty) {

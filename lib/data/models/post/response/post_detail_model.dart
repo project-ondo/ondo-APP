@@ -7,6 +7,7 @@ class PostDetailModel {
   final int viewCount;
   final int likeCount;
   final int commentCount;
+  final bool isFavorite;
 
   const PostDetailModel({
     required this.postId,
@@ -17,6 +18,7 @@ class PostDetailModel {
     required this.viewCount,
     required this.likeCount,
     required this.commentCount,
+    this.isFavorite = false,
   });
 
   factory PostDetailModel.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class PostDetailModel {
       viewCount: data['viewCount'] as int,
       likeCount: data['likeCount'] as int,
       commentCount: data['commentCount'] as int,
+      isFavorite: data['isFavorite'] == true,
     );
   }
 }

@@ -80,4 +80,51 @@ class NotificationRemoteDatasource {
 
     return null;
   }
+
+  Future<bool> deleteAllReadNotifications() async {
+    final log = ApiConstants(logName: "읽은 알림 전체 삭제");
+
+    try {
+      final res = await client.delete(
+        Uri.parse("${ApiConstants.notification}/read"),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"]);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200 && body["success"] == true) {
+        return true;
+      }
+
+      log.statusLog(res.statusCode);
+    } catch (e) {
+      log.errorLog(e);
+    }
+    return false;
+  }
+
+  Future<bool> readNotification(int id) async {
+    final log = ApiConstants(logName: "단건 알림 읽음 처리");
+
+    try {
+      final res = await client.post(
+        Uri.parse("${ApiConstants.notification}/$id/read"),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"] == true);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200 && body["success"] == true) {
+        return true;
+      }
+      log.statusLog(res.statusCode);
+    } catch (e) {
+      log.errorLog(e);
+    }
+    return false;
+  }
 }

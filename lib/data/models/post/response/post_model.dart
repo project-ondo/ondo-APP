@@ -49,6 +49,7 @@ class PostModel extends BaseModel {
   final int viewCount;
   final int likeCount;
   final int commentCount;
+  final bool isFavorite;
 
   PostModel({
     required this.postId,
@@ -58,6 +59,7 @@ class PostModel extends BaseModel {
     required this.viewCount,
     required this.likeCount,
     required this.commentCount,
+    this.isFavorite = false,
   });
 
   factory PostModel.fromJson(Map json) => PostModel(
@@ -68,6 +70,7 @@ class PostModel extends BaseModel {
     viewCount: json["viewCount"],
     likeCount: json["likeCount"],
     commentCount: json["commentCount"],
+    isFavorite: json["isFavorite"] == true,
   );
 
   @override
@@ -79,5 +82,6 @@ class PostModel extends BaseModel {
     "viewCount": viewCount,
     "likeCount": likeCount,
     "commentCount": commentCount,
+    "isFavorite": isFavorite,
   };
 }

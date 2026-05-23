@@ -9,6 +9,7 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
   static const String _refreshTokenKey = "REFRESH_TOKEN";
   static const String _accessTokenExpirationKey = "ACCESS_TOKEN_EXPIRATION";
   static const String _refreshTokenExpirationKey = "REFRESH_TOKEN_EXPIRATION";
+  static const String _myPublicIdKey = "MY_PUBLIC_ID";
 
   @override
   Future<String?> getAccessToken() async =>
@@ -44,6 +45,14 @@ class AuthLocalDatasourceImpl extends AuthLocalDatasource {
       value: refreshTokenExpiration,
     );
   }
+
+  @override
+  Future<void> saveMyPublicId(String publicId) async =>
+      await store.write(key: _myPublicIdKey, value: publicId);
+
+  @override
+  Future<String?> getMyPublicId() async =>
+      await store.read(key: _myPublicIdKey);
 
   @override
   Future<void> deleteAll() async => await store.deleteAll();

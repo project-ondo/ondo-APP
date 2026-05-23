@@ -10,6 +10,7 @@ import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
 import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
 import 'package:ondo/presentation/community/screens/community_post_create_screen.dart';
+import 'package:ondo/presentation/home/controllers/home_controller.dart';
 
 class CommunityController extends GetxController {
   final LikePostUseCase _likeUseCase;
@@ -126,6 +127,9 @@ class CommunityController extends GetxController {
       int postId,
       bool isLiked,
       ) async {
+    // 옵티미스틱 업데이트: API 결과 전에 즉시 UI 반영
+    _updatePostLikeInList(postId, isLiked ? 1 : -1, isLiked);
+
     try {
       if (isLiked) {
         await _likeUseCase(postId);
@@ -141,21 +145,24 @@ class CommunityController extends GetxController {
       }
       await _savePostLikeLocalUseCase(postId, isLiked);
 
-      _updatePostLikeInList(
-        postId,
-        isLiked ? 1 : -1,
-        isLiked,
-      );
+      // 홈 목록과 cross-sync
+      if (Get.isRegistered<HomeController>()) {
+        final post = viewPosts.firstWhereOrNull((p) => p.postId == postId);
+        if (post != null) {
+          Get.find<HomeController>().updatePostLike(
+            postId,
+            post.likeCount,
+            isLiked,
+          );
+        }
+      }
     } catch (e) {
       debugPrint(
         '[CommunityController] 좋아요 토글 실패 - error: $e',
       );
 
-      _updatePostLikeInList(
-        postId,
-        isLiked ? -1 : 1,
-        !isLiked,
-      );
+      // API 실패 시 롤백
+      _updatePostLikeInList(postId, isLiked ? -1 : 1, !isLiked);
     }
   }
 

@@ -5,6 +5,7 @@ import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
+import 'package:ondo/presentation/home/controllers/home_controller.dart';
 import '../../../data/models/post/request/post_update_request_model.dart';
 import '../../../data/models/post/response/post_detail_model.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
@@ -72,10 +73,28 @@ class PostViewController extends GetxController {
   void onInit() {
     super.onInit();
     commentController = TextEditingController();
-    selectHeart.value = initialIsFavorite;
-    debugPrint('[PostViewController] onInit - postId: $postId, initialIsFavorite: $initialIsFavorite');
+    selectHeart.value = _resolveIsFavorite();
+    debugPrint('[PostViewController] onInit - postId: $postId, resolvedIsFavorite: ${selectHeart.value}');
     fetchPostDetail(postId);
     fetchComments();
+  }
+
+  /// 네비게이션 extra보다 컨트롤러 캐시를 우선 조회
+  /// (옵티미스틱 업데이트 후 Obx 리빌드 전 진입 시 stale 방지)
+  bool _resolveIsFavorite() {
+    if (Get.isRegistered<CommunityController>()) {
+      final post = Get.find<CommunityController>()
+          .viewPosts
+          .firstWhereOrNull((p) => p.postId == postId);
+      if (post != null) return post.isFavorite;
+    }
+    if (Get.isRegistered<HomeController>()) {
+      final post = Get.find<HomeController>()
+          .viewPostList
+          .firstWhereOrNull((p) => p.postId == postId);
+      if (post != null) return post.isFavorite;
+    }
+    return initialIsFavorite;
   }
 
   @override
@@ -105,6 +124,10 @@ class PostViewController extends GetxController {
 
       heartTotal.value = result.likeCount;
       commentCount.value = result.commentCount;
+      // 서버가 liked라고 하는 경우만 보정 (false로는 덮어쓰지 않음)
+      // - true: 서버 확인 → 확실히 좋아요 상태로 보정
+      // - false: 서버가 isFavorite를 미지원하거나 레이스컨디션일 수 있으므로 로컬 상태 유지
+      if (result.isFavorite) selectHeart.value = true;
     } catch (e) {
       debugPrint('[PostViewController] API 요청 실패 - error: $e');
       errorMessage.value = e.toString();
@@ -140,7 +163,14 @@ class PostViewController extends GetxController {
         await _unlikeUseCase(postId);
       }
       if (Get.isRegistered<CommunityController>()) {
-        Get.find<CommunityController>().updatePostLike(
+        await Get.find<CommunityController>().updatePostLike(
+          postId,
+          heartTotal.value,
+          isLiked,
+        );
+      }
+      if (Get.isRegistered<HomeController>()) {
+        Get.find<HomeController>().updatePostLike(
           postId,
           heartTotal.value,
           isLiked,

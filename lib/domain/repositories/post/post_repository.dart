@@ -11,4 +11,8 @@ abstract class PostRepository {
   Future<void> deletePost(int postId);
   Future<void> likePost(int postId);
   Future<void> unlikePost(int postId);
+
+  /// 로컬 좋아요 캐시
+  Future<Set<int>> getCachedLikedPostIds();
+  Future<void> saveLikeState(int postId, bool isLiked);
 }

@@ -1,12 +1,11 @@
-import 'package:ondo/data/datasource/post/post_local_datasource.dart';
+import 'package:ondo/domain/repositories/post/post_repository.dart';
 
 class GetCachedLikedPostIdsUseCase {
-  final PostLocalDatasource _datasource;
+  final PostRepository _repository;
 
-  GetCachedLikedPostIdsUseCase({required PostLocalDatasource datasource})
-      : _datasource = datasource;
+  GetCachedLikedPostIdsUseCase(this._repository);
 
   Future<Set<int>> call() {
-    return _datasource.getLikedPostIds();
+    return _repository.getCachedLikedPostIds();
   }
 }

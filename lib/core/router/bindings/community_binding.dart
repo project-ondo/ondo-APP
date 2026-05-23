@@ -16,42 +16,39 @@ class CommunityBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<PostRemoteDatasource>(
-          () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
+      () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
     );
+    Get.lazyPut<PostLocalDatasource>(() => PostLocalDatasource());
     Get.lazyPut<PostRepositoryImpl>(
-          () => PostRepositoryImpl(Get.find<PostRemoteDatasource>()),
+      () => PostRepositoryImpl(
+        Get.find<PostRemoteDatasource>(),
+        Get.find<PostLocalDatasource>(),
+      ),
     );
     Get.lazyPut<GetRecommendPostsUseCase>(
-          () => GetRecommendPostsUseCase(Get.find<PostRepositoryImpl>()),
+      () => GetRecommendPostsUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<CreatePostUseCase>(
-          () => CreatePostUseCase(Get.find<PostRepositoryImpl>()),
+      () => CreatePostUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<UpdatePostUseCase>(
-          () => UpdatePostUseCase(Get.find<PostRepositoryImpl>()),
+      () => UpdatePostUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<LikePostUseCase>(
-          () => LikePostUseCase(Get.find<PostRepositoryImpl>()),
+      () => LikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<UnlikePostUseCase>(
-          () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
+      () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
-
-    /// 로컬 좋아요 캐시 관련 의존성
-    Get.lazyPut<PostLocalDatasource>(() => PostLocalDatasource());
     Get.lazyPut<SavePostLikeLocalUseCase>(
-          () => SavePostLikeLocalUseCase(
-        datasource: Get.find<PostLocalDatasource>(),
-      ),
+      () => SavePostLikeLocalUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<GetCachedLikedPostIdsUseCase>(
-          () => GetCachedLikedPostIdsUseCase(
-        datasource: Get.find<PostLocalDatasource>(),
-      ),
+      () => GetCachedLikedPostIdsUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     Get.lazyPut<CommunityController>(
-          () => CommunityController(
+      () => CommunityController(
         likeUseCase: Get.find<LikePostUseCase>(),
         unlikeUseCase: Get.find<UnlikePostUseCase>(),
         getRecommendPostsUseCase: Get.find<GetRecommendPostsUseCase>(),

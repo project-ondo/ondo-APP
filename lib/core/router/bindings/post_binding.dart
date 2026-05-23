@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
+import '../../../data/datasource/post/post_local_datasource.dart';
 import '../../../data/datasource/post/post_remote_datasource.dart';
 import '../../../data/datasource/comment/comment_remote_datasource.dart';
 import '../../../data/network/clients/auth_client.dart';
@@ -24,10 +25,14 @@ class PostBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<PostRemoteDatasource>(
-          () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
+      () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
     );
+    Get.lazyPut<PostLocalDatasource>(() => PostLocalDatasource());
     Get.lazyPut<PostRepositoryImpl>(
-          () => PostRepositoryImpl(Get.find<PostRemoteDatasource>()),
+      () => PostRepositoryImpl(
+        Get.find<PostRemoteDatasource>(),
+        Get.find<PostLocalDatasource>(),
+      ),
     );
     Get.lazyPut<GetPostDetailUseCase>(
           () => GetPostDetailUseCase(Get.find<PostRepositoryImpl>()),

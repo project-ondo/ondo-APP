@@ -1,12 +1,11 @@
-import 'package:ondo/data/datasource/post/post_local_datasource.dart';
+import 'package:ondo/domain/repositories/post/post_repository.dart';
 
 class SavePostLikeLocalUseCase {
-  final PostLocalDatasource _datasource;
+  final PostRepository _repository;
 
-  SavePostLikeLocalUseCase({required PostLocalDatasource datasource})
-      : _datasource = datasource;
+  SavePostLikeLocalUseCase(this._repository);
 
   Future<void> call(int postId, bool isLiked) {
-    return _datasource.saveLikeState(postId, isLiked);
+    return _repository.saveLikeState(postId, isLiked);
   }
 }

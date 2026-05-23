@@ -47,8 +47,12 @@ class HomeBinding extends Bindings {
     Get.lazyPut<PostRemoteDatasource>(
       () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
     );
+    Get.lazyPut<PostLocalDatasource>(() => PostLocalDatasource());
     Get.lazyPut<PostRepositoryImpl>(
-      () => PostRepositoryImpl(Get.find<PostRemoteDatasource>()),
+      () => PostRepositoryImpl(
+        Get.find<PostRemoteDatasource>(),
+        Get.find<PostLocalDatasource>(),
+      ),
     );
     Get.lazyPut<LikePostUseCase>(
       () => LikePostUseCase(Get.find<PostRepositoryImpl>()),
@@ -56,16 +60,11 @@ class HomeBinding extends Bindings {
     Get.lazyPut<UnlikePostUseCase>(
       () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
-    Get.lazyPut<PostLocalDatasource>(() => PostLocalDatasource());
     Get.lazyPut<SavePostLikeLocalUseCase>(
-      () => SavePostLikeLocalUseCase(
-        datasource: Get.find<PostLocalDatasource>(),
-      ),
+      () => SavePostLikeLocalUseCase(Get.find<PostRepositoryImpl>()),
     );
     Get.lazyPut<GetCachedLikedPostIdsUseCase>(
-      () => GetCachedLikedPostIdsUseCase(
-        datasource: Get.find<PostLocalDatasource>(),
-      ),
+      () => GetCachedLikedPostIdsUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     ///HomeController 등록

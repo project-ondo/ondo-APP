@@ -1,10 +1,16 @@
 import 'dart:math';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/domain/entities/post/post_entity.dart';
 import 'package:ondo/domain/entities/user/user_entity.dart';
 import 'package:ondo/domain/usecases/home/load_recommend_posts_use_case.dart';
 import 'package:ondo/domain/usecases/home/load_recommend_users_use_case.dart';
+import 'package:ondo/domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
+import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
+import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/search/user_search_use_case.dart';
+import 'package:ondo/presentation/community/controllers/community_controller.dart';
 
 class HomeController extends GetxController {
   final RxList<HomeRecentPopularPostInfo> ranks =
@@ -18,6 +24,12 @@ class HomeController extends GetxController {
   final LoadRecommendPostsUseCase recommendPostsUseCase;
   final LoadRecommendUsersUseCase recommendUsersUseCase;
   final UserSearchUseCase userSearchUseCase;
+  final LikePostUseCase likePostUseCase;
+  final UnlikePostUseCase unlikePostUseCase;
+  final SavePostLikeLocalUseCase savePostLikeLocalUseCase;
+  final GetCachedLikedPostIdsUseCase getCachedLikedPostIdsUseCase;
+
+  Set<int> _cachedLikedIds = {};
 
   final searchResultController = HomeSearchResultController();
 
@@ -25,6 +37,10 @@ class HomeController extends GetxController {
     required this.recommendPostsUseCase,
     required this.recommendUsersUseCase,
     required this.userSearchUseCase,
+    required this.likePostUseCase,
+    required this.unlikePostUseCase,
+    required this.savePostLikeLocalUseCase,
+    required this.getCachedLikedPostIdsUseCase,
   });
 
   @override
@@ -33,14 +49,100 @@ class HomeController extends GetxController {
     Get.put(searchResultController);
     //TODO : ranking 게시물 불러오기
     _sortRating(ranks..addAll(_getRanks()));
+    _cachedLikedIds = await getCachedLikedPostIdsUseCase();
     await loadRecommendPosts();
     await loadRecommendUsers();
   }
 
   Future<void> loadRecommendPosts() async {
     _cachePostList.clear();
-    _cachePostList.addAll(await recommendPostsUseCase.call());
+    final posts = await recommendPostsUseCase.call();
+
+    // 로컬 캐시 기반으로 isFavorite 보정 (앱 재시작 후에도 유지)
+    final applied = posts.map((post) {
+      if (_cachedLikedIds.contains(post.postId)) {
+        return post.copyWith(isFavorite: true);
+      }
+      // API가 이미 좋아요 상태를 반환한 경우 캐시에도 반영
+      if (post.isFavorite) {
+        _cachedLikedIds.add(post.postId);
+      }
+      return post;
+    }).toList();
+
+    _cachePostList.addAll(applied);
     viewPostList.assignAll(_cachePostList);
+  }
+
+  Future<void> toggleLike(int postId, bool isLiked) async {
+    // 옵티미스틱 업데이트
+    _updatePostLikeInList(postId, isLiked ? 1 : -1, isLiked);
+
+    try {
+      if (isLiked) {
+        await likePostUseCase(postId);
+      } else {
+        await unlikePostUseCase(postId);
+      }
+
+      if (isLiked) {
+        _cachedLikedIds.add(postId);
+      } else {
+        _cachedLikedIds.remove(postId);
+      }
+      await savePostLikeLocalUseCase(postId, isLiked);
+
+      // 커뮤니티 목록과 cross-sync
+      if (Get.isRegistered<CommunityController>()) {
+        final post = viewPostList.firstWhereOrNull((p) => p.postId == postId);
+        if (post != null) {
+          Get.find<CommunityController>().updatePostLike(
+            postId,
+            post.likeCount,
+            isLiked,
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint('[HomeController] 좋아요 토글 실패 - error: $e');
+      _updatePostLikeInList(postId, isLiked ? -1 : 1, !isLiked);
+    }
+  }
+
+  void _updatePostLikeInList(int postId, int delta, bool isFavorite) {
+    final index = viewPostList.indexWhere((p) => p.postId == postId);
+    if (index != -1) {
+      viewPostList[index] = viewPostList[index].copyWith(
+        likeCount: viewPostList[index].likeCount + delta,
+        isFavorite: isFavorite,
+      );
+      viewPostList.refresh();
+    }
+    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (cacheIndex != -1) {
+      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
+        likeCount: _cachePostList[cacheIndex].likeCount + delta,
+        isFavorite: isFavorite,
+      );
+    }
+  }
+
+  void updatePostLike(int postId, int likeCount, bool isFavorite) {
+    final index = viewPostList.indexWhere((p) => p.postId == postId);
+    if (index != -1) {
+      viewPostList[index] = viewPostList[index].copyWith(
+        likeCount: likeCount,
+        isFavorite: isFavorite,
+      );
+      viewPostList.refresh();
+    }
+    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (cacheIndex != -1) {
+      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
+        likeCount: likeCount,
+        isFavorite: isFavorite,
+      );
+    }
   }
 
   Future<void> loadRecommendUsers() async {

@@ -253,7 +253,8 @@ class ChatRoomController extends GetxController {
       final json = jsonDecode(frame.body!) as Map<String, dynamic>;
       final userPublicId = json['userPublicId'] as String?;
       final online = json['online'] as bool? ?? false;
-      final viewingChatRoomPublicId = json['viewingChatRoomPublicId'] as String?;
+      final viewingChatRoomPublicId =
+          json['viewingChatRoomPublicId'] as String?;
       log(
         '[ChatRoom] 프레즌스 이벤트 수신: userPublicId=$userPublicId, online=$online, viewing=$viewingChatRoomPublicId',
       );

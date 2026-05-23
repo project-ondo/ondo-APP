@@ -10,6 +10,7 @@ class PostEntity {
   final int commentCount;
   final int bookmarkCount;
   final DateTime createAt;
+  final bool isFavorite;
 
   PostEntity({
     required this.postId,
@@ -21,7 +22,21 @@ class PostEntity {
     required this.commentCount,
     required this.bookmarkCount,
     required this.createAt,
+    this.isFavorite = false,
   });
+
+  PostEntity copyWith({int? likeCount, bool? isFavorite}) => PostEntity(
+    postId: postId,
+    title: title,
+    authorName: authorName,
+    tags: tags,
+    viewCount: viewCount,
+    likeCount: likeCount ?? this.likeCount,
+    commentCount: commentCount,
+    bookmarkCount: bookmarkCount,
+    createAt: createAt,
+    isFavorite: isFavorite ?? this.isFavorite,
+  );
 
   factory PostEntity.fromPostModel(PostModel model) => PostEntity(
     postId: model.postId,
@@ -35,5 +50,6 @@ class PostEntity {
     bookmarkCount: model.likeCount,
     //TODO : 게시물 생성 시간 api 개발 이후, 수정
     createAt: DateTime.now(),
+    isFavorite: model.isFavorite,
   );
 }

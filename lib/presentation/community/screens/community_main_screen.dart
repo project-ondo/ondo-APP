@@ -10,7 +10,6 @@ import 'package:ondo/presentation/community/widgets/community_filter_tag_list.da
 import 'package:ondo/presentation/community/widgets/community_post_add_button.dart';
 import 'package:ondo/presentation/community/widgets/community_post_list.dart';
 
-//TODO : Binding CommunityController 필수
 class CommunityMainScreen extends GetView<CommunityController> {
   const CommunityMainScreen({super.key});
 

@@ -55,6 +55,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
   );
 
   Widget _chatList() => ListView.builder(
+    controller: controller.scrollController,
     itemBuilder: (context, index) {
       final chat = controller.viewChatList[index];
       if (chat.isMe) {

@@ -14,6 +14,7 @@ class MyProfileController extends GetxController {
   MyProfileController({required this.loadMyRatingListUseCase});
 
   final List<RatingEntity> _cacheRatingList = [];
+  final RxList<RatingEntity> viewRatingList = RxList();
 
   //TODO : 생성자 객체 할당 방식으로 변경
   final ProfileRemoteDatasource profileRemoteDatasource = Get.find();
@@ -83,7 +84,8 @@ class MyProfileController extends GetxController {
   }
 
   //TODO : 구조 변경
-  Future _initLoadMyRatingList() async {
+  Future<void> _initLoadMyRatingList() async {
     _cacheRatingList.assignAll(await loadMyRatingListUseCase.call(0, 20));
+    viewRatingList.assignAll(_cacheRatingList);
   }
 }

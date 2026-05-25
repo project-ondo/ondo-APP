@@ -37,7 +37,7 @@ class UserRemoteDatasource {
   }
 
   Future<Map?> loadRecommendUserList(
-    ListRequestModel model,
+    ListRequestModelBasePage model,
   ) async {
     final log = ApiConstants(logName: "홈 추천 사용자 조회");
 

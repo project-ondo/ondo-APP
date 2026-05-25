@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:ondo/data/models/rating/request/rating_chat_room_model.dart';
+import 'package:ondo/data/models/base/request/base_list_request_model.dart';
+import 'package:ondo/data/models/rating/request/rating_chat_request_model.dart';
 import 'package:ondo/data/network/constants/api_constants.dart';
 
 class RatingRemoteDatasource {
@@ -37,5 +38,33 @@ class RatingRemoteDatasource {
     }
 
     return false;
+  }
+
+  Future<Map> getOtherRatingList(
+    String userPublicId,
+    ListRequestModelBaseCursor model,
+  ) async {
+    final log = ApiConstants(logName: "특정 유저가 받은 평가 목록 조회 서버");
+
+    try {
+      final res = await client.get(
+        Uri.parse(
+          "${ApiConstants.rating}/users/$userPublicId${model.toQueryParameter()}",
+        ),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"]);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200) {
+        return body["data"] ?? {};
+      }
+    } catch (e) {
+      log.errorLog(e);
+    }
+
+    return {};
   }
 }

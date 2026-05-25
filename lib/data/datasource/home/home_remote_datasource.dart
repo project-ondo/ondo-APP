@@ -9,7 +9,7 @@ class HomeRemoteDatasource {
 
   HomeRemoteDatasource({required this.client});
 
-  Future<Map?> loadRecommendPostList(ListRequestModel model) async {
+  Future<Map?> loadRecommendPostList(ListRequestModelBasePage model) async {
     final log = ApiConstants(logName: "홈 추천 게시물 조회");
 
     try {

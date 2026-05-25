@@ -7,12 +7,22 @@ abstract class BaseListRequestModel {
   String toQueryParameter();
 }
 
-class ListRequestModel extends BaseListRequestModel {
+class ListRequestModelBasePage extends BaseListRequestModel {
   final int page;
 
-  ListRequestModel({required super.size, required this.page})
+  ListRequestModelBasePage({required super.size, required this.page})
     : super(start: page);
 
   @override
   String toQueryParameter() => "?size=$size&page=$page";
+}
+
+class ListRequestModelBaseCursor extends BaseListRequestModel {
+  final int cursor;
+
+  ListRequestModelBaseCursor({required super.size, required this.cursor})
+    : super(start: cursor);
+
+  @override
+  String toQueryParameter() => "?size=$size&cursor=$cursor";
 }

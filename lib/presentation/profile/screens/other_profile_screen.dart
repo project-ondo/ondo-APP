@@ -179,7 +179,7 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
       child: CustomButton(
         text: '커피챗 신청하기',
         variant: ButtonVariant.primary,
-        onPressed: () => log('커피챗 신청하기'), // TODO: 커피챗 API 연동
+        onPressed: () => controller.createChatRoom(publicId),
       ),
     );
   }

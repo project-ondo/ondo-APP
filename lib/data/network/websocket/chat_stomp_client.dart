@@ -198,13 +198,16 @@ class ChatStompClient {
 
     switch (frame.command) {
       case 'CONNECTED':
-        _isConnected = true;
-        _reconnectAttempts = 0;
-        if (!_isPaused) _startPing();
-        _resubscribeAll();
-        _connectCompleter?.complete();
-        _connectCompleter = null;
-        log('[STOMP] 연결 성공');
+        try {
+          _isConnected = true;
+          _reconnectAttempts = 0;
+          if (!_isPaused) _startPing();
+          _resubscribeAll();
+        } finally {
+          _connectCompleter?.complete();
+          _connectCompleter = null;
+          log('[STOMP] 연결 성공');
+        }
 
       case 'MESSAGE':
         final subId = frame.headers['subscription'];

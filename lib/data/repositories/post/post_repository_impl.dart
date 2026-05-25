@@ -55,4 +55,14 @@ class PostRepositoryImpl implements PostRepository {
   Future<void> saveLikeState(int postId, bool isLiked) {
     return _localDatasource.saveLikeState(postId, isLiked);
   }
+
+  @override
+  Future<void> bookmarkPost(int postId) {
+    return _remoteDatasource.bookmarkPost(postId);
+  }
+
+  @override
+  Future<void> unbookmarkPost(int postId) {
+    return _remoteDatasource.unbookmarkPost(postId);
+  }
 }

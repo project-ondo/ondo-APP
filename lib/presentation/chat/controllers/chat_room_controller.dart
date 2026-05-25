@@ -99,7 +99,8 @@ class ChatRoomController extends GetxController {
   }
 
   void _onScroll() {
-    // ListView가 역순(최신 메시지가 아래)이므로 maxScrollExtent 근처 = 가장 오래된 메시지 쪽
+    if (!scrollController.hasClients) return;
+    // reverse: true 환경에서 maxScrollExtent 근처 = 가장 오래된 메시지 쪽
     if (scrollController.position.pixels >=
         scrollController.position.maxScrollExtent - 200) {
       loadMoreMessages();
@@ -379,11 +380,11 @@ class ChatRoomController extends GetxController {
 
     if (_cacheChatList.isNotEmpty) {
       viewChatList.assignAll(
-        _cacheChatList.reversed.map(
+        _cacheChatList.map(
           (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
         ),
       );
-      lastMessageId = _cacheChatList.last.messageId;
+      lastMessageId = _cacheChatList.first.messageId;
     }
   }
 
@@ -403,7 +404,7 @@ class ChatRoomController extends GetxController {
       _nextCursor = res.nextCursor;
 
       viewChatList.assignAll(
-        _cacheChatList.reversed.map(
+        _cacheChatList.map(
           (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
         ),
       );

@@ -75,6 +75,7 @@ class ChatRepositoryImpl extends ChatRepository {
           .map((e) => ChatMessageEntity.fromJsonChatMessageModel(e))
           .toList(),
       nextCursor: json["nextCursor"],
+      hasNext: json["hasNext"] == true,
     );
   }
 
@@ -94,6 +95,12 @@ class ChatRepositoryImpl extends ChatRepository {
   @override
   Future<bool> deleteChatRoom(String chatRoomPublicId) async {
     final res = await remoteDatasource.deleteChatRoom(chatRoomPublicId);
+    return res;
+  }
+
+  @override
+  Future<bool> turnOnChatNotification(String chatRoomPublicId) async {
+    final res = await remoteDatasource.turnOnChatNotification(chatRoomPublicId);
     return res;
   }
 }

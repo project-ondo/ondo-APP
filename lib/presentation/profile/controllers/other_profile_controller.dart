@@ -12,6 +12,7 @@ class OtherProfileController extends GetxController {
   final LoadOtherRatingListUseCase loadOtherRatingListUseCase;
 
   final List<RatingEntity> _cacheRatingList = [];
+  final RxList<RatingEntity> viewRatingList = RxList();
 
   OtherProfileController({
     required this.loadOtherRatingListUseCase,
@@ -24,12 +25,7 @@ class OtherProfileController extends GetxController {
   //TODO : userPublicId 생성자로 할당
   String? userPublicId;
 
-  @override
-  void onInit() {
-    _initLoadRatingList();
-    super.onInit();
-  }
-
+  //TODO : 구조 변경
   Future<void> loadProfile(String publicId) async {
     // 동일한 publicId면 재로딩 불필요
     if (userPublicId == publicId && profile.value != null) return;
@@ -60,13 +56,14 @@ class OtherProfileController extends GetxController {
   }
 
   //TODO : 구조 변경
-  Future _initLoadRatingList() async {
+  Future loadRatingList(String userPublicId) async {
     _cacheRatingList.assignAll(
       await loadOtherRatingListUseCase.call(
-        userPublicId: userPublicId ?? "",
+        userPublicId: userPublicId,
         cursor: 0,
         size: 20,
       ),
     );
+    viewRatingList.assignAll(_cacheRatingList);
   }
 }

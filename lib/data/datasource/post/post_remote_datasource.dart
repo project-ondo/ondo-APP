@@ -138,7 +138,10 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
       log.successLog(body['success'] ?? false);
       log.messageLog(body['message']);
       if (body['success'] != true) {
-        throw Exception(body['message']);
+        final message = (body['message'] as String?) ?? '';
+        // 이미 좋아요 상태 = 원하는 상태와 동일 → 성공으로 처리
+        if (message.contains('이미 좋아요')) return;
+        throw Exception(message);
       }
     } catch (e) {
       log.errorLog(e);
@@ -158,7 +161,10 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
       log.successLog(body['success'] ?? false);
       log.messageLog(body['message']);
       if (body['success'] != true) {
-        throw Exception(body['message']);
+        final message = (body['message'] as String?) ?? '';
+        // 이미 좋아요 취소 상태 = 원하는 상태와 동일 → 성공으로 처리
+        if (message.contains('좋아요하지 않')) return;
+        throw Exception(message);
       }
     } catch (e) {
       log.errorLog(e);

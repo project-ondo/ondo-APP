@@ -25,14 +25,13 @@ class HomeRecommendPostList extends BasePostGrid {
             favorites: post.likeCount,
             createAt: post.createAt,
             bookmarkAction: (isBookmark, total) {
-              //TODO :  정의되면 setter 적용
+              //TODO : 북마크 api 개발 이후 구현
             },
             heartAction: (isFavorite, total) {
-              //TODO : model 정의되면 setter 적용
+              _controller.toggleLike(post.postId, isFavorite);
             },
-            //TODO : 서버에서 북마크, 좋아요 표시 값 전송시, 변경
             initialBookmark: false,
-            initialFavorite: false,
+            initialFavorite: post.isFavorite,
             isMy: true,
           ),
         )

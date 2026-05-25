@@ -1,4 +1,5 @@
 import '../../../domain/repositories/post/post_repository.dart';
+import '../../datasource/post/post_local_datasource.dart';
 import '../../datasource/post/post_remote_datasource.dart';
 import '../../models/post/request/post_create_request_model.dart';
 import '../../models/post/request/post_update_request_model.dart';
@@ -7,7 +8,8 @@ import '../../models/post/response/post_list_model.dart';
 
 class PostRepositoryImpl implements PostRepository {
   final PostRemoteDatasource _remoteDatasource;
-  PostRepositoryImpl(this._remoteDatasource);
+  final PostLocalDatasource _localDatasource;
+  PostRepositoryImpl(this._remoteDatasource, this._localDatasource);
 
   @override
   Future<PostListModel> getRecommendPosts({int page = 0}) {
@@ -42,5 +44,15 @@ class PostRepositoryImpl implements PostRepository {
   @override
   Future<void> unlikePost(int postId) {
     return _remoteDatasource.unlikePost(postId);
+  }
+
+  @override
+  Future<Set<int>> getCachedLikedPostIds() {
+    return _localDatasource.getLikedPostIds();
+  }
+
+  @override
+  Future<void> saveLikeState(int postId, bool isLiked) {
+    return _localDatasource.saveLikeState(postId, isLiked);
   }
 }

@@ -1,7 +1,14 @@
+
 import 'package:get/get.dart';
+import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
+import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
+import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
+import '../../../data/datasource/post/post_local_datasource.dart';
 import '../../../data/datasource/post/post_remote_datasource.dart';
+import '../../../data/datasource/comment/comment_remote_datasource.dart';
 import '../../../data/network/clients/auth_client.dart';
 import '../../../data/repositories/post/post_repository_impl.dart';
+import '../../../data/repositories/comment/comment_repository_impl.dart';
 import '../../../domain/usecases/post/create_post_usecase.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
@@ -18,10 +25,14 @@ class PostBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<PostRemoteDatasource>(
-          () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
+      () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
     );
+    Get.lazyPut<PostLocalDatasource>(() => PostLocalDatasource());
     Get.lazyPut<PostRepositoryImpl>(
-          () => PostRepositoryImpl(Get.find<PostRemoteDatasource>()),
+      () => PostRepositoryImpl(
+        Get.find<PostRemoteDatasource>(),
+        Get.find<PostLocalDatasource>(),
+      ),
     );
     Get.lazyPut<GetPostDetailUseCase>(
           () => GetPostDetailUseCase(Get.find<PostRepositoryImpl>()),
@@ -41,6 +52,24 @@ class PostBinding extends Bindings {
     Get.lazyPut<UnlikePostUseCase>(
           () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
+
+    // Comment
+    Get.lazyPut<CommentRemoteDataSource>(
+          () => CommentRemoteDataSourceImpl(Get.find<AuthClient>()),
+    );
+    Get.lazyPut<CommentRepositoryImpl>(
+          () => CommentRepositoryImpl(remoteDataSource: Get.find<CommentRemoteDataSource>()),
+    );
+    Get.lazyPut<GetCommentsUseCase>(
+          () => GetCommentsUseCase(Get.find<CommentRepositoryImpl>()),
+    );
+    Get.lazyPut<CreateCommentUseCase>(
+          () => CreateCommentUseCase(Get.find<CommentRepositoryImpl>()),
+    );
+    Get.lazyPut<DeleteCommentUseCase>(
+          () => DeleteCommentUseCase(Get.find<CommentRepositoryImpl>()),
+    );
+
     Get.put<PostViewController>(
       PostViewController(
         postId: postId,
@@ -50,7 +79,11 @@ class PostBinding extends Bindings {
         deleteUseCase: Get.find<DeletePostUseCase>(),
         likeUseCase: Get.find<LikePostUseCase>(),
         unlikeUseCase: Get.find<UnlikePostUseCase>(),
+        getCommentsUseCase: Get.find<GetCommentsUseCase>(),
+        createCommentUseCase: Get.find<CreateCommentUseCase>(),
+        deleteCommentUseCase: Get.find<DeleteCommentUseCase>(),
       ),
     );
   }
 }
+

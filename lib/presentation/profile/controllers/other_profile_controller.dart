@@ -61,6 +61,10 @@ class OtherProfileController extends GetxController {
 
   Future<void> createChatRoom(String publicId) async {
     if (isLoading.value) return;
+    if (profile.value == null) {
+      Get.snackbar('오류', '상대방 프로필 정보를 불러오는 중입니다.');
+      return;
+    }
 
     try {
       isLoading.value = true;

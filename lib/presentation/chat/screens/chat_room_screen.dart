@@ -65,7 +65,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
           return _myChat(chat.content, isRead: isRead);
         });
       }
-      return _otherChat(chat.content);
+      return _otherChat(chat.content, createdAt: chat.createdAt);
     },
     itemCount: controller.viewChatList.length,
   );
@@ -77,7 +77,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     ],
   );
 
-  Widget _otherChat(String text) => Row(
+  Widget _otherChat(String text, {required DateTime createdAt}) => Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
       ChatCard(
@@ -85,7 +85,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
         text: text,
         otherName: controller.opponentDisplayName,
         otherProfile: SvgPicture.asset(AppIcon.defaultProfile.path),
-        sendAt: Duration(hours: 3),
+        sendAt: DateTime.now().difference(createdAt),
       ),
     ],
   );

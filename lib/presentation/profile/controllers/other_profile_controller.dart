@@ -60,7 +60,10 @@ class OtherProfileController extends GetxController {
   }
 
   Future<void> createChatRoom(String publicId) async {
+    if (isLoading.value) return;
+
     try {
+      isLoading.value = true;
       final roomId = await createChatRoomUseCase(publicId);
       if (roomId.isEmpty) {
         Get.snackbar('오류', '채팅방을 생성하지 못했습니다.');
@@ -70,9 +73,11 @@ class OtherProfileController extends GetxController {
         () => ChatRoomScreen(roomId: roomId),
         binding: ChatRoomBinding(chatRoomId: roomId),
       );
-    } catch (e) {
-      debugPrint('Failed to create chat room: $e');
+    } catch (e, s) {
+      debugPrint('Failed to create chat room: $e\n$s');
       Get.snackbar('오류', '채팅방 생성 중 오류가 발생했습니다.');
+    } finally {
+      isLoading.value = false;
     }
   }
 

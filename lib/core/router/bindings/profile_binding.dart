@@ -107,9 +107,12 @@ class ProfileBinding extends Bindings {
         fenix: true,
       );
     }
-    Get.lazyPut<CreateChatRoomUseCase>(
-      () => CreateChatRoomUseCase(repository: Get.find<ChatRepositoryImpl>()),
-    );
+    if (!Get.isRegistered<CreateChatRoomUseCase>()) {
+      Get.lazyPut<CreateChatRoomUseCase>(
+        () => CreateChatRoomUseCase(repository: Get.find<ChatRepositoryImpl>()),
+        fenix: true,
+      );
+    }
 
     /// DeleteAccountUseCase 등록
     Get.lazyPut<DeleteAccountUseCase>(

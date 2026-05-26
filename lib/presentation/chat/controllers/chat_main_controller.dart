@@ -53,6 +53,7 @@ class ChatMainController extends GetxController {
   }
 
   void _onScroll() {
+    if (!scrollController.hasClients) return;
     if (scrollController.position.pixels >=
         scrollController.position.maxScrollExtent - 200) {
       loadMoreChatRooms();
@@ -72,18 +73,24 @@ class ChatMainController extends GetxController {
     if (!_hasMore || isLoadingMore.value) return;
 
     isLoadingMore.value = true;
-    _currentPage++;
 
-    final result = await loadChatRoomsUseCase.call(
-      page: _currentPage,
-      size: _pageSize,
-    );
+    try {
+      final nextPage = _currentPage + 1;
+      final result = await loadChatRoomsUseCase.call(
+        page: nextPage,
+        size: _pageSize,
+      );
 
-    if (result.isEmpty || result.length < _pageSize) _hasMore = false;
+      if (result.isEmpty || result.length < _pageSize) _hasMore = false;
 
-    _cacheChatRoomList.addAll(result);
-    viewChatRoomList.assignAll(_cacheChatRoomList);
-    isLoadingMore.value = false;
+      _currentPage = nextPage;
+      _cacheChatRoomList.addAll(result);
+      viewChatRoomList.assignAll(_cacheChatRoomList);
+    } catch (e) {
+      // 페이지 번호 롤백 없이 다음 시도 가능하도록 유지
+    } finally {
+      isLoadingMore.value = false;
+    }
   }
 
   Future<void> _cancelBlockChatRoom(String chatRoomPublicId) async {

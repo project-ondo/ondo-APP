@@ -101,8 +101,12 @@ class ChatMainController extends GetxController {
     final chat = viewChatRoomList[index];
     //TODO : route 정의 이후에 방식 변경
     final result = await Get.to<ChatRoomBackResult>(
-      ChatRoomScreen(roomId: chat.roomId),
-      binding: ChatRoomBinding(chatRoomId: chat.roomId),
+      () => ChatRoomScreen(roomId: chat.roomId),
+      binding: ChatRoomBinding(
+        chatRoomId: chat.roomId,
+        opponentDisplayName: chat.opponentDisplayName,
+        opponentProfileImageKey: chat.opponentProfileImageKey,
+      ),
     );
 
     switch (result) {

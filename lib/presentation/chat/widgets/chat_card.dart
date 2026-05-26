@@ -75,15 +75,7 @@ class ChatCard extends StatelessWidget {
     return '${duration.inDays}일 전';
   }
 
-  Widget _profile() => Container(
-    width: AppSpacing.s36,
-    height: AppSpacing.s36,
-    decoration: BoxDecoration(
-      borderRadius: AppRadius.circleRadius,
-    ),
-    clipBehavior: Clip.hardEdge,
-    child: otherProfile,
-  );
+  Widget _profile() => otherProfile ?? const SizedBox.shrink();
 
   Widget _card() => ConstrainedBox(
     constraints: BoxConstraints(maxWidth: 300),

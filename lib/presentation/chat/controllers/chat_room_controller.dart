@@ -19,7 +19,7 @@ import 'package:ondo/presentation/chat/view_models/chat_message_view_model.dart'
 import 'package:ondo/core/router/bindings/chat_rating_binding.dart';
 import 'package:ondo/presentation/chat/widgets/chat_review_dialog.dart';
 
-class ChatRoomController extends GetxController {
+class ChatRoomController extends GetxController with WidgetsBindingObserver {
   final List<ChatMessageEntity> _cacheChatList = [];
   final RxList<ChatMessageViewModel> viewChatList =
       <ChatMessageViewModel>[].obs;
@@ -81,6 +81,7 @@ class ChatRoomController extends GetxController {
 
   @override
   void onInit() {
+    WidgetsBinding.instance.addObserver(this);
     // 내 publicId 로드 → 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장
     authLocalDatasource.getMyPublicId().then((id) {
       _myPublicId = id;
@@ -91,6 +92,17 @@ class ChatRoomController extends GetxController {
       _connectAndEnter();
     });
     super.onInit();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused) {
+      stompClient.pausePing();
+      log('[ChatRoom] 앱 백그라운드 → Ping 중단');
+    } else if (state == AppLifecycleState.resumed) {
+      stompClient.resumePing();
+      log('[ChatRoom] 앱 포그라운드 → Ping 재개');
+    }
   }
 
   @override
@@ -126,6 +138,7 @@ class ChatRoomController extends GetxController {
       body: jsonEncode({'chatRoomPublicId': chatRoomId}),
     );
     textController.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     super.onClose();
   }
 

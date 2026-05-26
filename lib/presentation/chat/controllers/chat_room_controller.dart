@@ -25,6 +25,7 @@ class ChatRoomController extends GetxController {
   final RxList<ChatMessageViewModel> viewChatList =
       <ChatMessageViewModel>[].obs;
   final TextEditingController textController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
 
   /// 상대방이 마지막으로 읽은 메시지 ID (읽음 이벤트 수신 시 갱신)
   final RxInt opponentLastReadMessageId = 0.obs;
@@ -54,6 +55,10 @@ class ChatRoomController extends GetxController {
   String? _myPublicId;
 
   int lastMessageId = 0;
+
+  int? _nextCursor;
+  bool _hasNext = false;
+  bool _isLoadingMore = false;
 
   /// /topic/chat.rooms.{chatRoomPublicId} 구독 ID
   String? _messageSubscriptionId;
@@ -89,7 +94,7 @@ class ChatRoomController extends GetxController {
 
   @override
   void onInit() {
-    _initializeController();
+    _initializeController();scrollController.addListener(_onScroll);
     super.onInit();
   }
 
@@ -97,6 +102,8 @@ class ChatRoomController extends GetxController {
     try {
       // 1. 내 publicId 로드 (순서 보장)
       _myPublicId = await authLocalDatasource.getMyPublicId();
+    authLocalDatasource.getMyPublicId().then((id) {
+      _myPublicId = id;
       log('[ChatRoom] myPublicId: $_myPublicId');
 
       // 2. 상대방 프로필 이미지 URL 변환
@@ -119,6 +126,16 @@ class ChatRoomController extends GetxController {
       await _connectAndEnter();
     } catch (e) {
       log('[ChatRoom] 초기화 중 에러 발생: $e');
+    }
+
+  }
+
+  void _onScroll() {
+    if (!scrollController.hasClients) return;
+    // reverse: true 환경에서 maxScrollExtent 근처 = 가장 오래된 메시지 쪽
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 200) {
+      loadMoreMessages();
     }
   }
 
@@ -155,6 +172,7 @@ class ChatRoomController extends GetxController {
       body: jsonEncode({'chatRoomPublicId': chatRoomId}),
     );
     textController.dispose();
+    scrollController.dispose();
     super.onClose();
   }
 
@@ -383,26 +401,47 @@ class ChatRoomController extends GetxController {
   }
 
   Future _initLoadChatRoomMessages() async {
-    int? cursor = 0;
-    bool hasNext = true;
-    while (hasNext && cursor != null) {
-      final res = await loadChatRoomMessageUseCase.call(
-        chatRoomPublicId: chatRoomId,
-        cursor: cursor,
-        size: 50,
-      );
-      _cacheChatList.addAll(res.pages);
-      hasNext = res.hasNext;
-      cursor = res.nextCursor;
-    }
+    final res = await loadChatRoomMessageUseCase.call(
+      chatRoomPublicId: chatRoomId,
+      cursor: 0,
+      size: 50,
+    );
+    _cacheChatList.addAll(res.pages);
+    _hasNext = res.hasNext;
+    _nextCursor = res.nextCursor;
 
     if (_cacheChatList.isNotEmpty) {
       viewChatList.assignAll(
-        _cacheChatList.reversed.map(
+        _cacheChatList.map(
           (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
         ),
       );
-      lastMessageId = _cacheChatList.last.messageId;
+      lastMessageId = _cacheChatList.first.messageId;
+    }
+  }
+
+  /// 스크롤 상단 도달 시 이전 메시지 추가 로드
+  Future<void> loadMoreMessages() async {
+    if (!_hasNext || _nextCursor == null || _isLoadingMore) return;
+
+    _isLoadingMore = true;
+    try {
+      final res = await loadChatRoomMessageUseCase.call(
+        chatRoomPublicId: chatRoomId,
+        cursor: _nextCursor!,
+        size: 50,
+      );
+      _cacheChatList.addAll(res.pages);
+      _hasNext = res.hasNext;
+      _nextCursor = res.nextCursor;
+
+      viewChatList.assignAll(
+        _cacheChatList.map(
+          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+        ),
+      );
+    } finally {
+      _isLoadingMore = false;
     }
   }
 

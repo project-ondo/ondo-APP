@@ -4,8 +4,11 @@ import 'package:ondo/domain/entities/comment/comment_entity.dart';
 import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
+import 'package:ondo/domain/usecases/post/bookmark_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/unbookmark_post_usecase.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
+
 import '../../../data/models/post/request/post_update_request_model.dart';
 import '../../../data/models/post/response/post_detail_model.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
@@ -17,11 +20,14 @@ import '../../../domain/usecases/post/update_post_usecase.dart';
 class PostViewController extends GetxController {
   final int postId;
   final bool initialIsFavorite;
+
   final GetPostDetailUseCase _useCase;
   final UpdatePostUseCase _updateUseCase;
   final DeletePostUseCase _deleteUseCase;
   final LikePostUseCase _likeUseCase;
   final UnlikePostUseCase _unlikeUseCase;
+  final BookmarkPostUseCase _bookmarkUseCase;
+  final UnbookmarkPostUseCase _unbookmarkUseCase;
   final GetCommentsUseCase _getCommentsUseCase;
   final CreateCommentUseCase _createCommentUseCase;
   final DeleteCommentUseCase _deleteCommentUseCase;
@@ -34,6 +40,8 @@ class PostViewController extends GetxController {
     required DeletePostUseCase deleteUseCase,
     required LikePostUseCase likeUseCase,
     required UnlikePostUseCase unlikeUseCase,
+    required BookmarkPostUseCase bookmarkUseCase,
+    required UnbookmarkPostUseCase unbookmarkUseCase,
     required GetCommentsUseCase getCommentsUseCase,
     required CreateCommentUseCase createCommentUseCase,
     required DeleteCommentUseCase deleteCommentUseCase,
@@ -42,6 +50,8 @@ class PostViewController extends GetxController {
         _deleteUseCase = deleteUseCase,
         _likeUseCase = likeUseCase,
         _unlikeUseCase = unlikeUseCase,
+        _bookmarkUseCase = bookmarkUseCase,
+        _unbookmarkUseCase = unbookmarkUseCase,
         _getCommentsUseCase = getCommentsUseCase,
         _createCommentUseCase = createCommentUseCase,
         _deleteCommentUseCase = deleteCommentUseCase;
@@ -50,6 +60,7 @@ class PostViewController extends GetxController {
   final RxList<PostDetailModel> postList = <PostDetailModel>[].obs;
 
   final isLoading = false.obs;
+  final isCommentsLoading = false.obs;
   final errorMessage = ''.obs;
 
   final RxString title = ''.obs;
@@ -65,35 +76,43 @@ class PostViewController extends GetxController {
   final RxInt bookMarkTotal = 0.obs;
   final RxInt commentCount = 0.obs;
 
-  final RxList<CommentEntity> comments = <CommentEntity>[].obs; // CommentModel → CommentEntity
+  final RxList<CommentEntity> comments = <CommentEntity>[].obs;
 
   late final TextEditingController commentController;
 
   @override
   void onInit() {
     super.onInit();
+
     commentController = TextEditingController();
+
     selectHeart.value = _resolveIsFavorite();
-    debugPrint('[PostViewController] onInit - postId: $postId, resolvedIsFavorite: ${selectHeart.value}');
+
+    debugPrint(
+      '[PostViewController] onInit - postId: $postId, resolvedIsFavorite: ${selectHeart.value}',
+    );
+
     fetchPostDetail(postId);
     fetchComments();
   }
 
-  /// 네비게이션 extra보다 컨트롤러 캐시를 우선 조회
-  /// (옵티미스틱 업데이트 후 Obx 리빌드 전 진입 시 stale 방지)
   bool _resolveIsFavorite() {
     if (Get.isRegistered<CommunityController>()) {
       final post = Get.find<CommunityController>()
           .viewPosts
           .firstWhereOrNull((p) => p.postId == postId);
+
       if (post != null) return post.isFavorite;
     }
+
     if (Get.isRegistered<HomeController>()) {
       final post = Get.find<HomeController>()
           .viewPostList
           .firstWhereOrNull((p) => p.postId == postId);
+
       if (post != null) return post.isFavorite;
     }
+
     return initialIsFavorite;
   }
 
@@ -108,14 +127,18 @@ class PostViewController extends GetxController {
     errorMessage.value = '';
 
     try {
-      debugPrint('[PostViewController] API 요청 시작 - postId: $postId');
+      debugPrint(
+        '[PostViewController] API 요청 시작 - postId: $postId',
+      );
 
       final result = await _useCase(postId);
 
       post.value = result;
       postList.assignAll([result]);
 
-      debugPrint('[PostViewController] API 응답 성공 - title: ${result.title}');
+      debugPrint(
+        '[PostViewController] API 응답 성공 - title: ${result.title}',
+      );
 
       title.value = result.title;
       authorName.value = result.authorName;
@@ -124,12 +147,12 @@ class PostViewController extends GetxController {
 
       heartTotal.value = result.likeCount;
       commentCount.value = result.commentCount;
-      // 서버가 liked라고 하는 경우만 보정 (false로는 덮어쓰지 않음)
-      // - true: 서버 확인 → 확실히 좋아요 상태로 보정
-      // - false: 서버가 isFavorite를 미지원하거나 레이스컨디션일 수 있으므로 로컬 상태 유지
-      if (result.isFavorite) selectHeart.value = true;
+      selectHeart.value = result.isFavorite;
     } catch (e) {
-      debugPrint('[PostViewController] API 요청 실패 - error: $e');
+      debugPrint(
+        '[PostViewController] API 요청 실패 - error: $e',
+      );
+
       errorMessage.value = e.toString();
     } finally {
       isLoading.value = false;
@@ -137,24 +160,40 @@ class PostViewController extends GetxController {
   }
 
   Future<void> fetchComments() async {
+    isCommentsLoading.value = true;
+
     try {
-      debugPrint('[PostViewController] 댓글 조회 요청 - postId: $postId');
-      final result = await _getCommentsUseCase(postId);
-      comments.assignAll(
-        result.map((e) => e.toEntity(currentUserId: null)).toList(), // toEntity 변환
+      debugPrint(
+        '[PostViewController] 댓글 조회 요청 - postId: $postId',
       );
-      debugPrint('[PostViewController] 댓글 조회 성공 - count: ${result.length}');
+
+      final result = await _getCommentsUseCase(postId);
+
+      comments.assignAll(
+        result.map(
+              (e) => e.toEntity(currentUserId: null),
+        ),
+      );
+
+      debugPrint(
+        '[PostViewController] 댓글 조회 성공 - count: ${result.length}',
+      );
     } catch (e) {
-      debugPrint('[PostViewController] 댓글 조회 실패 - error: $e');
+      debugPrint(
+        '[PostViewController] 댓글 조회 실패 - error: $e',
+      );
+
       errorMessage.value = e.toString();
     } finally {
-      isLoading.value = false;
+      isCommentsLoading.value = false;
     }
   }
 
   Future<void> toggleLike(bool isLiked) async {
     selectHeart.value = isLiked;
-    heartTotal.value = isLiked ? heartTotal.value + 1 : heartTotal.value - 1;
+
+    heartTotal.value =
+    isLiked ? heartTotal.value + 1 : heartTotal.value - 1;
 
     try {
       if (isLiked) {
@@ -162,6 +201,7 @@ class PostViewController extends GetxController {
       } else {
         await _unlikeUseCase(postId);
       }
+
       if (Get.isRegistered<CommunityController>()) {
         await Get.find<CommunityController>().updatePostLike(
           postId,
@@ -169,6 +209,7 @@ class PostViewController extends GetxController {
           isLiked,
         );
       }
+
       if (Get.isRegistered<HomeController>()) {
         Get.find<HomeController>().updatePostLike(
           postId,
@@ -177,9 +218,40 @@ class PostViewController extends GetxController {
         );
       }
     } catch (e) {
-      debugPrint('[PostViewController] 좋아요 토글 실패 - error: $e');
+      debugPrint(
+        '[PostViewController] 좋아요 토글 실패 - error: $e',
+      );
+
       selectHeart.value = !isLiked;
-      heartTotal.value = isLiked ? heartTotal.value - 1 : heartTotal.value + 1;
+
+      heartTotal.value =
+      isLiked ? heartTotal.value - 1 : heartTotal.value + 1;
+    }
+  }
+
+  Future<void> toggleBookmark(bool isBookmarked) async {
+    selectBookMark.value = isBookmarked;
+    bookMarkTotal.value =
+    isBookmarked ? bookMarkTotal.value + 1 : bookMarkTotal.value - 1;
+
+    try {
+      if (isBookmarked) {
+        await _bookmarkUseCase(postId);
+      } else {
+        await _unbookmarkUseCase(postId);
+      }
+
+      debugPrint(
+        '[PostViewController] 북마크 토글 성공 - isBookmarked: $isBookmarked',
+      );
+    } catch (e) {
+      debugPrint(
+        '[PostViewController] 북마크 토글 실패 - error: $e',
+      );
+
+      selectBookMark.value = !isBookmarked;
+      bookMarkTotal.value =
+      isBookmarked ? bookMarkTotal.value - 1 : bookMarkTotal.value + 1;
     }
   }
 
@@ -192,7 +264,9 @@ class PostViewController extends GetxController {
     errorMessage.value = '';
 
     try {
-      debugPrint('[PostViewController] 게시물 수정 요청 - postId: $postId');
+      debugPrint(
+        '[PostViewController] 게시물 수정 요청 - postId: $postId',
+      );
 
       await _updateUseCase(
         postId,
@@ -204,9 +278,13 @@ class PostViewController extends GetxController {
       );
 
       debugPrint('[PostViewController] 게시물 수정 성공');
+
       await fetchPostDetail(postId);
     } catch (e) {
-      debugPrint('[PostViewController] 게시물 수정 실패 - error: $e');
+      debugPrint(
+        '[PostViewController] 게시물 수정 실패 - error: $e',
+      );
+
       errorMessage.value = e.toString();
     } finally {
       isLoading.value = false;
@@ -218,7 +296,9 @@ class PostViewController extends GetxController {
     errorMessage.value = '';
 
     try {
-      debugPrint('[PostViewController] 게시물 삭제 요청 - postId: $postId');
+      debugPrint(
+        '[PostViewController] 게시물 삭제 요청 - postId: $postId',
+      );
 
       await _deleteUseCase(postId);
 
@@ -227,7 +307,10 @@ class PostViewController extends GetxController {
       Get.find<CommunityController>().removePost(postId);
       Get.back();
     } catch (e) {
-      debugPrint('[PostViewController] 게시물 삭제 실패 - error: $e');
+      debugPrint(
+        '[PostViewController] 게시물 삭제 실패 - error: $e',
+      );
+
       errorMessage.value = e.toString();
     } finally {
       isLoading.value = false;
@@ -238,26 +321,46 @@ class PostViewController extends GetxController {
     if (content.trim().isEmpty) return;
 
     try {
-      debugPrint('[PostViewController] 댓글 작성 요청 - content: $content');
-      await _createCommentUseCase(postId: postId, content: content);
+      debugPrint(
+        '[PostViewController] 댓글 작성 요청 - content: $content',
+      );
+
+      await _createCommentUseCase(
+        postId: postId,
+        content: content,
+      );
+
       commentController.clear();
+
       await fetchComments();
+
       commentCount.value = comments.length;
+
       debugPrint('[PostViewController] 댓글 작성 성공');
     } catch (e) {
-      debugPrint('[PostViewController] 댓글 작성 실패 - error: $e');
+      debugPrint(
+        '[PostViewController] 댓글 작성 실패 - error: $e',
+      );
     }
   }
 
   Future<void> deleteComment(CommentEntity comment) async {
     try {
-      debugPrint('[PostViewController] 댓글 삭제 요청 - commentId: ${comment.id}');
+      debugPrint(
+        '[PostViewController] 댓글 삭제 요청 - commentId: ${comment.id}',
+      );
+
       await _deleteCommentUseCase(comment.id);
+
       await fetchComments();
+
       commentCount.value = comments.length;
+
       debugPrint('[PostViewController] 댓글 삭제 성공');
     } catch (e) {
-      debugPrint('[PostViewController] 댓글 삭제 실패 - error: $e');
+      debugPrint(
+        '[PostViewController] 댓글 삭제 실패 - error: $e',
+      );
     }
   }
 }

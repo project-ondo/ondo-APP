@@ -58,7 +58,7 @@ class ChatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "$otherName • ${sendAt?.inHours}시간 전",
+            "$otherName • ${_formatSendAt(sendAt)}",
             style: AppTextStyles.caption(textColor: AppColors.gray60),
           ),
           _card(),
@@ -66,6 +66,14 @@ class ChatCard extends StatelessWidget {
       ),
     ],
   );
+
+  String _formatSendAt(Duration? duration) {
+    if (duration == null) return '';
+    if (duration.inSeconds < 60) return '방금 전';
+    if (duration.inMinutes < 60) return '${duration.inMinutes}분 전';
+    if (duration.inHours < 24) return '${duration.inHours}시간 전';
+    return '${duration.inDays}일 전';
+  }
 
   Widget _profile() => Container(
     width: AppSpacing.s36,

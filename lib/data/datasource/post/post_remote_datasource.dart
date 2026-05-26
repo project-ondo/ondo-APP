@@ -14,6 +14,8 @@ abstract class PostRemoteDatasource {
   Future<void> deletePost(int postId);
   Future<void> likePost(int postId);
   Future<void> unlikePost(int postId);
+  Future<void> bookmarkPost(int postId);
+  Future<void> unbookmarkPost(int postId);
 }
 
 class PostRemoteDatasourceImpl implements PostRemoteDatasource {
@@ -164,6 +166,51 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
         final message = (body['message'] as String?) ?? '';
         // 이미 좋아요 취소 상태 = 원하는 상태와 동일 → 성공으로 처리
         if (message.contains('좋아요하지 않')) return;
+        throw Exception(message);
+      }
+    } catch (e) {
+      log.errorLog(e);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> bookmarkPost(int postId) async {
+    final log = ApiConstants(logName: '게시물 북마크 추가');
+    try {
+      final response = await _client.post(
+        Uri.parse('${ApiConstants.post}/$postId/bookmark'),
+        headers: ApiConstants.baseHeader,
+      );
+      final body = jsonDecode(response.body);
+      log.statusLog(response.statusCode);
+      log.successLog(body['success'] ?? false);
+      log.messageLog(body['message']);
+      if (body['success'] != true) {
+        final message = (body['message'] as String?) ?? '';
+        if (message.contains('이미 북마크')) return;
+        throw Exception(message);
+      }
+    } catch (e) {
+      log.errorLog(e);
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> unbookmarkPost(int postId) async {
+    final log = ApiConstants(logName: '게시물 북마크 해제');
+    try {
+      final response = await _client.delete(
+        Uri.parse('${ApiConstants.post}/$postId/bookmark'),
+      );
+      final body = jsonDecode(response.body);
+      log.statusLog(response.statusCode);
+      log.successLog(body['success'] ?? false);
+      log.messageLog(body['message']);
+      if (body['success'] != true) {
+        final message = (body['message'] as String?) ?? '';
+        if (message.contains('북마크하지 않')) return;
         throw Exception(message);
       }
     } catch (e) {

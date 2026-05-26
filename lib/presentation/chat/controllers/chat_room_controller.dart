@@ -5,6 +5,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
+import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
@@ -41,12 +42,14 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
   final String chatRoomId;
   final String opponentDisplayName;
   final String? opponentProfileImageKey;
+  final RxString opponentProfileImageUrl = ''.obs;
 
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
   final ReadChatMessageUseCase readChatMessageUseCase;
   final ChatStompClient stompClient;
   final ShowLocalNotificationUseCase showLocalNotificationUseCase;
   final AuthLocalDatasource authLocalDatasource;
+  final MediaRemoteDatasource mediaRemoteDatasource;
 
   /// 내 publicId — 이벤트 본인 필터링에 사용
   String? _myPublicId;
@@ -86,6 +89,7 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
     required this.stompClient,
     required this.showLocalNotificationUseCase,
     required this.authLocalDatasource,
+    required this.mediaRemoteDatasource,
   });
 
   @override
@@ -100,6 +104,7 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
       sendReadEvent();
       _connectAndEnter();
     });
+    _initializeController();
     scrollController.addListener(_onScroll);
     super.onInit();
   }
@@ -112,6 +117,35 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
     } else if (state == AppLifecycleState.resumed) {
       stompClient.resumePing();
       log('[ChatRoom] 앱 포그라운드 → Ping 재개');
+    }
+  }
+
+  Future<void> _initializeController() async {
+    try {
+      // 1. 내 publicId 로드 (순서 보장)
+      _myPublicId = await authLocalDatasource.getMyPublicId();
+      log('[ChatRoom] myPublicId: $_myPublicId');
+
+      // 2. 상대방 프로필 이미지 URL 변환
+      if (opponentProfileImageKey != null &&
+          opponentProfileImageKey!.isNotEmpty) {
+        try {
+          final url = await mediaRemoteDatasource.getDownloadUrl(
+            key: opponentProfileImageKey!,
+          );
+          opponentProfileImageUrl.value = url;
+        } catch (e) {
+          log('[ChatRoom] 프로필 이미지 로드 실패: $e');
+          opponentProfileImageUrl.value = '';
+        }
+      }
+
+      // 3. 메시지 내역 로드 및 WebSocket 연결
+      await _initLoadChatRoomMessages();
+      sendReadEvent();
+      await _connectAndEnter();
+    } catch (e) {
+      log('[ChatRoom] 초기화 중 에러 발생: $e');
     }
   }
 

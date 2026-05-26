@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/utils/app_date_utils.dart';
 
 class ChatCard extends StatelessWidget {
   const ChatCard({
@@ -21,7 +22,7 @@ class ChatCard extends StatelessWidget {
   final bool isRead;
   final Widget? otherProfile;
   final String? otherName;
-  final Duration? sendAt;
+  final DateTime? sendAt;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +59,7 @@ class ChatCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "$otherName • ${sendAt?.inHours}시간 전",
+            "$otherName • ${AppDateUtils.timeAgo(sendAt)}",
             style: AppTextStyles.caption(textColor: AppColors.gray60),
           ),
           _card(),
@@ -67,15 +68,7 @@ class ChatCard extends StatelessWidget {
     ],
   );
 
-  Widget _profile() => Container(
-    width: AppSpacing.s36,
-    height: AppSpacing.s36,
-    decoration: BoxDecoration(
-      borderRadius: AppRadius.circleRadius,
-    ),
-    clipBehavior: Clip.hardEdge,
-    child: otherProfile,
-  );
+  Widget _profile() => otherProfile ?? const SizedBox.shrink();
 
   Widget _card() => ConstrainedBox(
     constraints: BoxConstraints(maxWidth: 300),

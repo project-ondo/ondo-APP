@@ -14,6 +14,7 @@ class CustomProfileCircle extends StatelessWidget {
     return Container(
       width: radius,
       height: radius,
+      clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
         borderRadius: AppRadius.circleRadius,
       ),

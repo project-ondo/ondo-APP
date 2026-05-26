@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
@@ -80,12 +80,18 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
   Widget _otherChat(String text) => Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
-      //TODO : chat model 정의 후, 데이터 변경
       ChatCard(
         isMe: false,
         text: text,
-        otherName: "김유찬",
-        otherProfile: SvgPicture.asset(AppIcon.defaultProfile.path),
+        otherName: controller.opponentDisplayName,
+        otherProfile: Obx(
+          () => CustomProfileCircle(
+            radius: AppSpacing.s36,
+            imageUrl: controller.opponentProfileImageUrl.value.isEmpty
+                ? null
+                : controller.opponentProfileImageUrl.value,
+          ),
+        ),
         sendAt: Duration(hours: 3),
       ),
     ],
@@ -115,7 +121,6 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     ],
   );
 
-  //TODO : chat model 정의 후, 데이터 변경
   Widget _topBar() => Obx(
     () => CustomBackButton(
     moreOptions: true,
@@ -127,10 +132,13 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
             ? '온라인'
             : null,
     userInfo: (
-      SvgPicture.asset(
-        AppIcon.defaultProfile.path,
+      CustomProfileCircle(
+        radius: 24,
+        imageUrl: controller.opponentProfileImageUrl.value.isEmpty
+            ? null
+            : controller.opponentProfileImageUrl.value,
       ),
-      "김유찬",
+      controller.opponentDisplayName,
     ),
     itemBuilder: (context) => [
       _customPopupMenu(

@@ -8,6 +8,9 @@ class AuthClient extends BaseClient {
   AuthLocalDatasource localDatasource;
   AuthRemoteDatasource remoteDatasource;
 
+  /// 진행 중인 토큰 갱신 Future — 동시 401 응답 시 중복 갱신 방지
+  Future<String?>? _refreshFuture;
+
   AuthClient({required this.localDatasource, required this.remoteDatasource});
 
   @override
@@ -22,7 +25,9 @@ class AuthClient extends BaseClient {
     // 서버 401 응답 시 토큰 갱신 후 재시도
     if (response.statusCode == 401) {
       log("서버 401 응답 → 토큰 갱신 후 재시도");
-      final newToken = await _tryRefresh();
+      // 동시 401 응답 시 갱신 Future 공유하여 중복 갱신 방지
+      _refreshFuture ??= _tryRefresh().whenComplete(() => _refreshFuture = null);
+      final newToken = await _refreshFuture;
       if (newToken == null) {
         log("토큰 갱신 실패 → 원래 401 응답 반환");
         return response;
@@ -44,18 +49,16 @@ class AuthClient extends BaseClient {
       if (original is Request) {
         final cloned = Request(original.method, original.url);
         cloned.headers.addAll(original.headers);
+        cloned.headers.remove('content-length');
         cloned.headers["Authorization"] = "Bearer $newToken";
         cloned.bodyBytes = original.bodyBytes;
         cloned.encoding = original.encoding;
         return cloned;
       }
       if (original is MultipartRequest) {
-        final cloned = MultipartRequest(original.method, original.url);
-        cloned.headers.addAll(original.headers);
-        cloned.headers["Authorization"] = "Bearer $newToken";
-        cloned.fields.addAll(original.fields);
-        cloned.files.addAll(original.files);
-        return cloned;
+        // MultipartFile은 ByteStream을 일회성으로 사용하므로 재전송 불가
+        log("MultipartRequest는 파일 스트림 재사용이 불가능하여 재시도를 지원하지 않습니다.");
+        return null;
       }
       log("지원하지 않는 요청 타입: ${original.runtimeType}");
       return null;

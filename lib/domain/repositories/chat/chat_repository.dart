@@ -23,4 +23,5 @@ abstract class ChatRepository {
 
   Future<bool> turnOnChatNotification(String chatRoomPublicId);
 
+  Future<bool> turnOffChatNotification(String chatRoomPublicId);
 }

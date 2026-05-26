@@ -11,6 +11,7 @@ import 'package:ondo/presentation/chat/controllers/chat_main_controller.dart';
 
 import '../../../data/datasource/base/auth_local_datasource.dart';
 import '../../../data/network/clients/auth_client.dart';
+import '../../../domain/usecases/chat/turn_off_chat_notification_use_case.dart';
 
 class ChatBinding extends Bindings {
   @override
@@ -55,10 +56,17 @@ class ChatBinding extends Bindings {
         repository: Get.find<ChatRepositoryImpl>(),
       ),
     );
+    Get.lazyPut(
+      () => TurnOffChatNotificationUseCase(
+        repository: Get.find<ChatRepositoryImpl>(),
+      ),
+    );
 
     ///chat controller 등록
     Get.lazyPut(
       () => ChatMainController(
+        turnOffChatNotificationUseCase:
+            Get.find<TurnOffChatNotificationUseCase>(),
         turnOnChatNotificationUseCase:
             Get.find<TurnOnChatNotificationUseCase>(),
         cancelBlockChatRoomUseCase: Get.find<CancelBlockChatRoomUseCase>(),

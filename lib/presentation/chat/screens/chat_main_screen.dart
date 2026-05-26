@@ -66,19 +66,27 @@ class ChatList extends GetView<ChatMainController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => ListView.separated(
-        itemBuilder: (context, index) {
-          final chatRoom = controller.viewChatRoomList[index];
-          return ChatRoomCard(
-            onTap: () {
-              controller.enterChatRoom(index);
-            },
-            chatInfo: chatRoom,
-          );
-        },
-        separatorBuilder: (context, index) => AppGap.v4,
-        itemCount: controller.viewChatRoomList.length,
-      ),
+      () {
+        final list = controller.viewChatRoomList;
+        final isLoadingMore = controller.isLoadingMore.value;
+        return ListView.separated(
+          controller: controller.scrollController,
+          itemCount: list.length + (isLoadingMore ? 1 : 0),
+          separatorBuilder: (context, index) => AppGap.v4,
+          itemBuilder: (context, index) {
+            if (index == list.length) {
+              return const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Center(child: CircularProgressIndicator()),
+              );
+            }
+            return ChatRoomCard(
+              onTap: () => controller.enterChatRoom(index),
+              chatInfo: list[index],
+            );
+          },
+        );
+      },
     );
   }
 }

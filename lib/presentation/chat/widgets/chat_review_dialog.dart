@@ -49,13 +49,10 @@ class ChatReviewDialog extends GetView<ChatReviewController> {
 
   Widget _quitButton() => Obx(
     () => CustomButton(
-      text: "종료",
+      text: controller.isLoading.value ? "전송 중..." : "종료",
       variant: ButtonVariant.primary,
-      onPressed: () {
-        //TODO : 리뷰를 서버에 전송하는 로직
-        controller.submitReview();
-      },
-      enabled: controller.enableSubmit.value,
+      onPressed: controller.submitReview,
+      enabled: controller.enableSubmit.value && !controller.isLoading.value,
     ),
   );
 
@@ -85,13 +82,13 @@ class ChatReviewDialog extends GetView<ChatReviewController> {
   );
 
   Widget _starIcon(int index) => GestureDetector(
-    onTap: () => controller.star(index),
+    onTap: () => controller.setStar(index),
     child: Obx(
       () => Image.asset(
         AppIcon.star.path,
         width: AppSpacing.s28,
         height: AppSpacing.s28,
-        color: controller.star.value >= index
+        color: controller.star.value > index
             ? AppColors.primary
             : AppColors.gray50,
       ),

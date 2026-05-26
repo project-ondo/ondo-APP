@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/router/bindings/chat_room_binding.dart';
 import 'package:ondo/domain/entities/chat/chat_entity.dart';
@@ -30,18 +31,59 @@ class ChatMainController extends GetxController {
     required this.turnOnChatNotificationUseCase,
   });
 
+  int _currentPage = 0;
+  bool _hasMore = true;
+  final RxBool isLoadingMore = false.obs;
+  static const int _pageSize = 20;
+
+  final ScrollController scrollController = ScrollController();
+
   @override
   void onInit() {
     tags.addAll(_getTags());
     _loadChatRooms();
+    scrollController.addListener(_onScroll);
     super.onInit();
   }
 
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
+  }
+
+  void _onScroll() {
+    if (scrollController.position.pixels >=
+        scrollController.position.maxScrollExtent - 200) {
+      loadMoreChatRooms();
+    }
+  }
+
   Future<void> _loadChatRooms() async {
-    _cacheChatRoomList.assignAll(
-      await loadChatRoomsUseCase.call(page: 0, size: 10),
-    );
+    _currentPage = 0;
+    _hasMore = true;
+    final result = await loadChatRoomsUseCase.call(page: 0, size: _pageSize);
+    _cacheChatRoomList.assignAll(result);
     viewChatRoomList.assignAll(_cacheChatRoomList);
+    if (result.length < _pageSize) _hasMore = false;
+  }
+
+  Future<void> loadMoreChatRooms() async {
+    if (!_hasMore || isLoadingMore.value) return;
+
+    isLoadingMore.value = true;
+    _currentPage++;
+
+    final result = await loadChatRoomsUseCase.call(
+      page: _currentPage,
+      size: _pageSize,
+    );
+
+    if (result.isEmpty || result.length < _pageSize) _hasMore = false;
+
+    _cacheChatRoomList.addAll(result);
+    viewChatRoomList.assignAll(_cacheChatRoomList);
+    isLoadingMore.value = false;
   }
 
   Future<void> _cancelBlockChatRoom(String chatRoomPublicId) async {

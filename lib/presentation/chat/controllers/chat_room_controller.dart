@@ -89,23 +89,37 @@ class ChatRoomController extends GetxController {
 
   @override
   void onInit() {
-    // 내 publicId 로드 → 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장
-    authLocalDatasource.getMyPublicId().then((id) {
-      _myPublicId = id;
-      log('[ChatRoom] myPublicId: $_myPublicId');
-    });
-    // 상대방 프로필 이미지 URL 변환
-    if (opponentProfileImageKey != null && opponentProfileImageKey!.isNotEmpty) {
-      mediaRemoteDatasource
-          .getDownloadUrl(key: opponentProfileImageKey!)
-          .then((url) => opponentProfileImageUrl.value = url)
-          .catchError((_) => '');
-    }
-    _initLoadChatRoomMessages().then((_) {
-      sendReadEvent();
-      _connectAndEnter();
-    });
+    _initializeController();
     super.onInit();
+  }
+
+  Future<void> _initializeController() async {
+    try {
+      // 1. 내 publicId 로드 (순서 보장)
+      _myPublicId = await authLocalDatasource.getMyPublicId();
+      log('[ChatRoom] myPublicId: $_myPublicId');
+
+      // 2. 상대방 프로필 이미지 URL 변환
+      if (opponentProfileImageKey != null &&
+          opponentProfileImageKey!.isNotEmpty) {
+        try {
+          final url = await mediaRemoteDatasource.getDownloadUrl(
+            key: opponentProfileImageKey!,
+          );
+          opponentProfileImageUrl.value = url;
+        } catch (e) {
+          log('[ChatRoom] 프로필 이미지 로드 실패: $e');
+          opponentProfileImageUrl.value = '';
+        }
+      }
+
+      // 3. 메시지 내역 로드 및 WebSocket 연결
+      await _initLoadChatRoomMessages();
+      sendReadEvent();
+      await _connectAndEnter();
+    } catch (e) {
+      log('[ChatRoom] 초기화 중 에러 발생: $e');
+    }
   }
 
   @override

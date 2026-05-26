@@ -65,7 +65,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
           return _myChat(chat.content, isRead: isRead);
         });
       }
-      return _otherChat(chat.content);
+      return _otherChat(chat.content, createdAt: chat.createdAt);
     },
     itemCount: controller.viewChatList.length,
   );
@@ -77,16 +77,15 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     ],
   );
 
-  Widget _otherChat(String text) => Row(
+  Widget _otherChat(String text, {required DateTime createdAt}) => Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
-      //TODO : chat model 정의 후, 데이터 변경
       ChatCard(
         isMe: false,
         text: text,
-        otherName: "김유찬",
+        otherName: controller.opponentDisplayName,
         otherProfile: SvgPicture.asset(AppIcon.defaultProfile.path),
-        sendAt: Duration(hours: 3),
+        sendAt: DateTime.now().difference(createdAt),
       ),
     ],
   );
@@ -127,10 +126,8 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
             ? '온라인'
             : null,
     userInfo: (
-      SvgPicture.asset(
-        AppIcon.defaultProfile.path,
-      ),
-      "김유찬",
+      SvgPicture.asset(AppIcon.defaultProfile.path),
+      controller.opponentDisplayName,
     ),
     itemBuilder: (context) => [
       _customPopupMenu(

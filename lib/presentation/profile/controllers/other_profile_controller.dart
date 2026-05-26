@@ -61,6 +61,10 @@ class OtherProfileController extends GetxController {
 
   Future<void> createChatRoom(String publicId) async {
     if (isLoading.value) return;
+    if (profile.value == null) {
+      Get.snackbar('오류', '상대방 프로필 정보를 불러오는 중입니다.');
+      return;
+    }
 
     try {
       isLoading.value = true;
@@ -71,7 +75,11 @@ class OtherProfileController extends GetxController {
       }
       await Get.to(
         () => ChatRoomScreen(roomId: roomId),
-        binding: ChatRoomBinding(chatRoomId: roomId),
+        binding: ChatRoomBinding(
+          chatRoomId: roomId,
+          opponentDisplayName: profile.value?.displayName ?? '',
+          opponentProfileImageKey: profile.value?.profileImageKey,
+        ),
       );
     } catch (e, s) {
       debugPrint('Failed to create chat room: $e\n$s');

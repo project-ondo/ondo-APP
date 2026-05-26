@@ -38,6 +38,8 @@ class ChatRoomController extends GetxController {
   final RxBool isOpponentViewing = false.obs;
 
   final String chatRoomId;
+  final String opponentDisplayName;
+  final String? opponentProfileImageKey;
 
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
   final ReadChatMessageUseCase readChatMessageUseCase;
@@ -72,6 +74,8 @@ class ChatRoomController extends GetxController {
 
   ChatRoomController({
     required this.chatRoomId,
+    required this.opponentDisplayName,
+    this.opponentProfileImageKey,
     required this.loadChatRoomMessageUseCase,
     required this.readChatMessageUseCase,
     required this.stompClient,

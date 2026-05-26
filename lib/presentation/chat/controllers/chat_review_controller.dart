@@ -60,33 +60,40 @@ class ChatReviewController extends GetxController {
 
     isLoading.value = true;
 
-    final deleteSuccess = await _deleteChatRoom();
-    if (!deleteSuccess) {
-      isLoading.value = false;
+    try {
+      final deleteSuccess = await _deleteChatRoom();
+      if (!deleteSuccess) {
+        Get.snackbar(
+          '오류',
+          '채팅방 종료에 실패했습니다. 다시 시도해 주세요.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        return;
+      }
+
+      // 채팅방 삭제 성공 → 리뷰 전송 실패해도 이미 삭제됐으므로 무조건 화면 이탈
+      final ratingSuccess = await _ratingChatRoom();
+      if (!ratingSuccess) {
+        Get.snackbar(
+          '알림',
+          '리뷰 전송에 실패했습니다.',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      }
+
+      Get.back<ChatRoomQuitResult>(
+        closeOverlays: true,
+        result: ChatRoomQuitResult(success: true),
+      );
+    } catch (e) {
       Get.snackbar(
         '오류',
-        '채팅방 종료에 실패했습니다. 다시 시도해 주세요.',
+        '오류가 발생했습니다. 다시 시도해 주세요.',
         snackPosition: SnackPosition.BOTTOM,
       );
-      return;
-    }
-
-    final ratingSuccess = await _ratingChatRoom();
-    if (!ratingSuccess) {
+    } finally {
       isLoading.value = false;
-      Get.snackbar(
-        '오류',
-        '리뷰 전송에 실패했습니다.',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
     }
-
-    isLoading.value = false;
-    Get.back<ChatRoomQuitResult>(
-      closeOverlays: true,
-      result: ChatRoomQuitResult(success: true),
-    );
   }
 
   final List<String> baseCategories = [

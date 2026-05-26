@@ -5,7 +5,6 @@ import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
 import 'package:ondo/domain/entities/rating/rating_entity.dart';
-import 'package:ondo/domain/usecases/chat/create_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/rating/load_other_rating_list_use_case.dart';
 import 'package:ondo/domain/usecases/chat/create_chat_room_use_case.dart';
 import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';

@@ -94,7 +94,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
                 : controller.opponentProfileImageUrl.value,
           ),
         ),
-        sendAt: DateTime.now().difference(createdAt),
+        sendAt: createdAt,
       ),
     ],
   );

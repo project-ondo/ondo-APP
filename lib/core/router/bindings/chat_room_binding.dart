@@ -19,7 +19,7 @@ class ChatRoomBinding extends Bindings {
 
   ChatRoomBinding({
     required this.chatRoomId,
-    required this.opponentDisplayName,
+    this.opponentDisplayName = '',
     this.opponentProfileImageKey,
   });
 

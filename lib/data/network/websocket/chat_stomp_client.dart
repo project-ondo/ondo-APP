@@ -30,8 +30,9 @@ class ChatStompClient {
   bool get isConnected => _isConnected;
 
   // ─── 구독 관리 ─────────────────────────────────────────
-  /// subscriptionId → callback
-  final Map<String, void Function(StompFrame)> _subscriptions = {};
+  /// subscriptionId → (destination, callback)
+  final Map<String, ({String destination, void Function(StompFrame) callback})>
+  _subscriptions = {};
   int _subscriptionCounter = 0;
 
   // ─── 재연결 ───────────────────────────────────────────
@@ -101,7 +102,7 @@ class ChatStompClient {
   /// 반환값: subscriptionId (unsubscribe 시 사용)
   String subscribe(String destination, void Function(StompFrame) onFrame) {
     final id = 'sub-${_subscriptionCounter++}';
-    _subscriptions[id] = onFrame;
+    _subscriptions[id] = (destination: destination, callback: onFrame);
 
     _sendFrame(StompFrame(
       command: 'SUBSCRIBE',
@@ -197,17 +198,21 @@ class ChatStompClient {
 
     switch (frame.command) {
       case 'CONNECTED':
-        _isConnected = true;
-        _reconnectAttempts = 0;
-        if (!_isPaused) _startPing();
-        _connectCompleter?.complete();
-        _connectCompleter = null;
-        log('[STOMP] 연결 성공');
+        try {
+          _isConnected = true;
+          _reconnectAttempts = 0;
+          if (!_isPaused) _startPing();
+          _resubscribeAll();
+        } finally {
+          _connectCompleter?.complete();
+          _connectCompleter = null;
+          log('[STOMP] 연결 성공');
+        }
 
       case 'MESSAGE':
         final subId = frame.headers['subscription'];
         if (subId != null) {
-          _subscriptions[subId]?.call(frame);
+          _subscriptions[subId]?.callback(frame);
         }
 
       case 'ERROR':
@@ -251,6 +256,21 @@ class ChatStompClient {
       log('[STOMP] 재연결 시도 $_reconnectAttempts/$_maxReconnectAttempts');
       connect();
     });
+  }
+
+  /// 재연결 후 기존 구독 목록을 서버에 재등록
+  void _resubscribeAll() {
+    if (_subscriptions.isEmpty) return;
+    for (final entry in _subscriptions.entries) {
+      _sendFrame(StompFrame(
+        command: 'SUBSCRIBE',
+        headers: {
+          'destination': entry.value.destination,
+          'id': entry.key,
+        },
+      ));
+      log('[STOMP] 재구독 → ${entry.value.destination} (id: ${entry.key})');
+    }
   }
 
   void _startPing() {

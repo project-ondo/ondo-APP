@@ -5,6 +5,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/widgets.dart';
+import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
@@ -38,12 +39,16 @@ class ChatRoomController extends GetxController {
   final RxBool isOpponentViewing = false.obs;
 
   final String chatRoomId;
+  final String opponentDisplayName;
+  final String? opponentProfileImageKey;
+  final RxString opponentProfileImageUrl = ''.obs;
 
   final LoadChatRoomMessageUseCase loadChatRoomMessageUseCase;
   final ReadChatMessageUseCase readChatMessageUseCase;
   final ChatStompClient stompClient;
   final ShowLocalNotificationUseCase showLocalNotificationUseCase;
   final AuthLocalDatasource authLocalDatasource;
+  final MediaRemoteDatasource mediaRemoteDatasource;
 
   /// 내 publicId — 이벤트 본인 필터링에 사용
   String? _myPublicId;
@@ -72,11 +77,14 @@ class ChatRoomController extends GetxController {
 
   ChatRoomController({
     required this.chatRoomId,
+    required this.opponentDisplayName,
+    this.opponentProfileImageKey,
     required this.loadChatRoomMessageUseCase,
     required this.readChatMessageUseCase,
     required this.stompClient,
     required this.showLocalNotificationUseCase,
     required this.authLocalDatasource,
+    required this.mediaRemoteDatasource,
   });
 
   @override
@@ -86,6 +94,13 @@ class ChatRoomController extends GetxController {
       _myPublicId = id;
       log('[ChatRoom] myPublicId: $_myPublicId');
     });
+    // 상대방 프로필 이미지 URL 변환
+    if (opponentProfileImageKey != null && opponentProfileImageKey!.isNotEmpty) {
+      mediaRemoteDatasource
+          .getDownloadUrl(key: opponentProfileImageKey!)
+          .then((url) => opponentProfileImageUrl.value = url)
+          .catchError((_) => '');
+    }
     _initLoadChatRoomMessages().then((_) {
       sendReadEvent();
       _connectAndEnter();

@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
+import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
+import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/network/websocket/chat_stomp_client.dart';
 import 'package:ondo/data/repositories/chat/chat_repository_impl.dart';
 import 'package:ondo/domain/usecases/chat/delete_chat_room_use_case.dart';
@@ -12,11 +14,21 @@ import '../../../domain/usecases/chat/read_chat_message_use_case.dart';
 
 class ChatRoomBinding extends Bindings {
   final String chatRoomId;
+  final String opponentDisplayName;
+  final String? opponentProfileImageKey;
 
-  ChatRoomBinding({required this.chatRoomId});
+  ChatRoomBinding({
+    required this.chatRoomId,
+    required this.opponentDisplayName,
+    this.opponentProfileImageKey,
+  });
 
   @override
   void dependencies() {
+    Get.lazyPut<MediaRemoteDatasource>(
+      () => MediaRemoteDatasource(client: Get.find<AuthClient>()),
+    );
+
     Get.lazyPut<LoadChatRoomMessageUseCase>(
       () => LoadChatRoomMessageUseCase(
         repository: Get.find<ChatRepositoryImpl>(),
@@ -39,11 +51,14 @@ class ChatRoomBinding extends Bindings {
     Get.put<ChatRoomController>(
       ChatRoomController(
         chatRoomId: chatRoomId,
+        opponentDisplayName: opponentDisplayName,
+        opponentProfileImageKey: opponentProfileImageKey,
         loadChatRoomMessageUseCase: Get.find<LoadChatRoomMessageUseCase>(),
         readChatMessageUseCase: Get.find<ReadChatMessageUseCase>(),
         stompClient: Get.find<ChatStompClient>(),
         authLocalDatasource: Get.find<AuthLocalDatasource>(),
         showLocalNotificationUseCase: Get.find<ShowLocalNotificationUseCase>(),
+        mediaRemoteDatasource: Get.find<MediaRemoteDatasource>(),
       ),
       tag: chatRoomId,
     );

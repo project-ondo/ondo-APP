@@ -6,11 +6,9 @@ import 'package:ondo/presentation/chat/states/chat_room_back_result.dart';
 
 class ChatReviewController extends GetxController {
   final RxBool enableSubmit = false.obs;
+  final RxBool isLoading = false.obs;
   final RxSet<String> reviewTags = <String>{}.obs;
   final RxInt star = 5.obs;
-
-  //TODO : error 처리 UI 반영
-  RxString error = ''.obs;
 
   final TextEditingController commentController = TextEditingController();
 
@@ -24,16 +22,13 @@ class ChatReviewController extends GetxController {
     required this.ratingChatRoomUseCase,
   });
 
-  Future<void> _deleteChatRoom() async {
+  Future<bool> _deleteChatRoom() async {
     final res = await deleteChatRoomUseCase.call(chatRoomId);
-    if (res != true) error.value = "DELETE_ERROR";
+    return res == true;
   }
 
-  Future<void> _ratingChatRoom() async {
-    if (star.value < 1 || star.value > 5) {
-      error.value = "RATING_ERROR";
-      return;
-    }
+  Future<bool> _ratingChatRoom() async {
+    if (star.value < 1 || star.value > 5) return false;
 
     final res = await ratingChatRoomUseCase.call(
       chatRoomPublicId: chatRoomId,
@@ -41,7 +36,7 @@ class ChatReviewController extends GetxController {
       comment: commentController.text,
       tags: reviewTags.toList(),
     );
-    if (res != true) error.value = "RATING_ERROR";
+    return res == true;
   }
 
   @override
@@ -57,22 +52,41 @@ class ChatReviewController extends GetxController {
 
   void checkEnableSubmit() => enableSubmit.value = reviewTags.isNotEmpty;
 
-  set star(int index) => star.value = index + 1;
+  /// 별점 선택 (index: 0~4 → star: 1~5)
+  void setStar(int index) => star.value = index + 1;
 
   Future submitReview() async {
-    if (enableSubmit.value) {
-      await _deleteChatRoom();
-      //TODO : error state 정의
-      if (error.isEmpty) {
-        await _ratingChatRoom();
-      }
+    if (!enableSubmit.value || isLoading.value) return;
 
-      Get.back<ChatRoomQuitResult>(
-        closeOverlays: true,
-        //TODO : error state 정의 후 state delete error가 아닐 경우만 true 설장
-        result: ChatRoomQuitResult(success: error.isEmpty),
+    isLoading.value = true;
+
+    final deleteSuccess = await _deleteChatRoom();
+    if (!deleteSuccess) {
+      isLoading.value = false;
+      Get.snackbar(
+        '오류',
+        '채팅방 종료에 실패했습니다. 다시 시도해 주세요.',
+        snackPosition: SnackPosition.BOTTOM,
       );
+      return;
     }
+
+    final ratingSuccess = await _ratingChatRoom();
+    if (!ratingSuccess) {
+      isLoading.value = false;
+      Get.snackbar(
+        '오류',
+        '리뷰 전송에 실패했습니다.',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    isLoading.value = false;
+    Get.back<ChatRoomQuitResult>(
+      closeOverlays: true,
+      result: ChatRoomQuitResult(success: true),
+    );
   }
 
   final List<String> baseCategories = [

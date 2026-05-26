@@ -1,14 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/router/bindings/chat_room_binding.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
 import 'package:ondo/domain/entities/rating/rating_entity.dart';
 import 'package:ondo/domain/usecases/rating/load_other_rating_list_use_case.dart';
+import 'package:ondo/domain/usecases/chat/create_chat_room_use_case.dart';
+import 'package:ondo/presentation/chat/screens/chat_room_screen.dart';
 
 class OtherProfileController extends GetxController {
   final UserRemoteDatasource userRemoteDatasource = Get.find();
   final MediaRemoteDatasource mediaRemoteDatasource = Get.find();
+  final CreateChatRoomUseCase createChatRoomUseCase = Get.find();
   final LoadOtherRatingListUseCase loadOtherRatingListUseCase;
 
   final List<RatingEntity> _cacheRatingList = [];
@@ -50,6 +54,28 @@ class OtherProfileController extends GetxController {
     } catch (e, s) {
       debugPrint('Failed to load other profile: $e\n$s');
       Get.snackbar('오류', '프로필을 불러오지 못했습니다.');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> createChatRoom(String publicId) async {
+    if (isLoading.value) return;
+
+    try {
+      isLoading.value = true;
+      final roomId = await createChatRoomUseCase(publicId);
+      if (roomId.isEmpty) {
+        Get.snackbar('오류', '채팅방을 생성하지 못했습니다.');
+        return;
+      }
+      await Get.to(
+        () => ChatRoomScreen(roomId: roomId),
+        binding: ChatRoomBinding(chatRoomId: roomId),
+      );
+    } catch (e, s) {
+      debugPrint('Failed to create chat room: $e\n$s');
+      Get.snackbar('오류', '채팅방 생성 중 오류가 발생했습니다.');
     } finally {
       isLoading.value = false;
     }

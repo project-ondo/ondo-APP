@@ -10,7 +10,7 @@ class ChatRemoteDatasource {
 
   ChatRemoteDatasource({required this.client});
 
-  Future<Map?> loadMyChatRoomList(ListRequestModel model) async {
+  Future<Map?> loadMyChatRoomList(ListRequestModelBasePage model) async {
     final log = ApiConstants(logName: "내 채팅 목록");
 
     try {

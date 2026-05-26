@@ -49,4 +49,21 @@ class RatingRepositoryImpl extends RatingRepository {
         )
         .toList();
   }
+
+  @override
+  Future<List<RatingEntity>> loadMyRatingList(int cursor, int size) async {
+    final model = ListRequestModelBaseCursor(size: size, cursor: cursor);
+    final json = await remoteDatasource.getMyRatingList(model);
+
+    //TODO : Pageable 객체로 관리
+    if (json.isEmpty) return [];
+
+    final data = RatingDataModel.fromJson(json);
+
+    return data.items
+        .map(
+          (e) => RatingEntity.fromRatingModel(e),
+        )
+        .toList();
+  }
 }

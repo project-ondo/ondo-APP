@@ -150,7 +150,6 @@ class PostBinding extends Bindings {
         unlikeUseCase:
         Get.find<UnlikePostUseCase>(),
 
-        // 추가
         bookmarkUseCase:
         Get.find<BookmarkPostUseCase>(),
         unbookmarkUseCase:

@@ -18,6 +18,7 @@ import 'package:ondo/data/repositories/notification/notification_repository_impl
 import 'package:ondo/domain/repositories/auth/auth_repository.dart';
 import 'package:ondo/domain/usecases/auth/logout_usecase.dart';
 import 'package:ondo/domain/usecases/chat/create_chat_room_use_case.dart';
+import 'package:ondo/domain/usecases/rating/load_my_rating_list_use_case.dart';
 import 'package:ondo/domain/usecases/rating/load_other_rating_list_use_case.dart';
 import 'package:ondo/domain/usecases/notification/load_notification_setting_use_case.dart';
 import 'package:ondo/domain/usecases/notification/update_notification_setting_use_case.dart';
@@ -124,7 +125,7 @@ class ProfileBinding extends Bindings {
     /// NotificationLocalDatasource 등록 (설정값 저장/불러오기용)
     if (!Get.isRegistered<NotificationLocalDatasource>()) {
       Get.lazyPut<NotificationLocalDatasource>(
-            () => NotificationLocalDatasource(),
+        () => NotificationLocalDatasource(),
         fenix: true,
       );
     }
@@ -132,7 +133,7 @@ class ProfileBinding extends Bindings {
     /// NotificationRepositoryImpl 등록 (설정 UseCase에 필요)
     if (!Get.isRegistered<NotificationRepositoryImpl>()) {
       Get.lazyPut<NotificationRepositoryImpl>(
-            () => NotificationRepositoryImpl(
+        () => NotificationRepositoryImpl(
           remoteDatasource: Get.find<NotificationRemoteDatasource>(),
           localDatasource: Get.find<NotificationLocalDatasource>(),
         ),
@@ -142,19 +143,14 @@ class ProfileBinding extends Bindings {
 
     /// 알림 설정 UseCase 등록
     Get.lazyPut<LoadNotificationSettingUseCase>(
-          () => LoadNotificationSettingUseCase(
+      () => LoadNotificationSettingUseCase(
         repository: Get.find<NotificationRepositoryImpl>(),
       ),
     );
     Get.lazyPut<UpdateNotificationSettingUseCase>(
-          () => UpdateNotificationSettingUseCase(
+      () => UpdateNotificationSettingUseCase(
         repository: Get.find<NotificationRepositoryImpl>(),
       ),
-    );
-
-    /// MyProfileController 등록
-    Get.lazyPut<MyProfileController>(
-      () => MyProfileController(),
     );
 
     /// EditProfileController 등록
@@ -163,6 +159,13 @@ class ProfileBinding extends Bindings {
     );
 
     LoadRatingBinding().dependencies();
+
+    /// MyProfileController 등록
+    Get.lazyPut<MyProfileController>(
+      () => MyProfileController(
+        loadMyRatingListUseCase: Get.find<LoadMyRatingListUseCase>(),
+      ),
+    );
 
     /// OtherProfileController 등록
     Get.lazyPut<OtherProfileController>(
@@ -173,11 +176,11 @@ class ProfileBinding extends Bindings {
 
     /// SettingController 등록
     Get.lazyPut<SettingController>(
-          () => SettingController(
+      () => SettingController(
         loadNotificationSettingUseCase:
-        Get.find<LoadNotificationSettingUseCase>(),
+            Get.find<LoadNotificationSettingUseCase>(),
         updateNotificationSettingUseCase:
-        Get.find<UpdateNotificationSettingUseCase>(),
+            Get.find<UpdateNotificationSettingUseCase>(),
       ),
     );
   }

@@ -60,6 +60,7 @@ class PostViewController extends GetxController {
   final RxList<PostDetailModel> postList = <PostDetailModel>[].obs;
 
   final isLoading = false.obs;
+  final isCommentsLoading = false.obs;
   final errorMessage = ''.obs;
 
   final RxString title = ''.obs;
@@ -146,7 +147,6 @@ class PostViewController extends GetxController {
 
       heartTotal.value = result.likeCount;
       commentCount.value = result.commentCount;
-
       selectHeart.value = result.isFavorite;
     } catch (e) {
       debugPrint(
@@ -160,7 +160,7 @@ class PostViewController extends GetxController {
   }
 
   Future<void> fetchComments() async {
-    isLoading.value = true;
+    isCommentsLoading.value = true;
 
     try {
       debugPrint(
@@ -185,7 +185,7 @@ class PostViewController extends GetxController {
 
       errorMessage.value = e.toString();
     } finally {
-      isLoading.value = false;
+      isCommentsLoading.value = false;
     }
   }
 
@@ -231,6 +231,8 @@ class PostViewController extends GetxController {
 
   Future<void> toggleBookmark(bool isBookmarked) async {
     selectBookMark.value = isBookmarked;
+    bookMarkTotal.value =
+    isBookmarked ? bookMarkTotal.value + 1 : bookMarkTotal.value - 1;
 
     try {
       if (isBookmarked) {
@@ -247,8 +249,9 @@ class PostViewController extends GetxController {
         '[PostViewController] 북마크 토글 실패 - error: $e',
       );
 
-      // 롤백
       selectBookMark.value = !isBookmarked;
+      bookMarkTotal.value =
+      isBookmarked ? bookMarkTotal.value - 1 : bookMarkTotal.value + 1;
     }
   }
 

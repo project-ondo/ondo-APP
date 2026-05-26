@@ -16,7 +16,53 @@ class AuthClient extends BaseClient {
     if (token != null) {
       request.headers["Authorization"] = "Bearer $token";
     }
-    return request.send();
+
+    final response = await request.send();
+
+    // 서버 401 응답 시 토큰 갱신 후 재시도
+    if (response.statusCode == 401) {
+      log("서버 401 응답 → 토큰 갱신 후 재시도");
+      final newToken = await _tryRefresh();
+      if (newToken == null) {
+        log("토큰 갱신 실패 → 원래 401 응답 반환");
+        return response;
+      }
+
+      final retryRequest = _cloneRequest(request, newToken);
+      if (retryRequest == null) return response;
+
+      log("재시도 요청 전송");
+      return retryRequest.send();
+    }
+
+    return response;
+  }
+
+  /// BaseRequest를 새 토큰으로 복제
+  BaseRequest? _cloneRequest(BaseRequest original, String newToken) {
+    try {
+      if (original is Request) {
+        final cloned = Request(original.method, original.url);
+        cloned.headers.addAll(original.headers);
+        cloned.headers["Authorization"] = "Bearer $newToken";
+        cloned.bodyBytes = original.bodyBytes;
+        cloned.encoding = original.encoding;
+        return cloned;
+      }
+      if (original is MultipartRequest) {
+        final cloned = MultipartRequest(original.method, original.url);
+        cloned.headers.addAll(original.headers);
+        cloned.headers["Authorization"] = "Bearer $newToken";
+        cloned.fields.addAll(original.fields);
+        cloned.files.addAll(original.files);
+        return cloned;
+      }
+      log("지원하지 않는 요청 타입: ${original.runtimeType}");
+      return null;
+    } catch (e) {
+      log("요청 복제 실패: $e");
+      return null;
+    }
   }
 
   /// 유효한 accessToken 반환

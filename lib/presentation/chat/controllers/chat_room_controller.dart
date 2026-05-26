@@ -94,7 +94,8 @@ class ChatRoomController extends GetxController {
 
   @override
   void onInit() {
-    _initializeController();scrollController.addListener(_onScroll);
+    _initializeController();
+    scrollController.addListener(_onScroll);
     super.onInit();
   }
 
@@ -102,8 +103,6 @@ class ChatRoomController extends GetxController {
     try {
       // 1. 내 publicId 로드 (순서 보장)
       _myPublicId = await authLocalDatasource.getMyPublicId();
-    authLocalDatasource.getMyPublicId().then((id) {
-      _myPublicId = id;
       log('[ChatRoom] myPublicId: $_myPublicId');
 
       // 2. 상대방 프로필 이미지 URL 변환
@@ -127,7 +126,6 @@ class ChatRoomController extends GetxController {
     } catch (e) {
       log('[ChatRoom] 초기화 중 에러 발생: $e');
     }
-
   }
 
   void _onScroll() {

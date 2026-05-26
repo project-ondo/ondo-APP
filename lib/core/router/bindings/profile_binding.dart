@@ -4,16 +4,20 @@ import 'package:ondo/core/router/bindings/load_rating_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
+import 'package:ondo/data/datasource/chat/chat_remote_datasource.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/notification/notification_local_datasource.dart';
 import 'package:ondo/data/datasource/notification/notification_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
+import 'package:ondo/data/network/websocket/chat_stomp_client.dart';
 import 'package:ondo/data/repositories/auth/auth_repository_impl.dart';
+import 'package:ondo/data/repositories/chat/chat_repository_impl.dart';
 import 'package:ondo/data/repositories/notification/notification_repository_impl.dart';
 import 'package:ondo/domain/repositories/auth/auth_repository.dart';
 import 'package:ondo/domain/usecases/auth/logout_usecase.dart';
+import 'package:ondo/domain/usecases/chat/create_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/rating/load_other_rating_list_use_case.dart';
 import 'package:ondo/domain/usecases/notification/load_notification_setting_use_case.dart';
 import 'package:ondo/domain/usecases/notification/update_notification_setting_use_case.dart';
@@ -83,6 +87,32 @@ class ProfileBinding extends Bindings {
       () => UserRemoteDatasource(client: Get.find<AuthClient>()),
       fenix: true,
     );
+
+    /// 채팅 의존성 등록 (커피챗 신청 및 ChatRoomBinding에서 필요)
+    if (!Get.isRegistered<ChatStompClient>()) {
+      Get.lazyPut<ChatStompClient>(
+        () => ChatStompClient(localDatasource: Get.find<AuthLocalDatasource>()),
+        fenix: true,
+      );
+    }
+    if (!Get.isRegistered<ChatRemoteDatasource>()) {
+      Get.lazyPut<ChatRemoteDatasource>(
+        () => ChatRemoteDatasource(client: Get.find<AuthClient>()),
+        fenix: true,
+      );
+    }
+    if (!Get.isRegistered<ChatRepositoryImpl>()) {
+      Get.lazyPut<ChatRepositoryImpl>(
+        () => ChatRepositoryImpl(remoteDatasource: Get.find<ChatRemoteDatasource>()),
+        fenix: true,
+      );
+    }
+    if (!Get.isRegistered<CreateChatRoomUseCase>()) {
+      Get.lazyPut<CreateChatRoomUseCase>(
+        () => CreateChatRoomUseCase(repository: Get.find<ChatRepositoryImpl>()),
+        fenix: true,
+      );
+    }
 
     /// DeleteAccountUseCase 등록
     Get.lazyPut<DeleteAccountUseCase>(

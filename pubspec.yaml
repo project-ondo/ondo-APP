@@ -99,15 +99,15 @@ flutter:
           weight: 200
         - asset: assets/font/Pretendard-Light.ttf
           weight: 300
-        - asset: assets/font/Pretendard-Medium.ttf
-          weight: 400
         - asset: assets/font/Pretendard-Regular.ttf
+          weight: 400
+        - asset: assets/font/Pretendard-Medium.ttf
           weight: 500
-        - asset: assets/font/Pretendard-ExtraBold.ttf
-          weight: 600
         - asset: assets/font/Pretendard-SemiBold.ttf
-          weight: 700
+          weight: 600
         - asset: assets/font/Pretendard-Bold.ttf
+          weight: 700
+        - asset: assets/font/Pretendard-ExtraBold.ttf
           weight: 800
         - asset: assets/font/Pretendard-Black.ttf
           weight: 900

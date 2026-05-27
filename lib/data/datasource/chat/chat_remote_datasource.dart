@@ -212,4 +212,29 @@ class ChatRemoteDatasource {
 
     return false;
   }
+
+  Future<bool> turnOffChatNotification(String chatRoomPublicId) async {
+    final log = ApiConstants(logName: "채팅방 알림 끄기 서버");
+
+    try {
+      final res = await client.put(
+        Uri.parse("${ApiConstants.chat}/rooms/$chatRoomPublicId/mute"),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"]);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200 && body["success"] == true) {
+        return true;
+      }
+
+      log.statusLog(res.statusCode);
+    } catch (e) {
+      log.errorLog(e);
+    }
+
+    return false;
+  }
 }

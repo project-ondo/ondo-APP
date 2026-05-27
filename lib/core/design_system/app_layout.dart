@@ -6,6 +6,7 @@ class AppSpacing {
   static const double s2 = 2;
   static const double s4 = 4;
   static const double s6 = 6;
+  static const double s7 = 7;
   static const double s8 = 8;
   static const double s9 = 9;
   static const double s10 = 10;
@@ -41,6 +42,7 @@ class AppGap {
 
   static const SizedBox v4 = SizedBox(height: AppSpacing.s4);
   static const SizedBox v6 = SizedBox(height: AppSpacing.s6);
+  static const SizedBox v7 = SizedBox(height: AppSpacing.s6);
   static const SizedBox v8 = SizedBox(height: AppSpacing.s8);
   static const SizedBox v10 = SizedBox(height: AppSpacing.s10);
   static const SizedBox v12 = SizedBox(height: AppSpacing.s12);
@@ -50,9 +52,9 @@ class AppGap {
   static const SizedBox v36 = SizedBox(height: AppSpacing.s36);
   static const SizedBox v40 = SizedBox(height: AppSpacing.s40);
   static const SizedBox v51 = SizedBox(height: AppSpacing.s51);
+  static const SizedBox v52 = SizedBox(height: AppSpacing.s52);
   static const SizedBox v76 = SizedBox(height: AppSpacing.s76);
   static const SizedBox v80 = SizedBox(height: AppSpacing.s80);
-
 }
 
 class AppPadding {
@@ -74,7 +76,6 @@ class AppPadding {
   );
 
   static const EdgeInsets card = EdgeInsets.all(AppSpacing.s12);
-
 
   static const EdgeInsets userCard = EdgeInsets.all(AppSpacing.s10);
 

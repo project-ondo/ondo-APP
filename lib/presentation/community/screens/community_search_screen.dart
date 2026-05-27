@@ -15,33 +15,30 @@ class CommunitySearchScreen extends GetView<CommunityResultController> {
     return BaseScaffold(
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        child: Padding(
-          padding: AppPadding.screenHorizontal,
-          child: Column(
-            children: [
-              AppGap.v16,
-              Obx(
-                () => PostGridList(
-                  title: "게시물 검색 결과",
-                  list: controller.viewPosts
-                      .map(
-                        (post) => PostItem(
-                          postId: post.postId,
-                          skills: post.tags,
-                          title: post.title,
-                          author: post.authorName,
-                          bookmarks: 0,
-                          favorites: post.likeCount,
-                          createAt: DateTime.now(),
-                          isMy: true,
-                        ),
-                      )
-                      .toList(),
-                ),
+        child: Column(
+          children: [
+            AppGap.v16,
+            Obx(
+              () => PostGridList(
+                title: "게시물 검색 결과",
+                list: controller.viewPosts
+                    .map(
+                      (post) => PostItem(
+                        postId: post.postId,
+                        skills: post.tags,
+                        title: post.title,
+                        author: post.authorName,
+                        bookmarks: 0,
+                        favorites: post.likeCount,
+                        createAt: DateTime.now(),
+                        isMy: true,
+                      ),
+                    )
+                    .toList(),
               ),
-              AppGap.v16,
-            ],
-          ),
+            ),
+            AppGap.v16,
+          ],
         ),
       ),
     );

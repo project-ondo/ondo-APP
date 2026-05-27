@@ -38,8 +38,6 @@ class _HomePostRankListState extends State<HomePostRankList> {
     super.dispose();
   }
 
-  int _getPageTotal() => (_mainController.ranks.length / 3).ceil();
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -69,6 +67,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
   Widget _postList() {
     return Obx(() {
       final ranks = _mainController.ranks;
+      final pageCount = (ranks.length / 3).ceil();
       return PageView.builder(
         controller: _pageController,
         pageSnapping: true,
@@ -107,7 +106,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
             }),
           );
         },
-        itemCount: _getPageTotal(),
+        itemCount: pageCount,
       );
     });
   }

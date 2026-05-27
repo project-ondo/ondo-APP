@@ -17,7 +17,7 @@ class ChatReviewDialog extends GetView<ChatReviewController> {
   Widget build(BuildContext context) {
     return Dialog(
       backgroundColor: AppColors.white,
-      insetPadding: AppPadding.basePopup,
+      insetPadding: AppPadding.actionPopup,
       shape: RoundedRectangleBorder(borderRadius: AppRadius.popupRadius),
       child: Padding(
         padding: AppPadding.actionPopup,
@@ -56,19 +56,22 @@ class ChatReviewDialog extends GetView<ChatReviewController> {
     ),
   );
 
-  Widget _reviewCategoryList() => Wrap(
-    direction: Axis.horizontal,
-    spacing: AppSpacing.s12,
-    runSpacing: AppSpacing.s12,
-    children: List.generate(
-      controller.baseCategories.length,
-      (index) => CustomTagCard(
-        onTap: (isSelect) => controller.selectReviewTag(
-          controller.baseCategories[index],
-          isSelect,
+  Widget _reviewCategoryList() => SizedBox(
+    width: double.maxFinite,
+    child: Wrap(
+      direction: Axis.horizontal,
+      spacing: AppSpacing.s12,
+      runSpacing: AppSpacing.s12,
+      children: List.generate(
+        controller.baseCategories.length,
+        (index) => CustomTagCard(
+          onTap: (isSelect) => controller.selectReviewTag(
+            controller.baseCategories[index],
+            isSelect,
+          ),
+          tag: controller.baseCategories[index],
+          color: AppColors.gray20,
         ),
-        tag: controller.baseCategories[index],
-        color: AppColors.gray20,
       ),
     ),
   );
@@ -77,20 +80,18 @@ class ChatReviewDialog extends GetView<ChatReviewController> {
     mainAxisSize: MainAxisSize.min,
     children: List.generate(
       5,
-      (index) => _starIcon(index),
-    ),
-  );
-
-  Widget _starIcon(int index) => GestureDetector(
-    onTap: () => controller.setStar(index),
-    child: Obx(
-      () => Image.asset(
-        AppIcon.star.path,
-        width: AppSpacing.s28,
-        height: AppSpacing.s28,
-        color: controller.star.value > index
-            ? AppColors.primary
-            : AppColors.gray50,
+      (index) => GestureDetector(
+        onTap: () => controller.setStar(index),
+        child: Obx(
+          () => Image.asset(
+            AppIcon.star.path,
+            width: AppSpacing.s28,
+            height: AppSpacing.s28,
+            color: controller.star.value > index
+                ? AppColors.primary
+                : AppColors.gray50,
+          ),
+        ),
       ),
     ),
   );

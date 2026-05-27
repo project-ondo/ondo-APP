@@ -26,7 +26,6 @@ class CommunityMainScreen extends GetView<CommunityController> {
               AppGap.v16,
               CommunityFilterTagList(),
               CommunityPostList(),
-              AppGap.v16,
             ],
           ),
         ),

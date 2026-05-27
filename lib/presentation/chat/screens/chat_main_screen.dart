@@ -4,7 +4,6 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_tag_card.dart';
 import 'package:ondo/presentation/chat/controllers/chat_main_controller.dart';
-import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/chat/widgets/chat_room_card.dart';
 
@@ -14,25 +13,17 @@ class ChatMainScreen extends GetView<ChatMainController> {
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      body: MainTopSearchBar(
-        pageId: "chat",
-        mainPage: Container(
-          color: AppColors.background,
-          child: Column(
-            children: [
-              AppGap.v16,
-              TagList(),
-              AppGap.v16,
-              Expanded(child: ChatList()),
-              AppGap.v16,
-            ],
-          ),
+      body: Container(
+        color: AppColors.background,
+        child: Column(
+          children: [
+            AppGap.v16,
+            TagList(),
+            AppGap.v16,
+            Expanded(child: ChatList()),
+            AppGap.v16,
+          ],
         ),
-        resultPageBuilder: (state) {
-          if (state.query.isEmpty || state.tags.isEmpty) return;
-          controller.search(state.query, state.tags.toList());
-          return null;
-        },
       ),
     );
   }
@@ -43,17 +34,17 @@ class TagList extends GetView<ChatMainController> {
 
   @override
   Widget build(BuildContext context) {
+    final tags = controller.tags;
     return SizedBox(
       height: AppSpacing.s36,
       child: ListView.separated(
         padding: AppPadding.screenHorizontal,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) => CustomTagCard(
-          tag: controller.tags[index],
-          onTap: (isSelect) =>
-              controller.selectTag(controller.tags[index], isSelect),
+          tag: tags[index],
+          onTap: (isSelect) => controller.selectTag(tags[index], isSelect),
         ),
-        itemCount: controller.tags.length,
+        itemCount: tags.length,
         separatorBuilder: (context, index) => AppGap.h16,
       ),
     );

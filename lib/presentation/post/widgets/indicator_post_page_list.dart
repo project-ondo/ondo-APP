@@ -80,7 +80,7 @@ class _IndicatorPostPageListState extends State<IndicatorPostPageList> {
                   ),
                   children: List.generate(
                     slice.length,
-                        (itemIndex) => slice[itemIndex],
+                    (itemIndex) => slice[itemIndex],
                   ),
                 ),
               );
@@ -100,6 +100,7 @@ class _IndicatorPostPageListState extends State<IndicatorPostPageList> {
             );
           },
         ),
+        AppGap.v16,
       ],
     );
   }

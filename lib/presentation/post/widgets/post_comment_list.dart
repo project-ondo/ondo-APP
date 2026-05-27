@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
@@ -39,67 +37,72 @@ class _PostCommentListState extends State<PostCommentList> {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 420,
-      child: Column(
-        children: [
-          _title(),
-          AppGap.v16,
-          PostCommentCreateField(
-            controller: controller.commentController,
-            authorName: "김유찬", //TODO : 앱 사용자 정보를 가지는 Store가 정의되면 불러오기
-            profileUrl: null,
-            submit: (m) {
-              controller.createComment(m);
-            },
-          ),
-          AppGap.v16,
-          Expanded(
-            child: Obx(
-              () => PageView.builder(
-                controller: _pageController,
-                onPageChanged: (value) {
-                  curIndex.value = value;
+      child: Obx(
+        () {
+          final list = controller.comments;
+          final pageCount = (list.length / 4).ceil();
+
+          return Column(
+            children: [
+              _title(),
+              AppGap.v16,
+              PostCommentCreateField(
+                controller: controller.commentController,
+                authorName: "김유찬", //TODO : 앱 사용자 정보를 가지는 Store가 정의되면 불러오기
+                profileUrl: null,
+                submit: (m) {
+                  controller.createComment(m);
                 },
-                itemCount: (controller.comments.length / 4).ceil(),
-                itemBuilder: (context, pIndex) => Column(
-                  mainAxisSize: .min,
-                  spacing: AppSpacing.s16,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: List.generate(
-                    4,
-                    (iIndex) {
-                      final itemIndex = (pIndex * 4) + iIndex;
-                      if (itemIndex >= controller.comments.length) {
-                        return Spacer();
-                      }
-                      final comment = controller.comments[itemIndex];
-                      return Expanded(
-                        child: PostCommentCard(
-                          comment: comment,
-                        ),
-                      );
-                    },
+              ),
+              AppGap.v16,
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: (value) {
+                    curIndex.value = value;
+                  },
+                  itemCount: pageCount,
+                  itemBuilder: (context, pIndex) => Column(
+                    spacing: AppSpacing.s16,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: List.generate(
+                      4,
+                      (iIndex) {
+                        final itemIndex = (pIndex * 4) + iIndex;
+                        if (itemIndex >= controller.comments.length) {
+                          return Spacer();
+                        }
+                        final comment = controller.comments[itemIndex];
+                        return Expanded(
+                          child: PostCommentCard(
+                            comment: comment,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
-          ),
-          AppGap.v16,
-          ValueListenableBuilder(
-            valueListenable: curIndex,
-            builder: (context, value, _) => PostListIndicator(
-              currentPage: value,
-              totalPage: (controller.comments.length / 4).ceil(),
-              onTap: (value) {
-                _pageController.animateToPage(
-                  value,
-                  duration: Duration(milliseconds: 300),
-                  curve: Curves.ease,
-                );
-              },
-            ),
-          ),
-          AppGap.v16,
-        ],
+
+              AppGap.v16,
+              ValueListenableBuilder(
+                valueListenable: curIndex,
+                builder: (context, value, _) => PostListIndicator(
+                  currentPage: value,
+                  totalPage: pageCount,
+                  onTap: (value) {
+                    _pageController.animateToPage(
+                      value,
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.ease,
+                    );
+                  },
+                ),
+              ),
+              AppGap.v16,
+            ],
+          );
+        },
       ),
     );
   }

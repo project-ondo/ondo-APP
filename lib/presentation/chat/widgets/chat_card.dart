@@ -2,25 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
 import 'package:ondo/core/utils/app_date_utils.dart';
 
 class ChatCard extends StatelessWidget {
-  const ChatCard({
+  const ChatCard.other({
     super.key,
-    required this.isMe,
     required this.text,
-    this.isRead = false,
-    this.sendAt,
-    this.otherName,
-    this.otherProfile,
-  });
+    required this.sendAt,
+    required this.otherName,
+    required this.profileImgUrl,
+  }) : isMe = false,
+       isRead = false;
+
+  const ChatCard.my({
+    super.key,
+    required this.text,
+    required this.isRead,
+  }) : isMe = true,
+       sendAt = null,
+       otherName = null,
+       profileImgUrl = null;
 
   final bool isMe;
   final String text;
 
-  /// 내가 보낸 메시지가 상대방에게 읽혔는지 여부 (isMe == true 일 때만 사용)
   final bool isRead;
-  final Widget? otherProfile;
+  final String? profileImgUrl;
   final String? otherName;
   final DateTime? sendAt;
 
@@ -68,24 +76,25 @@ class ChatCard extends StatelessWidget {
     ],
   );
 
-  Widget _profile() => otherProfile ?? const SizedBox.shrink();
+  Widget _profile() => profileImgUrl != null
+      ? CustomProfileCircle(
+          radius: AppSpacing.s36,
+          imageUrl: profileImgUrl,
+        )
+      : SizedBox.shrink();
 
-  Widget _card() => ConstrainedBox(
+  Widget _card() => Container(
     constraints: BoxConstraints(maxWidth: 300),
-    child: Card(
+    decoration: BoxDecoration(
       color: isMe ? AppColors.primary : AppColors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: isMe ? AppRadius.myChat : AppRadius.otherChat,
-      ),
-      child: Padding(
-        padding: AppPadding.chatPadding,
-        child: Text(
-          text,
-          softWrap: true,
-          style: AppTextStyles.textMedium(
-            textColor: isMe ? AppColors.white : AppColors.black,
-          ),
-        ),
+      borderRadius: isMe ? AppRadius.myChat : AppRadius.otherChat,
+    ),
+    padding: AppPadding.chatPadding,
+    child: Text(
+      text,
+      softWrap: true,
+      style: AppTextStyles.textMedium(
+        textColor: isMe ? AppColors.white : AppColors.black,
       ),
     ),
   );

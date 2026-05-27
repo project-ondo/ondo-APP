@@ -39,11 +39,12 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     child: Column(
       children: [
         Expanded(
-          child: Obx(
-            () => controller.viewChatList.isNotEmpty
-                ? _chatList()
-                : _noChatIcon(),
-          ),
+          child: Obx(() {
+            final lastReadId = controller.opponentLastReadMessageId.value;
+            return controller.viewChatList.isNotEmpty
+                ? _chatList(lastReadId)
+                : _noChatIcon();
+          }),
         ),
         Obx(
           () => controller.isOpponentTyping.value
@@ -54,29 +55,24 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     ),
   );
 
-  Widget _chatList() => ListView.builder(
+  Widget _chatList(int lastReadId) => ListView.builder(
     controller: controller.scrollController,
     reverse: true,
     itemBuilder: (context, index) {
       final chat = controller.viewChatList[index];
       if (chat.isMe) {
-        return Obx(() {
-          final isRead =
-              chat.messageId != null &&
-              chat.messageId! <= controller.opponentLastReadMessageId.value;
-          return _myChat(chat.content, isRead: isRead);
-        });
+        final isRead =
+            chat.messageId != null && chat.messageId! <= lastReadId;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            ChatCard(isMe: true, text: chat.content, isRead: isRead),
+          ],
+        );
       }
       return _otherChat(chat.content, chat.createdAt);
     },
     itemCount: controller.viewChatList.length,
-  );
-
-  Widget _myChat(String text, {bool isRead = false}) => Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-    children: [
-      ChatCard(isMe: true, text: text, isRead: isRead),
-    ],
   );
 
   Widget _otherChat(String text, DateTime createdAt) => Row(

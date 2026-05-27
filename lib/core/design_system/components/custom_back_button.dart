@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/design_system/app_shadow.dart';
 
 import '../app_colors.dart';
 import '../app_icon.dart';
@@ -32,12 +33,7 @@ class CustomBackButton extends StatelessWidget {
       padding: AppPadding.topBar,
       decoration: BoxDecoration(
         boxShadow: [
-          BoxShadow(
-            color: Color(0x05781F07),
-            blurRadius: AppSpacing.s16,
-            offset: Offset(0, 16),
-            spreadRadius: 0,
-          ),
+          AppShadow.barShadow,
         ],
       ),
       child: Row(

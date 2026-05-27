@@ -82,7 +82,7 @@ class ChatList extends GetView<ChatMainController> {
             }
             return ChatRoomCard(
               onTap: () => controller.enterChatRoom(index),
-              chatInfo: list[index],
+              chat: list[index],
             );
           },
         );

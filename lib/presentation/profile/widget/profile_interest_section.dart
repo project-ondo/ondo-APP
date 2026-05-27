@@ -21,12 +21,16 @@ class ProfileInterestSection extends StatelessWidget {
           style: AppTextStyles.titleSm16(textColor: AppColors.gray90),
         ),
         AppGap.v16,
-        Wrap(
-          spacing: AppSpacing.s10,
-          runSpacing: AppSpacing.s8,
-          children: interests
-              .map((e) => ProfileInterestChip(name: e))
-              .toList(),
+        Row(
+          children: [
+            Wrap(
+              spacing: AppSpacing.s10,
+              runSpacing: AppSpacing.s8,
+              children: interests
+                  .map((e) => ProfileInterestChip(name: e))
+                  .toList(),
+            ),
+          ],
         ),
       ],
     );

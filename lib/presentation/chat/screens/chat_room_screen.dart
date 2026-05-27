@@ -41,8 +41,9 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
         Expanded(
           child: Obx(() {
             final lastReadId = controller.opponentLastReadMessageId.value;
+            final opponentProfileUrl = controller.opponentProfileImageUrl.value;
             return controller.viewChatList.isNotEmpty
-                ? _chatList(lastReadId)
+                ? _chatList(lastReadId, opponentProfileUrl)
                 : _noChatIcon();
           }),
         ),
@@ -55,7 +56,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     ),
   );
 
-  Widget _chatList(int lastReadId) => ListView.builder(
+  Widget _chatList(int lastReadId, String opponentProfileUrl) => ListView.builder(
     controller: controller.scrollController,
     reverse: true,
     itemBuilder: (context, index) {
@@ -70,25 +71,21 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
           ],
         );
       }
-      return _otherChat(chat.content, chat.createdAt);
+      return _otherChat(chat.content, chat.createdAt, opponentProfileUrl);
     },
     itemCount: controller.viewChatList.length,
   );
 
-  Widget _otherChat(String text, DateTime createdAt) => Row(
+  Widget _otherChat(String text, DateTime createdAt, String opponentProfileUrl) => Row(
     mainAxisAlignment: MainAxisAlignment.start,
     children: [
       ChatCard(
         isMe: false,
         text: text,
         otherName: controller.opponentDisplayName,
-        otherProfile: Obx(
-          () => CustomProfileCircle(
-            radius: AppSpacing.s36,
-            imageUrl: controller.opponentProfileImageUrl.value.isEmpty
-                ? null
-                : controller.opponentProfileImageUrl.value,
-          ),
+        otherProfile: CustomProfileCircle(
+          radius: AppSpacing.s36,
+          imageUrl: opponentProfileUrl.isEmpty ? null : opponentProfileUrl,
         ),
         sendAt: createdAt,
       ),

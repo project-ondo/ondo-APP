@@ -10,12 +10,12 @@ import 'package:ondo/domain/entities/chat/chat_entity.dart';
 @immutable
 class ChatRoomCard extends StatelessWidget {
   final ValueNotifier<bool> bookmark;
-  final ChatEntity chatInfo;
+  final ChatEntity chat;
   final VoidCallback? onTap;
 
   ChatRoomCard({
     super.key,
-    required this.chatInfo,
+    required this.chat,
     this.onTap,
     //TODO : 북마크 api 이후 수정
   }) : bookmark = ValueNotifier(false);
@@ -35,7 +35,7 @@ class ChatRoomCard extends StatelessWidget {
             _profile(),
             AppGap.h16,
             Expanded(child: _content()),
-            if (chatInfo.unreadCount > 1) _newChatCountIcon(),
+            if (chat.unreadCount > 1) _newChatCountIcon(),
             _bookmarkIcon(),
           ],
         ),
@@ -56,19 +56,19 @@ class ChatRoomCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
-            chatInfo.opponentDisplayName,
+            chat.opponentDisplayName,
             style: AppTextStyles.caption(textColor: AppColors.gray60),
           ),
           Text(
-            AppDateUtils.timeAgo(chatInfo.lastMessageAt),
+            AppDateUtils.timeAgo(chat.lastMessageAt),
             style: AppTextStyles.caption(textColor: AppColors.gray60),
           ),
         ],
       ),
       Text(
-        chatInfo.lastMessagePreview,
+        chat.lastMessagePreview,
         style: AppTextStyles.caption(
-          textColor: chatInfo.unreadCount != 0
+          textColor: chat.unreadCount != 0
               ? AppColors.gray90
               : AppColors.gray60,
         ),
@@ -81,7 +81,7 @@ class ChatRoomCard extends StatelessWidget {
   Widget _newChatCountIcon() => Padding(
     padding: AppPadding.between,
     child: Text(
-      "+${chatInfo.unreadCount}",
+      "+${chat.unreadCount}",
       style: AppTextStyles.caption(textColor: AppColors.primary),
     ),
   );

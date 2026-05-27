@@ -6,7 +6,6 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
-import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/presentation/notification/controllers/notification_controller.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
@@ -19,19 +18,6 @@ import '../widgets/report_notification_card.dart';
 class NotificationScreen extends GetView<NotificationController> {
   const NotificationScreen({super.key});
 
-  void _showNotificationDeleteDialog() => Get.dialog(
-    CustomAlertDialog(
-      title: "알림",
-      comment: "정말 모든 알림을 삭제하시겠어요?",
-      actionLeft: () => Get.back(),
-      actionRight: () {
-        controller.clear();
-        Get.back();
-      },
-      rightActionText: "삭제",
-    ),
-  );
-
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
@@ -39,7 +25,6 @@ class NotificationScreen extends GetView<NotificationController> {
         children: [
           _topBar(),
           Expanded(child: _body()),
-          AppGap.v16,
         ],
       ),
     );
@@ -50,7 +35,7 @@ class NotificationScreen extends GetView<NotificationController> {
     itemBuilder: (context) => [
       PopupMenuItem(
         padding: AppPadding.popupManuButton,
-        onTap: _showNotificationDeleteDialog,
+        onTap: controller.deleteAllNotification,
         height: double.minPositive,
         child: Align(
           alignment: Alignment.center,
@@ -64,11 +49,12 @@ class NotificationScreen extends GetView<NotificationController> {
   );
 
   Widget _body() => Container(
-    color: AppColors.background,
+    color: AppColors.white,
+    padding: AppPadding.screenHorizontal,
     child: Column(
       children: [
         _Title(),
-
+        AppGap.v16,
         Obx(
           () => Expanded(
             child: controller.viewNotificationList.isNotEmpty
@@ -76,6 +62,7 @@ class NotificationScreen extends GetView<NotificationController> {
                 : _noMessageIcon(),
           ),
         ),
+        AppGap.v16,
       ],
     ),
   );
@@ -100,31 +87,26 @@ class NotificationScreen extends GetView<NotificationController> {
 class _Title extends GetView<NotificationController> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.white,
-      padding: AppPadding.screenHorizontal,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AppGap.v8,
-          Row(
-            children: [
-              Text(
-                "알림",
-                style: AppTextStyles.titleSm16(textColor: AppColors.gray90),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        AppGap.v8,
+        Row(
+          children: [
+            Text(
+              "알림",
+              style: AppTextStyles.titleSm16(textColor: AppColors.gray90),
+            ),
+            AppGap.h12,
+            Obx(
+              () => Text(
+                "${controller.viewNotificationList.length}",
+                style: AppTextStyles.textMedium(textColor: AppColors.gray60),
               ),
-              AppGap.h12,
-              Obx(
-                () => Text(
-                  "${controller.viewNotificationList.length}",
-                  style: AppTextStyles.textMedium(textColor: AppColors.gray60),
-                ),
-              ),
-            ],
-          ),
-          AppGap.v16,
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -133,78 +115,65 @@ class _Title extends GetView<NotificationController> {
 class _NotificationPageList extends GetView<NotificationController> {
   final ValueNotifier<int> curIndex = ValueNotifier(0);
 
-  int getTotalPage() => (controller.viewNotificationList.length / 11).ceil();
-
-  int getStartIndex(int index) => index * 11;
-
-  int getLastIndex(int index) =>
-      min(getStartIndex(index) + 11, controller.viewNotificationList.length);
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: AppColors.white,
-      padding: AppPadding.screenHorizontal,
-      child: Column(
-        children: [
-          Expanded(
-            child: PageView.builder(
-              itemCount: getTotalPage(),
-              onPageChanged: (value) => curIndex.value = value,
-              itemBuilder: (context, index) =>
-                  _notificationList(getStartIndex(index), getLastIndex(index)),
-            ),
-          ),
-          AppGap.v16,
-          _indicator(),
-        ],
-      ),
-    );
-  }
+    final list = controller.viewNotificationList;
+    final pageCount = (list.length / 11).ceil();
+    return Column(
+      children: [
+        Expanded(
+          child: PageView.builder(
+            itemCount: pageCount,
+            onPageChanged: (value) => curIndex.value = value,
+            itemBuilder: (context, pageIndex) {
+              final slice = list.sublist(
+                pageIndex * 11,
+                min((pageIndex + 1) * 11, list.length),
+              );
 
-  Widget _notificationList(int startIndex, int lastIndex) {
-    final subNotifications = controller.viewNotificationList.sublist(
-      startIndex,
-      lastIndex,
-    );
-    return ListView.separated(
-      shrinkWrap: true,
-      itemCount: subNotifications.length,
-      itemBuilder: (context, index) {
-        final notification = subNotifications[index];
-
-        if (notification.type == NotificationState.reported.title) {
-          return ReportNotificationCard(
-            notificationInfo: notification,
-          );
-        }
-
-        return NotificationCard(
-          notificationInfo: notification,
-        );
-      },
-      separatorBuilder: (context, index) => AppGap.v16,
-    );
-  }
-
-  Widget _indicator() => ValueListenableBuilder(
-    valueListenable: curIndex,
-    builder: (_, _, _) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(
-          (controller.viewNotificationList.length / 11).ceil(),
-          (index) => Padding(
-            padding: AppPadding.indicatorSpacing,
-            child: Text(
-              "${index + 1}",
-              style: AppTextStyles.pageIndicator(
-                isCurrent: curIndex.value == index,
-              ),
-            ),
+              return ListView.separated(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: slice.length,
+                separatorBuilder: (context, index) => AppGap.v16,
+                itemBuilder: (context, index) {
+                  final notification = slice[index];
+                  if (notification.type == NotificationState.reported.title) {
+                    return ReportNotificationCard(
+                      notificationInfo: notification,
+                    );
+                  }
+                  return NotificationCard(
+                    notificationInfo: notification,
+                  );
+                },
+              );
+            },
           ),
         ),
-      );
-    },
-  );
+        AppGap.v16,
+        ValueListenableBuilder(
+          valueListenable: curIndex,
+          builder: (_, _, _) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                pageCount,
+                (index) => Padding(
+                  padding: AppPadding.indicatorSpacing,
+                  child: Text(
+                    "${index + 1}",
+                    style: AppTextStyles.pageIndicator(
+                      isCurrent: curIndex.value == index,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+        AppGap.v16,
+      ],
+    );
+  }
 }

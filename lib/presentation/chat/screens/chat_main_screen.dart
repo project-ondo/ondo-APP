@@ -18,7 +18,6 @@ class ChatMainScreen extends GetView<ChatMainController> {
         pageId: "chat",
         mainPage: Container(
           color: AppColors.background,
-          padding: AppPadding.screenHorizontal,
           child: Column(
             children: [
               AppGap.v16,
@@ -47,6 +46,7 @@ class TagList extends GetView<ChatMainController> {
     return SizedBox(
       height: AppSpacing.s36,
       child: ListView.separated(
+        padding: AppPadding.screenHorizontal,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) => CustomTagCard(
           tag: controller.tags[index],
@@ -65,28 +65,35 @@ class ChatList extends GetView<ChatMainController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () {
-        final list = controller.viewChatRoomList;
-        final isLoadingMore = controller.isLoadingMore.value;
-        return ListView.separated(
-          controller: controller.scrollController,
-          itemCount: list.length + (isLoadingMore ? 1 : 0),
-          separatorBuilder: (context, index) => AppGap.v4,
-          itemBuilder: (context, index) {
-            if (index == list.length) {
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(child: CircularProgressIndicator()),
+    return Padding(
+      padding: AppPadding.screenHorizontal,
+      child: Obx(
+        () {
+          final list = controller.viewChatRoomList;
+          final isLoadingMore = controller.isLoadingMore.value;
+          return ListView.separated(
+            controller: controller.scrollController,
+            itemCount: list.length + (isLoadingMore ? 1 : 0),
+            separatorBuilder: (context, index) => AppGap.v4,
+            itemBuilder: (context, index) {
+              if (index == list.length) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppGap.v16,
+                    CircularProgressIndicator(),
+                    AppGap.v16,
+                  ],
+                );
+              }
+              return ChatRoomCard(
+                onTap: () => controller.enterChatRoom(index),
+                chatInfo: list[index],
               );
-            }
-            return ChatRoomCard(
-              onTap: () => controller.enterChatRoom(index),
-              chatInfo: list[index],
-            );
-          },
-        );
-      },
+            },
+          );
+        },
+      ),
     );
   }
 }

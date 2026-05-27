@@ -7,10 +7,16 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/presentation/profile/widget/rating_stars.dart';
 
 class UserReviewCard extends StatelessWidget {
-  const UserReviewCard({super.key, required this.userName, required this.userReview});
+  const UserReviewCard({
+    super.key,
+    required this.userName,
+    required this.userReview,
+    required this.stars,
+  });
 
   final String userName;
   final String userReview;
+  final int stars;
 
   @override
   Widget build(BuildContext context) {
@@ -23,8 +29,8 @@ class UserReviewCard extends StatelessWidget {
           //이미지 받음
           SvgPicture.asset(
             AppIcon.defaultProfile.path,
-            width: 35,
-            height: 35,
+            width: AppSpacing.s36,
+            height: AppSpacing.s36,
           ),
           AppGap.h12,
           Expanded(
@@ -40,8 +46,8 @@ class UserReviewCard extends StatelessWidget {
                       style: AppTextStyles.caption(textColor: AppColors.gray60),
                     ),
                     AppGap.h16,
-                    //별점 개수 받음
-                    RatingStars(currentUserStars: 3),
+                    //별 개수 받음
+                    RatingStars(currentUserStars: stars),
                   ],
                 ),
                 //리뷰내용 받음

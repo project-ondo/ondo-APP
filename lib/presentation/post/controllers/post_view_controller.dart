@@ -290,48 +290,41 @@ class PostViewController extends GetxController {
     }
   }
 
-  Future<void> deletePost() async {
-    bool confirm = false;
-
-    await Get.dialog(
+  void deletePost() {
+    Get.dialog(
       CustomAlertDialog(
         title: "알림",
         comment: "정말 게시물 삭제하시겠어요?",
         actionLeft: () {
-          confirm = false;
           Get.back();
         },
-        actionRight: () {
-          confirm = true;
+        actionRight: () async {
+          isLoading.value = true;
+          errorMessage.value = '';
+
+          try {
+            debugPrint(
+              '[PostViewController] 게시물 삭제 요청 - postId: $postId',
+            );
+
+            await _deleteUseCase(postId);
+
+            debugPrint('[PostViewController] 게시물 삭제 성공');
+            Get.find<CommunityController>().removePost(postId);
+            Get.back(closeOverlays: true);
+          } catch (e) {
+            debugPrint(
+              '[PostViewController] 게시물 삭제 실패 - error: $e',
+            );
+
+            errorMessage.value = e.toString();
+          } finally {
+            isLoading.value = false;
+          }
         },
         rightActionText: "삭제",
       ),
     );
-
-    if (!confirm) return;
-
-    isLoading.value = true;
-    errorMessage.value = '';
-
-    try {
-      debugPrint(
-        '[PostViewController] 게시물 삭제 요청 - postId: $postId',
-      );
-
-      await _deleteUseCase(postId);
-
-      debugPrint('[PostViewController] 게시물 삭제 성공');
-
-      Get.find<CommunityController>().removePost(postId);
-    } catch (e) {
-      debugPrint(
-        '[PostViewController] 게시물 삭제 실패 - error: $e',
-      );
-
-      errorMessage.value = e.toString();
-    } finally {
-      isLoading.value = false;
-    }
   }
 
   Future<void> createComment(String content) async {

@@ -42,7 +42,7 @@ class AppGap {
 
   static const SizedBox v4 = SizedBox(height: AppSpacing.s4);
   static const SizedBox v6 = SizedBox(height: AppSpacing.s6);
-  static const SizedBox v7 = SizedBox(height: AppSpacing.s6);
+  static const SizedBox v7 = SizedBox(height: AppSpacing.s7);
   static const SizedBox v8 = SizedBox(height: AppSpacing.s8);
   static const SizedBox v10 = SizedBox(height: AppSpacing.s10);
   static const SizedBox v12 = SizedBox(height: AppSpacing.s12);

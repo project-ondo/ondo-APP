@@ -47,7 +47,7 @@ class HomeProfileList extends StatelessWidget {
 
           return HomeProfileCard(
             publicId: chat.publicId,
-            skill: chat.interests.first,
+            skill: chat.interests.firstOrNull ?? '',
             name: chat.displayName,
             rating: chat.ratingCount,
           );

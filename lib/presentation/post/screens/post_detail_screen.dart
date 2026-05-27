@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
@@ -58,7 +57,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   void _goToEditScreen() {
     Get.delete<CommunityPostCreateController>(force: true);
     Get.lazyPut(
-          () => CommunityPostCreateController(
+      () => CommunityPostCreateController(
         createUseCase: Get.find<CreatePostUseCase>(),
         updateUseCase: Get.find<UpdatePostUseCase>(),
         isEditMode: true,
@@ -80,7 +79,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
             ..._top(),
             AppGap.v16,
             _body(),
-            _footer(),
+            RelatedPostList(),
           ],
         ),
       ),
@@ -106,17 +105,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         PostBody(),
         AppGap.v24,
         PostCommentList(),
-      ],
-    ),
-  );
-
-  Widget _footer() => Container(
-    color: AppColors.background,
-    padding: AppPadding.screenHorizontal,
-    child: Column(
-      children: [
-        AppGap.v16,
-        RelatedPostList(),
       ],
     ),
   );

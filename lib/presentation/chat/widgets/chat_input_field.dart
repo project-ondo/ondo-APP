@@ -19,7 +19,17 @@ class ChatInputField extends GetView<ChatRoomController> {
   Widget build(BuildContext context) {
     return Container(
       padding: AppPadding.textField,
-      color: AppColors.white,
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadowGray,
+            offset: const Offset(0, -16),
+            blurRadius: 16.0,
+            spreadRadius: 0.0,
+          ),
+        ],
+      ),
       child: Row(
         children: [
           Expanded(

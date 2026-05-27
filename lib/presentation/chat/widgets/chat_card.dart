@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
 import 'package:ondo/core/utils/app_date_utils.dart';
-
-import '../../../core/design_system/components/custom_profile_circle.dart';
 
 class ChatCard extends StatelessWidget {
   const ChatCard.other({
@@ -85,6 +84,7 @@ class ChatCard extends StatelessWidget {
       : SizedBox.shrink();
 
   Widget _card() => Container(
+    constraints: BoxConstraints(maxWidth: 300),
     decoration: BoxDecoration(
       color: isMe ? AppColors.primary : AppColors.white,
       borderRadius: isMe ? AppRadius.myChat : AppRadius.otherChat,

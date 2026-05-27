@@ -80,13 +80,16 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
                     chat.messageId != null && chat.messageId! <= lastReadId;
                 return ChatCard.my(text: text, isRead: isRead);
               })
-            : ChatCard.other(
-                text: text,
-                otherName: controller.opponentDisplayName,
-                profileImgUrl: controller.opponentProfileImageUrl.value.isEmpty
-                    ? null
-                    : controller.opponentProfileImageUrl.value,
-                sendAt: chat.createdAt,
+            : Obx(
+                () => ChatCard.other(
+                  text: text,
+                  otherName: controller.opponentDisplayName,
+                  profileImgUrl:
+                      controller.opponentProfileImageUrl.value.isEmpty
+                      ? null
+                      : controller.opponentProfileImageUrl.value,
+                  sendAt: chat.createdAt,
+                ),
               ),
       ],
     );

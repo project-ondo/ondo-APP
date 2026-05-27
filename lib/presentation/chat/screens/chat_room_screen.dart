@@ -8,6 +8,7 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/chat/controllers/chat_room_controller.dart';
+import 'package:ondo/presentation/chat/view_models/chat_message_view_model.dart';
 import 'package:ondo/presentation/chat/widgets/chat_card.dart';
 import 'package:ondo/presentation/chat/widgets/chat_input_field.dart';
 
@@ -54,50 +55,42 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     ),
   );
 
-  Widget _chatList() => ListView.builder(
-    controller: controller.scrollController,
-    reverse: true,
-    itemBuilder: (context, index) {
-      final chat = controller.viewChatList[index];
-      if (chat.isMe) {
-        return Obx(() {
-          final isRead =
-              chat.messageId != null &&
-              chat.messageId! <= controller.opponentLastReadMessageId.value;
-          return _myChat(chat.content, isRead: isRead);
-        });
-      }
-      return _otherChat(chat.content, chat.createdAt);
-    },
-    itemCount: controller.viewChatList.length,
+  Widget _chatList() => Obx(
+    () => ListView.builder(
+      controller: controller.scrollController,
+      reverse: true,
+      itemBuilder: (context, index) {
+        final chat = controller.viewChatList[index];
+        return _chatBubble(chat);
+      },
+      itemCount: controller.viewChatList.length,
+    ),
   );
 
-  Widget _myChat(String text, {bool isRead = false}) => Row(
-    mainAxisAlignment: MainAxisAlignment.end,
-    children: [
-      ChatCard(isMe: true, text: text, isRead: isRead),
-    ],
-  );
-
-  Widget _otherChat(String text, DateTime createdAt) => Row(
-    mainAxisAlignment: MainAxisAlignment.start,
-    children: [
-      ChatCard(
-        isMe: false,
-        text: text,
-        otherName: controller.opponentDisplayName,
-        otherProfile: Obx(
-          () => CustomProfileCircle(
-            radius: AppSpacing.s36,
-            imageUrl: controller.opponentProfileImageUrl.value.isEmpty
-                ? null
-                : controller.opponentProfileImageUrl.value,
-          ),
-        ),
-        sendAt: createdAt,
-      ),
-    ],
-  );
+  Widget _chatBubble(ChatMessageViewModel chat) {
+    final bool isMe = chat.isMe;
+    final String text = chat.content;
+    return Row(
+      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+      children: [
+        isMe
+            ? Obx(() {
+                final lastReadId = controller.opponentLastReadMessageId.value;
+                final isRead =
+                    chat.messageId != null && chat.messageId! <= lastReadId;
+                return ChatCard.my(text: text, isRead: isRead);
+              })
+            : ChatCard.other(
+                text: text,
+                otherName: controller.opponentDisplayName,
+                profileImgUrl: controller.opponentProfileImageUrl.value.isEmpty
+                    ? null
+                    : controller.opponentProfileImageUrl.value,
+                sendAt: chat.createdAt,
+              ),
+      ],
+    );
+  }
 
   Widget _typingIndicator() => Padding(
     padding: AppPadding.chatMargin,
@@ -125,39 +118,39 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
 
   Widget _topBar() => Obx(
     () => CustomBackButton(
-    moreOptions: true,
-    useUserProfile: true,
-    backAction: controller.backChatRoom,
-    subtitle: controller.isOpponentViewing.value
-        ? '채팅 중'
-        : controller.isOpponentOnline.value
-            ? '온라인'
-            : null,
-    userInfo: (
-      CustomProfileCircle(
-        radius: 24,
-        imageUrl: controller.opponentProfileImageUrl.value.isEmpty
-            ? null
-            : controller.opponentProfileImageUrl.value,
+      moreOptions: true,
+      useUserProfile: true,
+      backAction: controller.backChatRoom,
+      subtitle: controller.isOpponentViewing.value
+          ? '채팅 중'
+          : controller.isOpponentOnline.value
+          ? '온라인'
+          : null,
+      userInfo: (
+        CustomProfileCircle(
+          radius: AppSpacing.s24,
+          imageUrl: controller.opponentProfileImageUrl.value.isEmpty
+              ? null
+              : controller.opponentProfileImageUrl.value,
+        ),
+        controller.opponentDisplayName,
       ),
-      controller.opponentDisplayName,
-    ),
-    itemBuilder: (context) => [
-      _customPopupMenu(
-        "커피챗 종료하기",
+      itemBuilder: (context) => [
+        _customPopupMenu(
+          "커피챗 종료하기",
 
-        ///종료 알림창 표시
-        controller.quitChat,
-      ),
-      _customPopupMenu(
-        "신고하기",
-        //신고 기능
-        () {
-          //TODO : 신고 기능
-        },
-      ),
-    ],
-  ),
+          ///종료 알림창 표시
+          controller.quitChat,
+        ),
+        _customPopupMenu(
+          "신고하기",
+          //신고 기능
+          () {
+            //TODO : 신고 기능
+          },
+        ),
+      ],
+    ),
   );
 
   PopupMenuEntry<String> _customPopupMenu(

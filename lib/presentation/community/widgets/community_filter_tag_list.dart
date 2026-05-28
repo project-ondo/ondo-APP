@@ -12,6 +12,7 @@ class CommunityFilterTagList extends GetView<CommunityController> {
     return SizedBox(
       height: AppSpacing.s36,
       child: ListView.separated(
+        padding: AppPadding.screenHorizontal,
         scrollDirection: Axis.horizontal,
         itemCount: controller.tags.length,
         separatorBuilder: (context, index) => AppGap.h16,

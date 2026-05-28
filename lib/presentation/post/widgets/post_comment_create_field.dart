@@ -6,8 +6,8 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_profile_circle.dart';
 
-class PostCreateField extends StatefulWidget {
-  const PostCreateField({
+class PostCommentCreateField extends StatefulWidget {
+  const PostCommentCreateField({
     super.key,
     required this.controller,
     required this.authorName,
@@ -21,10 +21,10 @@ class PostCreateField extends StatefulWidget {
   final Function(String m) submit;
 
   @override
-  State<PostCreateField> createState() => _PostCreateFieldState();
+  State<PostCommentCreateField> createState() => _PostCommentCreateFieldState();
 }
 
-class _PostCreateFieldState extends State<PostCreateField> {
+class _PostCommentCreateFieldState extends State<PostCommentCreateField> {
   bool enableSubmit = false;
   String text = "";
 
@@ -50,14 +50,14 @@ class _PostCreateFieldState extends State<PostCreateField> {
           AppGap.h16,
           Expanded(
             child: Column(
-              spacing: 6,
               crossAxisAlignment: .start,
               children: [
                 Text(
                   widget.authorName,
                   style: AppTextStyles.caption(textColor: AppColors.gray60),
                 ),
-                _commentInputField(),
+                AppGap.v6,
+                Expanded(child: _commentInputField()),
               ],
             ),
           ),

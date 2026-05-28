@@ -12,13 +12,12 @@ import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/user/user_search_use_case.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
+import 'package:ondo/presentation/home/controllers/base_home_controller.dart';
 
-class HomeController extends GetxController {
+class HomeController extends GetxController with BaseHomeController {
   final RxList<HomeRecentPopularPostInfo> ranks =
       <HomeRecentPopularPostInfo>[].obs;
   final List<PostEntity> _cachePostList = [];
-  final RxList<PostEntity> viewPostList = <PostEntity>[].obs;
-  final RxList<UserEntity> viewUserList = <UserEntity>[].obs;
   final List<UserEntity> _cacheProfileList = [];
 
   ///usecase 모음
@@ -181,10 +180,8 @@ class HomeController extends GetxController {
   }
 }
 
-class HomeSearchResultController extends GetxController {
-  final RxList<UserEntity> viewUserList = <UserEntity>[].obs;
-  final RxList<PostEntity> viewPostList = <PostEntity>[].obs;
-
+class HomeSearchResultController extends GetxController
+    with BaseHomeController {
   ///홈 검색 결과 업데이트
   void updateResult(
     Iterable<PostEntity> posts,

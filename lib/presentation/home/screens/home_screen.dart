@@ -6,8 +6,9 @@ import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
 import 'package:ondo/presentation/home/screens/home_search_screen.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_list.dart';
-import 'package:ondo/presentation/home/widgets/home_recommend_chat_list.dart';
-import 'package:ondo/presentation/home/widgets/home_recommend_post_list.dart';
+import 'package:ondo/presentation/home/widgets/home_recommend_profile_list.dart';
+import 'package:ondo/presentation/post/widgets/base_post_list.dart';
+import 'package:ondo/presentation/post/widgets/post_item.dart';
 import '../../search/widgets/main_top_search_bar.dart';
 
 class HomeScreen extends GetView<HomeController> {
@@ -19,15 +20,7 @@ class HomeScreen extends GetView<HomeController> {
       backgroundColor: AppColors.background,
       body: MainTopSearchBar(
         pageId: "home",
-        mainPage: SingleChildScrollView(
-          child: Column(
-            children: [
-              _highSection(),
-
-              _lowSection(),
-            ],
-          ),
-        ),
+        mainPage: SingleChildScrollView(child: _body()),
         resultPageBuilder: (state) {
           if (state.query.trim().isEmpty && state.tags.isEmpty) return null;
           controller.search(query: state.query, tags: state.tags.toList());
@@ -37,33 +30,40 @@ class HomeScreen extends GetView<HomeController> {
     );
   }
 
-  Widget _highSection() {
-    return Container(
-      decoration: BoxDecoration(color: AppColors.white),
-      child: Padding(
-        padding: AppPadding.screenHorizontal,
-        child: Column(
-          children: [
-            HomePostRankList(),
-            AppGap.v16,
-          ],
+  Widget _body() {
+    return Column(
+      children: [
+        HomePostRankList(),
+        AppGap.v16,
+        HomeProfileList(title: "커피챗 추천", controller: controller),
+        AppGap.v16,
+        PostGridList(
+          title: "추천 게시물",
+          list: controller.viewPostList
+              .map(
+                (post) => PostItem(
+                  postId: post.postId,
+                  skills: post.tags,
+                  title: post.title,
+                  author: post.authorName,
+                  bookmarks: post.bookmarkCount,
+                  favorites: post.likeCount,
+                  createAt: post.createAt,
+                  bookmarkAction: (isBookmark, total) {
+                    //TODO : 북마크 api 개발 이후 구현
+                  },
+                  heartAction: (isFavorite, total) {
+                    controller.toggleLike(post.postId, isFavorite);
+                  },
+                  initialBookmark: false,
+                  initialFavorite: post.isFavorite,
+                  isMy: true,
+                ),
+              )
+              .toList(),
         ),
-      ),
-    );
-  }
-
-  Widget _lowSection() {
-    return Padding(
-      padding: AppPadding.screenHorizontal,
-      child: Column(
-        children: [
-          AppGap.v16,
-          HomeRecommendChatList(),
-          AppGap.v16,
-          HomeRecommendPostList(),
-          AppGap.v16,
-        ],
-      ),
+        AppGap.v16,
+      ],
     );
   }
 }

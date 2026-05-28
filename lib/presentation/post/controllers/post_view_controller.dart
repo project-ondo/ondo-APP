@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/domain/entities/comment/comment_entity.dart';
 import 'package:ondo/domain/entities/post/post_detail_entity.dart';
 import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
@@ -11,11 +12,15 @@ import 'package:ondo/presentation/community/controllers/community_controller.dar
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
 
 import '../../../data/models/post/request/post_update_request_model.dart';
+import '../../../domain/usecases/post/create_post_usecase.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
 import '../../../domain/usecases/post/like_post_usecase.dart';
 import '../../../domain/usecases/post/unlike_post_usecase.dart';
 import '../../../domain/usecases/post/update_post_usecase.dart';
+import '../../community/controllers/community_post_create_screen_controller.dart';
+import '../../community/screens/community_post_create_screen.dart';
+import '../widgets/post_report_dialog.dart';
 
 class PostViewController extends GetxController {
   final int postId;
@@ -114,12 +119,6 @@ class PostViewController extends GetxController {
     }
 
     return initialIsFavorite;
-  }
-
-  @override
-  void onClose() {
-    commentController.dispose();
-    super.onClose();
   }
 
   Future<void> fetchPostDetail(int postId) async {
@@ -291,30 +290,41 @@ class PostViewController extends GetxController {
     }
   }
 
-  Future<void> deletePost() async {
-    isLoading.value = true;
-    errorMessage.value = '';
+  void deletePost() {
+    Get.dialog(
+      CustomAlertDialog(
+        title: "알림",
+        comment: "정말 게시물 삭제하시겠어요?",
+        actionLeft: () {
+          Get.back();
+        },
+        actionRight: () async {
+          isLoading.value = true;
+          errorMessage.value = '';
 
-    try {
-      debugPrint(
-        '[PostViewController] 게시물 삭제 요청 - postId: $postId',
-      );
+          try {
+            debugPrint(
+              '[PostViewController] 게시물 삭제 요청 - postId: $postId',
+            );
 
       await _deletePostUseCase(postId);
 
-      debugPrint('[PostViewController] 게시물 삭제 성공');
+            debugPrint('[PostViewController] 게시물 삭제 성공');
+            Get.find<CommunityController>().removePost(postId);
+            Get.back(closeOverlays: true);
+          } catch (e) {
+            debugPrint(
+              '[PostViewController] 게시물 삭제 실패 - error: $e',
+            );
 
-      Get.find<CommunityController>().removePost(postId);
-      Get.back();
-    } catch (e) {
-      debugPrint(
-        '[PostViewController] 게시물 삭제 실패 - error: $e',
-      );
-
-      errorMessage.value = e.toString();
-    } finally {
-      isLoading.value = false;
-    }
+            errorMessage.value = e.toString();
+          } finally {
+            isLoading.value = false;
+          }
+        },
+        rightActionText: "삭제",
+      ),
+    );
   }
 
   Future<void> createComment(String content) async {
@@ -362,5 +372,27 @@ class PostViewController extends GetxController {
         '[PostViewController] 댓글 삭제 실패 - error: $e',
       );
     }
+  }
+
+  void reportPost() {
+    Get.dialog(
+      PostReportDialog(),
+    );
+  }
+
+  void editPost() {
+    Get.delete<CommunityPostCreateController>(force: true);
+    Get.lazyPut(
+      () => CommunityPostCreateController(
+        createUseCase: Get.find<CreatePostUseCase>(),
+        updateUseCase: Get.find<UpdatePostUseCase>(),
+        isEditMode: true,
+        editPostId: postId,
+        initialTitle: title.value,
+        initialContent: bodyText.value,
+        initialTags: postTags.toList(),
+      ),
+    );
+    Get.to(() => CommunityPostCreateScreen());
   }
 }

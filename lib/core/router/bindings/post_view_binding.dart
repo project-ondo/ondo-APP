@@ -21,35 +21,17 @@ import '../../../domain/usecases/post/update_post_usecase.dart';
 
 import '../../../presentation/post/controllers/post_view_controller.dart';
 
-class PostBinding extends Bindings {
+class PostViewBinding extends Bindings {
   final int postId;
   final bool isFavorite;
 
-  PostBinding(
+  PostViewBinding(
     this.postId, [
     this.isFavorite = false,
   ]);
 
   @override
   void dependencies() {
-    // Post DataSource
-    Get.lazyPut<PostRemoteDatasource>(
-      () => PostRemoteDatasource(
-        Get.find<AuthClient>(),
-      ),
-    );
-
-    Get.lazyPut<PostLocalDatasource>(
-      () => PostLocalDatasource(),
-    );
-
-    // Post Repository
-    Get.lazyPut<PostRepositoryImpl>(
-      () => PostRepositoryImpl(
-        Get.find<PostRemoteDatasource>(),
-        Get.find<PostLocalDatasource>(),
-      ),
-    );
 
     // Post UseCases
     Get.lazyPut<GetPostDetailUseCase>(
@@ -76,30 +58,6 @@ class PostBinding extends Bindings {
       ),
     );
 
-    Get.lazyPut<LikePostUseCase>(
-      () => LikePostUseCase(
-        Get.find<PostRepositoryImpl>(),
-      ),
-    );
-
-    Get.lazyPut<UnlikePostUseCase>(
-      () => UnlikePostUseCase(
-        Get.find<PostRepositoryImpl>(),
-      ),
-    );
-
-    // 추가된 북마크 UseCase
-    Get.lazyPut<BookmarkPostUseCase>(
-      () => BookmarkPostUseCase(
-        Get.find<PostRepositoryImpl>(),
-      ),
-    );
-
-    Get.lazyPut<UnbookmarkPostUseCase>(
-      () => UnbookmarkPostUseCase(
-        Get.find<PostRepositoryImpl>(),
-      ),
-    );
 
     // Comment DataSource
     Get.lazyPut<CommentRemoteDataSource>(

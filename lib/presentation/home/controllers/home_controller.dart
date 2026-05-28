@@ -8,8 +8,9 @@ import 'package:ondo/domain/usecases/home/load_recommend_users_use_case.dart';
 import 'package:ondo/domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
+import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
-import 'package:ondo/domain/usecases/search/user_search_use_case.dart';
+import 'package:ondo/domain/usecases/user/user_search_use_case.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
 
 class HomeController extends GetxController {
@@ -24,6 +25,7 @@ class HomeController extends GetxController {
   final LoadRecommendPostsUseCase recommendPostsUseCase;
   final LoadRecommendUsersUseCase recommendUsersUseCase;
   final UserSearchUseCase userSearchUseCase;
+  final PostSearchUseCase postSearchUseCase;
   final LikePostUseCase likePostUseCase;
   final UnlikePostUseCase unlikePostUseCase;
   final SavePostLikeLocalUseCase savePostLikeLocalUseCase;
@@ -41,6 +43,7 @@ class HomeController extends GetxController {
     required this.unlikePostUseCase,
     required this.savePostLikeLocalUseCase,
     required this.getCachedLikedPostIdsUseCase,
+    required this.postSearchUseCase,
   });
 
   @override
@@ -157,18 +160,22 @@ class HomeController extends GetxController {
 
   void search({required String query, required List<String> tags}) async {
     final Set<UserEntity> userRes = {};
-    final Set<PostEntity> postRes = {};
 
     ///서버 유저 검색 api에서 user결과 실시간 표시
+    // TODO 구조 변경
     userRes.addAll(
       await userSearchUseCase.call(interests: tags, keyword: query),
     );
 
-    //TODO : 서버 게시물 검색 api 개발 이후 구현
+    final postResult = await postSearchUseCase(
+      keyword: query,
+      tags: tags,
+      sort: "latest",
+    );
 
     ///홈 검색 결과 표시 controller
     searchResultController.updateResult(
-      postRes,
+      postResult.content,
       userRes,
     );
   }
@@ -178,7 +185,7 @@ class HomeSearchResultController extends GetxController {
   final RxList<UserEntity> viewUserList = <UserEntity>[].obs;
   final RxList<PostEntity> viewPostList = <PostEntity>[].obs;
 
-  ///홈 검색 결과 업데이트
+  ///홈 검색 결과 업데이트ㅂ
   void updateResult(
     Iterable<PostEntity> posts,
     Iterable<UserEntity> profiles,

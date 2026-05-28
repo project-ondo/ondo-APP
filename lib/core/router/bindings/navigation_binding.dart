@@ -4,20 +4,21 @@ import 'package:ondo/core/router/bindings/chat_binding.dart';
 import 'package:ondo/core/router/bindings/community_binding.dart';
 import 'package:ondo/core/router/bindings/home_binding.dart';
 import 'package:ondo/core/router/bindings/notification_binding.dart';
+import 'package:ondo/core/router/bindings/post_binding.dart';
 import 'package:ondo/core/router/bindings/profile_binding.dart';
+import 'package:ondo/core/router/bindings/user_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/user/user_repository_impl.dart';
-import 'package:ondo/domain/usecases/search/user_search_use_case.dart';
+import 'package:ondo/domain/usecases/user/user_search_use_case.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
 import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
 
 class NavigationBinding extends Bindings {
-
   @override
   void dependencies() {
     Get.lazyPut<AuthRemoteDatasource>(
@@ -44,20 +45,8 @@ class NavigationBinding extends Bindings {
     Get.lazyPut<MainTopBarSearchController>(() => MainTopBarSearchController());
     Get.lazyPut(() => PostController());
 
-    /// user 관련 dataSource, repository 등록
-    Get.lazyPut<UserRemoteDatasource>(
-      () => UserRemoteDatasource(client: Get.find<AuthClient>()),
-    );
-    Get.lazyPut<UserRepositoryImpl>(
-      () => UserRepositoryImpl(
-        remoteDatasource: Get.find<UserRemoteDatasource>(),
-      ),
-    );
-
-    /// user 검색 usecase 등록
-    Get.lazyPut(
-      () => UserSearchUseCase(repository: Get.find<UserRepositoryImpl>()),
-    );
+    UserBinding().dependencies();
+    PostBinding().dependencies();
 
     /// 각 화면 Binding
     HomeBinding().dependencies();

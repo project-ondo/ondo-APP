@@ -9,9 +9,10 @@ import 'package:ondo/domain/usecases/home/load_recommend_posts_use_case.dart';
 import 'package:ondo/domain/usecases/home/load_recommend_users_use_case.dart';
 import 'package:ondo/domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
-import 'package:ondo/domain/usecases/search/user_search_use_case.dart';
+import 'package:ondo/domain/usecases/user/user_search_use_case.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
 
 import '../../../data/repositories/user/user_repository_impl.dart';
@@ -45,7 +46,7 @@ class HomeBinding extends Bindings {
 
     /// 좋아요 관련 의존성
     Get.lazyPut<PostRemoteDatasource>(
-      () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
+      () => PostRemoteDatasource(Get.find<AuthClient>()),
     );
     Get.lazyPut<PostLocalDatasource>(() => PostLocalDatasource());
     Get.lazyPut<PostRepositoryImpl>(
@@ -70,6 +71,7 @@ class HomeBinding extends Bindings {
     ///HomeController 등록
     Get.lazyPut(
       () => HomeController(
+        postSearchUseCase: Get.find<PostSearchUseCase>(),
         recommendPostsUseCase: Get.find<LoadRecommendPostsUseCase>(),
         recommendUsersUseCase: Get.find<LoadRecommendUsersUseCase>(),
         userSearchUseCase: Get.find<UserSearchUseCase>(),

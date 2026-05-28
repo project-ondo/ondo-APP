@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ondo/core/router/bindings/login_binding.dart';
 import 'package:ondo/core/router/bindings/navigation_binding.dart';
 import 'package:ondo/core/router/bindings/password_reset_binding.dart';
-import 'package:ondo/core/router/bindings/post_binding.dart';
+import 'package:ondo/core/router/bindings/post_view_binding.dart';
 import 'package:ondo/core/router/bindings/profile_binding.dart';
 import 'package:ondo/core/router/bindings/signup_binding.dart';
 import 'package:ondo/core/router/bindings/splash_binding.dart';
@@ -137,7 +137,7 @@ final GoRouter appRouter = GoRouter(
           Get.delete<PostViewController>(force: true);
         }
 
-        PostBinding(postId, state.extra as bool? ?? false).dependencies();
+        PostViewBinding(postId, state.extra as bool? ?? false).dependencies();
 
         return PostDetailScreen();
       },

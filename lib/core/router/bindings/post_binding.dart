@@ -1,0 +1,61 @@
+import 'package:get/get.dart';
+import 'package:ondo/data/datasource/post/post_local_datasource.dart';
+import 'package:ondo/data/datasource/post/post_remote_datasource.dart';
+import 'package:ondo/data/network/clients/auth_client.dart';
+import 'package:ondo/data/repositories/post/post_repository_impl.dart';
+import 'package:ondo/domain/usecases/post/bookmark_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
+import 'package:ondo/domain/usecases/post/unbookmark_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
+
+class PostBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<PostRemoteDatasource>(
+      () => PostRemoteDatasource(
+        Get.find<AuthClient>(),
+      ),
+    );
+
+    Get.lazyPut<PostLocalDatasource>(
+      () => PostLocalDatasource(),
+    );
+
+    // Post Repository
+    Get.lazyPut<PostRepositoryImpl>(
+      () => PostRepositoryImpl(
+        Get.find<PostRemoteDatasource>(),
+        Get.find<PostLocalDatasource>(),
+      ),
+    );
+    Get.lazyPut<LikePostUseCase>(
+      () => LikePostUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
+
+    Get.lazyPut<UnlikePostUseCase>(
+      () => UnlikePostUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
+
+    // 추가된 북마크 UseCase
+    Get.lazyPut<BookmarkPostUseCase>(
+      () => BookmarkPostUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
+
+    Get.lazyPut<UnbookmarkPostUseCase>(
+      () => UnbookmarkPostUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
+
+    Get.lazyPut<PostSearchUseCase>(
+      () => PostSearchUseCase(Get.find<PostRepositoryImpl>()),
+    );
+  }
+}

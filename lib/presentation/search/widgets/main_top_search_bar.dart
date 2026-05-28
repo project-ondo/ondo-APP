@@ -46,14 +46,10 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
           child: Stack(
             children: [
               GestureDetector(
-                onTap: controller.tapSearchBar,
+                onTap: controller.tapOther,
                 child: Obx(() {
                   if (!controller.showResult.value) return widget.mainPage;
-
                   final resultPage = widget.resultPageBuilder(controller.state);
-
-                  controller.showResult.value = false;
-                  controller.state.clear();
                   //검색 결과가 없다면 null을 반환해 mainPage 표시
                   return resultPage ?? widget.mainPage;
                 }),

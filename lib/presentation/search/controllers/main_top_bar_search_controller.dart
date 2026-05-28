@@ -53,7 +53,13 @@ class MainTopBarSearchController extends GetxController {
 
   void tapSearchBar() => focusNode.requestFocus();
 
-  void _updateQuery() => queryNotifier.value = searchController.text;
+  void _updateQuery() {
+    queryNotifier.value = searchController.text;
+    if(searchController.text.isEmpty) {
+      showResult.value = false;
+      state.clear();
+    }
+  }
 
   void _updatePopup() => showPopup.value = focusNode.hasFocus;
 }

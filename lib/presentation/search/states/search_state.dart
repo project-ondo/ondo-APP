@@ -8,6 +8,6 @@ class SearchState {
   }
 
   void setKeyword({String? query, String? tag, String? tip}) {
-    keyword = query ?? tag ?? tip ?? keyword;
+    keyword = (query ?? tag ?? tip ?? keyword).trim();
   }
 }

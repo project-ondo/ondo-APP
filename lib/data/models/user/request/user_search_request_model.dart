@@ -1,4 +1,4 @@
-class BaseSearchRequestModel {
+class UserSearchRequestModel {
   final String? keyword;
   final String? major;
   final List<String>? interests;
@@ -6,7 +6,7 @@ class BaseSearchRequestModel {
   final int? page;
   final int? size;
 
-  BaseSearchRequestModel({
+  UserSearchRequestModel({
     required this.keyword,
     required this.major,
     required this.interests,
@@ -27,6 +27,6 @@ class BaseSearchRequestModel {
     if (sort != null) params.add('sort=${Uri.encodeQueryComponent(sort!)}');
     if (page != null) params.add('page=$page');
     if (size != null) params.add('size=$size');
-    return params.join('&');
+    return "?${params.join('&')}";
   }
 }

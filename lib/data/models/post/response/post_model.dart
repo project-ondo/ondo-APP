@@ -49,7 +49,8 @@ class PostModel extends BaseModel {
   final int viewCount;
   final int likeCount;
   final int commentCount;
-  final bool isFavorite;
+  final int bookmarkCount;
+  final String createdAt;
 
   PostModel({
     required this.postId,
@@ -59,18 +60,24 @@ class PostModel extends BaseModel {
     required this.viewCount,
     required this.likeCount,
     required this.commentCount,
-    this.isFavorite = false,
+    required this.createdAt,
+    required this.bookmarkCount,
   });
 
   factory PostModel.fromJson(Map json) => PostModel(
-    postId: json["postId"],
-    title: json["title"],
-    authorName: json["authorName"],
-    tags: (json["tags"] as List).cast<String>(),
-    viewCount: json["viewCount"],
-    likeCount: json["likeCount"],
-    commentCount: json["commentCount"],
-    isFavorite: json["isFavorite"] == true,
+    postId: json["postId"] as int,
+    title: json["title"] as String,
+    authorName: json["authorName"] as String,
+    tags: (json["tags"] as List)
+        .map(
+          (e) => e.toString(),
+        )
+        .toList(),
+    viewCount: json["viewCount"] as int,
+    likeCount: json["likeCount"] as int,
+    bookmarkCount: json["bookmarkCount"] as int,
+    commentCount: json["commentCount"] as int,
+    createdAt: json["createdAt"] as String,
   );
 
   @override
@@ -82,6 +89,6 @@ class PostModel extends BaseModel {
     "viewCount": viewCount,
     "likeCount": likeCount,
     "commentCount": commentCount,
-    "isFavorite": isFavorite,
+    "createdAt": createdAt,
   };
 }

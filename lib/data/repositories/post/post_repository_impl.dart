@@ -1,3 +1,9 @@
+import 'package:ondo/data/models/post/request/post_search_request_model.dart';
+import 'package:ondo/data/models/post/response/post_model.dart';
+import 'package:ondo/domain/entities/base/listable_wrapper.dart';
+import 'package:ondo/domain/entities/post/post_detail_entity.dart';
+import 'package:ondo/domain/entities/post/post_entity.dart';
+
 import '../../../domain/repositories/post/post_repository.dart';
 import '../../datasource/post/post_local_datasource.dart';
 import '../../datasource/post/post_remote_datasource.dart';
@@ -9,6 +15,7 @@ import '../../models/post/response/post_list_model.dart';
 class PostRepositoryImpl implements PostRepository {
   final PostRemoteDatasource _remoteDatasource;
   final PostLocalDatasource _localDatasource;
+
   PostRepositoryImpl(this._remoteDatasource, this._localDatasource);
 
   @override
@@ -17,8 +24,10 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
-  Future<PostDetailModel> getPostDetail(int postId) {
-    return _remoteDatasource.getPostDetail(postId);
+  Future<PostDetailEntity> loadPostDetail(int postId) async {
+    final json = await _remoteDatasource.getPostDetail(postId);
+    final model = PostDetailModel.fromJson(json);
+    return PostDetailEntity.fromPostDetailModel(model);
   }
 
   @override
@@ -64,5 +73,42 @@ class PostRepositoryImpl implements PostRepository {
   @override
   Future<void> unbookmarkPost(int postId) {
     return _remoteDatasource.unbookmarkPost(postId);
+  }
+
+  @override
+  Future<ListableWrapper<PostEntity>> search(
+    String keyword,
+    List<String>? tags,
+    String? sort,
+    bool? latest,
+    int? page,
+    int? size,
+  ) async {
+    final model = PostSearchRequestModel(
+      keyword: keyword,
+      tags: tags,
+      sort: sort,
+      latest: latest,
+      page: page,
+      size: size,
+    );
+    final json = await _remoteDatasource.search(model);
+
+    if (json == null) return ListableWrapper.none();
+
+    final data = PostDataModel.fromJson(json);
+
+    return ListableWrapper<PostEntity>(
+      page: data.page,
+      size: data.size,
+      totalElements: data.totalElements,
+      totalPages: data.totalPages,
+      last: data.last,
+      content: data.content
+          .map(
+            (e) => PostEntity.fromPostModel(e),
+          )
+          .toList(),
+    );
   }
 }

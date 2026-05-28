@@ -1,5 +1,5 @@
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
-import 'package:ondo/data/models/base/request/base_search_request_model.dart';
+import 'package:ondo/data/models/user/request/user_search_request_model.dart';
 import 'package:ondo/data/models/user/response/user_model.dart';
 import 'package:ondo/domain/repositories/search/user_repository.dart';
 
@@ -19,7 +19,7 @@ class UserRepositoryImpl extends UserRepository {
     int? page,
     int? size,
   }) async {
-    final model = BaseSearchRequestModel(
+    final model = UserSearchRequestModel(
       keyword: keyword,
       major: major,
       interests: interests,

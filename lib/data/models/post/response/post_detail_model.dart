@@ -7,7 +7,8 @@ class PostDetailModel {
   final int viewCount;
   final int likeCount;
   final int commentCount;
-  final bool isFavorite;
+  final int bookmarkCount;
+  final String createdAt;
 
   const PostDetailModel({
     required this.postId,
@@ -18,24 +19,26 @@ class PostDetailModel {
     required this.viewCount,
     required this.likeCount,
     required this.commentCount,
-    this.isFavorite = false,
+    required this.bookmarkCount,
+    required this.createdAt,
   });
 
-  factory PostDetailModel.fromJson(Map<String, dynamic> json) {
-    final data = json['data'] as Map<String, dynamic>?;
-    if (data == null) {
-      throw Exception(json['message'] ?? '게시물을 찾을 수 없습니다.');
-    }
+  factory PostDetailModel.fromJson(Map json) {
     return PostDetailModel(
-      postId: data['postId'] as int,
-      title: data['title'] as String,
-      content: data['content'] as String,
-      authorName: data['authorName'] as String,
-      tags: List<String>.from(data['tags']),
-      viewCount: data['viewCount'] as int,
-      likeCount: data['likeCount'] as int,
-      commentCount: data['commentCount'] as int,
-      isFavorite: data['isFavorite'] == true,
+      postId: json["postId"] as int,
+      title: json["title"] as String,
+      content: json["content"] as String,
+      authorName: json["authorName"] as String,
+      tags: (json["tags"] as List)
+          .map(
+            (e) => e.toString(),
+          )
+          .toList(),
+      viewCount: json["viewCount"] as int,
+      likeCount: json["likeCount"] as int,
+      commentCount: json["commentCount"] as int,
+      bookmarkCount: json["bookmarkCount"] as int,
+      createdAt: json["createdAt"] as String,
     );
   }
 }

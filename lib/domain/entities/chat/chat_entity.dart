@@ -1,3 +1,4 @@
+import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/data/models/chat/response/chat_model.dart';
 
 class ChatEntity {
@@ -33,6 +34,6 @@ class ChatEntity {
     unreadCount: model.unreadCount,
     lastMessagePreview: model.lastMessagePreview,
     muted: model.muted,
-    lastMessageAt: DateTime.tryParse(model.lastMessageAt ?? ""),
+    lastMessageAt: AppDateUtils.tryParseUtc(model.lastMessageAt),
   );
 }

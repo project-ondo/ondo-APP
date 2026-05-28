@@ -1,3 +1,4 @@
+import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/domain/entities/chat/chat_message_entity.dart';
 
 class ChatMessageViewModel {
@@ -47,7 +48,7 @@ class ChatMessageViewModel {
         messageType: json['messageType'] as String? ?? 'TEXT',
         content: json['content'] as String? ?? '',
         createdAt:
-            DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+            AppDateUtils.tryParseUtc(json['createdAt'] as String?) ??
             DateTime.now(),
         isMe: false,
         profileImageKey: null, // TODO: senderId로 프로필 이미지 조회 예정

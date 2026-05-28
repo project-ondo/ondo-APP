@@ -1,3 +1,4 @@
+import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/data/models/notification/response/notification_model.dart';
 
 class NotificationEntity {
@@ -27,7 +28,7 @@ class NotificationEntity {
         body: model.body,
         target: model.target,
         read: model.read,
-        createdAt: DateTime.parse(model.createdAt),
+        createdAt: AppDateUtils.parseUtc(model.createdAt),
       );
 
   NotificationEntity copyWith({bool? read}) => NotificationEntity(

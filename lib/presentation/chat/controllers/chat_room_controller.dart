@@ -95,15 +95,7 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     WidgetsBinding.instance.addObserver(this);
-    // 내 publicId 로드 → 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장
-    authLocalDatasource.getMyPublicId().then((id) {
-      _myPublicId = id;
-      log('[ChatRoom] myPublicId: $_myPublicId');
-    });
-    _initLoadChatRoomMessages().then((_) {
-      sendReadEvent();
-      _connectAndEnter();
-    });
+    // 내 publicId 로드 → 프로필 이미지 → 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장
     _initializeController();
     scrollController.addListener(_onScroll);
     super.onInit();

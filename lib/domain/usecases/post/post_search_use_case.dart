@@ -2,10 +2,10 @@ import 'package:ondo/domain/entities/base/listable_wrapper.dart';
 import 'package:ondo/domain/entities/post/post_entity.dart';
 import 'package:ondo/domain/repositories/post/post_repository.dart';
 
-class SearchPostListUseCase {
+class PostSearchUseCase {
   final PostRepository _repository;
 
-  SearchPostListUseCase(this._repository);
+  PostSearchUseCase(this._repository);
 
   Future<ListableWrapper<PostEntity>> call({
     required String keyword,

@@ -11,6 +11,7 @@ class PostEntity {
   final int bookmarkCount;
   final DateTime createAt;
   final bool isFavorite;
+  final bool isBookmark;
 
   PostEntity({
     required this.postId,
@@ -22,7 +23,9 @@ class PostEntity {
     required this.commentCount,
     required this.bookmarkCount,
     required this.createAt,
+    //TODO api에선 좋아요, 북마크를 눌렀는 지, 여부를 넘겨주지 않는다.
     this.isFavorite = false,
+    this.isBookmark = false,
   });
 
   PostEntity copyWith({int? likeCount, bool? isFavorite}) => PostEntity(
@@ -46,10 +49,7 @@ class PostEntity {
     viewCount: model.viewCount,
     likeCount: model.likeCount,
     commentCount: model.commentCount,
-    //TODO : 북마크 api 개발 이후, 수정
-    bookmarkCount: model.likeCount,
-    //TODO : 게시물 생성 시간 api 개발 이후, 수정
-    createAt: DateTime.now(),
-    isFavorite: model.isFavorite,
+    bookmarkCount: model.bookmarkCount,
+    createAt: DateTime.tryParse(model.createdAt) ?? DateTime.now(),
   );
 }

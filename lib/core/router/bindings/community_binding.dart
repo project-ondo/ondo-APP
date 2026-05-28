@@ -12,7 +12,6 @@ import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
-import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
 import 'package:ondo/presentation/search/states/search_page_state.dart';
 
 class CommunityBinding extends Bindings {

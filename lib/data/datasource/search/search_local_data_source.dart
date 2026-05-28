@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SearchLocalDataSource {
-  late final SharedPreferences? _prefs;
+  SharedPreferences? _prefs;
 
   final String _searchKeywordListKey = 'SEARCH_KEYWORD_LIST_KEY';
 
@@ -13,6 +13,7 @@ class SearchLocalDataSource {
   }
 
   Future<bool> saveSearchKeyword(String keyword) async {
+    _cacheSearchKeywordList.remove(keyword);
     _cacheSearchKeywordList.assignAll([
       keyword,
       ..._cacheSearchKeywordList.take(2),

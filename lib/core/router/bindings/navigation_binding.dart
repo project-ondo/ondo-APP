@@ -14,10 +14,8 @@ import 'package:ondo/data/repositories/user/user_repository_impl.dart';
 import 'package:ondo/domain/usecases/search/user_search_use_case.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
-import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
 
 class NavigationBinding extends Bindings {
-
   @override
   void dependencies() {
     Get.lazyPut<AuthRemoteDatasource>(
@@ -41,7 +39,6 @@ class NavigationBinding extends Bindings {
     /// 전 화면 공통 controller 등록
     Get.lazyPut<NavigationController>(() => NavigationController());
     NotificationBinding().dependencies();
-    Get.lazyPut<MainTopBarSearchController>(() => MainTopBarSearchController());
     Get.lazyPut(() => PostController());
 
     /// user 관련 dataSource, repository 등록

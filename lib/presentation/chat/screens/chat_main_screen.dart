@@ -14,26 +14,18 @@ class ChatMainScreen extends GetView<ChatMainController> {
   @override
   Widget build(BuildContext context) {
     return BaseScaffold(
-      body: MainTopSearchBar(
-        pageId: "chat",
-        mainPage: Container(
-          color: AppColors.background,
-          padding: AppPadding.screenHorizontal,
-          child: Column(
-            children: [
-              AppGap.v16,
-              TagList(),
-              AppGap.v16,
-              Expanded(child: ChatList()),
-              AppGap.v16,
-            ],
-          ),
+      body: Container(
+        color: AppColors.background,
+        padding: AppPadding.screenHorizontal,
+        child: Column(
+          children: [
+            AppGap.v16,
+            TagList(),
+            AppGap.v16,
+            Expanded(child: ChatList()),
+            AppGap.v16,
+          ],
         ),
-        resultPageBuilder: (state) {
-          if (state.query.isEmpty || state.tags.isEmpty) return;
-          controller.search(state.query, state.tags.toList());
-          return null;
-        },
       ),
     );
   }

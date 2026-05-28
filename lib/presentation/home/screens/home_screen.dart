@@ -8,6 +8,7 @@ import 'package:ondo/presentation/home/screens/home_search_screen.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_list.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_chat_list.dart';
 import 'package:ondo/presentation/home/widgets/home_recommend_post_list.dart';
+import 'package:ondo/presentation/search/states/search_page_state.dart';
 import '../../search/widgets/main_top_search_bar.dart';
 
 class HomeScreen extends GetView<HomeController> {
@@ -18,7 +19,7 @@ class HomeScreen extends GetView<HomeController> {
     return BaseScaffold(
       backgroundColor: AppColors.background,
       body: MainTopSearchBar(
-        pageId: "home",
+        pageState: SearchPageState.home,
         mainPage: SingleChildScrollView(
           child: Column(
             children: [

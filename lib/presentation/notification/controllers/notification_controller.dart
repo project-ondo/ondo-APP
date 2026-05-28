@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/domain/entities/notification/notification_entity.dart';
 import 'package:ondo/domain/usecases/notification/delete_all_read_notifications_use_case.dart';
 import 'package:ondo/domain/usecases/notification/load_my_notification_list_use_case.dart';
@@ -76,11 +77,20 @@ class NotificationController extends GetxController {
     newNotificationCount.value = 0;
   }
 
-  Future<void> clear() async {
-    if (await _deleteAllReadNotification()) {
-      viewNotificationList.removeWhere(
-        (notification) => notification.read == true,
-      );
-    }
-  }
+  Future<void> deleteAllNotification() async => Get.dialog(
+    CustomAlertDialog(
+      title: "알림",
+      comment: "정말 모든 알림을 삭제하시겠어요?",
+      actionLeft: () => Get.back(),
+      actionRight: () async {
+        if (await _deleteAllReadNotification()) {
+          viewNotificationList.removeWhere(
+            (notification) => notification.read == true,
+          );
+        }
+        Get.back();
+      },
+      rightActionText: "삭제",
+    ),
+  );
 }

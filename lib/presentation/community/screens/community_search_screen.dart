@@ -7,7 +7,7 @@ import 'package:ondo/presentation/community/controllers/community_controller.dar
 import 'package:ondo/presentation/post/widgets/base_post_list.dart';
 import 'package:ondo/presentation/post/widgets/post_item.dart';
 
-class CommunitySearchScreen extends StatelessWidget {
+class CommunitySearchScreen extends GetView<CommunityResultController> {
   const CommunitySearchScreen({super.key});
 
   @override
@@ -15,46 +15,33 @@ class CommunitySearchScreen extends StatelessWidget {
     return BaseScaffold(
       backgroundColor: AppColors.background,
       body: SingleChildScrollView(
-        child: Padding(
-          padding: AppPadding.screenHorizontal,
-          child: Column(
-            children: [
-              AppGap.v16,
-              _PostResults(),
-              AppGap.v16,
-            ],
-          ),
+        child: Column(
+          children: [
+            AppGap.v16,
+            Obx(
+              () => PostGridList(
+                title: "게시물 검색 결과",
+                list: controller.viewPosts
+                    .map(
+                      (post) => PostItem(
+                        postId: post.postId,
+                        skills: post.tags,
+                        title: post.title,
+                        author: post.authorName,
+                        bookmarks: 0,
+                        favorites: post.likeCount,
+                        //TODO api에서 post 게시 시간 보내주면 데이터 입력
+                        createAt: DateTime.now(),
+                        isMy: true,
+                      ),
+                    )
+                    .toList(),
+              ),
+            ),
+            AppGap.v16,
+          ],
         ),
       ),
     );
-  }
-}
-
-@immutable
-class _PostResults extends BasePostGrid {
-  final CommunityResultController _controller =
-  Get.find<CommunityResultController>();
-
-  _PostResults({
-    super.title = "게시물 검색 결과",
-  });
-
-  @override
-  List<Widget> listBuilder() {
-    return List.generate(_controller.viewPosts.length, (index) {
-      return Obx(() {
-        final post = _controller.viewPosts[index];
-        return PostItem(
-          postId: post.postId,
-          skills: post.tags,
-          title: post.title,
-          author: post.authorName,
-          bookmarks: 0,
-          favorites: post.likeCount,
-          createAt: DateTime.now(),
-          isMy: true,
-        );
-      });
-    });
   }
 }

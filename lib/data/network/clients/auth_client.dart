@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:http/http.dart';
+import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/models/auth/response/sign_in_response_model.dart';
@@ -88,17 +89,23 @@ class AuthClient extends BaseClient {
   }
 
   /// refreshToken 유효성 검사 후 새 accessToken 발급
+  /// 갱신 완전 실패 시 로그인 화면으로 이동
   Future<String?> _tryRefresh() async {
     final refreshToken = await localDatasource.getRefreshToken();
-    if (refreshToken == null) return null;
+    if (refreshToken == null) {
+      log("RefreshToken 없음 → 로그인 화면 이동");
+      _navigateToLogin();
+      return null;
+    }
 
     // refreshToken 만료 여부 사전 확인
     final refreshExpirationStr = await localDatasource.getRefreshTokenExpiration();
     if (refreshExpirationStr != null) {
       final refreshExpiration = DateTime.tryParse(refreshExpirationStr);
       if (refreshExpiration != null && DateTime.now().isAfter(refreshExpiration)) {
-        log("RefreshToken 만료 → 토큰 삭제");
+        log("RefreshToken 만료 → 토큰 삭제 후 로그인 화면 이동");
         await localDatasource.deleteAll();
+        _navigateToLogin();
         return null;
       }
     }
@@ -116,8 +123,18 @@ class AuthClient extends BaseClient {
       return newToken.accessToken;
     }
 
-    log("토큰 재발급 실패 → 토큰 삭제");
+    log("토큰 재발급 실패 → 토큰 삭제 후 로그인 화면 이동");
     await localDatasource.deleteAll();
+    _navigateToLogin();
     return null;
+  }
+
+  /// 로그인 화면으로 강제 이동
+  void _navigateToLogin() {
+    try {
+      appRouter.go(RoutePaths.login);
+    } catch (e) {
+      log("로그인 화면 이동 실패: $e");
+    }
   }
 }

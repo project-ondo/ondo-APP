@@ -40,11 +40,13 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     child: Column(
       children: [
         Expanded(
-          child: Obx(
-            () => controller.viewChatList.isNotEmpty
-                ? _chatList()
-                : _noChatIcon(),
-          ),
+          child: Obx(() {
+            final lastReadId = controller.opponentLastReadMessageId.value;
+            final opponentProfileUrl = controller.opponentProfileImageUrl.value;
+            return controller.viewChatList.isNotEmpty
+                ? _chatList(lastReadId, opponentProfileUrl)
+                : _noChatIcon();
+          }),
         ),
         Obx(
           () => controller.isOpponentTyping.value
@@ -55,42 +57,33 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     ),
   );
 
-  Widget _chatList() => Obx(
-    () => ListView.builder(
-      controller: controller.scrollController,
-      reverse: true,
-      itemBuilder: (context, index) {
-        final chat = controller.viewChatList[index];
-        return _chatBubble(chat);
-      },
-      itemCount: controller.viewChatList.length,
-    ),
+  Widget _chatList(int lastReadId, String opponentProfileUrl) => ListView.builder(
+    controller: controller.scrollController,
+    reverse: true,
+    itemBuilder: (context, index) {
+      final chat = controller.viewChatList[index];
+      return _chatBubble(chat, lastReadId, opponentProfileUrl);
+    },
+    itemCount: controller.viewChatList.length,
   );
 
-  Widget _chatBubble(ChatMessageViewModel chat) {
-    final bool isMe = chat.isMe;
-    final String text = chat.content;
+  Widget _chatBubble(ChatMessageViewModel chat, int lastReadId, String opponentProfileUrl) {
+    if (chat.isMe) {
+      final isRead = chat.messageId != null && chat.messageId! <= lastReadId;
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [ChatCard.my(text: chat.content, isRead: isRead)],
+      );
+    }
     return Row(
-      mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        isMe
-            ? Obx(() {
-                final lastReadId = controller.opponentLastReadMessageId.value;
-                final isRead =
-                    chat.messageId != null && chat.messageId! <= lastReadId;
-                return ChatCard.my(text: text, isRead: isRead);
-              })
-            : Obx(
-                () => ChatCard.other(
-                  text: text,
-                  otherName: controller.opponentDisplayName,
-                  profileImgUrl:
-                      controller.opponentProfileImageUrl.value.isEmpty
-                      ? null
-                      : controller.opponentProfileImageUrl.value,
-                  sendAt: chat.createdAt,
-                ),
-              ),
+        ChatCard.other(
+          text: chat.content,
+          otherName: controller.opponentDisplayName,
+          profileImgUrl: opponentProfileUrl.isEmpty ? null : opponentProfileUrl,
+          sendAt: chat.createdAt,
+        ),
       ],
     );
   }

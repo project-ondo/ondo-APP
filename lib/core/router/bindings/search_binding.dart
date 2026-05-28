@@ -4,6 +4,7 @@ import 'package:ondo/data/repositories/search/search_repository_impl.dart';
 import 'package:ondo/domain/usecases/search/load_search_keyword_list_use_case.dart';
 import 'package:ondo/domain/usecases/search/save_search_keyword_use_case.dart';
 import 'package:ondo/presentation/search/controllers/main_top_bar_search_controller.dart';
+import 'package:ondo/presentation/search/controllers/search_popup_controller.dart';
 import 'package:ondo/presentation/search/states/search_page_state.dart';
 
 class SearchBinding extends Bindings {
@@ -34,7 +35,6 @@ class SearchBinding extends Bindings {
 
     Get.lazyPut<MainTopBarSearchController>(
       () => MainTopBarSearchController(
-        loadSearchKeywordListUseCase: Get.find<LoadSearchKeywordListUseCase>(),
         saveSearchKeywordUseCase: Get.find<SaveSearchKeywordUseCase>(),
       ),
       tag: pageState.id,
@@ -42,7 +42,10 @@ class SearchBinding extends Bindings {
     );
     Get.lazyPut<SearchPopupController>(
       () => SearchPopupController(
-        mainController: Get.find<MainTopBarSearchController>(),
+        mainTopBarSearchController: Get.find<MainTopBarSearchController>(
+          tag: pageState.id,
+        ),
+        loadSearchKeywordListUseCase: Get.find<LoadSearchKeywordListUseCase>(),
       ),
       tag: pageState.id,
       fenix: true,

@@ -1,9 +1,13 @@
 class SearchState {
-  Set<String> tags = <String>{};
-  String query = "";
+  String keyword;
+
+  SearchState({this.keyword = ''});
 
   void clear() {
-    tags.clear();
-    query = "";
+    keyword = '';
+  }
+
+  void setKeyword({String? query, String? tag, String? tip}) {
+    keyword = query ?? tag ?? tip ?? keyword;
   }
 }

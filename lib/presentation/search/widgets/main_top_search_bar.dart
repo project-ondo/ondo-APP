@@ -46,16 +46,16 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
           child: Stack(
             children: [
               GestureDetector(
-                onTap: controller.searchUnfocus,
+                onTap: controller.tapSearchBar,
                 child: Obx(() {
                   if (!controller.showResult.value) return widget.mainPage;
 
-                  final res = widget.resultPageBuilder(controller.state);
+                  final resultPage = widget.resultPageBuilder(controller.state);
 
                   controller.showResult.value = false;
                   controller.state.clear();
                   //검색 결과가 없다면 null을 반환해 mainPage 표시
-                  return res ?? widget.mainPage;
+                  return resultPage ?? widget.mainPage;
                 }),
               ),
               Obx(() {
@@ -82,10 +82,9 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
         children: [
           Expanded(
             child: CustomTextField(
-              onSubmitted: controller.onSubmitText,
-              onChanged: controller.onChange,
+              onSubmitted: (value) => controller.submit(query: value),
               focusNode: controller.focusNode,
-              controller: controller.textController,
+              controller: controller.searchController,
               hintText: "게시물 또는 프로필 검색어를 입력해 주세요",
               maxLines: 1,
               prefix: SvgPicture.asset(AppIcon.searchFocus.path),

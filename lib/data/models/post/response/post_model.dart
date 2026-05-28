@@ -68,11 +68,13 @@ class PostModel extends BaseModel {
     postId: json["postId"] as int,
     title: json["title"] as String,
     authorName: json["authorName"] as String,
-    tags: (json["tags"] as List)
-        .map(
-          (e) => e.toString(),
-        )
-        .toList(),
+    tags:
+        (json["tags"] as List?)
+            ?.map(
+              (e) => e.toString(),
+            )
+            .toList() ??
+        [],
     viewCount: json["viewCount"] as int,
     likeCount: json["likeCount"] as int,
     bookmarkCount: json["bookmarkCount"] as int,

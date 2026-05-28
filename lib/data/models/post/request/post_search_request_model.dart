@@ -1,6 +1,6 @@
 class PostSearchRequestModel {
   final String keyword;
-  late final List<String>? tags;
+  final List<String>? tags;
   final String? sort;
   final bool? latest;
   final int? page;

@@ -185,7 +185,7 @@ class HomeSearchResultController extends GetxController {
   final RxList<UserEntity> viewUserList = <UserEntity>[].obs;
   final RxList<PostEntity> viewPostList = <PostEntity>[].obs;
 
-  ///홈 검색 결과 업데이트ㅂ
+  ///홈 검색 결과 업데이트
   void updateResult(
     Iterable<PostEntity> posts,
     Iterable<UserEntity> profiles,

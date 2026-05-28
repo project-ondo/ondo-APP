@@ -214,7 +214,7 @@ class PostRemoteDatasource {
       log.successLog(body["success"]);
       log.messageLog(body["message"]);
 
-      if (res.statusCode == 200 && body["success"]) {
+      if (res.statusCode == 200 && body["success"] == true) {
         return body["data"];
       }
 

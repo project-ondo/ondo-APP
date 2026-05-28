@@ -1,6 +1,6 @@
 import 'dart:developer';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
-import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/models/auth/response/sign_in_response_model.dart';
@@ -9,10 +9,17 @@ class AuthClient extends BaseClient {
   AuthLocalDatasource localDatasource;
   AuthRemoteDatasource remoteDatasource;
 
-  /// 진행 중인 토큰 갱신 Future — 동시 401 응답 시 중복 갱신 방지
+  /// 인증 실패(토큰 갱신 불가) 시 호출되는 콜백 — 상위 레이어에서 로그인 화면 이동 처리
+  final VoidCallback? onAuthFailed;
+
+  /// 진행 중인 토큰 갱신 Future — _getValidAccessToken과 401 재시도 모두에서 공유하여 중복 갱신 방지
   Future<String?>? _refreshFuture;
 
-  AuthClient({required this.localDatasource, required this.remoteDatasource});
+  AuthClient({
+    required this.localDatasource,
+    required this.remoteDatasource,
+    this.onAuthFailed,
+  });
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
@@ -85,7 +92,8 @@ class AuthClient extends BaseClient {
     if (DateTime.now().isBefore(expiration)) return token;
 
     log("AccessToken 만료 → refresh 시도");
-    return await _tryRefresh();
+    _refreshFuture ??= _tryRefresh().whenComplete(() => _refreshFuture = null);
+    return await _refreshFuture;
   }
 
   /// refreshToken 유효성 검사 후 새 accessToken 발급
@@ -129,12 +137,12 @@ class AuthClient extends BaseClient {
     return null;
   }
 
-  /// 로그인 화면으로 강제 이동
+  /// 인증 실패 콜백 호출 — 상위 레이어에서 로그인 화면 이동 등을 처리
   void _navigateToLogin() {
     try {
-      appRouter.go(RoutePaths.login);
+      onAuthFailed?.call();
     } catch (e) {
-      log("로그인 화면 이동 실패: $e");
+      log("인증 실패 콜백 실행 오류: $e");
     }
   }
 }

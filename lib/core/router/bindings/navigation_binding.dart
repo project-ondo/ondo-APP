@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:ondo/core/env.dart';
+import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/router/bindings/chat_binding.dart';
 import 'package:ondo/core/router/bindings/community_binding.dart';
 import 'package:ondo/core/router/bindings/home_binding.dart';
@@ -34,6 +35,7 @@ class NavigationBinding extends Bindings {
       () => AuthClient(
         localDatasource: Get.find<AuthLocalDatasource>(),
         remoteDatasource: Get.find<AuthRemoteDatasource>(),
+        onAuthFailed: () => appRouter.go(RoutePaths.login),
       ),
       fenix: true,
     );

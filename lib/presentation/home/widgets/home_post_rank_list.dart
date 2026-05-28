@@ -26,7 +26,9 @@ class _HomePostRankListState extends State<HomePostRankList> {
   void initState() {
     _mainController = Get.find<HomeController>();
     _postController = Get.find<PostController>();
-    _pageController = PageController(initialPage: curIndex.value);
+    _pageController = PageController(
+      initialPage: curIndex.value,
+    );
     super.initState();
   }
 
@@ -36,25 +38,27 @@ class _HomePostRankListState extends State<HomePostRankList> {
     super.dispose();
   }
 
-  int _getPageTotal() => (_mainController.ranks.length / 3).ceil();
-
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 220,
-      width: double.infinity,
+      height: 240,
+      width: double.maxFinite,
       decoration: BoxDecoration(color: AppColors.white),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "실시간 인기 게시물",
-            style: AppTextStyles.titleBold16(textColor: AppColors.gray90),
+          Padding(
+            padding: AppPadding.screenHorizontal,
+            child: Text(
+              "실시간 인기 게시물",
+              style: AppTextStyles.titleBold16(textColor: AppColors.gray90),
+            ),
           ),
           AppGap.v16,
           Expanded(child: _postList()),
           AppGap.v16,
           _indicator(),
+          AppGap.v16,
         ],
       ),
     );
@@ -63,6 +67,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
   Widget _postList() {
     return Obx(() {
       final ranks = _mainController.ranks;
+      final pageCount = (ranks.length / 3).ceil();
       return PageView.builder(
         controller: _pageController,
         pageSnapping: true,
@@ -77,24 +82,31 @@ class _HomePostRankListState extends State<HomePostRankList> {
               final currentItemIndex = (pageIndex * 3) + itemIndex;
 
               return currentItemIndex < ranks.length
-                  ? HomePostRankItem(
-                      onTap: () {
-                        //TODO : 나의 게시물인지 판단하여 넘김
-                        _postController.enterPostDetail(context, false, ranks[currentItemIndex].postId);
-                      },
-                      title: ranks[currentItemIndex].title,
-                      createAgo: ranks[currentItemIndex].creatAt.inDays,
-                      favorite: ranks[currentItemIndex].favorites,
-                      rank: currentItemIndex + 1,
-                      heartAction: (isFavorite, total) {
-                        //TODO : model 정의되면 setter 적용
-                      },
+                  ? Padding(
+                      padding: AppPadding.screenHorizontal,
+                      child: HomePostRankItem(
+                        onTap: () {
+                          //TODO : 나의 게시물인지 판단하여 넘김
+                          _postController.enterPostDetail(
+                            context,
+                            false,
+                            ranks[currentItemIndex].postId,
+                          );
+                        },
+                        title: ranks[currentItemIndex].title,
+                        createAgo: ranks[currentItemIndex].creatAt.inDays,
+                        favorite: ranks[currentItemIndex].favorites,
+                        rank: currentItemIndex + 1,
+                        heartAction: (isFavorite, total) {
+                          //TODO : model 정의되면 setter 적용
+                        },
+                      ),
                     )
                   : SizedBox.shrink();
             }),
           );
         },
-        itemCount: _getPageTotal(),
+        itemCount: pageCount,
       );
     });
   }

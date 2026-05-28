@@ -25,14 +25,12 @@ class SettingScreen extends StatelessWidget {
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: () => context.pop(),
-              child: const CustomBackButton(moreOptions: false),
-            ),
+            CustomBackButton(moreOptions: false),
+
             AppGap.v16,
             Obx(
               () => Container(
-                width: MediaQuery.of(context).size.width,
+                width: double.maxFinite,
                 padding: AppPadding.settingSession,
                 child: Column(
                   children: [
@@ -66,7 +64,7 @@ class SettingScreen extends StatelessWidget {
             ),
             AppGap.v16,
             Container(
-              width: MediaQuery.of(context).size.width,
+              width: double.maxFinite,
               padding: AppPadding.settingSession,
               child: Column(
                 children: [

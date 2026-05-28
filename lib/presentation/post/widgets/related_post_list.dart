@@ -11,8 +11,8 @@ class RelatedPostList extends GetView<PostViewController> {
   Widget build(BuildContext context) {
     return Obx(
           () => IndicatorPostPageList(
-        title: "관련 게시물",
-        items: controller.postList.map((post) {
+                  title: "관련 게시물",
+                  items: controller.postList.map((post) {
           return PostItem(
             postId: post.postId,
             skills: post.tags,
@@ -23,8 +23,8 @@ class RelatedPostList extends GetView<PostViewController> {
             createAt: DateTime.now(),
             isMy: true,
           );
-        }).toList(),
-      ),
+                  }).toList(),
+                ),
     );
   }
 }

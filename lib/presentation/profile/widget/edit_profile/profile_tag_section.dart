@@ -28,20 +28,23 @@ class ProfileTagSection extends StatelessWidget {
           style: AppTextStyles.textMedium(textColor: AppColors.gray80),
         ),
         AppGap.v4,
-        Wrap(
-          spacing: AppSpacing.s16,
-          runSpacing: AppSpacing.s12,
-          children: tags.map((e) {
-            final bool isSelected = selectedTags.contains(e);
+        SizedBox(
+          width: double.maxFinite,
+          child: Wrap(
+            spacing: AppSpacing.s16,
+            runSpacing: AppSpacing.s12,
+            children: tags.map((e) {
+              final bool isSelected = selectedTags.contains(e);
 
-            return GestureDetector(
-              onTap: () => onTagToggle(e),
-              child: ProfileSelectTagChips(
-                title: e,
-                isSelected: isSelected,
-              ),
-            );
-          }).toList(),
+              return GestureDetector(
+                onTap: () => onTagToggle(e),
+                child: ProfileSelectTagChips(
+                  title: e,
+                  isSelected: isSelected,
+                ),
+              );
+            }).toList(),
+          ),
         ),
       ],
     );

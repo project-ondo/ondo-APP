@@ -15,7 +15,6 @@ class ChatMainScreen extends GetView<ChatMainController> {
     return BaseScaffold(
       body: Container(
         color: AppColors.background,
-        padding: AppPadding.screenHorizontal,
         child: Column(
           children: [
             AppGap.v16,
@@ -35,16 +34,17 @@ class TagList extends GetView<ChatMainController> {
 
   @override
   Widget build(BuildContext context) {
+    final tags = controller.tags;
     return SizedBox(
       height: AppSpacing.s36,
       child: ListView.separated(
+        padding: AppPadding.screenHorizontal,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) => CustomTagCard(
-          tag: controller.tags[index],
-          onTap: (isSelect) =>
-              controller.selectTag(controller.tags[index], isSelect),
+          tag: tags[index],
+          onTap: (isSelect) => controller.selectTag(tags[index], isSelect),
         ),
-        itemCount: controller.tags.length,
+        itemCount: tags.length,
         separatorBuilder: (context, index) => AppGap.h16,
       ),
     );

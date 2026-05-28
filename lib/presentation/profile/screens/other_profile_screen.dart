@@ -84,36 +84,33 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      ColoredBox(
-                        color: AppColors.white,
-                        child: CustomBackButton(
-                          moreOptions: true,
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              onTap: () => showDialog(
-                                context: context,
-                                builder: (context) => const UserReportPopup(),
-                              ),
-                              padding: AppPadding.settingSession,
-                              child: Text(
-                                '신고하기',
-                                style: AppTextStyles.caption(
-                                  textColor: AppColors.gray90,
-                                ),
+                      CustomBackButton(
+                        moreOptions: true,
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            onTap: () => showDialog(
+                              context: context,
+                              builder: (context) => const UserReportPopup(),
+                            ),
+                            padding: AppPadding.settingSession,
+                            child: Text(
+                              '신고하기',
+                              style: AppTextStyles.caption(
+                                textColor: AppColors.gray90,
                               ),
                             ),
-                            PopupMenuItem(
-                              onTap: () => log('차단하기'), // TODO: 차단 API 연동
-                              padding: AppPadding.settingSession,
-                              child: Text(
-                                '차단하기',
-                                style: AppTextStyles.caption(
-                                  textColor: AppColors.gray90,
-                                ),
+                          ),
+                          PopupMenuItem(
+                            onTap: () => log('차단하기'), // TODO: 차단 API 연동
+                            padding: AppPadding.settingSession,
+                            child: Text(
+                              '차단하기',
+                              style: AppTextStyles.caption(
+                                textColor: AppColors.gray90,
                               ),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                       _buildOtherUserIntroductionSession(profile),
                       ProfileRatingSession(),
@@ -161,9 +158,11 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Obx(() => UserProfileImage(
-          imageUrl: controller.profileImageUrl.value,
-        )),
+        Obx(
+          () => UserProfileImage(
+            imageUrl: controller.profileImageUrl.value,
+          ),
+        ),
         UserNameAndMajor(
           name: profile?.displayName ?? '',
           major: profile?.major ?? '',

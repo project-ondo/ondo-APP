@@ -22,17 +22,12 @@ class CommunityMainScreen extends GetView<CommunityController> {
       body: MainTopSearchBar(
         pageState: SearchPageState.community,
         mainPage: SingleChildScrollView(
-          child: Padding(
-            padding: AppPadding.screenHorizontal,
-            child: Column(
-              children: [
-                AppGap.v16,
-                CommunityFilterTagList(),
-                AppGap.v16,
-                CommunityPostList(),
-                AppGap.v16,
-              ],
-            ),
+          child: Column(
+            children: [
+              AppGap.v16,
+              CommunityFilterTagList(),
+              CommunityPostList(),
+            ],
           ),
         ),
         resultPageBuilder: (state) {

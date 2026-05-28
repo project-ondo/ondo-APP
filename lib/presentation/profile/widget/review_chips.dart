@@ -21,48 +21,51 @@ class ReviewChips extends StatelessWidget {
     for (final review in mockReviews) {
       countReviews.update(
         review,
-            (value) => value + 1,
+        (value) => value + 1,
         ifAbsent: () => 1,
       );
     }
 
-    return Wrap(
-      spacing: AppSpacing.s12,
-      runSpacing: AppSpacing.s12,
-      children: countReviews.entries.map(
-            (e) {
-          final text = e.key;
-          final count = e.value;
+    return SizedBox(
+      width: double.maxFinite,
+      child: Wrap(
+        spacing: AppSpacing.s12,
+        runSpacing: AppSpacing.s12,
+        children: countReviews.entries.map(
+          (e) {
+            final text = e.key;
+            final count = e.value;
 
-          return Container(
-            padding: AppPadding.chip,
-            decoration: BoxDecoration(
-              color: AppColors.gray20,
-              borderRadius: AppRadius.baseRadius,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  text,
-                  style: AppTextStyles.textMedium(
-                    textColor: AppColors.gray90,
-                  ),
-                ),
-                if (count > 1) ...[
-                  AppGap.h10,
+            return Container(
+              padding: AppPadding.chip,
+              decoration: BoxDecoration(
+                color: AppColors.gray20,
+                borderRadius: AppRadius.baseRadius,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                   Text(
-                    "X$count",
+                    text,
                     style: AppTextStyles.textMedium(
-                      textColor: AppColors.primary,
+                      textColor: AppColors.gray90,
                     ),
                   ),
+                  if (count > 1) ...[
+                    AppGap.h10,
+                    Text(
+                      "X$count",
+                      style: AppTextStyles.textMedium(
+                        textColor: AppColors.primary,
+                      ),
+                    ),
+                  ],
                 ],
-              ],
-            ),
-          );
-        },
-      ).toList(),
+              ),
+            );
+          },
+        ).toList(),
+      ),
     );
   }
 }

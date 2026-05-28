@@ -30,8 +30,8 @@ class HomeScreen extends GetView<HomeController> {
           ),
         ),
         resultPageBuilder: (state) {
-          if (state.query.trim().isEmpty && state.tags.isEmpty) return null;
-          controller.search(query: state.query, tags: state.tags.toList());
+          if (state.keyword.isEmpty) return null;
+          controller.search(state.keyword);
           return HomeSearchScreen();
         },
       ),

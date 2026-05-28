@@ -36,8 +36,8 @@ class CommunityMainScreen extends GetView<CommunityController> {
           ),
         ),
         resultPageBuilder: (state) {
-          if (state.query.trim().isEmpty && state.tags.isEmpty) return null;
-          controller.searchPost([state.query, ...state.tags]);
+          if (state.keyword.isEmpty) return null;
+          controller.searchPost([state.keyword]);
           return CommunitySearchScreen();
         },
       ),

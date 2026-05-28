@@ -155,13 +155,13 @@ class HomeController extends GetxController {
       ? ranks.sort((a, b) => (b.favorites - a.favorites))
       : list.sort((a, b) => b.favorites - a.favorites);
 
-  void search({required String query, required List<String> tags}) async {
+  void search(String query) async {
     final Set<UserEntity> userRes = {};
     final Set<PostEntity> postRes = {};
 
     ///서버 유저 검색 api에서 user결과 실시간 표시
     userRes.addAll(
-      await userSearchUseCase.call(interests: tags, keyword: query),
+      await userSearchUseCase.call(keyword: query),
     );
 
     //TODO : 서버 게시물 검색 api 개발 이후 구현

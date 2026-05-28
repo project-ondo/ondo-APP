@@ -1,11 +1,21 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/domain/usecases/search/load_search_keyword_list_use_case.dart';
+import 'package:ondo/domain/usecases/search/save_search_keyword_use_case.dart';
 import 'package:ondo/presentation/search/states/search_state.dart';
 
 class MainTopBarSearchController extends GetxController {
   final TextEditingController textController = TextEditingController();
   final FocusNode focusNode = FocusNode();
+
+  final LoadSearchKeywordListUseCase loadSearchKeywordListUseCase;
+  final SaveSearchKeywordUseCase saveSearchKeywordUseCase;
+
+  MainTopBarSearchController({
+    required this.loadSearchKeywordListUseCase,
+    required this.saveSearchKeywordUseCase,
+  });
 
   final RxBool showPopup = false.obs;
   final RxBool showResult = false.obs;
@@ -20,16 +30,10 @@ class MainTopBarSearchController extends GetxController {
   @override
   void onInit() {
     state = SearchState();
+    focusNode.addListener(_updateShowPopup);
     _cacheTags = loadTags();
     _cacheTips = loadTips();
     super.onInit();
-  }
-
-  @override
-  void onReady() {
-    focusNode.addListener(_updateShowPopup);
-    Get.lazyPut(() => SearchPopupController(mainController: this), fenix: true);
-    super.onReady();
   }
 
   @override

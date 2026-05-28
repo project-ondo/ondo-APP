@@ -4,8 +4,6 @@ import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
 
 import '../../../data/datasource/comment/comment_remote_datasource.dart';
-import '../../../data/datasource/post/post_local_datasource.dart';
-import '../../../data/datasource/post/post_remote_datasource.dart';
 import '../../../data/network/clients/auth_client.dart';
 import '../../../data/repositories/comment/comment_repository_impl.dart';
 import '../../../data/repositories/post/post_repository_impl.dart';

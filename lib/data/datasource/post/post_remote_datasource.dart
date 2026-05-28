@@ -4,7 +4,6 @@ import 'package:ondo/data/models/post/request/post_search_request_model.dart';
 import 'package:ondo/data/models/post/request/post_update_request_model.dart';
 import 'package:ondo/data/models/post/response/post_list_model.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
-import 'package:ondo/data/models/post/response/post_detail_model.dart';
 import 'package:ondo/data/network/constants/api_constants.dart';
 
 class PostRemoteDatasource {

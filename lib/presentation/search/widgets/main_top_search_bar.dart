@@ -28,11 +28,11 @@ class MainTopSearchBar extends StatefulWidget {
 }
 
 class _MainTopSearchBarState extends State<MainTopSearchBar> {
-  late final MainTopBarSearchController _controller;
+  late final MainTopBarSearchController controller;
 
   @override
   void initState() {
-    _controller = Get.put(MainTopBarSearchController(), tag: widget.pageId);
+    controller = Get.put(MainTopBarSearchController(), tag: widget.pageId);
     super.initState();
   }
 
@@ -45,20 +45,20 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
           child: Stack(
             children: [
               GestureDetector(
-                onTap: _controller.searchUnfocus,
+                onTap: controller.searchUnfocus,
                 child: Obx(() {
-                  if (!_controller.showResult.value) return widget.mainPage;
+                  if (!controller.showResult.value) return widget.mainPage;
 
-                  final res = widget.resultPageBuilder(_controller.state);
+                  final res = widget.resultPageBuilder(controller.state);
 
-                  _controller.showResult.value = false;
-                  _controller.state.clear();
+                  controller.showResult.value = false;
+                  controller.state.clear();
                   //검색 결과가 없다면 null을 반환해 mainPage 표시
                   return res ?? widget.mainPage;
                 }),
               ),
               Obx(() {
-                if (!_controller.showPopup.value) {
+                if (!controller.showPopup.value) {
                   return SizedBox.shrink();
                 }
 
@@ -81,17 +81,17 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
         children: [
           Expanded(
             child: CustomTextField(
-              onSubmitted: _controller.onSubmitText,
-              onChanged: _controller.onChange,
-              focusNode: _controller.focusNode,
-              controller: _controller.textController,
+              onSubmitted: controller.onSubmitText,
+              onChanged: controller.onChange,
+              focusNode: controller.focusNode,
+              controller: controller.textController,
               hintText: "게시물 또는 프로필 검색어를 입력해 주세요",
               maxLines: 1,
               prefix: SvgPicture.asset(AppIcon.searchFocus.path),
             ),
           ),
           Obx(() {
-            if (_controller.showPopup.value) {
+            if (controller.showPopup.value) {
               return SizedBox.shrink();
             }
             return Row(

@@ -22,10 +22,7 @@ class EditProfileScreen extends GetView<EditProfileController> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: () => context.pop(),
-              child: const CustomBackButton(moreOptions: false),
-            ),
+            CustomBackButton(moreOptions: false),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -78,13 +75,14 @@ class EditProfileScreen extends GetView<EditProfileController> {
                           onTagToggle: (tag) => controller.toggleInterest(tag),
                         ),
                       ),
-
-                      AppGap.v24,
                     ],
                   ),
                 ),
               ),
             ),
+
+            AppGap.v24,
+
             Obx(
               () => Padding(
                 padding: AppPadding.settingSession,
@@ -102,7 +100,7 @@ class EditProfileScreen extends GetView<EditProfileController> {
                         },
                 ),
               ),
-            )
+            ),
           ],
         ),
       ),

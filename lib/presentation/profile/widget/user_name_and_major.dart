@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
+import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
 class UserNameAndMajor extends StatelessWidget {
@@ -21,6 +22,7 @@ class UserNameAndMajor extends StatelessWidget {
           name,
           style: AppTextStyles.profileIntroduction(textColor: AppColors.gray90),
         ),
+        AppGap.v7,
         Text(
           major,
           style: AppTextStyles.profileIntroduction(textColor: AppColors.gray60),

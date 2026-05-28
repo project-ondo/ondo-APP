@@ -14,7 +14,8 @@ class PostBody extends GetView<PostViewController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
-          () => Column(
+      () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _top(),
           AppGap.v16,
@@ -33,6 +34,7 @@ class PostBody extends GetView<PostViewController> {
         CustomProfileCircle(radius: AppSpacing.s24),
         AppGap.h12,
         Expanded(child: Text(controller.authorName.value)),
+        AppGap.h12,
         Text(AppDateUtils.timeAgo(DateTime.now())),
       ],
     ),

@@ -1,0 +1,114 @@
+import 'package:flutter/cupertino.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
+import 'package:get/get_rx/src/rx_workers/rx_workers.dart';
+import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:ondo/domain/usecases/search/load_search_keyword_list_use_case.dart';
+
+import 'main_top_bar_search_controller.dart';
+
+class SearchPopupController extends GetxController {
+  final LoadSearchKeywordListUseCase loadSearchKeywordListUseCase;
+
+  SearchPopupController({
+    required this.mainTopBarSearchController,
+    required this.loadSearchKeywordListUseCase,
+  });
+
+  RxSet<String> viewSearchTagList = <String>{}.obs;
+  RxSet<String> viewSearchTipList = <String>{}.obs;
+
+  final Set<String> _cacheSearchTipList = {};
+
+  final MainTopBarSearchController mainTopBarSearchController;
+
+  late final Worker typingWorker;
+  late final Worker showPopupWorker;
+
+  @override
+  void onInit() {
+    //TODO 삭제
+    _cacheSearchTipList.assignAll(loadTips());
+
+    /// 태그, 추천 검색어 불러오기
+    //TODO : 서버로부터 추천 키워드 받기
+    viewSearchTipList.assignAll(_cacheSearchTipList.take(20));
+
+    /// worker 등록
+    typingWorker = ever(
+      mainTopBarSearchController.queryNotifier,
+      _update,
+    );
+    showPopupWorker = ever(
+      mainTopBarSearchController.showPopup,
+      _loadSearchTagList,
+    );
+
+    super.onInit();
+  }
+
+  @override
+  void onClose() {
+    typingWorker.dispose();
+    showPopupWorker.dispose();
+    super.onClose();
+  }
+
+  Future<void> _loadSearchTagList(bool showPopup) async {
+    if (!showPopup) return;
+
+    final result = await loadSearchKeywordListUseCase.call();
+    viewSearchTagList.assignAll(result);
+    debugPrint("로컬, 최근 검색 태그 불러오기 성공");
+  }
+
+  Future<void> selectSearchTag(String tag) async {
+    mainTopBarSearchController.submit(tag: tag);
+  }
+
+  void selectSearchTip(String tip) {
+    mainTopBarSearchController.submit(tip: tip);
+  }
+
+  void _update(String text) {
+    /// 값이 비면, 전체 표시
+    if (text.isEmpty) {
+      viewSearchTipList.assignAll(_cacheSearchTipList);
+      return;
+    }
+
+    final matchingTipList = _cacheSearchTipList.where(
+      (tip) => tip.trim().toLowerCase().contains(text.trim().toLowerCase()),
+    );
+
+    /// 매칭되는 게 없으면, 전체 표시
+    if (matchingTipList.isEmpty) {
+      viewSearchTipList.assignAll(_cacheSearchTipList);
+      return;
+    }
+
+    /// 최대 20개
+    viewSearchTipList.assignAll(matchingTipList.take(20));
+  }
+}
+
+extension DummyMoel on SearchPopupController {
+  List<String> loadTags() => [
+    "최근검색태그",
+    "UI/UX",
+    "Android",
+    "멘토링",
+    "팁",
+    "공부인증",
+  ];
+
+  List<String> loadTips() => [
+    "UIUX",
+    "공부",
+    "공부방법",
+    "공부인증",
+    "김유찬",
+    "공부",
+    "공부방법",
+    "공부인증",
+  ];
+}

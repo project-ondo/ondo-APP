@@ -34,7 +34,14 @@ class AppDateUtils {
   }
 
   /// timezone 정보가 없는 문자열에 `Z` suffix를 붙인다.
+  ///
+  /// 시간 파트(`T` 또는 공백)가 없는 날짜 전용 문자열(예: `"2024-01-15"`)은
+  /// `DateTime.parse()`가 시간대 접미사를 지원하지 않으므로 그대로 반환한다.
   static String _withUtcSuffix(String s) {
+    // 시간 파트가 없으면 Z 붙여도 FormatException 발생 → 그대로 반환
+    final hasTimePart = s.contains('T') || s.contains(' ');
+    if (!hasTimePart) return s;
+
     // 이미 Z, +, 또는 날짜 부분(10자) 이후에 - 가 있으면 timezone 있음
     final hasTimezone =
         s.endsWith('Z') ||

@@ -1,7 +1,7 @@
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
 import 'package:ondo/data/models/base/request/base_search_request_model.dart';
 import 'package:ondo/data/models/user/response/user_model.dart';
-import 'package:ondo/domain/repositories/search/user_repository.dart';
+import 'package:ondo/domain/repositories/user/user_repository.dart';
 
 import '../../models/base/request/base_list_request_model.dart';
 

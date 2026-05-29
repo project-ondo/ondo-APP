@@ -1,5 +1,5 @@
 import 'package:ondo/domain/entities/user/user_entity.dart';
-import 'package:ondo/domain/repositories/search/user_repository.dart';
+import 'package:ondo/domain/repositories/user/user_repository.dart';
 
 class LoadRecommendUsersUseCase {
   final UserRepository repository;

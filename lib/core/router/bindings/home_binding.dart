@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:ondo/core/router/bindings/search_binding.dart';
 import 'package:ondo/data/datasource/home/home_remote_datasource.dart';
 import 'package:ondo/data/datasource/post/post_local_datasource.dart';
 import 'package:ondo/data/datasource/post/post_remote_datasource.dart';
@@ -13,6 +14,7 @@ import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/search/user_search_use_case.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
+import 'package:ondo/presentation/search/states/search_page_state.dart';
 
 import '../../../data/repositories/user/user_repository_impl.dart';
 
@@ -66,6 +68,9 @@ class HomeBinding extends Bindings {
     Get.lazyPut<GetCachedLikedPostIdsUseCase>(
       () => GetCachedLikedPostIdsUseCase(Get.find<PostRepositoryImpl>()),
     );
+
+    /// 검색 관련 의존성
+    SearchBinding(pageState: SearchPageState.home).dependencies();
 
     ///HomeController 등록
     Get.lazyPut(

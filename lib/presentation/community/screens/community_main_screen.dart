@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/presentation/search/states/search_page_state.dart';
 import 'package:ondo/presentation/search/widgets/main_top_search_bar.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
@@ -19,7 +20,7 @@ class CommunityMainScreen extends GetView<CommunityController> {
       floatingActionButton: CommunityPostAddButton.float(),
       backgroundColor: AppColors.background,
       body: MainTopSearchBar(
-        pageId: "community",
+        pageState: SearchPageState.community,
         mainPage: SingleChildScrollView(
           child: Column(
             children: [
@@ -30,8 +31,8 @@ class CommunityMainScreen extends GetView<CommunityController> {
           ),
         ),
         resultPageBuilder: (state) {
-          if (state.query.trim().isEmpty && state.tags.isEmpty) return null;
-          controller.searchPost([state.query, ...state.tags]);
+          if (state.keyword.isEmpty) return null;
+          controller.searchPost([state.keyword]);
           return CommunitySearchScreen();
         },
       ),

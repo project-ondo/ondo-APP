@@ -1,144 +1,65 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/domain/usecases/search/save_search_keyword_use_case.dart';
 import 'package:ondo/presentation/search/states/search_state.dart';
 
 class MainTopBarSearchController extends GetxController {
-  final TextEditingController textController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
   final FocusNode focusNode = FocusNode();
+  final SearchState state = SearchState();
+
+  final SaveSearchKeywordUseCase saveSearchKeywordUseCase;
+
+  MainTopBarSearchController({required this.saveSearchKeywordUseCase});
 
   final RxBool showPopup = false.obs;
   final RxBool showResult = false.obs;
 
-  late final List<String> _cacheTags;
-  late final List<String> _cacheTips;
-
-  final RxString tempQuery = "".obs;
-
-  late final SearchState state;
+  final RxString queryNotifier = "".obs;
 
   @override
   void onInit() {
-    state = SearchState();
-    _cacheTags = loadTags();
-    _cacheTips = loadTips();
+    focusNode.addListener(_updatePopup);
+    searchController.addListener(_updateQuery);
     super.onInit();
-  }
-
-  @override
-  void onReady() {
-    focusNode.addListener(_updateShowPopup);
-    Get.lazyPut(() => SearchPopupController(mainController: this), fenix: true);
-    super.onReady();
   }
 
   @override
   void onClose() {
-    focusNode.removeListener(_updateShowPopup);
-    textController.dispose();
-    focusNode.dispose();
+    focusNode.removeListener(_updatePopup);
+    searchController.removeListener(_updateQuery);
     super.onClose();
   }
 
-  void searchFocus() => focusNode.requestFocus();
-
-  void searchUnfocus() => focusNode.unfocus();
-
-  void onSubmitText(String value) {
-    state.query = value;
-    _submit();
+  Future<void> _saveSearchTag(String keyword) async {
+    /// 로컬 저장
+    final success = await saveSearchKeywordUseCase.call(keyword);
+    debugPrint("최근 검색 태그, 로컬 저장 ${success ? '성공' : '실패'}");
   }
 
-  void onSubmitTip(String tip) {
-    final trim = tip.trim();
-    textController.text = trim;
-    onSubmitText(trim);
-  }
-
-  void _submit() {
-    searchUnfocus();
+  void submit({String? query, String? tag, String? tip}) {
+    focusNode.unfocus();
+    state.setKeyword(query: query, tag: tag, tip: tip);
+    if (state.keyword.isEmpty) {
+      showResult.value = false;
+      return;
+    }
     showResult.value = true;
+    _saveSearchTag(state.keyword);
   }
 
-  void selectTag(String value, bool isSelect) {
-    isSelect ? state.tags.add(value) : state.tags.remove(value);
-  }
+  void tapOther() => focusNode.unfocus();
 
-  void onChange(String value) {
-    tempQuery.value = value;
-  }
+  void tapSearchBar() => focusNode.requestFocus();
 
-  void _updateShowPopup() => showPopup.value = focusNode.hasFocus;
-}
-
-class SearchPopupController extends GetxController {
-  RxList<String> viewTags = <String>[].obs;
-  RxList<String> viewTips = <String>[].obs;
-
-  final MainTopBarSearchController mainController;
-
-  late final Worker worker1;
-
-  SearchPopupController({required this.mainController});
-
-  @override
-  void onInit() {
-    //팁, 태그 보이기
-    viewTips.addAll(mainController._cacheTips);
-    viewTags.addAll(mainController._cacheTags);
-    //worker 등록
-    worker1 = ever(
-      mainController.tempQuery,
-      _updateData,
-    );
-    super.onInit();
-  }
-
-  void _updateData(String text) {
-    if (text.isNotEmpty) {
-      //입력 걀과와 같은, 태그 20개 보이기
-      viewTags.value = List.of(
-        mainController._cacheTags
-            .where(
-              (tag) =>
-                  tag.trim().toLowerCase().contains(text.trim().toLowerCase()),
-            )
-            .take(20),
-      );
-      //입력 걀과와 같은, 팁 20개 보이기
-      viewTips.value = List.of(
-        mainController._cacheTips
-            .where(
-              (tip) =>
-                  tip.trim().toLowerCase().contains(text.trim().toLowerCase()),
-            )
-            .take(20),
-      );
-    } else {
-      viewTags.value = mainController._cacheTags;
-      viewTips.value = mainController._cacheTips;
+  void _updateQuery() {
+    queryNotifier.value = searchController.text;
+    if(searchController.text.isEmpty) {
+      showResult.value = false;
+      state.clear();
     }
   }
-}
 
-extension DummyMoel on MainTopBarSearchController {
-  List<String> loadTags() => [
-    "최근검색태그",
-    "UI/UX",
-    "Android",
-    "멘토링",
-    "팁",
-    "공부인증",
-  ];
-
-  List<String> loadTips() => [
-    "UIUX",
-    "공부",
-    "공부방법",
-    "공부인증",
-    "김유찬",
-    "공부",
-    "공부방법",
-    "공부인증",
-  ];
+  void _updatePopup() => showPopup.value = focusNode.hasFocus;
 }

@@ -116,11 +116,8 @@ class ChatRemoteDatasource {
     final log = ApiConstants(logName: "채팅 메시지 목록 조회");
 
     try {
-      final res = await client.get(
-        Uri.parse(
-          "${ApiConstants.chat}/rooms/$chatRoomPublicId/messages${model.toQueryParameter()}",
-        ),
-      );
+      final url = "${ApiConstants.chat}/rooms/$chatRoomPublicId/messages${model.toQueryParameter()}";
+      final res = await client.get(Uri.parse(url));
 
       final body = jsonDecode(res.body);
 

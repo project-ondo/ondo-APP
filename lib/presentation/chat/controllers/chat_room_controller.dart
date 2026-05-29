@@ -56,6 +56,9 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
 
   int lastMessageId = 0;
 
+  /// 컨트롤러 해제 여부 — 비동기 초기화 중 조기 이탈 시 작업 중단용
+  bool _isDisposed = false;
+
   int? _nextCursor;
   bool _hasNext = false;
   bool _isLoadingMore = false;
@@ -95,15 +98,7 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
   @override
   void onInit() {
     WidgetsBinding.instance.addObserver(this);
-    // 내 publicId 로드 → 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장
-    authLocalDatasource.getMyPublicId().then((id) {
-      _myPublicId = id;
-      log('[ChatRoom] myPublicId: $_myPublicId');
-    });
-    _initLoadChatRoomMessages().then((_) {
-      sendReadEvent();
-      _connectAndEnter();
-    });
+    // 내 publicId 로드 → 프로필 이미지 → 메시지 내역 로드 → 읽음 처리 → WebSocket 구독 순서 보장
     _initializeController();
     scrollController.addListener(_onScroll);
     super.onInit();
@@ -122,8 +117,9 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
 
   Future<void> _initializeController() async {
     try {
-      // 1. 내 publicId 로드 (순서 보장)
+      // 1. 내 publicId 로드
       _myPublicId = await authLocalDatasource.getMyPublicId();
+      if (_isDisposed) return;
       log('[ChatRoom] myPublicId: $_myPublicId');
 
       // 2. 상대방 프로필 이미지 URL 변환
@@ -133,15 +129,20 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
           final url = await mediaRemoteDatasource.getDownloadUrl(
             key: opponentProfileImageKey!,
           );
+          if (_isDisposed) return;
           opponentProfileImageUrl.value = url;
         } catch (e) {
           log('[ChatRoom] 프로필 이미지 로드 실패: $e');
+          if (_isDisposed) return;
           opponentProfileImageUrl.value = '';
         }
       }
 
-      // 3. 메시지 내역 로드 및 WebSocket 연결
+      // 3. 메시지 내역 로드
       await _initLoadChatRoomMessages();
+      if (_isDisposed) return;
+
+      // 4. 읽음 처리 및 WebSocket 연결
       sendReadEvent();
       await _connectAndEnter();
     } catch (e) {
@@ -160,6 +161,7 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
 
   @override
   void onClose() {
+    _isDisposed = true;
     // 구독 해제
     if (_messageSubscriptionId != null) {
       stompClient.unsubscribe(_messageSubscriptionId!);
@@ -196,44 +198,50 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
     super.onClose();
   }
 
-  /// WebSocket 연결 → 채팅방 입장 이벤트 발행 → 메시지/읽음 토픽 구독 시작
+  /// WebSocket 구독 등록 → 연결 → 채팅방 입장 이벤트 발행
+  ///
+  /// 구독을 connect() 보다 먼저 등록하여, 초기 연결 실패 시에도
+  /// _subscriptions 맵에 정보가 보존되고 재연결 후 _resubscribeAll()로 복구된다.
   Future<void> _connectAndEnter() async {
-    await stompClient.connect();
+    // 구독 먼저 등록 (연결 실패해도 맵에 보존 → 재연결 시 자동 복구)
+    _messageSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId',
+      _onMessageReceived,
+    );
+    log('[ChatRoom] 메시지 구독 등록: /topic/chat.rooms.$chatRoomId');
 
-    // 채팅방 입장 이벤트 발행
+    _readSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId.read',
+      _onReadEventReceived,
+    );
+    log('[ChatRoom] 읽음 이벤트 구독 등록: /topic/chat.rooms.$chatRoomId.read');
+
+    _typingSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId.typing',
+      _onTypingEventReceived,
+    );
+    log('[ChatRoom] 타이핑 이벤트 구독 등록: /topic/chat.rooms.$chatRoomId.typing');
+
+    _presenceSubscriptionId = stompClient.subscribe(
+      '/topic/chat.rooms.$chatRoomId.presence',
+      _onPresenceEventReceived,
+    );
+    log('[ChatRoom] 프레즌스 이벤트 구독 등록: /topic/chat.rooms.$chatRoomId.presence');
+
+    // 연결 시도 — 실패해도 자동 재연결 예약됨
+    try {
+      await stompClient.connect();
+    } catch (e) {
+      log('[ChatRoom] STOMP 초기 연결 실패 → 자동 재연결 예약됨: $e');
+      return;
+    }
+
+    // 연결 성공 시에만 입장 이벤트 발행
     stompClient.publish(
       '/pub/chat.room.enter',
       body: jsonEncode({'chatRoomPublicId': chatRoomId}),
     );
     log('[ChatRoom] 채팅방 입장: $chatRoomId');
-
-    // 메시지 토픽 구독 시작
-    _messageSubscriptionId = stompClient.subscribe(
-      '/topic/chat.rooms.$chatRoomId',
-      _onMessageReceived,
-    );
-    log('[ChatRoom] 메시지 구독 시작: /topic/chat.rooms.$chatRoomId');
-
-    // 읽음 이벤트 토픽 구독 시작
-    _readSubscriptionId = stompClient.subscribe(
-      '/topic/chat.rooms.$chatRoomId.read',
-      _onReadEventReceived,
-    );
-    log('[ChatRoom] 읽음 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.read');
-
-    // 타이핑 이벤트 토픽 구독 시작
-    _typingSubscriptionId = stompClient.subscribe(
-      '/topic/chat.rooms.$chatRoomId.typing',
-      _onTypingEventReceived,
-    );
-    log('[ChatRoom] 타이핑 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.typing');
-
-    // 프레즌스 이벤트 토픽 구독 시작
-    _presenceSubscriptionId = stompClient.subscribe(
-      '/topic/chat.rooms.$chatRoomId.presence',
-      _onPresenceEventReceived,
-    );
-    log('[ChatRoom] 프레즌스 이벤트 구독 시작: /topic/chat.rooms.$chatRoomId.presence');
   }
 
   /// 읽음 처리 이벤트 전송

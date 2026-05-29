@@ -7,5 +7,7 @@ class ChatMessageListRequestModel extends BaseListRequestModel {
     : super(start: cursor);
 
   @override
-  String toQueryParameter() => "?size=$size&cursor=$cursor";
+  // cursor=0은 초기 요청 — 서버가 최신 메시지부터 반환하도록 cursor 파라미터 생략
+  String toQueryParameter() =>
+      cursor == 0 ? "?size=$size" : "?size=$size&cursor=$cursor";
 }

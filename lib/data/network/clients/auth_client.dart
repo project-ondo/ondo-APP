@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
@@ -8,10 +9,17 @@ class AuthClient extends BaseClient {
   AuthLocalDatasource localDatasource;
   AuthRemoteDatasource remoteDatasource;
 
-  /// 진행 중인 토큰 갱신 Future — 동시 401 응답 시 중복 갱신 방지
+  /// 인증 실패(토큰 갱신 불가) 시 호출되는 콜백 — 상위 레이어에서 로그인 화면 이동 처리
+  final VoidCallback? onAuthFailed;
+
+  /// 진행 중인 토큰 갱신 Future — _getValidAccessToken과 401 재시도 모두에서 공유하여 중복 갱신 방지
   Future<String?>? _refreshFuture;
 
-  AuthClient({required this.localDatasource, required this.remoteDatasource});
+  AuthClient({
+    required this.localDatasource,
+    required this.remoteDatasource,
+    this.onAuthFailed,
+  });
 
   @override
   Future<StreamedResponse> send(BaseRequest request) async {
@@ -84,21 +92,28 @@ class AuthClient extends BaseClient {
     if (DateTime.now().isBefore(expiration)) return token;
 
     log("AccessToken 만료 → refresh 시도");
-    return await _tryRefresh();
+    _refreshFuture ??= _tryRefresh().whenComplete(() => _refreshFuture = null);
+    return await _refreshFuture;
   }
 
   /// refreshToken 유효성 검사 후 새 accessToken 발급
+  /// 갱신 완전 실패 시 로그인 화면으로 이동
   Future<String?> _tryRefresh() async {
     final refreshToken = await localDatasource.getRefreshToken();
-    if (refreshToken == null) return null;
+    if (refreshToken == null) {
+      log("RefreshToken 없음 → 로그인 화면 이동");
+      _navigateToLogin();
+      return null;
+    }
 
     // refreshToken 만료 여부 사전 확인
     final refreshExpirationStr = await localDatasource.getRefreshTokenExpiration();
     if (refreshExpirationStr != null) {
       final refreshExpiration = DateTime.tryParse(refreshExpirationStr);
       if (refreshExpiration != null && DateTime.now().isAfter(refreshExpiration)) {
-        log("RefreshToken 만료 → 토큰 삭제");
+        log("RefreshToken 만료 → 토큰 삭제 후 로그인 화면 이동");
         await localDatasource.deleteAll();
+        _navigateToLogin();
         return null;
       }
     }
@@ -116,8 +131,18 @@ class AuthClient extends BaseClient {
       return newToken.accessToken;
     }
 
-    log("토큰 재발급 실패 → 토큰 삭제");
+    log("토큰 재발급 실패 → 토큰 삭제 후 로그인 화면 이동");
     await localDatasource.deleteAll();
+    _navigateToLogin();
     return null;
+  }
+
+  /// 인증 실패 콜백 호출 — 상위 레이어에서 로그인 화면 이동 등을 처리
+  void _navigateToLogin() {
+    try {
+      onAuthFailed?.call();
+    } catch (e) {
+      log("인증 실패 콜백 실행 오류: $e");
+    }
   }
 }

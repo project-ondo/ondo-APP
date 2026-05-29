@@ -1,3 +1,4 @@
+import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/data/models/rating/response/rating_model.dart';
 
 class RatingEntity {
@@ -20,6 +21,6 @@ class RatingEntity {
     stars: model.stars,
     comment: model.comment,
     tags: model.tags,
-    createdAt: DateTime.tryParse(model.createdAt) ?? DateTime.now(),
+    createdAt: AppDateUtils.tryParseUtc(model.createdAt) ?? DateTime.now(),
   );
 }

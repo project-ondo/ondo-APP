@@ -1,3 +1,4 @@
+import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/data/models/chat/response/chat_message_model.dart';
 
 class ChatMessageEntity {
@@ -24,6 +25,6 @@ class ChatMessageEntity {
         senderId: model.senderId,
         messageType: model.messageType,
         content: model.content,
-        createdAt: DateTime.parse(model.createdAt),
+        createdAt: AppDateUtils.parseUtc(model.createdAt),
       );
 }

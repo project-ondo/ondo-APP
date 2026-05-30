@@ -97,6 +97,7 @@ class MyProfileScreen extends GetView<MyProfileController> {
       color: AppColors.white,
       padding: AppPadding.textField,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildUserProfileIntroduction(context, profile),
           AppGap.v16,

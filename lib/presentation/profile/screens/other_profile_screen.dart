@@ -136,6 +136,7 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
       padding: AppPadding.button,
       color: AppColors.white,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppGap.v8,
           _buildOtherUserProfileInformation(profile),

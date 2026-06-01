@@ -239,7 +239,7 @@ class PostViewController extends GetxController {
       }
 
       if (Get.isRegistered<HomeController>()) {
-        await Get.find<HomeController>().updatePostLike(
+         Get.find<HomeController>().updatePostLike(
           postId,
           heartTotal.value,
           isLiked,

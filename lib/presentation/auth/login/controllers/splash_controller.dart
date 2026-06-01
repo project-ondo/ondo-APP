@@ -1,5 +1,6 @@
 import 'package:flutter/animation.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 
 class SplashController extends GetxController
@@ -45,7 +46,7 @@ class SplashController extends GetxController
     final expirationStr = await localDatasource.getAccessTokenExpiration();
     if (expirationStr == null) return false;
 
-    final expiration = DateTime.tryParse(expirationStr);
+    final expiration = AppDateUtils.tryParseUtc(expirationStr);
     if (expiration == null) return false;
 
     // refreshToken도 확인
@@ -56,7 +57,7 @@ class SplashController extends GetxController
     await localDatasource.getRefreshTokenExpiration();
     if (refreshExpirationStr == null) return false;
 
-    final refreshExpiration = DateTime.tryParse(refreshExpirationStr);
+    final refreshExpiration = AppDateUtils.tryParseUtc(refreshExpirationStr);
     if (refreshExpiration == null) return false;
 
     // refreshToken이 유효하면 로그인 상태로 간주

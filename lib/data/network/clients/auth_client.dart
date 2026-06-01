@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
+import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/models/auth/response/sign_in_response_model.dart';
@@ -85,7 +86,7 @@ class AuthClient extends BaseClient {
     final expirationStr = await localDatasource.getAccessTokenExpiration();
     if (expirationStr == null) return token;
 
-    final expiration = DateTime.tryParse(expirationStr);
+    final expiration = AppDateUtils.tryParseUtc(expirationStr);
     if (expiration == null) return token;
 
     // 유효기간이 남아있으면 그대로 사용
@@ -109,7 +110,7 @@ class AuthClient extends BaseClient {
     // refreshToken 만료 여부 사전 확인
     final refreshExpirationStr = await localDatasource.getRefreshTokenExpiration();
     if (refreshExpirationStr != null) {
-      final refreshExpiration = DateTime.tryParse(refreshExpirationStr);
+      final refreshExpiration = AppDateUtils.tryParseUtc(refreshExpirationStr);
       if (refreshExpiration != null && DateTime.now().isAfter(refreshExpiration)) {
         log("RefreshToken 만료 → 토큰 삭제 후 로그인 화면 이동");
         await localDatasource.deleteAll();

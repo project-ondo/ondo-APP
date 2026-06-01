@@ -1,13 +1,15 @@
 import 'package:ondo/domain/entities/base/listable_wrapper.dart';
 import 'package:ondo/domain/entities/post/post_detail_entity.dart';
 import 'package:ondo/domain/entities/post/post_entity.dart';
+import 'package:ondo/domain/entities/post/post_rank_entity.dart';
 
 import '../../../data/models/post/request/post_create_request_model.dart';
 import '../../../data/models/post/request/post_update_request_model.dart';
-import '../../../data/models/post/response/post_list_model.dart';
 
 abstract class PostRepository {
-  Future<PostListModel> getRecommendPosts({int page = 0});
+  Future<List<PostRankEntity>> loadRecentPopularPostList();
+
+  Future<ListableWrapper<PostEntity>> loadRecommendPostList(int page, int size);
 
   Future<PostDetailEntity> loadPostDetail(int postId);
 

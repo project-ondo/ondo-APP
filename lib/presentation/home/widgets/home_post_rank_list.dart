@@ -66,7 +66,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
 
   Widget _postList() {
     return Obx(() {
-      final ranks = _mainController.ranks;
+      final ranks = _mainController.recentPopularPostList;
       final pageCount = (ranks.length / 3).ceil();
       return PageView.builder(
         controller: _pageController,
@@ -85,6 +85,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
                   ? Padding(
                       padding: AppPadding.screenHorizontal,
                       child: HomePostRankItem(
+                        post: ranks[currentItemIndex],
                         onTap: () {
                           //TODO : 나의 게시물인지 판단하여 넘김
                           _postController.enterPostDetail(
@@ -93,10 +94,6 @@ class _HomePostRankListState extends State<HomePostRankList> {
                             ranks[currentItemIndex].postId,
                           );
                         },
-                        title: ranks[currentItemIndex].title,
-                        createAgo: ranks[currentItemIndex].creatAt.inDays,
-                        favorite: ranks[currentItemIndex].favorites,
-                        rank: currentItemIndex + 1,
                         heartAction: (isFavorite, total) {
                           //TODO : model 정의되면 setter 적용
                         },

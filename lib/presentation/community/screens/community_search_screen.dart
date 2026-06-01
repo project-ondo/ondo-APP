@@ -24,14 +24,7 @@ class CommunitySearchScreen extends GetView<CommunityResultController> {
                 list: controller.viewPosts
                     .map(
                       (post) => PostItem(
-                        postId: post.postId,
-                        skills: post.tags,
-                        title: post.title,
-                        author: post.authorName,
-                        bookmarks: 0,
-                        favorites: post.likeCount,
-                        //TODO api에서 post 게시 시간 보내주면 데이터 입력
-                        createAt: DateTime.now(),
+                        post: post,
                         isMy: true,
                       ),
                     )

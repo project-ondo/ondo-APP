@@ -6,36 +6,21 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_icon_button.dart';
 import 'package:ondo/core/utils/app_date_utils.dart';
+import 'package:ondo/domain/entities/post/post_entity.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 class PostItem extends GetView<PostController> {
-  final int postId;
+  final PostEntity post;
   final bool isMy;
-  final List<String> skills;
-  final String title;
-  final String author;
-  final int favorites;
-  final int bookmarks;
-  final DateTime createAt;
-  final bool initialBookmark;
-  final bool initialFavorite;
   final FavoriteAction? heartAction;
   final BookmarkAction? bookmarkAction;
 
   const PostItem({
     super.key,
-    required this.postId,
+    required this.post,
     required this.isMy,
-    required this.skills,
-    required this.title,
-    required this.author,
-    required this.bookmarks,
-    required this.favorites,
-    required this.createAt,
     this.heartAction,
     this.bookmarkAction,
-    this.initialBookmark = false,
-    this.initialFavorite = false,
   });
 
   @override
@@ -45,8 +30,8 @@ class PostItem extends GetView<PostController> {
         controller.enterPostDetail(
           context,
           isMy,
-          postId,
-          isFavorite: initialFavorite, // isFavorite 전달
+          post.postId,
+          isFavorite: post.isBookmark,
         );
       },
       child: Container(
@@ -71,8 +56,8 @@ class PostItem extends GetView<PostController> {
   }
 
   Widget _skillList() {
-    final visibleSkills = skills.take(2).toList();
-    final remainCount = skills.length - 2;
+    final visibleSkills = post.tags.take(2).toList();
+    final remainCount = post.tags.length - 2;
 
     return Row(
       children: [
@@ -96,14 +81,14 @@ class PostItem extends GetView<PostController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title,
+          post.title,
           style: AppTextStyles.titleSm14(),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         ),
         AppGap.v4,
         Text(
-          author,
+          post.authorName,
           style: AppTextStyles.caption(textColor: AppColors.gray60),
         ),
       ],
@@ -115,26 +100,26 @@ class PostItem extends GetView<PostController> {
       children: [
         CustomIconButton(
           imagePath: AppIcon.heart.path,
-          total: favorites,
+          total: post.likeCount,
           activeColor: AppColors.red,
           action: heartAction,
           iconSize: AppSpacing.s16,
           totalStyle: AppTextStyles.caption(),
-          initialIsSelected: initialFavorite,
+          initialIsSelected: post.isFavorite,
         ),
         AppGap.h8,
         CustomIconButton(
           imagePath: AppIcon.bookmark.path,
-          total: bookmarks,
+          total: post.bookmarkCount,
           activeColor: AppColors.yellow,
           action: bookmarkAction,
           iconSize: AppSpacing.s16,
           totalStyle: AppTextStyles.caption(),
-          initialIsSelected: initialBookmark,
+          initialIsSelected: post.isBookmark,
         ),
         Spacer(),
         Text(
-          AppDateUtils.timeAgo(createAt),
+          AppDateUtils.timeAgo(post.createAt),
           style: AppTextStyles.caption(textColor: AppColors.gray50),
         ),
       ],

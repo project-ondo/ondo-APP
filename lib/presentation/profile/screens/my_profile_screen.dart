@@ -7,6 +7,7 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_popup_menu_button.dart';
 import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
+import 'package:ondo/domain/entities/post/post_entity.dart';
 import 'package:ondo/presentation/post/widgets/post_item.dart';
 import 'package:ondo/presentation/profile/controllers/my_profile_controller.dart';
 import 'package:ondo/presentation/profile/widget/profile_activity_section.dart';
@@ -38,19 +39,23 @@ final List<Map<String, dynamic>> mockPostData = [
     "createMinutes": 15,
   },
 ];
-
+//TODO mock data 제거
 final List<PostItem> testPostItemList = mockPostData.map((data) {
   return PostItem(
-    postId: data['postId'] ?? 0,
-    skills: List<String>.from(data['skills']),
-    title: data['title'],
-    author: data['author'],
-    bookmarks: data['bookmarks'],
-    favorites: data['favorites'],
-    createAt: DateTime.now().subtract(
-      Duration(minutes: data['createMinutes']),
+    post: PostEntity(
+      postId: data['postId'] ?? 0,
+      title: data['title'],
+      authorName: data['author'],
+      tags: List<String>.from(data['skills']),
+      viewCount: 10,
+      likeCount: data['favorites'],
+      commentCount: 10,
+      bookmarkCount: data['bookmarks'],
+      createAt: DateTime.now().subtract(
+        Duration(minutes: data['createMinutes']),
+      ),
     ),
-    isMy: true,
+    isMy: false,
   );
 }).toList();
 

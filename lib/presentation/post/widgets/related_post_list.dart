@@ -12,15 +12,9 @@ class RelatedPostList extends GetView<PostViewController> {
     return Obx(
           () => IndicatorPostPageList(
                   title: "관련 게시물",
-                  items: controller.postList.map((post) {
+                  items: controller.relatedPostList.map((post) {
           return PostItem(
-            postId: post.postId,
-            skills: post.tags,
-            title: post.title,
-            author: post.authorName,
-            bookmarks: 0,
-            favorites: post.likeCount,
-            createAt: DateTime.now(),
+            post: post,
             isMy: true,
           );
                   }).toList(),

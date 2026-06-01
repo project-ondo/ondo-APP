@@ -148,7 +148,7 @@ class CommunityController extends GetxController {
       if (Get.isRegistered<HomeController>()) {
         final post = viewPosts.firstWhereOrNull((p) => p.postId == postId);
         if (post != null) {
-          await Get.find<HomeController>().updatePostLike(
+          Get.find<HomeController>().updatePostLike(
             postId,
             post.likeCount,
             isLiked,

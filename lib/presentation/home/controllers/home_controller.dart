@@ -79,13 +79,13 @@ class HomeController extends GetxController with BaseHomeController {
     if (isLast) return;
 
     final result = await loadRecommendPostsUseCase.call(
-      page: _cachePostList.length,
+      page: _cachePostList.length ~/ size,
       size: size,
     );
     isLast = result.last ?? true;
 
     // 로컬 캐시에 저장된 좋아요 누른 게시물 id 불러오기
-    if (_cachedLikedIds.isEmpty) {
+    if (_cachedLikedIds.isEmpty && _cachePostList.isEmpty) {
       _cachedLikedIds = await getCachedLikedPostIdsUseCase();
     }
 

@@ -37,11 +37,13 @@ class ChatMessageViewModel {
   ///
   /// 서버 payload:
   /// ```json
-  /// { "messageId", "roomId", "senderId", "senderPublicId", "messageType", "content", "createdAt" }
+  /// { "messageId", "roomId", "senderPublicId", "messageType", "content", "createdAt" }
   /// ```
-  /// 내가 보낸 메시지는 ChatRoomController의 echo 감지(_pendingSentContents)로
-  /// 처리되므로 이 factory는 상대방 메시지에만 호출된다 → isMe: false 고정.
-  factory ChatMessageViewModel.fromJson(Map<String, dynamic> json) =>
+  /// [myPublicId]를 전달하면 다중 기기 로그인 환경에서도 본인 메시지를 올바르게 판별한다.
+  factory ChatMessageViewModel.fromJson(
+    Map<String, dynamic> json, {
+    String? myPublicId,
+  }) =>
       ChatMessageViewModel(
         messageId: (json['messageId'] as num?)?.toInt(),
         messageType: json['messageType'] as String? ?? 'TEXT',
@@ -49,7 +51,9 @@ class ChatMessageViewModel {
         createdAt:
             AppDateUtils.tryParseUtc(json['createdAt'] as String?) ??
             DateTime.now(),
-        isMe: false,
+        isMe: myPublicId != null &&
+            json['senderPublicId'] != null &&
+            json['senderPublicId'] == myPublicId,
         profileImageKey: null, // TODO: senderPublicId로 프로필 이미지 조회 예정
       );
 }

@@ -1,4 +1,5 @@
 class AppDateUtils {
+  static final RegExp _nanoSecondsRegex = RegExp(r'(\.\d{6})\d+(Z|[+-].*)$');
   static String timeAgo(DateTime? dateTime) {
     if (dateTime == null) return "";
 
@@ -55,7 +56,7 @@ class AppDateUtils {
 
     // 소수점 이하 7자리 이상 잘라내기 (나노초 → 마이크로초)
     return withZ.replaceFirstMapped(
-      RegExp(r'(\.\d{6})\d+(Z|[+-].*)$'),
+      _nanoSecondsRegex,
       (m) => '${m.group(1)}${m.group(2)}',
     );
   }

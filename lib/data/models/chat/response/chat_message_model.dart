@@ -21,7 +21,7 @@ class ChatMessageModel extends BaseModel {
     required this.createdAt,
   });
 
-  factory ChatMessageModel.fromJson(Map json) => ChatMessageModel(
+  factory ChatMessageModel.fromJson(Map<String, dynamic> json) => ChatMessageModel(
     messageId: (json["messageId"] as num).toInt(),
     roomId: json["roomId"] as String,
     senderPublicId: json["senderPublicId"] as String?,

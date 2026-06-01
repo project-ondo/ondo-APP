@@ -11,8 +11,10 @@ import '../../../data/repositories/post/post_repository_impl.dart';
 import '../../../domain/usecases/post/bookmark_post_usecase.dart';
 import '../../../domain/usecases/post/create_post_usecase.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
+import '../../../domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
 import '../../../domain/usecases/post/like_post_usecase.dart';
+import '../../../domain/usecases/post/save_post_like_local_use_case.dart';
 import '../../../domain/usecases/post/unbookmark_post_usecase.dart';
 import '../../../domain/usecases/post/unlike_post_usecase.dart';
 import '../../../domain/usecases/post/update_post_usecase.dart';
@@ -30,7 +32,6 @@ class PostViewBinding extends Bindings {
 
   @override
   void dependencies() {
-
     // Post UseCases
     Get.lazyPut<GetPostDetailUseCase>(
       () => GetPostDetailUseCase(
@@ -56,6 +57,41 @@ class PostViewBinding extends Bindings {
       ),
     );
 
+    Get.lazyPut<LikePostUseCase>(
+      () => LikePostUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
+
+    Get.lazyPut<UnlikePostUseCase>(
+      () => UnlikePostUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
+
+    Get.lazyPut<SavePostLikeLocalUseCase>(
+      () => SavePostLikeLocalUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
+
+    Get.lazyPut<GetCachedLikedPostIdsUseCase>(
+      () => GetCachedLikedPostIdsUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
+
+    Get.lazyPut<BookmarkPostUseCase>(
+      () => BookmarkPostUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
+
+    Get.lazyPut<UnbookmarkPostUseCase>(
+      () => UnbookmarkPostUseCase(
+        Get.find<PostRepositoryImpl>(),
+      ),
+    );
 
     // Comment DataSource
     Get.lazyPut<CommentRemoteDataSource>(
@@ -94,13 +130,16 @@ class PostViewBinding extends Bindings {
     Get.lazyPut<PostViewController>(
       () => PostViewController(
         postId: postId,
-        getPostDetailUseCase: Get.find<GetPostDetailUseCase>(),
-        updatePostUseCase: Get.find<UpdatePostUseCase>(),
-        deletePostUseCase: Get.find<DeletePostUseCase>(),
-        likePostUseCase: Get.find<LikePostUseCase>(),
-        unlikePostUseCase: Get.find<UnlikePostUseCase>(),
-        bookmarkPostUseCase: Get.find<BookmarkPostUseCase>(),
-        unbookmarkPostUseCase: Get.find<UnbookmarkPostUseCase>(),
+        initialIsFavorite: isFavorite,
+        useCase: Get.find<GetPostDetailUseCase>(),
+        updateUseCase: Get.find<UpdatePostUseCase>(),
+        deleteUseCase: Get.find<DeletePostUseCase>(),
+        likeUseCase: Get.find<LikePostUseCase>(),
+        unlikeUseCase: Get.find<UnlikePostUseCase>(),
+        savePostLikeLocalUseCase: Get.find<SavePostLikeLocalUseCase>(),
+        getCachedLikedPostIdsUseCase: Get.find<GetCachedLikedPostIdsUseCase>(),
+        bookmarkUseCase: Get.find<BookmarkPostUseCase>(),
+        unbookmarkUseCase: Get.find<UnbookmarkPostUseCase>(),
         getCommentsUseCase: Get.find<GetCommentsUseCase>(),
         createCommentUseCase: Get.find<CreateCommentUseCase>(),
         deleteCommentUseCase: Get.find<DeleteCommentUseCase>(),

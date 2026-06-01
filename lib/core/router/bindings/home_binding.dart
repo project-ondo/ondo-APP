@@ -71,6 +71,10 @@ class HomeBinding extends Bindings {
     );
 
     /// 검색 관련 의존성
+    Get.lazyPut<PostSearchUseCase>(
+      () => PostSearchUseCase(Get.find<PostRepositoryImpl>()),
+    );
+
     SearchBinding(pageState: SearchPageState.home).dependencies();
 
     ///HomeController 등록

@@ -41,5 +41,30 @@ class PostDetailEntity {
         commentCount: model.commentCount,
         bookmarkCount: model.bookmarkCount,
         createdAt: DateTime.tryParse(model.createdAt) ?? DateTime.now(),
+        isLike: model.isFavorite,
       );
+
+  bool get isFavorite => isLike;
+
+  PostDetailEntity copyWith({
+    int? likeCount,
+    int? commentCount,
+    int? bookmarkCount,
+    bool? isFavorite,
+    bool? isLike,
+    bool? isBookmark,
+  }) => PostDetailEntity(
+    postId: postId,
+    title: title,
+    content: content,
+    authorName: authorName,
+    tags: tags,
+    viewCount: viewCount,
+    likeCount: likeCount ?? this.likeCount,
+    commentCount: commentCount ?? this.commentCount,
+    bookmarkCount: bookmarkCount ?? this.bookmarkCount,
+    createdAt: createdAt,
+    isLike: isLike ?? isFavorite ?? this.isLike,
+    isBookmark: isBookmark ?? this.isBookmark,
+  );
 }

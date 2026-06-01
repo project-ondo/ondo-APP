@@ -5,7 +5,6 @@ import 'package:ondo/core/router/bindings/chat_binding.dart';
 import 'package:ondo/core/router/bindings/community_binding.dart';
 import 'package:ondo/core/router/bindings/home_binding.dart';
 import 'package:ondo/core/router/bindings/notification_binding.dart';
-import 'package:ondo/core/router/bindings/post_binding.dart';
 import 'package:ondo/core/router/bindings/profile_binding.dart';
 import 'package:ondo/core/router/bindings/user_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
@@ -43,7 +42,6 @@ class NavigationBinding extends Bindings {
     Get.lazyPut(() => PostController());
 
     UserBinding().dependencies();
-    PostBinding().dependencies();
 
     /// 각 화면 Binding
     HomeBinding().dependencies();

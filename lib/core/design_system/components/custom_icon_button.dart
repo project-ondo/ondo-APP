@@ -55,19 +55,13 @@ class _CustomIconButtonState extends State<CustomIconButton> {
   Widget build(BuildContext context) {
     final touchSize = widget.iconSize < 32 ? 32.0 : widget.iconSize;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            setState(() {
-              isSelect = !isSelect;
-              total = _nextTotal(isSelect);
-            });
-            widget.action?.call(isSelect, total);
-          },
-          child: SizedBox.square(
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _toggle,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox.square(
             dimension: touchSize,
             child: Center(
               child: Image.asset(
@@ -78,18 +72,26 @@ class _CustomIconButtonState extends State<CustomIconButton> {
               ),
             ),
           ),
-        ),
-        AppGap.h4,
-        Text(
-          "$total",
-          style: TextStyle(
-            fontSize: widget.totalStyle.fontSize,
-            fontWeight: widget.totalStyle.fontWeight,
-            color: AppColors.gray60,
+          AppGap.h4,
+          Text(
+            "$total",
+            style: TextStyle(
+              fontSize: widget.totalStyle.fontSize,
+              fontWeight: widget.totalStyle.fontWeight,
+              color: AppColors.gray60,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
+  }
+
+  void _toggle() {
+    setState(() {
+      isSelect = !isSelect;
+      total = _nextTotal(isSelect);
+    });
+    widget.action?.call(isSelect, total);
   }
 
   int _nextTotal(bool willSelect) {

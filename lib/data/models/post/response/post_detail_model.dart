@@ -9,6 +9,7 @@ class PostDetailModel {
   final int commentCount;
   final int bookmarkCount;
   final String createdAt;
+  final bool isFavorite;
 
   const PostDetailModel({
     required this.postId,
@@ -21,6 +22,7 @@ class PostDetailModel {
     required this.commentCount,
     required this.bookmarkCount,
     required this.createdAt,
+    required this.isFavorite,
   });
 
   factory PostDetailModel.fromJson(Map json) {
@@ -29,26 +31,22 @@ class PostDetailModel {
       title: json["title"] as String,
       content: json["content"] as String,
       authorName: json["authorName"] as String,
-      tags:
-          (json["tags"] as List?)
-              ?.map(
-                (e) => e.toString(),
-              )
-              .toList() ??
-          [],
+      tags: (json["tags"] as List?)
+          ?.map((e) => e.toString())
+          .toList() ?? [],
       viewCount: json["viewCount"] as int,
       likeCount: json["likeCount"] as int,
       commentCount: json["commentCount"] as int,
       bookmarkCount: json["bookmarkCount"] as int,
       createdAt: json["createdAt"] as String,
+      isFavorite: json["isFavorite"] as bool? ?? false,
     );
   }
-<<<<<<< HEAD
-=======
 
   PostDetailModel copyWith({
     int? likeCount,
     int? commentCount,
+    int? bookmarkCount,
     bool? isFavorite,
   }) {
     return PostDetailModel(
@@ -60,8 +58,9 @@ class PostDetailModel {
       viewCount: viewCount,
       likeCount: likeCount ?? this.likeCount,
       commentCount: commentCount ?? this.commentCount,
+      bookmarkCount: bookmarkCount ?? this.bookmarkCount,
+      createdAt: createdAt,
       isFavorite: isFavorite ?? this.isFavorite,
     );
   }
->>>>>>> 4536235 (fix : 하트 기능 버그 수정)
 }

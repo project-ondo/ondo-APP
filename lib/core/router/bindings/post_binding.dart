@@ -1,28 +1,15 @@
 import 'package:get/get.dart';
-<<<<<<< HEAD
-import 'package:ondo/data/datasource/post/post_local_datasource.dart';
-import 'package:ondo/data/datasource/post/post_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
-import 'package:ondo/data/repositories/post/post_repository_impl.dart';
-import 'package:ondo/domain/usecases/post/bookmark_post_usecase.dart';
-import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
-import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
-import 'package:ondo/domain/usecases/post/unbookmark_post_usecase.dart';
-import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
-
-class PostBinding extends Bindings {
-=======
-import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
-import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
-import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
 
 import '../../../data/datasource/comment/comment_remote_datasource.dart';
 import '../../../data/datasource/post/post_local_datasource.dart';
 import '../../../data/datasource/post/post_remote_datasource.dart';
-import '../../../data/network/clients/auth_client.dart';
 import '../../../data/repositories/comment/comment_repository_impl.dart';
 import '../../../data/repositories/post/post_repository_impl.dart';
 
+import '../../../domain/usecases/comment/create_comment_usecase.dart';
+import '../../../domain/usecases/comment/delete_comment_usecase.dart';
+import '../../../domain/usecases/comment/get_comments_usecase.dart';
 import '../../../domain/usecases/post/bookmark_post_usecase.dart';
 import '../../../domain/usecases/post/create_post_usecase.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
@@ -33,7 +20,6 @@ import '../../../domain/usecases/post/save_post_like_local_use_case.dart';
 import '../../../domain/usecases/post/unbookmark_post_usecase.dart';
 import '../../../domain/usecases/post/unlike_post_usecase.dart';
 import '../../../domain/usecases/post/update_post_usecase.dart';
-
 import '../../../presentation/post/controllers/post_view_controller.dart';
 
 class PostBinding extends Bindings {
@@ -45,15 +31,10 @@ class PostBinding extends Bindings {
     this.isFavorite = false,
   ]);
 
->>>>>>> 4536235 (fix : 하트 기능 버그 수정)
   @override
   void dependencies() {
     Get.lazyPut<PostRemoteDatasource>(
-<<<<<<< HEAD
       () => PostRemoteDatasource(
-=======
-      () => PostRemoteDatasourceImpl(
->>>>>>> 4536235 (fix : 하트 기능 버그 수정)
         Get.find<AuthClient>(),
       ),
     );
@@ -62,17 +43,13 @@ class PostBinding extends Bindings {
       () => PostLocalDatasource(),
     );
 
-    // Post Repository
     Get.lazyPut<PostRepositoryImpl>(
       () => PostRepositoryImpl(
         Get.find<PostRemoteDatasource>(),
         Get.find<PostLocalDatasource>(),
       ),
     );
-<<<<<<< HEAD
-=======
 
-    // Post UseCases
     Get.lazyPut<GetPostDetailUseCase>(
       () => GetPostDetailUseCase(
         Get.find<PostRepositoryImpl>(),
@@ -97,7 +74,6 @@ class PostBinding extends Bindings {
       ),
     );
 
->>>>>>> 4536235 (fix : 하트 기능 버그 수정)
     Get.lazyPut<LikePostUseCase>(
       () => LikePostUseCase(
         Get.find<PostRepositoryImpl>(),
@@ -110,7 +86,6 @@ class PostBinding extends Bindings {
       ),
     );
 
-    // 추가된 북마크 UseCase
     Get.lazyPut<SavePostLikeLocalUseCase>(
       () => SavePostLikeLocalUseCase(
         Get.find<PostRepositoryImpl>(),
@@ -135,25 +110,18 @@ class PostBinding extends Bindings {
       ),
     );
 
-<<<<<<< HEAD
-    Get.lazyPut<PostSearchUseCase>(
-      () => PostSearchUseCase(Get.find<PostRepositoryImpl>()),
-=======
-    // Comment DataSource
     Get.lazyPut<CommentRemoteDataSource>(
       () => CommentRemoteDataSourceImpl(
         Get.find<AuthClient>(),
       ),
     );
 
-    // Comment Repository
     Get.lazyPut<CommentRepositoryImpl>(
       () => CommentRepositoryImpl(
         remoteDataSource: Get.find<CommentRemoteDataSource>(),
       ),
     );
 
-    // Comment UseCases
     Get.lazyPut<GetCommentsUseCase>(
       () => GetCommentsUseCase(
         Get.find<CommentRepositoryImpl>(),
@@ -172,7 +140,6 @@ class PostBinding extends Bindings {
       ),
     );
 
-    // Controller
     Get.put<PostViewController>(
       PostViewController(
         postId: postId,
@@ -182,19 +149,14 @@ class PostBinding extends Bindings {
         deleteUseCase: Get.find<DeletePostUseCase>(),
         likeUseCase: Get.find<LikePostUseCase>(),
         unlikeUseCase: Get.find<UnlikePostUseCase>(),
-
-        // 추가
         savePostLikeLocalUseCase: Get.find<SavePostLikeLocalUseCase>(),
         getCachedLikedPostIdsUseCase: Get.find<GetCachedLikedPostIdsUseCase>(),
-
         bookmarkUseCase: Get.find<BookmarkPostUseCase>(),
         unbookmarkUseCase: Get.find<UnbookmarkPostUseCase>(),
-
         getCommentsUseCase: Get.find<GetCommentsUseCase>(),
         createCommentUseCase: Get.find<CreateCommentUseCase>(),
         deleteCommentUseCase: Get.find<DeleteCommentUseCase>(),
       ),
->>>>>>> 4536235 (fix : 하트 기능 버그 수정)
     );
   }
 }

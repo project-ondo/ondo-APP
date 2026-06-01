@@ -1,28 +1,16 @@
 import 'dart:convert';
 import 'package:ondo/data/models/post/request/post_create_request_model.dart';
+import 'package:ondo/data/models/post/request/post_search_request_model.dart';
 import 'package:ondo/data/models/post/request/post_update_request_model.dart';
 import 'package:ondo/data/models/post/response/post_list_model.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
-import 'package:ondo/data/models/post/response/post_detail_model.dart';
 import 'package:ondo/data/network/constants/api_constants.dart';
 
-abstract class PostRemoteDatasource {
-  Future<PostListModel> getRecommendPosts({int page = 0});
-  Future<PostDetailModel> getPostDetail(int postId);
-  Future<int> createPost(PostCreateRequestModel model);
-  Future<void> updatePost(int postId, PostUpdateRequestModel model);
-  Future<void> deletePost(int postId);
-  Future<void> likePost(int postId);
-  Future<void> unlikePost(int postId);
-  Future<void> bookmarkPost(int postId);
-  Future<void> unbookmarkPost(int postId);
-}
-
-class PostRemoteDatasourceImpl implements PostRemoteDatasource {
+class PostRemoteDatasource {
   final AuthClient _client;
-  PostRemoteDatasourceImpl(this._client);
 
-  @override
+  PostRemoteDatasource(this._client);
+
   Future<PostListModel> getRecommendPosts({int page = 0}) async {
     final log = ApiConstants(logName: '추천 게시물 조회');
     try {
@@ -44,8 +32,7 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     }
   }
 
-  @override
-  Future<PostDetailModel> getPostDetail(int postId) async {
+  Future<Map> getPostDetail(int postId) async {
     final log = ApiConstants(logName: '게시물 상세 조회');
     try {
       final response = await _client.get(
@@ -55,14 +42,13 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
       log.statusLog(response.statusCode);
       log.successLog(body['success'] ?? false);
       log.messageLog(body['message']);
-      return PostDetailModel.fromJson(body);
+      return body["data"];
     } catch (e) {
       log.errorLog(e);
       rethrow;
     }
   }
 
-  @override
   Future<int> createPost(PostCreateRequestModel model) async {
     final log = ApiConstants(logName: '게시물 생성');
     try {
@@ -85,7 +71,6 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     }
   }
 
-  @override
   Future<void> updatePost(int postId, PostUpdateRequestModel model) async {
     final log = ApiConstants(logName: '게시물 수정');
     try {
@@ -107,7 +92,6 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     }
   }
 
-  @override
   Future<void> deletePost(int postId) async {
     final log = ApiConstants(logName: '게시물 삭제');
     try {
@@ -127,7 +111,6 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     }
   }
 
-  @override
   Future<void> likePost(int postId) async {
     final log = ApiConstants(logName: '게시물 좋아요');
     try {
@@ -151,7 +134,6 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     }
   }
 
-  @override
   Future<void> unlikePost(int postId) async {
     final log = ApiConstants(logName: '게시물 좋아요 취소');
     try {
@@ -174,7 +156,6 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     }
   }
 
-  @override
   Future<void> bookmarkPost(int postId) async {
     final log = ApiConstants(logName: '게시물 북마크 추가');
     try {
@@ -197,7 +178,6 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
     }
   }
 
-  @override
   Future<void> unbookmarkPost(int postId) async {
     final log = ApiConstants(logName: '게시물 북마크 해제');
     try {
@@ -217,5 +197,32 @@ class PostRemoteDatasourceImpl implements PostRemoteDatasource {
       log.errorLog(e);
       rethrow;
     }
+  }
+
+  Future<Map?> search(PostSearchRequestModel model) async {
+    final log = ApiConstants(logName: "게시글 검색 서버");
+
+    try {
+      final res = await _client.get(
+        Uri.parse(
+          "${ApiConstants.post}/search${model.toQueryParameter()}",
+        ),
+      );
+
+      final body = jsonDecode(res.body);
+
+      log.successLog(body["success"]);
+      log.messageLog(body["message"]);
+
+      if (res.statusCode == 200 && body["success"] == true) {
+        return body["data"];
+      }
+
+      log.statusLog(res.statusCode);
+    } catch (e) {
+      log.errorLog(e);
+    }
+
+    return null;
   }
 }

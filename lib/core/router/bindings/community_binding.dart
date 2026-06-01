@@ -18,7 +18,7 @@ class CommunityBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<PostRemoteDatasource>(
-      () => PostRemoteDatasourceImpl(Get.find<AuthClient>()),
+      () => PostRemoteDatasource(Get.find<AuthClient>()),
     );
     Get.lazyPut<PostLocalDatasource>(() => PostLocalDatasource());
     Get.lazyPut<PostRepositoryImpl>(

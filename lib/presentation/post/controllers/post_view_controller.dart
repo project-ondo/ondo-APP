@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/domain/entities/comment/comment_entity.dart';
+import 'package:ondo/domain/entities/post/post_detail_entity.dart';
 import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
@@ -11,7 +12,6 @@ import 'package:ondo/presentation/community/controllers/community_controller.dar
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
 
 import '../../../data/models/post/request/post_update_request_model.dart';
-import '../../../data/models/post/response/post_detail_model.dart';
 import '../../../domain/usecases/post/create_post_usecase.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
@@ -26,13 +26,13 @@ class PostViewController extends GetxController {
   final int postId;
   final bool initialIsFavorite;
 
-  final GetPostDetailUseCase _useCase;
-  final UpdatePostUseCase _updateUseCase;
-  final DeletePostUseCase _deleteUseCase;
-  final LikePostUseCase _likeUseCase;
-  final UnlikePostUseCase _unlikeUseCase;
-  final BookmarkPostUseCase _bookmarkUseCase;
-  final UnbookmarkPostUseCase _unbookmarkUseCase;
+  final GetPostDetailUseCase _getPostDetailUseCase;
+  final UpdatePostUseCase _updatePostUseCase;
+  final DeletePostUseCase _deletePostUseCase;
+  final LikePostUseCase _likePostUseCase;
+  final UnlikePostUseCase _unlikePostUseCase;
+  final BookmarkPostUseCase _bookmarkPostUseCase;
+  final UnbookmarkPostUseCase _unbookmarkPostUseCase;
   final GetCommentsUseCase _getCommentsUseCase;
   final CreateCommentUseCase _createCommentUseCase;
   final DeleteCommentUseCase _deleteCommentUseCase;
@@ -40,29 +40,29 @@ class PostViewController extends GetxController {
   PostViewController({
     required this.postId,
     this.initialIsFavorite = false,
-    required GetPostDetailUseCase useCase,
-    required UpdatePostUseCase updateUseCase,
-    required DeletePostUseCase deleteUseCase,
-    required LikePostUseCase likeUseCase,
-    required UnlikePostUseCase unlikeUseCase,
-    required BookmarkPostUseCase bookmarkUseCase,
-    required UnbookmarkPostUseCase unbookmarkUseCase,
+    required GetPostDetailUseCase getPostDetailUseCase,
+    required UpdatePostUseCase updatePostUseCase,
+    required DeletePostUseCase deletePostUseCase,
+    required LikePostUseCase likePostUseCase,
+    required UnlikePostUseCase unlikePostUseCase,
+    required BookmarkPostUseCase bookmarkPostUseCase,
+    required UnbookmarkPostUseCase unbookmarkPostUseCase,
     required GetCommentsUseCase getCommentsUseCase,
     required CreateCommentUseCase createCommentUseCase,
     required DeleteCommentUseCase deleteCommentUseCase,
-  }) : _useCase = useCase,
-       _updateUseCase = updateUseCase,
-       _deleteUseCase = deleteUseCase,
-       _likeUseCase = likeUseCase,
-       _unlikeUseCase = unlikeUseCase,
-       _bookmarkUseCase = bookmarkUseCase,
-       _unbookmarkUseCase = unbookmarkUseCase,
+  }) : _getPostDetailUseCase = getPostDetailUseCase,
+       _updatePostUseCase = updatePostUseCase,
+       _deletePostUseCase = deletePostUseCase,
+       _likePostUseCase = likePostUseCase,
+       _unlikePostUseCase = unlikePostUseCase,
+       _bookmarkPostUseCase = bookmarkPostUseCase,
+       _unbookmarkPostUseCase = unbookmarkPostUseCase,
        _getCommentsUseCase = getCommentsUseCase,
        _createCommentUseCase = createCommentUseCase,
        _deleteCommentUseCase = deleteCommentUseCase;
 
-  final Rx<PostDetailModel?> post = Rx<PostDetailModel?>(null);
-  final RxList<PostDetailModel> postList = <PostDetailModel>[].obs;
+  final Rx<PostDetailEntity?> post = Rx<PostDetailEntity?>(null);
+  final RxList<PostDetailEntity> postList = <PostDetailEntity>[].obs;
 
   final isLoading = false.obs;
   final isCommentsLoading = false.obs;
@@ -130,7 +130,7 @@ class PostViewController extends GetxController {
         '[PostViewController] API 요청 시작 - postId: $postId',
       );
 
-      final result = await _useCase(postId);
+      final result = await _getPostDetailUseCase(postId);
 
       post.value = result;
       postList.assignAll([result]);
@@ -146,7 +146,7 @@ class PostViewController extends GetxController {
 
       heartTotal.value = result.likeCount;
       commentCount.value = result.commentCount;
-      selectHeart.value = result.isFavorite;
+      selectHeart.value = result.isLike;
     } catch (e) {
       debugPrint(
         '[PostViewController] API 요청 실패 - error: $e',
@@ -195,9 +195,9 @@ class PostViewController extends GetxController {
 
     try {
       if (isLiked) {
-        await _likeUseCase(postId);
+        await _likePostUseCase(postId);
       } else {
-        await _unlikeUseCase(postId);
+        await _unlikePostUseCase(postId);
       }
 
       if (Get.isRegistered<CommunityController>()) {
@@ -234,9 +234,9 @@ class PostViewController extends GetxController {
 
     try {
       if (isBookmarked) {
-        await _bookmarkUseCase(postId);
+        await _bookmarkPostUseCase(postId);
       } else {
-        await _unbookmarkUseCase(postId);
+        await _unbookmarkPostUseCase(postId);
       }
 
       debugPrint(
@@ -267,7 +267,7 @@ class PostViewController extends GetxController {
         '[PostViewController] 게시물 수정 요청 - postId: $postId',
       );
 
-      await _updateUseCase(
+      await _updatePostUseCase(
         postId,
         PostUpdateRequestModel(
           title: title,
@@ -307,7 +307,7 @@ class PostViewController extends GetxController {
               '[PostViewController] 게시물 삭제 요청 - postId: $postId',
             );
 
-            await _deleteUseCase(postId);
+      await _deletePostUseCase(postId);
 
             debugPrint('[PostViewController] 게시물 삭제 성공');
             Get.find<CommunityController>().removePost(postId);

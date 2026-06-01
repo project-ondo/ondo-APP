@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart';
-import 'package:ondo/data/models/base/request/base_search_request_model.dart';
+import 'package:ondo/data/models/user/request/user_search_request_model.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
 import 'package:ondo/data/network/constants/api_constants.dart';
 
@@ -12,12 +12,12 @@ class UserRemoteDatasource {
 
   UserRemoteDatasource({required this.client});
 
-  Future<Map?> search(BaseSearchRequestModel model) async {
-    final log = ApiConstants(logName: "유저 검색");
+  Future<Map?> search(UserSearchRequestModel model) async {
+    final log = ApiConstants(logName: "유저 검색 서버");
 
     try {
       final res = await client.get(
-        Uri.parse("${ApiConstants.user}/search?${model.toQueryString()}"),
+        Uri.parse("${ApiConstants.user}/search${model.toQueryString()}"),
       );
 
       final body = jsonDecode(res.body);

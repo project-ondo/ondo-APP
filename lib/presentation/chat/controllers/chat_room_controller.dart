@@ -441,7 +441,10 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
     if (_cacheChatList.isNotEmpty) {
       viewChatList.assignAll(
         _cacheChatList.map(
-          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(
+            e,
+            myPublicId: _myPublicId,
+          ),
         ),
       );
       lastMessageId = _cacheChatList.first.messageId;
@@ -465,7 +468,10 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
 
       viewChatList.assignAll(
         _cacheChatList.map(
-          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(
+            e,
+            myPublicId: _myPublicId,
+          ),
         ),
       );
     } finally {

@@ -53,22 +53,30 @@ class _CustomIconButtonState extends State<CustomIconButton> {
 
   @override
   Widget build(BuildContext context) {
+    final touchSize = widget.iconSize < 32 ? 32.0 : widget.iconSize;
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
+          behavior: HitTestBehavior.opaque,
           onTap: () {
             setState(() {
               isSelect = !isSelect;
-              isSelect ? total += 1 : total -= 1;
+              total = _nextTotal(isSelect);
             });
             widget.action?.call(isSelect, total);
           },
-          child: Image.asset(
-            widget.imagePath,
-            color: isSelect ? widget.activeColor : AppColors.gray50,
-            height: widget.iconSize,
-            width: widget.iconSize,
+          child: SizedBox.square(
+            dimension: touchSize,
+            child: Center(
+              child: Image.asset(
+                widget.imagePath,
+                color: isSelect ? widget.activeColor : AppColors.gray50,
+                height: widget.iconSize,
+                width: widget.iconSize,
+              ),
+            ),
           ),
         ),
         AppGap.h4,
@@ -82,5 +90,10 @@ class _CustomIconButtonState extends State<CustomIconButton> {
         ),
       ],
     );
+  }
+
+  int _nextTotal(bool willSelect) {
+    final next = total + (willSelect ? 1 : -1);
+    return next < 0 ? 0 : next;
   }
 }

@@ -14,18 +14,31 @@ import 'package:ondo/presentation/home/controllers/home_controller.dart';
 import '../../../data/models/post/request/post_update_request_model.dart';
 import '../../../domain/usecases/post/create_post_usecase.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
+import '../../../domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
 import '../../../domain/usecases/post/like_post_usecase.dart';
+import '../../../domain/usecases/post/save_post_like_local_use_case.dart';
 import '../../../domain/usecases/post/unlike_post_usecase.dart';
 import '../../../domain/usecases/post/update_post_usecase.dart';
 import '../../community/controllers/community_post_create_screen_controller.dart';
 import '../../community/screens/community_post_create_screen.dart';
 import '../widgets/post_report_dialog.dart';
 
+class _PostLikeState {
+  const _PostLikeState({
+    required this.likeCount,
+    required this.isFavorite,
+  });
+
+  final int likeCount;
+  final bool isFavorite;
+}
+
 class PostViewController extends GetxController {
   final int postId;
   final bool initialIsFavorite;
 
+<<<<<<< HEAD
   final GetPostDetailUseCase _getPostDetailUseCase;
   final UpdatePostUseCase _updatePostUseCase;
   final DeletePostUseCase _deletePostUseCase;
@@ -33,6 +46,17 @@ class PostViewController extends GetxController {
   final UnlikePostUseCase _unlikePostUseCase;
   final BookmarkPostUseCase _bookmarkPostUseCase;
   final UnbookmarkPostUseCase _unbookmarkPostUseCase;
+=======
+  final GetPostDetailUseCase _useCase;
+  final UpdatePostUseCase _updateUseCase;
+  final DeletePostUseCase _deleteUseCase;
+  final LikePostUseCase _likeUseCase;
+  final UnlikePostUseCase _unlikeUseCase;
+  final SavePostLikeLocalUseCase _savePostLikeLocalUseCase;
+  final GetCachedLikedPostIdsUseCase _getCachedLikedPostIdsUseCase;
+  final BookmarkPostUseCase _bookmarkUseCase;
+  final UnbookmarkPostUseCase _unbookmarkUseCase;
+>>>>>>> 4536235 (fix : 하트 기능 버그 수정)
   final GetCommentsUseCase _getCommentsUseCase;
   final CreateCommentUseCase _createCommentUseCase;
   final DeleteCommentUseCase _deleteCommentUseCase;
@@ -40,6 +64,7 @@ class PostViewController extends GetxController {
   PostViewController({
     required this.postId,
     this.initialIsFavorite = false,
+<<<<<<< HEAD
     required GetPostDetailUseCase getPostDetailUseCase,
     required UpdatePostUseCase updatePostUseCase,
     required DeletePostUseCase deletePostUseCase,
@@ -57,6 +82,29 @@ class PostViewController extends GetxController {
        _unlikePostUseCase = unlikePostUseCase,
        _bookmarkPostUseCase = bookmarkPostUseCase,
        _unbookmarkPostUseCase = unbookmarkPostUseCase,
+=======
+    required GetPostDetailUseCase useCase,
+    required UpdatePostUseCase updateUseCase,
+    required DeletePostUseCase deleteUseCase,
+    required LikePostUseCase likeUseCase,
+    required UnlikePostUseCase unlikeUseCase,
+    required SavePostLikeLocalUseCase savePostLikeLocalUseCase,
+    required GetCachedLikedPostIdsUseCase getCachedLikedPostIdsUseCase,
+    required BookmarkPostUseCase bookmarkUseCase,
+    required UnbookmarkPostUseCase unbookmarkUseCase,
+    required GetCommentsUseCase getCommentsUseCase,
+    required CreateCommentUseCase createCommentUseCase,
+    required DeleteCommentUseCase deleteCommentUseCase,
+  }) : _useCase = useCase,
+       _updateUseCase = updateUseCase,
+       _deleteUseCase = deleteUseCase,
+       _likeUseCase = likeUseCase,
+       _unlikeUseCase = unlikeUseCase,
+       _savePostLikeLocalUseCase = savePostLikeLocalUseCase,
+       _getCachedLikedPostIdsUseCase = getCachedLikedPostIdsUseCase,
+       _bookmarkUseCase = bookmarkUseCase,
+       _unbookmarkUseCase = unbookmarkUseCase,
+>>>>>>> 4536235 (fix : 하트 기능 버그 수정)
        _getCommentsUseCase = getCommentsUseCase,
        _createCommentUseCase = createCommentUseCase,
        _deleteCommentUseCase = deleteCommentUseCase;
@@ -102,12 +150,31 @@ class PostViewController extends GetxController {
   }
 
   bool _resolveIsFavorite() {
+<<<<<<< HEAD
+    if (Get.isRegistered<CommunityController>()) {
+      final post = Get.find<CommunityController>().viewPosts.firstWhereOrNull(
+        (p) => p.postId == postId,
+      );
+=======
+    final listState = _resolveLikeStateFromLists();
+    if (listState != null) return listState.isFavorite;
+>>>>>>> 4536235 (fix : 하트 기능 버그 수정)
+
+    return initialIsFavorite;
+  }
+
+  _PostLikeState? _resolveLikeStateFromLists() {
     if (Get.isRegistered<CommunityController>()) {
       final post = Get.find<CommunityController>().viewPosts.firstWhereOrNull(
         (p) => p.postId == postId,
       );
 
-      if (post != null) return post.isFavorite;
+      if (post != null) {
+        return _PostLikeState(
+          likeCount: post.likeCount,
+          isFavorite: post.isFavorite,
+        );
+      }
     }
 
     if (Get.isRegistered<HomeController>()) {
@@ -115,10 +182,15 @@ class PostViewController extends GetxController {
         (p) => p.postId == postId,
       );
 
-      if (post != null) return post.isFavorite;
+      if (post != null) {
+        return _PostLikeState(
+          likeCount: post.likeCount,
+          isFavorite: post.isFavorite,
+        );
+      }
     }
 
-    return initialIsFavorite;
+    return null;
   }
 
   Future<void> fetchPostDetail(int postId) async {
@@ -130,23 +202,38 @@ class PostViewController extends GetxController {
         '[PostViewController] API 요청 시작 - postId: $postId',
       );
 
+<<<<<<< HEAD
       final result = await _getPostDetailUseCase(postId);
+=======
+      final result = await _useCase(postId);
+      final resolvedLikeState = await _resolveFetchedLikeState(result);
+      final resolvedResult = result.copyWith(
+        likeCount: resolvedLikeState.likeCount,
+        isFavorite: resolvedLikeState.isFavorite,
+      );
+>>>>>>> 4536235 (fix : 하트 기능 버그 수정)
 
-      post.value = result;
-      postList.assignAll([result]);
+      post.value = resolvedResult;
+      postList.assignAll([resolvedResult]);
 
       debugPrint(
         '[PostViewController] API 응답 성공 - title: ${result.title}',
       );
 
-      title.value = result.title;
-      authorName.value = result.authorName;
-      bodyText.value = result.content;
-      postTags.assignAll(result.tags);
+      title.value = resolvedResult.title;
+      authorName.value = resolvedResult.authorName;
+      bodyText.value = resolvedResult.content;
+      postTags.assignAll(resolvedResult.tags);
 
+<<<<<<< HEAD
       heartTotal.value = result.likeCount;
       commentCount.value = result.commentCount;
       selectHeart.value = result.isLike;
+=======
+      heartTotal.value = resolvedResult.likeCount;
+      commentCount.value = resolvedResult.commentCount;
+      selectHeart.value = resolvedResult.isFavorite;
+>>>>>>> 4536235 (fix : 하트 기능 버그 수정)
     } catch (e) {
       debugPrint(
         '[PostViewController] API 요청 실패 - error: $e',
@@ -156,6 +243,19 @@ class PostViewController extends GetxController {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  Future<_PostLikeState> _resolveFetchedLikeState(
+    PostDetailModel result,
+  ) async {
+    final listState = _resolveLikeStateFromLists();
+    if (listState != null) return listState;
+
+    final cachedLikedIds = await _getCachedLikedPostIdsUseCase();
+    return _PostLikeState(
+      likeCount: result.likeCount,
+      isFavorite: cachedLikedIds.contains(postId) || result.isFavorite,
+    );
   }
 
   Future<void> fetchComments() async {
@@ -189,9 +289,16 @@ class PostViewController extends GetxController {
   }
 
   Future<void> toggleLike(bool isLiked) async {
-    selectHeart.value = isLiked;
+    final previousIsLiked = selectHeart.value;
+    final previousHeartTotal = heartTotal.value;
 
+<<<<<<< HEAD
     heartTotal.value = isLiked ? heartTotal.value + 1 : heartTotal.value - 1;
+=======
+    selectHeart.value = isLiked;
+    heartTotal.value = _nextLikeCount(heartTotal.value, isLiked);
+    _syncDetailLikeState();
+>>>>>>> 4536235 (fix : 하트 기능 버그 수정)
 
     try {
       if (isLiked) {
@@ -199,6 +306,8 @@ class PostViewController extends GetxController {
       } else {
         await _unlikePostUseCase(postId);
       }
+
+      await _savePostLikeLocalUseCase(postId, isLiked);
 
       if (Get.isRegistered<CommunityController>()) {
         await Get.find<CommunityController>().updatePostLike(
@@ -209,7 +318,7 @@ class PostViewController extends GetxController {
       }
 
       if (Get.isRegistered<HomeController>()) {
-        Get.find<HomeController>().updatePostLike(
+        await Get.find<HomeController>().updatePostLike(
           postId,
           heartTotal.value,
           isLiked,
@@ -220,10 +329,34 @@ class PostViewController extends GetxController {
         '[PostViewController] 좋아요 토글 실패 - error: $e',
       );
 
+<<<<<<< HEAD
       selectHeart.value = !isLiked;
 
       heartTotal.value = isLiked ? heartTotal.value - 1 : heartTotal.value + 1;
+=======
+      selectHeart.value = previousIsLiked;
+      heartTotal.value = previousHeartTotal;
+      _syncDetailLikeState();
+>>>>>>> 4536235 (fix : 하트 기능 버그 수정)
     }
+  }
+
+  int _nextLikeCount(int current, bool isLiked) {
+    final next = current + (isLiked ? 1 : -1);
+    return next < 0 ? 0 : next;
+  }
+
+  void _syncDetailLikeState() {
+    final current = post.value;
+    if (current == null) return;
+
+    final updated = current.copyWith(
+      likeCount: heartTotal.value,
+      isFavorite: selectHeart.value,
+    );
+
+    post.value = updated;
+    postList.assignAll([updated]);
   }
 
   Future<void> toggleBookmark(bool isBookmarked) async {
@@ -373,6 +506,7 @@ class PostViewController extends GetxController {
       );
     }
   }
+<<<<<<< HEAD
 
   void reportPost() {
     Get.dialog(
@@ -395,4 +529,6 @@ class PostViewController extends GetxController {
     );
     Get.to(() => CommunityPostCreateScreen());
   }
+=======
+>>>>>>> 4536235 (fix : 하트 기능 버그 수정)
 }

@@ -10,9 +10,15 @@ class RelatedPostList extends GetView<PostViewController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
+<<<<<<< HEAD
           () => IndicatorPostPageList(
                   title: "관련 게시물",
                   items: controller.postList.map((post) {
+=======
+      () => IndicatorPostPageList(
+        title: "관련 게시물",
+        items: controller.postList.map((post) {
+>>>>>>> 4536235 (fix : 하트 기능 버그 수정)
           return PostItem(
             postId: post.postId,
             skills: post.tags,
@@ -22,6 +28,10 @@ class RelatedPostList extends GetView<PostViewController> {
             favorites: post.likeCount,
             createAt: DateTime.now(),
             isMy: true,
+            initialFavorite: post.isFavorite,
+            heartAction: (isFavorite, total) {
+              controller.toggleLike(isFavorite);
+            },
           );
                   }).toList(),
                 ),

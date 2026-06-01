@@ -43,4 +43,25 @@ class PostDetailModel {
       createdAt: json["createdAt"] as String,
     );
   }
+<<<<<<< HEAD
+=======
+
+  PostDetailModel copyWith({
+    int? likeCount,
+    int? commentCount,
+    bool? isFavorite,
+  }) {
+    return PostDetailModel(
+      postId: postId,
+      title: title,
+      content: content,
+      authorName: authorName,
+      tags: tags,
+      viewCount: viewCount,
+      likeCount: likeCount ?? this.likeCount,
+      commentCount: commentCount ?? this.commentCount,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
+>>>>>>> 4536235 (fix : 하트 기능 버그 수정)
 }

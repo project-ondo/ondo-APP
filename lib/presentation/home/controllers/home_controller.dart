@@ -129,7 +129,18 @@ class HomeController extends GetxController with BaseHomeController {
     }
   }
 
-  void updatePostLike(int postId, int likeCount, bool isFavorite) {
+  Future<void> updatePostLike(
+    int postId,
+    int likeCount,
+    bool isFavorite,
+  ) async {
+    if (isFavorite) {
+      _cachedLikedIds.add(postId);
+    } else {
+      _cachedLikedIds.remove(postId);
+    }
+    await savePostLikeLocalUseCase(postId, isFavorite);
+
     final index = viewPostList.indexWhere((p) => p.postId == postId);
     if (index != -1) {
       viewPostList[index] = viewPostList[index].copyWith(

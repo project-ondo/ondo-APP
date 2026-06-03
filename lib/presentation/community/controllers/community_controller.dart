@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ondo/data/models/post/response/post_list_model.dart';
+import 'package:ondo/domain/entities/post/post_entity.dart';
 import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
-import 'package:ondo/domain/usecases/post/get_recommend_posts_usecase.dart';
+import 'package:ondo/domain/usecases/post/load_recommend_post_list_use_case.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
@@ -15,26 +15,26 @@ import 'package:ondo/presentation/home/controllers/home_controller.dart';
 class CommunityController extends GetxController {
   final LikePostUseCase _likeUseCase;
   final UnlikePostUseCase _unlikeUseCase;
-  final GetRecommendPostsUseCase _getRecommendPostsUseCase;
+  final LoadRecommendPostListUseCase _getRecommendPostsUseCase;
   final SavePostLikeLocalUseCase _savePostLikeLocalUseCase;
   final GetCachedLikedPostIdsUseCase _getCachedLikedPostIdsUseCase;
 
   CommunityController({
     required LikePostUseCase likeUseCase,
     required UnlikePostUseCase unlikeUseCase,
-    required GetRecommendPostsUseCase getRecommendPostsUseCase,
+    required LoadRecommendPostListUseCase getRecommendPostsUseCase,
     required SavePostLikeLocalUseCase savePostLikeLocalUseCase,
     required GetCachedLikedPostIdsUseCase getCachedLikedPostIdsUseCase,
-  })  : _likeUseCase = likeUseCase,
-        _unlikeUseCase = unlikeUseCase,
-        _getRecommendPostsUseCase = getRecommendPostsUseCase,
-        _savePostLikeLocalUseCase = savePostLikeLocalUseCase,
-        _getCachedLikedPostIdsUseCase = getCachedLikedPostIdsUseCase;
+  }) : _likeUseCase = likeUseCase,
+       _unlikeUseCase = unlikeUseCase,
+       _getRecommendPostsUseCase = getRecommendPostsUseCase,
+       _savePostLikeLocalUseCase = savePostLikeLocalUseCase,
+       _getCachedLikedPostIdsUseCase = getCachedLikedPostIdsUseCase;
 
-  final List<String> tags = <String>[].obs;
+  final Set<String> viewTagList = <String>{}.obs;
   final RxSet<String> selectTagList = <String>{}.obs;
-  final List<PostContentModel> _cachePosts = <PostContentModel>[];
-  final RxList<PostContentModel> viewPosts = <PostContentModel>[].obs;
+  final List<PostEntity> _cachePostList = <PostEntity>[];
+  final RxList<PostEntity> viewPostList = <PostEntity>[].obs;
 
   final RxBool isLoading = false.obs;
   final RxBool isLastPage = false.obs;
@@ -45,13 +45,13 @@ class CommunityController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    tags.addAll(_getTags());
+    viewTagList.addAll(_getTags());
     _loadCacheAndFetch();
   }
 
   Future<void> _loadCacheAndFetch() async {
     _cachedLikedIds = await _getCachedLikedPostIdsUseCase();
-    await fetchRecommendPosts();
+    await loadRecommendPostList();
   }
 
   @override
@@ -60,21 +60,21 @@ class CommunityController extends GetxController {
     super.onReady();
   }
 
-  Future<void> fetchRecommendPosts({bool refresh = false}) async {
+  Future<void> loadRecommendPostList({bool refresh = false}) async {
     if (refresh) {
       _currentPage = 0;
-      _cachePosts.clear();
-      viewPosts.clear();
+      _cachePostList.clear();
+      viewPostList.clear();
       isLastPage.value = false;
     }
 
     if (isLastPage.value) return;
-
     isLoading.value = true;
 
     try {
       final result = await _getRecommendPostsUseCase(
         page: _currentPage,
+        size: 20,
       );
 
       // 로컬 캐시 기반으로 isFavorite 덮어쓰기 (앱 재시작 후에도 유지)
@@ -89,11 +89,11 @@ class CommunityController extends GetxController {
         return post;
       }).toList();
 
-      _cachePosts.addAll(applied);
+      _cachePostList.addAll(applied);
 
-      viewPosts.assignAll(_cachePosts);
+      viewPostList.assignAll(_cachePostList);
 
-      isLastPage.value = result.last;
+      isLastPage.value = result.last ?? true;
 
       _currentPage++;
     } catch (e) {
@@ -105,8 +105,7 @@ class CommunityController extends GetxController {
     }
   }
 
-  Future<void> refreshPosts() =>
-      fetchRecommendPosts(refresh: true);
+  Future<void> refreshPosts() => loadRecommendPostList(refresh: true);
 
   void enterPostCreate() {
     Get.delete<CommunityPostCreateController>(
@@ -114,7 +113,7 @@ class CommunityController extends GetxController {
     );
 
     Get.lazyPut(
-          () => CommunityPostCreateController(
+      () => CommunityPostCreateController(
         createUseCase: Get.find<CreatePostUseCase>(),
         updateUseCase: Get.find<UpdatePostUseCase>(),
       ),
@@ -124,9 +123,9 @@ class CommunityController extends GetxController {
   }
 
   Future<void> toggleLike(
-      int postId,
-      bool isLiked,
-      ) async {
+    int postId,
+    bool isLiked,
+  ) async {
     // 옵티미스틱 업데이트: API 결과 전에 즉시 UI 반영
     _updatePostLikeInList(postId, isLiked ? 1 : -1, isLiked);
 
@@ -147,7 +146,7 @@ class CommunityController extends GetxController {
 
       // 홈 목록과 cross-sync
       if (Get.isRegistered<HomeController>()) {
-        final post = viewPosts.firstWhereOrNull((p) => p.postId == postId);
+        final post = viewPostList.firstWhereOrNull((p) => p.postId == postId);
         if (post != null) {
           Get.find<HomeController>().updatePostLike(
             postId,
@@ -167,40 +166,36 @@ class CommunityController extends GetxController {
   }
 
   void _updatePostLikeInList(
-      int postId,
-      int delta,
-      bool isFavorite,
-      ) {
-    final index =
-    viewPosts.indexWhere((p) => p.postId == postId);
+    int postId,
+    int delta,
+    bool isFavorite,
+  ) {
+    final index = viewPostList.indexWhere((p) => p.postId == postId);
 
     if (index != -1) {
-      viewPosts[index] = viewPosts[index].copyWith(
-        likeCount: viewPosts[index].likeCount + delta,
+      viewPostList[index] = viewPostList[index].copyWith(
+        likeCount: viewPostList[index].likeCount + delta,
         isFavorite: isFavorite,
       );
 
-      viewPosts.refresh();
+      viewPostList.refresh();
     }
 
-    final cacheIndex =
-    _cachePosts.indexWhere((p) => p.postId == postId);
+    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
 
     if (cacheIndex != -1) {
-      _cachePosts[cacheIndex] =
-          _cachePosts[cacheIndex].copyWith(
-            likeCount:
-            _cachePosts[cacheIndex].likeCount + delta,
-            isFavorite: isFavorite,
-          );
+      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
+        likeCount: _cachePostList[cacheIndex].likeCount + delta,
+        isFavorite: isFavorite,
+      );
     }
   }
 
   Future<void> updatePostLike(
-      int postId,
-      int likeCount,
-      bool isFavorite,
-      ) async {
+    int postId,
+    int likeCount,
+    bool isFavorite,
+  ) async {
     // 로컬 캐시 동기화 (PostViewController → CommunityController 방향)
     if (isFavorite) {
       _cachedLikedIds.add(postId);
@@ -209,108 +204,99 @@ class CommunityController extends GetxController {
     }
     await _savePostLikeLocalUseCase(postId, isFavorite);
 
-    final index =
-    viewPosts.indexWhere((p) => p.postId == postId);
+    final index = viewPostList.indexWhere((p) => p.postId == postId);
 
     if (index != -1) {
-      viewPosts[index] = viewPosts[index].copyWith(
+      viewPostList[index] = viewPostList[index].copyWith(
         likeCount: likeCount,
         isFavorite: isFavorite,
       );
 
-      viewPosts.refresh();
+      viewPostList.refresh();
     }
 
-    final cacheIndex =
-    _cachePosts.indexWhere((p) => p.postId == postId);
+    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
 
     if (cacheIndex != -1) {
-      _cachePosts[cacheIndex] =
-          _cachePosts[cacheIndex].copyWith(
-            likeCount: likeCount,
-            isFavorite: isFavorite,
-          );
+      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
+        likeCount: likeCount,
+        isFavorite: isFavorite,
+      );
     }
   }
 
   void removePost(int postId) {
-    viewPosts.removeWhere(
-          (p) => p.postId == postId,
+    viewPostList.removeWhere(
+      (p) => p.postId == postId,
     );
 
-    _cachePosts.removeWhere(
-          (p) => p.postId == postId,
+    _cachePostList.removeWhere(
+      (p) => p.postId == postId,
     );
   }
 
   void searchPost(List<String> searchList) {
-    final Set<PostContentModel> result = {};
+    final Set<PostEntity> result = {};
 
     result.addAllIf(
       searchList.isNotEmpty,
-      _cachePosts.where(
-            (post) =>
-        searchList.any(
-              (search) =>
-              post.title.contains(search),
-        ) ||
+      _cachePostList.where(
+        (post) =>
             searchList.any(
-                  (search) =>
-                  post.authorName.contains(search),
+              (search) => post.title.contains(search),
             ) ||
             searchList.any(
-                  (search) => post.tags.any(
-                    (tag) => tag.contains(search),
+              (search) => post.authorName.contains(search),
+            ) ||
+            searchList.any(
+              (search) => post.tags.any(
+                (tag) => tag.contains(search),
               ),
             ),
       ),
     );
 
-    Get.find<CommunityResultController>()
-        .updateResult(result);
+    Get.find<CommunityResultController>().updateResult(result);
   }
 
   void filterPostTag(
-      String tag,
-      bool isSelect,
-      ) {
-    isSelect
-        ? selectTagList.add(tag)
-        : selectTagList.remove(tag);
+    String tag,
+    bool isSelect,
+  ) {
+    isSelect ? selectTagList.add(tag) : selectTagList.remove(tag);
 
     if (selectTagList.isEmpty) {
-      viewPosts.assignAll(_cachePosts);
+      viewPostList.assignAll(_cachePostList);
       return;
     }
 
-    final result = _cachePosts.where(
+    final result = _cachePostList
+        .where(
           (post) =>
-      selectTagList.any(
-            (t) => post.title.contains(t),
-      ) ||
-          selectTagList.any(
-                (t) =>
-                post.authorName.contains(t),
-          ) ||
-          selectTagList.any(
+              selectTagList.any(
+                (t) => post.title.contains(t),
+              ) ||
+              selectTagList.any(
+                (t) => post.authorName.contains(t),
+              ) ||
+              selectTagList.any(
                 (t) => post.tags.any(
                   (skill) => skill.contains(t),
-            ),
-          ),
-    ).toList();
+                ),
+              ),
+        )
+        .toList();
 
-    viewPosts.assignAll(result);
+    viewPostList.assignAll(result);
   }
 }
 
-class CommunityResultController
-    extends GetxController {
-  final RxList<PostContentModel> viewPosts =
-      <PostContentModel>[].obs;
+class CommunityResultController extends GetxController {
+  final RxList<PostEntity> viewPosts = <PostEntity>[].obs;
 
   void updateResult(
-      Iterable<PostContentModel> results,
-      ) {
+    Iterable<PostEntity> results,
+  ) {
     viewPosts.assignAll(results);
   }
 }

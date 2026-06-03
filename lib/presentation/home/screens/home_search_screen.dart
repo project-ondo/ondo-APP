@@ -32,13 +32,7 @@ class HomeSearchScreen extends GetView<HomeSearchResultController> {
                 list: controller.viewPostList
                     .map(
                       (post) => PostItem(
-                        postId: post.postId,
-                        skills: post.tags,
-                        title: post.title,
-                        author: post.authorName,
-                        bookmarks: post.likeCount,
-                        favorites: post.likeCount,
-                        createAt: post.createAt,
+                        post: post,
                         isMy: true,
                       ),
                     )

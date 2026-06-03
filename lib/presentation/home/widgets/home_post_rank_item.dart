@@ -4,22 +4,18 @@ import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_icon_button.dart';
+import 'package:ondo/core/utils/app_date_utils.dart';
+import 'package:ondo/domain/entities/post/post_rank_entity.dart';
 
 @immutable
 class HomePostRankItem extends StatelessWidget {
-  final int rank;
-  final String title;
-  final int createAgo;
-  final int favorite;
+  final PostRankEntity post;
   final FavoriteAction? heartAction;
   final VoidCallback? onTap;
 
   const HomePostRankItem({
     super.key,
-    required this.title,
-    required this.createAgo,
-    required this.favorite,
-    required this.rank,
+    required this.post,
     this.heartAction,
     this.onTap,
   });
@@ -36,7 +32,7 @@ class HomePostRankItem extends StatelessWidget {
           AppGap.h16,
           CustomIconButton(
             imagePath: AppIcon.heart.path,
-            total: favorite,
+            total: post.likeCount,
             activeColor: AppColors.red,
             action: heartAction,
             iconSize: AppSpacing.s16,
@@ -53,7 +49,7 @@ class HomePostRankItem extends StatelessWidget {
       child: Align(
         alignment: Alignment.center,
         child: Text(
-          "$rank",
+          "${post.rank}",
           style: AppTextStyles.textMedium(textColor: AppColors.primary),
         ),
       ),
@@ -66,12 +62,12 @@ class HomePostRankItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title,
+          post.title,
           style: AppTextStyles.textMedium(textColor: AppColors.gray90),
         ),
         AppGap.v4,
         Text(
-          "$createAgo일 전",
+          AppDateUtils.timeAgo(post.createAt),
           style: AppTextStyles.subCaption(textColor: AppColors.gray60),
         ),
       ],

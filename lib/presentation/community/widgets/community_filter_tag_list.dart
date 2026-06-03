@@ -9,18 +9,24 @@ class CommunityFilterTagList extends GetView<CommunityController> {
 
   @override
   Widget build(BuildContext context) {
+    final tags = controller.viewTagList.indexed.toList();
+
     return SizedBox(
       height: AppSpacing.s36,
       child: ListView.separated(
         padding: AppPadding.screenHorizontal,
         scrollDirection: Axis.horizontal,
-        itemCount: controller.tags.length,
+        itemCount: tags.length,
         separatorBuilder: (context, index) => AppGap.h16,
-        itemBuilder: (context, index) => CustomTagCard(
-          onTap: (isSelect) =>
-              controller.filterPostTag(controller.tags[index], isSelect),
-          tag: controller.tags[index],
-        ),
+        itemBuilder: (context, index) {
+          return CustomTagCard(
+            onTap: (isSelect) => controller.filterPostTag(
+              tags[index].$2,
+              isSelect,
+            ),
+            tag: tags[index].$2,
+          );
+        },
       ),
     );
   }

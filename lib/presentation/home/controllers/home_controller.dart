@@ -1,12 +1,13 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/domain/entities/post/post_entity.dart';
+import 'package:ondo/domain/entities/post/post_rank_entity.dart';
 import 'package:ondo/domain/entities/user/user_entity.dart';
-import 'package:ondo/domain/usecases/home/load_recommend_posts_use_case.dart';
-import 'package:ondo/domain/usecases/home/load_recommend_users_use_case.dart';
+import 'package:ondo/domain/usecases/post/load_recommend_post_list_use_case.dart';
+import 'package:ondo/domain/usecases/user/load_recommend_users_use_case.dart';
 import 'package:ondo/domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/load_recent_popular_post_list_use_case.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
@@ -15,59 +16,83 @@ import 'package:ondo/presentation/community/controllers/community_controller.dar
 import 'package:ondo/presentation/home/controllers/base_home_controller.dart';
 
 class HomeController extends GetxController with BaseHomeController {
-  final RxList<HomeRecentPopularPostInfo> ranks =
-      <HomeRecentPopularPostInfo>[].obs;
+  final RxList<PostRankEntity> recentPopularPostList = <PostRankEntity>[].obs;
   final List<PostEntity> _cachePostList = [];
   final List<UserEntity> _cacheProfileList = [];
 
   ///usecase 모음
-  final LoadRecommendPostsUseCase recommendPostsUseCase;
-  final LoadRecommendUsersUseCase recommendUsersUseCase;
+  final LoadRecommendPostListUseCase loadRecommendPostsUseCase;
+  final LoadRecommendUsersUseCase loadRecommendUsersUseCase;
   final UserSearchUseCase userSearchUseCase;
   final PostSearchUseCase postSearchUseCase;
   final LikePostUseCase likePostUseCase;
   final UnlikePostUseCase unlikePostUseCase;
   final SavePostLikeLocalUseCase savePostLikeLocalUseCase;
   final GetCachedLikedPostIdsUseCase getCachedLikedPostIdsUseCase;
+  final LoadRecentPopularPostListUseCase loadRecentPopularPostListUseCase;
 
   Set<int> _cachedLikedIds = {};
 
   final searchResultController = HomeSearchResultController();
 
   HomeController({
-    required this.recommendPostsUseCase,
-    required this.recommendUsersUseCase,
+    required this.loadRecommendPostsUseCase,
+    required this.loadRecommendUsersUseCase,
     required this.userSearchUseCase,
     required this.likePostUseCase,
     required this.unlikePostUseCase,
     required this.savePostLikeLocalUseCase,
     required this.getCachedLikedPostIdsUseCase,
     required this.postSearchUseCase,
+    required this.loadRecentPopularPostListUseCase,
   });
+
+  bool isLast = false;
 
   @override
   void onInit() async {
     super.onInit();
     Get.put(searchResultController);
-    //TODO : ranking 게시물 불러오기
-    _sortRating(ranks..addAll(_getRanks()));
-    _cachedLikedIds = await getCachedLikedPostIdsUseCase();
-    await loadRecommendPosts();
-    await loadRecommendUsers();
+    _loadRecentPopularPostList();
+    _loadRecommendPostList(refresh: true);
+    loadRecommendUsers();
   }
 
-  Future<void> loadRecommendPosts() async {
-    _cachePostList.clear();
-    final posts = await recommendPostsUseCase.call();
+  Future<void> _loadRecentPopularPostList() async {
+    final result = await loadRecentPopularPostListUseCase();
+    if (result.isEmpty) return;
+    recentPopularPostList.assignAll(result);
+    recentPopularPostList.sort(
+      (a, b) => a.rank - b.rank,
+    );
+  }
+
+  Future<void> _loadRecommendPostList({
+    bool refresh = false,
+    int size = 20,
+  }) async {
+    if (refresh) {
+      _cachePostList.clear();
+      isLast = false;
+    }
+
+    if (isLast) return;
+
+    final result = await loadRecommendPostsUseCase.call(
+      page: _cachePostList.length ~/ size,
+      size: size,
+    );
+    isLast = result.last ?? true;
+
+    // 로컬 캐시에 저장된 좋아요 누른 게시물 id 불러오기
+    if (_cachedLikedIds.isEmpty && _cachePostList.isEmpty) {
+      _cachedLikedIds = await getCachedLikedPostIdsUseCase();
+    }
 
     // 로컬 캐시 기반으로 isFavorite 보정 (앱 재시작 후에도 유지)
-    final applied = posts.map((post) {
+    final applied = result.content.map((post) {
       if (_cachedLikedIds.contains(post.postId)) {
         return post.copyWith(isFavorite: true);
-      }
-      // API가 이미 좋아요 상태를 반환한 경우 캐시에도 반영
-      if (post.isFavorite) {
-        _cachedLikedIds.add(post.postId);
       }
       return post;
     }).toList();
@@ -112,14 +137,6 @@ class HomeController extends GetxController with BaseHomeController {
   }
 
   void _updatePostLikeInList(int postId, int delta, bool isFavorite) {
-    final index = viewPostList.indexWhere((p) => p.postId == postId);
-    if (index != -1) {
-      viewPostList[index] = viewPostList[index].copyWith(
-        likeCount: viewPostList[index].likeCount + delta,
-        isFavorite: isFavorite,
-      );
-      viewPostList.refresh();
-    }
     final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
     if (cacheIndex != -1) {
       _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
@@ -127,6 +144,7 @@ class HomeController extends GetxController with BaseHomeController {
         isFavorite: isFavorite,
       );
     }
+    viewPostList.assignAll(_cachePostList);
   }
 
   void updatePostLike(int postId, int likeCount, bool isFavorite) {
@@ -149,13 +167,9 @@ class HomeController extends GetxController with BaseHomeController {
 
   Future<void> loadRecommendUsers() async {
     _cacheProfileList.clear();
-    _cacheProfileList.addAll(await recommendUsersUseCase.call());
+    _cacheProfileList.addAll(await loadRecommendUsersUseCase.call());
     viewUserList.assignAll(_cacheProfileList);
   }
-
-  void _sortRating(RxList<HomeRecentPopularPostInfo>? list) => list == null
-      ? ranks.sort((a, b) => (b.favorites - a.favorites))
-      : list.sort((a, b) => b.favorites - a.favorites);
 
   void search(String query) async {
     final Set<UserEntity> userRes = {};
@@ -190,50 +204,3 @@ class HomeSearchResultController extends GetxController
     viewPostList.assignAll(posts);
   }
 }
-
-//TODO : 임시 데이터 삭제
-typedef HomeRecentPopularPostInfo = ({
-  int postId,
-  String title,
-  Duration creatAt,
-  int favorites,
-  bool isFavorite,
-});
-typedef HomeProfileInfo = ({String name, String skill, int rating});
-typedef PostInfo = ({
-  int postId,
-  List<String> skills,
-  String title,
-  String name,
-  int favoites,
-  int bookmarks,
-  DateTime createAt,
-  bool isBookmark,
-  bool isFavorite,
-});
-
-List<HomeRecentPopularPostInfo> _getRanks() => [
-  for (int i = 1; i < 5; i++) ...{
-    (
-      postId: i + 1,
-      title: "요즘 공부 어케 하시나요 다들",
-      creatAt: Duration(days: 3),
-      favorites: 160 * Random().nextInt(i),
-      isFavorite: i % 2 == 0,
-    ),
-    (
-      postId: i + 10,
-      title: "10년차 개발자는 무슨 공부할까",
-      creatAt: Duration(days: 5),
-      favorites: 121 * Random().nextInt(i),
-      isFavorite: i % 2 == 0,
-    ),
-    (
-      postId: i + 120,
-      title: "팀장 퇴사해서 디자인빵꾸남",
-      creatAt: Duration(days: 2),
-      favorites: 73 * Random().nextInt(i),
-      isFavorite: i % 2 == 0,
-    ),
-  },
-];

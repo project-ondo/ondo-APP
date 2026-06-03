@@ -26,11 +26,18 @@ class ApiConstants {
 
   static const baseHeader = {"Content-Type": "application/json"};
 
-
   //TODO : 임시 로그인 데이터
   static String get loginId => Env.loginId;
 
   static String get loginPassword => Env.loginPassword;
+
+  void serverLog(Map body, {int? stausCode}) {
+    if (stausCode != null) {
+      statusLog(stausCode);
+    }
+    successLog(body["success"]);
+    messageLog(body["message"]);
+  }
 
   void errorLog(Object error) => log("$logName 서버 에러 : ${error.toString()}");
 

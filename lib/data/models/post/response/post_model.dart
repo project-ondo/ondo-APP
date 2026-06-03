@@ -64,23 +64,16 @@ class PostModel extends BaseModel {
     required this.bookmarkCount,
   });
 
-  factory PostModel.fromJson(Map json) => PostModel(
-    postId: json["postId"] as int,
-    title: json["title"] as String,
-    authorName: json["authorName"] as String,
-    tags:
-        (json["tags"] as List?)
-            ?.map(
-              (e) => e.toString(),
-            )
-            .toList() ??
-        [],
-    viewCount: json["viewCount"] as int,
-    likeCount: json["likeCount"] as int,
-    bookmarkCount: json["bookmarkCount"] as int,
-    commentCount: json["commentCount"] as int,
-    createdAt: json["createdAt"] as String,
-  );
+  PostModel.fromJson(Map json)
+    : postId = json["postId"] as int,
+      title = json["title"] as String,
+      authorName = json["authorName"] as String,
+      tags = (json["tags"] as List?)?.map((e) => e.toString()).toList() ?? [],
+      viewCount = json["viewCount"] as int,
+      likeCount = json["likeCount"] as int,
+      bookmarkCount = json["bookmarkCount"] as int,
+      commentCount = json["commentCount"] as int,
+      createdAt = json["createdAt"] as String;
 
   @override
   Map<String, dynamic> toJson() => {

@@ -402,7 +402,7 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
         }
       } else {
         // 상대방 메시지 → 리스트 앞에 삽입
-        final viewModel = ChatMessageViewModel.fromJson(json);
+        final viewModel = ChatMessageViewModel.fromJson(json, myPublicId: _myPublicId);
         viewChatList.insert(0, viewModel);
         log('[ChatRoom] 메시지 수신: $content');
 
@@ -441,7 +441,10 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
     if (_cacheChatList.isNotEmpty) {
       viewChatList.assignAll(
         _cacheChatList.map(
-          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(
+            e,
+            myPublicId: _myPublicId,
+          ),
         ),
       );
       lastMessageId = _cacheChatList.first.messageId;
@@ -463,9 +466,13 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
       _hasNext = res.hasNext;
       _nextCursor = res.nextCursor;
 
-      viewChatList.assignAll(
-        _cacheChatList.map(
-          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(e),
+      // assignAll 대신 addAll로 이전 메시지만 추가 — 실시간 수신 메시지 유실 방지
+      viewChatList.addAll(
+        res.pages.map(
+          (e) => ChatMessageViewModel.fromJsonChatMessageEntity(
+            e,
+            myPublicId: _myPublicId,
+          ),
         ),
       );
     } finally {

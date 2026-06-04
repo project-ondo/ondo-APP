@@ -76,8 +76,13 @@ class HomeController extends GetxController with BaseHomeController {
     viewPostList.assignAll(_cachePostList);
   }
 
+
+  bool isPostLiked(int postId) {
+    return _cachedLikedIds.contains(postId);
+  }
+
   Future<void> toggleLike(int postId, bool isLiked) async {
-    // 옵티미스틱 업데이트
+
     _updatePostLikeInList(postId, isLiked ? 1 : -1, isLiked);
 
     try {
@@ -94,7 +99,7 @@ class HomeController extends GetxController with BaseHomeController {
       }
       await savePostLikeLocalUseCase(postId, isLiked);
 
-      // 커뮤니티 목록과 cross-sync
+
       if (Get.isRegistered<CommunityController>()) {
         final post = viewPostList.firstWhereOrNull((p) => p.postId == postId);
         if (post != null) {
@@ -129,21 +134,48 @@ class HomeController extends GetxController with BaseHomeController {
     }
   }
 
-  void updatePostLike(int postId, int likeCount, bool isFavorite) {
-    final index = viewPostList.indexWhere((p) => p.postId == postId);
-    if (index != -1) {
-      viewPostList[index] = viewPostList[index].copyWith(
-        likeCount: likeCount,
-        isFavorite: isFavorite,
-      );
-      viewPostList.refresh();
+  void updatePostLike(
+      int postId,
+      int likeCount,
+      bool isFavorite,
+      ) {
+
+    if (isFavorite) {
+      _cachedLikedIds.add(postId);
+    } else {
+      _cachedLikedIds.remove(postId);
     }
-    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
-    if (cacheIndex != -1) {
-      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
+
+    final index = viewPostList.indexWhere(
+          (p) => p.postId == postId,
+    );
+
+    if (index != -1) {
+      final updatedPost =
+      viewPostList[index].copyWith(
         likeCount: likeCount,
         isFavorite: isFavorite,
       );
+
+      viewPostList[index] = updatedPost;
+
+
+      viewPostList.assignAll(
+        List<PostEntity>.from(viewPostList),
+      );
+    }
+
+    final cacheIndex =
+    _cachePostList.indexWhere(
+          (p) => p.postId == postId,
+    );
+
+    if (cacheIndex != -1) {
+      _cachePostList[cacheIndex] =
+          _cachePostList[cacheIndex].copyWith(
+            likeCount: likeCount,
+            isFavorite: isFavorite,
+          );
     }
   }
 
@@ -183,9 +215,9 @@ class HomeSearchResultController extends GetxController
     with BaseHomeController {
   ///홈 검색 결과 업데이트
   void updateResult(
-    Iterable<PostEntity> posts,
-    Iterable<UserEntity> profiles,
-  ) {
+      Iterable<PostEntity> posts,
+      Iterable<UserEntity> profiles,
+      ) {
     viewUserList.assignAll(profiles);
     viewPostList.assignAll(posts);
   }
@@ -193,47 +225,47 @@ class HomeSearchResultController extends GetxController
 
 //TODO : 임시 데이터 삭제
 typedef HomeRecentPopularPostInfo = ({
-  int postId,
-  String title,
-  Duration creatAt,
-  int favorites,
-  bool isFavorite,
+int postId,
+String title,
+Duration creatAt,
+int favorites,
+bool isFavorite,
 });
 typedef HomeProfileInfo = ({String name, String skill, int rating});
 typedef PostInfo = ({
-  int postId,
-  List<String> skills,
-  String title,
-  String name,
-  int favoites,
-  int bookmarks,
-  DateTime createAt,
-  bool isBookmark,
-  bool isFavorite,
+int postId,
+List<String> skills,
+String title,
+String name,
+int favoites,
+int bookmarks,
+DateTime createAt,
+bool isBookmark,
+bool isFavorite,
 });
 
 List<HomeRecentPopularPostInfo> _getRanks() => [
   for (int i = 1; i < 5; i++) ...{
     (
-      postId: i + 1,
-      title: "요즘 공부 어케 하시나요 다들",
-      creatAt: Duration(days: 3),
-      favorites: 160 * Random().nextInt(i),
-      isFavorite: i % 2 == 0,
+    postId: i + 1,
+    title: "요즘 공부 어케 하시나요 다들",
+    creatAt: Duration(days: 3),
+    favorites: 160 * Random().nextInt(i),
+    isFavorite: i % 2 == 0,
     ),
     (
-      postId: i + 10,
-      title: "10년차 개발자는 무슨 공부할까",
-      creatAt: Duration(days: 5),
-      favorites: 121 * Random().nextInt(i),
-      isFavorite: i % 2 == 0,
+    postId: i + 10,
+    title: "10년차 개발자는 무슨 공부할까",
+    creatAt: Duration(days: 5),
+    favorites: 121 * Random().nextInt(i),
+    isFavorite: i % 2 == 0,
     ),
     (
-      postId: i + 120,
-      title: "팀장 퇴사해서 디자인빵꾸남",
-      creatAt: Duration(days: 2),
-      favorites: 73 * Random().nextInt(i),
-      isFavorite: i % 2 == 0,
+    postId: i + 120,
+    title: "팀장 퇴사해서 디자인빵꾸남",
+    creatAt: Duration(days: 2),
+    favorites: 73 * Random().nextInt(i),
+    isFavorite: i % 2 == 0,
     ),
   },
 ];

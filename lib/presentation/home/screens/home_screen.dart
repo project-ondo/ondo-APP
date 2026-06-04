@@ -38,30 +38,42 @@ class HomeScreen extends GetView<HomeController> {
         AppGap.v16,
         HomeProfileList(title: "커피챗 추천", controller: controller),
         AppGap.v16,
-        PostGridList(
-          title: "추천 게시물",
-          list: controller.viewPostList
-              .map(
-                (post) => PostItem(
-                  postId: post.postId,
-                  skills: post.tags,
-                  title: post.title,
-                  author: post.authorName,
-                  bookmarks: post.bookmarkCount,
-                  favorites: post.likeCount,
-                  createAt: post.createAt,
-                  bookmarkAction: (isBookmark, total) {
-                    //TODO : 북마크 api 개발 이후 구현
-                  },
-                  heartAction: (isFavorite, total) {
-                    controller.toggleLike(post.postId, isFavorite);
-                  },
-                  initialBookmark: false,
-                  initialFavorite: post.isFavorite,
-                  isMy: true,
-                ),
-              )
-              .toList(),
+        Obx(
+              () => PostGridList(
+            title: "추천 게시물",
+            list: controller.viewPostList
+                .map(
+                  (post) => PostItem(
+                postId: post.postId,
+                skills: post.tags,
+                title: post.title,
+                author: post.authorName,
+                bookmarks: post.bookmarkCount,
+                favorites: post.likeCount,
+                createAt: post.createAt,
+                bookmarkAction: (
+                    isBookmark,
+                    total,
+                    ) {
+                  // TODO : 북마크 api 개발 이후 구현
+                },
+                heartAction: (
+                    isFavorite,
+                    total,
+                    ) {
+                  controller.toggleLike(
+                    post.postId,
+                    isFavorite,
+                  );
+                },
+                initialBookmark: false,
+                initialFavorite:
+                post.isFavorite,
+                isMy: true,
+              ),
+            )
+                .toList(),
+          ),
         ),
         AppGap.v16,
       ],

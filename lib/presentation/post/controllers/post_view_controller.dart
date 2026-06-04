@@ -51,15 +51,15 @@ class PostViewController extends GetxController {
     required CreateCommentUseCase createCommentUseCase,
     required DeleteCommentUseCase deleteCommentUseCase,
   }) : _getPostDetailUseCase = getPostDetailUseCase,
-       _updatePostUseCase = updatePostUseCase,
-       _deletePostUseCase = deletePostUseCase,
-       _likePostUseCase = likePostUseCase,
-       _unlikePostUseCase = unlikePostUseCase,
-       _bookmarkPostUseCase = bookmarkPostUseCase,
-       _unbookmarkPostUseCase = unbookmarkPostUseCase,
-       _getCommentsUseCase = getCommentsUseCase,
-       _createCommentUseCase = createCommentUseCase,
-       _deleteCommentUseCase = deleteCommentUseCase;
+        _updatePostUseCase = updatePostUseCase,
+        _deletePostUseCase = deletePostUseCase,
+        _likePostUseCase = likePostUseCase,
+        _unlikePostUseCase = unlikePostUseCase,
+        _bookmarkPostUseCase = bookmarkPostUseCase,
+        _unbookmarkPostUseCase = unbookmarkPostUseCase,
+        _getCommentsUseCase = getCommentsUseCase,
+        _createCommentUseCase = createCommentUseCase,
+        _deleteCommentUseCase = deleteCommentUseCase;
 
   final Rx<PostDetailEntity?> post = Rx<PostDetailEntity?>(null);
   final RxList<PostDetailEntity> postList = <PostDetailEntity>[].obs;
@@ -102,23 +102,36 @@ class PostViewController extends GetxController {
   }
 
   bool _resolveIsFavorite() {
-    if (Get.isRegistered<CommunityController>()) {
-      final post = Get.find<CommunityController>().viewPosts.firstWhereOrNull(
-        (p) => p.postId == postId,
-      );
+    bool homeLiked = false;
+    bool communityLiked = false;
 
-      if (post != null) return post.isFavorite;
-    }
 
     if (Get.isRegistered<HomeController>()) {
-      final post = Get.find<HomeController>().viewPostList.firstWhereOrNull(
-        (p) => p.postId == postId,
-      );
-
-      if (post != null) return post.isFavorite;
+      homeLiked =
+          Get.find<HomeController>()
+              .isPostLiked(postId);
     }
 
-    return initialIsFavorite;
+
+    if (Get.isRegistered<CommunityController>()) {
+      communityLiked =
+          Get.find<CommunityController>()
+              .isPostLiked(postId);
+    }
+
+    debugPrint(
+      '[PostViewController] '
+          'resolveIsFavorite - '
+          'postId: $postId, '
+          'homeLiked: $homeLiked, '
+          'communityLiked: $communityLiked, '
+          'initialIsFavorite: $initialIsFavorite',
+    );
+
+
+    return homeLiked ||
+        communityLiked ||
+        initialIsFavorite;
   }
 
   Future<void> fetchPostDetail(int postId) async {
@@ -145,8 +158,11 @@ class PostViewController extends GetxController {
       postTags.assignAll(result.tags);
 
       heartTotal.value = result.likeCount;
+      bookMarkTotal.value = result.bookmarkCount;
       commentCount.value = result.commentCount;
-      selectHeart.value = result.isLike;
+
+
+      selectHeart.value = _resolveIsFavorite();
     } catch (e) {
       debugPrint(
         '[PostViewController] API 요청 실패 - error: $e',
@@ -170,7 +186,7 @@ class PostViewController extends GetxController {
 
       comments.assignAll(
         result.map(
-          (e) => e.toEntity(currentUserId: null),
+              (e) => e.toEntity(currentUserId: null),
         ),
       );
 
@@ -189,9 +205,29 @@ class PostViewController extends GetxController {
   }
 
   Future<void> toggleLike(bool isLiked) async {
+    debugPrint(
+      '[PostViewController] toggleLike 시작 '
+          'postId: $postId, '
+          'isLiked: $isLiked',
+    );
+
+    debugPrint(
+      '[PostViewController] '
+          'HomeController registered: '
+          '${Get.isRegistered<HomeController>()}',
+    );
+
+    debugPrint(
+      '[PostViewController] '
+          'CommunityController registered: '
+          '${Get.isRegistered<CommunityController>()}',
+    );
+
     selectHeart.value = isLiked;
 
-    heartTotal.value = isLiked ? heartTotal.value + 1 : heartTotal.value - 1;
+    heartTotal.value = isLiked
+        ? heartTotal.value + 1
+        : heartTotal.value - 1;
 
     try {
       if (isLiked) {
@@ -200,16 +236,38 @@ class PostViewController extends GetxController {
         await _unlikePostUseCase(postId);
       }
 
-      if (Get.isRegistered<CommunityController>()) {
-        await Get.find<CommunityController>().updatePostLike(
+      // 홈 목록 강제 업데이트
+      if (Get.isRegistered<HomeController>()) {
+        final homeController =
+        Get.find<HomeController>();
+
+        debugPrint(
+          '[PostViewController] '
+              'Home updatePostLike 호출',
+        );
+
+        homeController.updatePostLike(
           postId,
           heartTotal.value,
           isLiked,
         );
+
+        debugPrint(
+          '[PostViewController] '
+              'home liked after update: '
+              '${homeController.isPostLiked(postId)}',
+        );
       }
 
-      if (Get.isRegistered<HomeController>()) {
-        Get.find<HomeController>().updatePostLike(
+      // 커뮤니티 목록 업데이트
+      if (Get.isRegistered<CommunityController>()) {
+        debugPrint(
+          '[PostViewController] '
+              'Community updatePostLike 호출',
+        );
+
+        await Get.find<CommunityController>()
+            .updatePostLike(
           postId,
           heartTotal.value,
           isLiked,
@@ -217,15 +275,17 @@ class PostViewController extends GetxController {
       }
     } catch (e) {
       debugPrint(
-        '[PostViewController] 좋아요 토글 실패 - error: $e',
+        '[PostViewController] '
+            '좋아요 토글 실패 - error: $e',
       );
 
       selectHeart.value = !isLiked;
 
-      heartTotal.value = isLiked ? heartTotal.value - 1 : heartTotal.value + 1;
+      heartTotal.value = isLiked
+          ? heartTotal.value - 1
+          : heartTotal.value + 1;
     }
   }
-
   Future<void> toggleBookmark(bool isBookmarked) async {
     selectBookMark.value = isBookmarked;
     bookMarkTotal.value = isBookmarked
@@ -307,7 +367,7 @@ class PostViewController extends GetxController {
               '[PostViewController] 게시물 삭제 요청 - postId: $postId',
             );
 
-      await _deletePostUseCase(postId);
+            await _deletePostUseCase(postId);
 
             debugPrint('[PostViewController] 게시물 삭제 성공');
             Get.find<CommunityController>().removePost(postId);
@@ -383,7 +443,7 @@ class PostViewController extends GetxController {
   void editPost() {
     Get.delete<CommunityPostCreateController>(force: true);
     Get.lazyPut(
-      () => CommunityPostCreateController(
+          () => CommunityPostCreateController(
         createUseCase: Get.find<CreatePostUseCase>(),
         updateUseCase: Get.find<UpdatePostUseCase>(),
         isEditMode: true,

@@ -60,6 +60,11 @@ class CommunityController extends GetxController {
     super.onReady();
   }
 
+
+  bool isPostLiked(int postId) {
+    return _cachedLikedIds.contains(postId);
+  }
+
   Future<void> fetchRecommendPosts({bool refresh = false}) async {
     if (refresh) {
       _currentPage = 0;
@@ -77,12 +82,12 @@ class CommunityController extends GetxController {
         page: _currentPage,
       );
 
-      // 로컬 캐시 기반으로 isFavorite 덮어쓰기 (앱 재시작 후에도 유지)
+
       final applied = result.content.map((post) {
         if (_cachedLikedIds.contains(post.postId)) {
           return post.copyWith(isFavorite: true);
         }
-        // API가 이미 좋아요 상태를 반환한 경우 캐시에도 반영
+
         if (post.isFavorite) {
           _cachedLikedIds.add(post.postId);
         }
@@ -127,7 +132,7 @@ class CommunityController extends GetxController {
       int postId,
       bool isLiked,
       ) async {
-    // 옵티미스틱 업데이트: API 결과 전에 즉시 UI 반영
+
     _updatePostLikeInList(postId, isLiked ? 1 : -1, isLiked);
 
     try {
@@ -137,7 +142,7 @@ class CommunityController extends GetxController {
         await _unlikeUseCase(postId);
       }
 
-      // 로컬 캐시 갱신 및 영속화
+
       if (isLiked) {
         _cachedLikedIds.add(postId);
       } else {
@@ -145,7 +150,7 @@ class CommunityController extends GetxController {
       }
       await _savePostLikeLocalUseCase(postId, isLiked);
 
-      // 홈 목록과 cross-sync
+
       if (Get.isRegistered<HomeController>()) {
         final post = viewPosts.firstWhereOrNull((p) => p.postId == postId);
         if (post != null) {
@@ -161,7 +166,7 @@ class CommunityController extends GetxController {
         '[CommunityController] 좋아요 토글 실패 - error: $e',
       );
 
-      // API 실패 시 롤백
+
       _updatePostLikeInList(postId, isLiked ? -1 : 1, !isLiked);
     }
   }
@@ -201,7 +206,7 @@ class CommunityController extends GetxController {
       int likeCount,
       bool isFavorite,
       ) async {
-    // 로컬 캐시 동기화 (PostViewController → CommunityController 방향)
+
     if (isFavorite) {
       _cachedLikedIds.add(postId);
     } else {
@@ -303,8 +308,7 @@ class CommunityController extends GetxController {
   }
 }
 
-class CommunityResultController
-    extends GetxController {
+class CommunityResultController extends GetxController {
   final RxList<PostContentModel> viewPosts =
       <PostContentModel>[].obs;
 

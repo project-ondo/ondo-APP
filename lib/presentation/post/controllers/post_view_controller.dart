@@ -105,6 +105,9 @@ class PostViewController extends GetxController {
   bool _resolveIsFavorite() {
 
 
+    bool homeLiked = false;
+    bool communityLiked = false;
+
     if (Get.isRegistered<HomeController>()) {
       homeLiked =
           Get.find<HomeController>()

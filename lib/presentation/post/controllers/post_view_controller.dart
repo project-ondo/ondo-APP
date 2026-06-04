@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/domain/entities/comment/comment_entity.dart';
 import 'package:ondo/domain/entities/post/post_detail_entity.dart';
+import 'package:ondo/domain/entities/post/post_entity.dart';
 import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
@@ -62,7 +63,7 @@ class PostViewController extends GetxController {
         _deleteCommentUseCase = deleteCommentUseCase;
 
   final Rx<PostDetailEntity?> post = Rx<PostDetailEntity?>(null);
-  final RxList<PostDetailEntity> postList = <PostDetailEntity>[].obs;
+  final RxList<PostEntity> relatedPostList = <PostEntity>[].obs;
 
   final isLoading = false.obs;
   final isCommentsLoading = false.obs;
@@ -102,8 +103,6 @@ class PostViewController extends GetxController {
   }
 
   bool _resolveIsFavorite() {
-    bool homeLiked = false;
-    bool communityLiked = false;
 
 
     if (Get.isRegistered<HomeController>()) {
@@ -146,7 +145,6 @@ class PostViewController extends GetxController {
       final result = await _getPostDetailUseCase(postId);
 
       post.value = result;
-      postList.assignAll([result]);
 
       debugPrint(
         '[PostViewController] API 응답 성공 - title: ${result.title}',

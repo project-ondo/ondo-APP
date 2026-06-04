@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'package:ondo/data/models/base/request/base_list_request_model.dart';
 import 'package:ondo/data/models/post/request/post_create_request_model.dart';
 import 'package:ondo/data/models/post/request/post_search_request_model.dart';
 import 'package:ondo/data/models/post/request/post_update_request_model.dart';
-import 'package:ondo/data/models/post/response/post_list_model.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/network/constants/api_constants.dart';
 
@@ -11,12 +11,31 @@ class PostRemoteDatasource {
 
   PostRemoteDatasource(this._client);
 
-  Future<PostListModel> getRecommendPosts({int page = 0}) async {
+  Future<List?> getRecentPopularPostList() async {
+    final log = ApiConstants(logName: "인기 게시글 Top 10 조회 서버");
+    try {
+      final res = await _client.get(Uri.parse("${ApiConstants.post}/popular"));
+
+      final body = jsonDecode(res.body);
+      log.serverLog(body, stausCode: res.statusCode);
+
+      if (res.statusCode == 200 && body["success"] == true) {
+        return body["data"];
+      }
+
+    } catch (e) {
+      log.errorLog(e);
+    }
+
+    return null;
+  }
+
+  Future<Map> getRecommendPostList(ListRequestModelBasePage model) async {
     final log = ApiConstants(logName: '추천 게시물 조회');
     try {
       final uri = Uri.parse(
-        '${ApiConstants.post}/recommend',
-      ).replace(queryParameters: {'page': '$page'});
+        '${ApiConstants.post}/recommend${model.toQueryParameter()}',
+      );
       final response = await _client.get(uri);
       final body = jsonDecode(response.body);
       log.statusLog(response.statusCode);
@@ -25,7 +44,7 @@ class PostRemoteDatasource {
       if (body['success'] != true) {
         throw Exception(body['message']);
       }
-      return PostListModel.fromJson(body);
+      return body["data"];
     } catch (e) {
       log.errorLog(e);
       rethrow;

@@ -1,4 +1,5 @@
 class AppDateUtils {
+  static final RegExp _nanoSecondsRegex = RegExp(r'(\.\d{6})\d+(Z|[+-].*)$');
   static String timeAgo(DateTime? dateTime) {
     if (dateTime == null) return "";
 
@@ -37,6 +38,10 @@ class AppDateUtils {
   ///
   /// 시간 파트(`T` 또는 공백)가 없는 날짜 전용 문자열(예: `"2024-01-15"`)은
   /// `DateTime.parse()`가 시간대 접미사를 지원하지 않으므로 그대로 반환한다.
+  ///
+  /// Dart의 [DateTime.parse]는 소수점 이하 최대 6자리(마이크로초)만 지원한다.
+  /// 서버가 나노초(9자리) 등 더 긴 소수점을 반환하면 파싱이 실패하므로
+  /// 소수점 7자리 이상은 잘라낸다.
   static String _withUtcSuffix(String s) {
     // 시간 파트가 없으면 Z 붙여도 FormatException 발생 → 그대로 반환
     final hasTimePart = s.contains('T') || s.contains(' ');
@@ -47,6 +52,12 @@ class AppDateUtils {
         s.endsWith('Z') ||
         s.contains('+') ||
         (s.length > 10 && s.substring(10).contains('-'));
-    return hasTimezone ? s : '${s}Z';
+    final withZ = hasTimezone ? s : '${s}Z';
+
+    // 소수점 이하 7자리 이상 잘라내기 (나노초 → 마이크로초)
+    return withZ.replaceFirstMapped(
+      _nanoSecondsRegex,
+      (m) => '${m.group(1)}${m.group(2)}',
+    );
   }
 }

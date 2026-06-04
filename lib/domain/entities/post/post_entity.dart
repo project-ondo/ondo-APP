@@ -41,15 +41,16 @@ class PostEntity {
     isFavorite: isFavorite ?? this.isFavorite,
   );
 
-  factory PostEntity.fromPostModel(PostModel model) => PostEntity(
-    postId: model.postId,
-    title: model.title,
-    authorName: model.authorName,
-    tags: model.tags,
-    viewCount: model.viewCount,
-    likeCount: model.likeCount,
-    commentCount: model.commentCount,
-    bookmarkCount: model.bookmarkCount,
-    createAt: DateTime.tryParse(model.createdAt) ?? DateTime.now(),
-  );
+  PostEntity.fromPostModel(PostModel model)
+    : postId = model.postId,
+      title = model.title,
+      authorName = model.authorName,
+      tags = model.tags,
+      viewCount = model.viewCount,
+      likeCount = model.likeCount,
+      commentCount = model.commentCount,
+      bookmarkCount = model.bookmarkCount,
+      createAt = DateTime.tryParse(model.createdAt) ?? DateTime.now(),
+      isFavorite = false,
+      isBookmark = false;
 }

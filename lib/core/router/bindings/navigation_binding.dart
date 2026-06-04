@@ -13,7 +13,6 @@ import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
-import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 class NavigationBinding extends Bindings {
   @override
@@ -40,7 +39,6 @@ class NavigationBinding extends Bindings {
     /// 전 화면 공통 controller 등록
     Get.lazyPut<NavigationController>(() => NavigationController());
     NotificationBinding().dependencies();
-    Get.lazyPut(() => PostController());
 
     UserBinding().dependencies();
     PostBinding().dependencies();

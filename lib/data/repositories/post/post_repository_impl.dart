@@ -1,8 +1,11 @@
+import 'package:ondo/data/models/base/request/base_list_request_model.dart';
 import 'package:ondo/data/models/post/request/post_search_request_model.dart';
 import 'package:ondo/data/models/post/response/post_model.dart';
+import 'package:ondo/data/models/post/response/post_rank_model.dart';
 import 'package:ondo/domain/entities/base/listable_wrapper.dart';
 import 'package:ondo/domain/entities/post/post_detail_entity.dart';
 import 'package:ondo/domain/entities/post/post_entity.dart';
+import 'package:ondo/domain/entities/post/post_rank_entity.dart';
 
 import '../../../domain/repositories/post/post_repository.dart';
 import '../../datasource/post/post_local_datasource.dart';
@@ -10,7 +13,6 @@ import '../../datasource/post/post_remote_datasource.dart';
 import '../../models/post/request/post_create_request_model.dart';
 import '../../models/post/request/post_update_request_model.dart';
 import '../../models/post/response/post_detail_model.dart';
-import '../../models/post/response/post_list_model.dart';
 
 class PostRepositoryImpl implements PostRepository {
   final PostRemoteDatasource _remoteDatasource;
@@ -19,8 +21,45 @@ class PostRepositoryImpl implements PostRepository {
   PostRepositoryImpl(this._remoteDatasource, this._localDatasource);
 
   @override
-  Future<PostListModel> getRecommendPosts({int page = 0}) {
-    return _remoteDatasource.getRecommendPosts(page: page);
+  Future<List<PostRankEntity>> loadRecentPopularPostList() async {
+    final json = await _remoteDatasource.getRecentPopularPostList();
+    final data =
+        json
+            ?.map(
+              (e) => PostRankModel.fromJson(e),
+            )
+            .toList() ??
+        [];
+
+    return data
+        .map(
+          (e) => PostRankEntity.fromPostRankModel(e),
+        )
+        .toList();
+  }
+
+  @override
+  Future<ListableWrapper<PostEntity>> loadRecommendPostList(
+    int page,
+    int size,
+  ) async {
+    final model = ListRequestModelBasePage(size: size, page: page);
+    final json = await _remoteDatasource.getRecommendPostList(model);
+
+    final data = PostDataModel.fromJson(json);
+
+    return ListableWrapper(
+      page: data.page,
+      size: data.size,
+      totalElements: data.totalElements,
+      totalPages: data.totalPages,
+      last: data.last,
+      content: data.content
+          .map(
+            (e) => PostEntity.fromPostModel(e),
+          )
+          .toList(),
+    );
   }
 
   @override

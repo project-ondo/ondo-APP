@@ -178,9 +178,7 @@ class HomeController extends GetxController with BaseHomeController {
       viewPostList[index] = updatedPost;
 
 
-      viewPostList.assignAll(
-        List<PostEntity>.from(viewPostList),
-      );
+      viewPostList.refresh();
     }
 
     final cacheIndex =

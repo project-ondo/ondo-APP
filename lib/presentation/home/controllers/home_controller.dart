@@ -110,6 +110,7 @@ class HomeController extends GetxController with BaseHomeController {
     viewPostList.assignAll(_cachePostList);
   }
 
+  @override
   Future<void> refresh() async {
     await _loadRecommendPostList(refresh: true);
   }

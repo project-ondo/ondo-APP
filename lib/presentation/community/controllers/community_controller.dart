@@ -112,6 +112,7 @@ class CommunityController extends GetxController {
     }
   }
 
+  @override
   Future<void> refresh() async {
     await loadRecommendPostList(refresh: true);
   }

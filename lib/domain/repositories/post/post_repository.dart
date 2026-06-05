@@ -15,10 +15,7 @@ abstract class PostRepository {
 
   Future<int> createPost(PostCreateRequestModel model);
 
-  Future<void> updatePost(
-    int postId,
-    PostUpdateRequestModel model,
-  );
+  Future<void> updatePost(int postId, PostUpdateRequestModel model);
 
   Future<void> deletePost(int postId);
 
@@ -30,20 +27,18 @@ abstract class PostRepository {
 
   Future<void> unbookmarkPost(int postId);
 
-  /// 로컬 좋아요 캐시
   Future<Set<int>> getCachedLikedPostIds();
 
-  Future<void> saveLikeState(
-    int postId,
-    bool isLiked,
-  );
+  Future<void> saveLikeState(int postId, bool isLiked);
+
+  Future<bool> likedPost(int postId);
 
   Future<ListableWrapper<PostEntity>> search(
-    String keyword,
-    List<String>? tags,
-    String? sort,
-    bool? latest,
-    int? page,
-    int? size,
-  );
+      String keyword,
+      List<String>? tags,
+      String? sort,
+      bool? latest,
+      int? page,
+      int? size,
+      );
 }

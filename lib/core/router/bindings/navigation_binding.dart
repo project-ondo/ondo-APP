@@ -12,23 +12,26 @@ import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
+import 'package:ondo/presentation/community/controllers/like_state_controller.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
+
 
 class NavigationBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<AuthRemoteDatasource>(
-      () => AuthRemoteDatasource(Env.apiBaseUrl),
+          () => AuthRemoteDatasource(Env.apiBaseUrl),
       fenix: true,
     );
+
     Get.lazyPut<AuthLocalDatasource>(
-      () => AuthLocalDatasourceImpl(),
+          () => AuthLocalDatasourceImpl(),
       fenix: true,
     );
 
     /// 인증 token을 포함하는 client 등록
     Get.lazyPut(
-      () => AuthClient(
+          () => AuthClient(
         localDatasource: Get.find<AuthLocalDatasource>(),
         remoteDatasource: Get.find<AuthRemoteDatasource>(),
         onAuthFailed: () => appRouter.go(RoutePaths.login),
@@ -36,8 +39,14 @@ class NavigationBinding extends Bindings {
       fenix: true,
     );
 
+    /// 전역 LikeStateController 등록
+    Get.put(LikeStateController(), permanent: true);
+
     /// 전 화면 공통 controller 등록
-    Get.lazyPut<NavigationController>(() => NavigationController());
+    Get.lazyPut<NavigationController>(
+          () => NavigationController(),
+    );
+
     NotificationBinding().dependencies();
 
     UserBinding().dependencies();

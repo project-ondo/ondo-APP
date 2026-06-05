@@ -54,13 +54,10 @@ class HomeScreen extends GetView<HomeController> {
                   (post) => PostItem(
                 post: post,
                 isMy: true,
-
                 heartAction: (isFavorite, total) {
                   controller.toggleLike(post.postId, isFavorite);
                 },
-
-                bookmarkAction: (isBookmark, total) {
-                },
+                bookmarkAction: (isBookmark, total) {},
               ),
             )
                 .toList(),

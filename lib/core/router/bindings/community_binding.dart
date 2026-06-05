@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:ondo/core/router/bindings/search_binding.dart';
-import 'package:ondo/domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/liked_post_use_case.dart';
 import 'package:ondo/domain/usecases/post/load_recommend_post_list_use_case.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
@@ -11,16 +11,15 @@ import 'package:ondo/presentation/search/states/search_page_state.dart';
 class CommunityBinding extends Bindings {
   @override
   void dependencies() {
-    /// 검색 관련 의존성
     SearchBinding(pageState: SearchPageState.community).dependencies();
 
     Get.lazyPut<CommunityController>(
-      () => CommunityController(
+          () => CommunityController(
         likeUseCase: Get.find<LikePostUseCase>(),
         unlikeUseCase: Get.find<UnlikePostUseCase>(),
         getRecommendPostsUseCase: Get.find<LoadRecommendPostListUseCase>(),
         savePostLikeLocalUseCase: Get.find<SavePostLikeLocalUseCase>(),
-        getCachedLikedPostIdsUseCase: Get.find<GetCachedLikedPostIdsUseCase>(),
+        likedPostUseCase: Get.find<LikedPostUseCase>(),
       ),
     );
   }

@@ -23,29 +23,17 @@ class PostRepositoryImpl implements PostRepository {
   @override
   Future<List<PostRankEntity>> loadRecentPopularPostList() async {
     final json = await _remoteDatasource.getRecentPopularPostList();
-    final data =
-        json
-            ?.map(
-              (e) => PostRankModel.fromJson(e),
-            )
-            .toList() ??
-        [];
-
-    return data
-        .map(
-          (e) => PostRankEntity.fromPostRankModel(e),
-        )
-        .toList();
+    final data = json?.map((e) => PostRankModel.fromJson(e)).toList() ?? [];
+    return data.map((e) => PostRankEntity.fromPostRankModel(e)).toList();
   }
 
   @override
   Future<ListableWrapper<PostEntity>> loadRecommendPostList(
-    int page,
-    int size,
-  ) async {
+      int page,
+      int size,
+      ) async {
     final model = ListRequestModelBasePage(size: size, page: page);
     final json = await _remoteDatasource.getRecommendPostList(model);
-
     final data = PostDataModel.fromJson(json);
 
     return ListableWrapper(
@@ -54,11 +42,7 @@ class PostRepositoryImpl implements PostRepository {
       totalElements: data.totalElements,
       totalPages: data.totalPages,
       last: data.last,
-      content: data.content
-          .map(
-            (e) => PostEntity.fromPostModel(e),
-          )
-          .toList(),
+      content: data.content.map((e) => PostEntity.fromPostModel(e)).toList(),
     );
   }
 
@@ -95,16 +79,6 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
-  Future<Set<int>> getCachedLikedPostIds() {
-    return _localDatasource.getLikedPostIds();
-  }
-
-  @override
-  Future<void> saveLikeState(int postId, bool isLiked) {
-    return _localDatasource.saveLikeState(postId, isLiked);
-  }
-
-  @override
   Future<void> bookmarkPost(int postId) {
     return _remoteDatasource.bookmarkPost(postId);
   }
@@ -115,14 +89,29 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
+  Future<Set<int>> getCachedLikedPostIds() {
+    return _localDatasource.getLikedPostIds();
+  }
+
+  @override
+  Future<void> saveLikeState(int postId, bool isLiked) {
+    return _localDatasource.saveLikeState(postId, isLiked);
+  }
+
+  @override
+  Future<bool> likedPost(int postId) {
+    return _localDatasource.likedPost(postId);
+  }
+
+  @override
   Future<ListableWrapper<PostEntity>> search(
-    String keyword,
-    List<String>? tags,
-    String? sort,
-    bool? latest,
-    int? page,
-    int? size,
-  ) async {
+      String keyword,
+      List<String>? tags,
+      String? sort,
+      bool? latest,
+      int? page,
+      int? size,
+      ) async {
     final model = PostSearchRequestModel(
       keyword: keyword,
       tags: tags,
@@ -132,22 +121,16 @@ class PostRepositoryImpl implements PostRepository {
       size: size,
     );
     final json = await _remoteDatasource.search(model);
-
     if (json == null) return ListableWrapper.none();
 
     final data = PostDataModel.fromJson(json);
-
     return ListableWrapper<PostEntity>(
       page: data.page,
       size: data.size,
       totalElements: data.totalElements,
       totalPages: data.totalPages,
       last: data.last,
-      content: data.content
-          .map(
-            (e) => PostEntity.fromPostModel(e),
-          )
-          .toList(),
+      content: data.content.map((e) => PostEntity.fromPostModel(e)).toList(),
     );
   }
 }

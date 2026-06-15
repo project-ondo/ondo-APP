@@ -7,6 +7,7 @@ import 'package:ondo/core/router/bindings/home_binding.dart';
 import 'package:ondo/core/router/bindings/notification_binding.dart';
 import 'package:ondo/core/router/bindings/post_binding.dart';
 import 'package:ondo/core/router/bindings/profile_binding.dart';
+import 'package:ondo/core/router/bindings/report_binding.dart';
 import 'package:ondo/core/router/bindings/user_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
@@ -38,8 +39,9 @@ class NavigationBinding extends Bindings {
 
     /// 전 화면 공통 controller 등록
     Get.lazyPut<NavigationController>(() => NavigationController());
-    NotificationBinding().dependencies();
 
+    NotificationBinding().dependencies();
+    ReportBinding().dependencies();
     UserBinding().dependencies();
     PostBinding().dependencies();
 

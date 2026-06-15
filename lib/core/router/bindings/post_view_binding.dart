@@ -30,7 +30,6 @@ class PostViewBinding extends Bindings {
 
   @override
   void dependencies() {
-
     // Post UseCases
     Get.lazyPut<GetPostDetailUseCase>(
       () => GetPostDetailUseCase(
@@ -55,7 +54,6 @@ class PostViewBinding extends Bindings {
         Get.find<PostRepositoryImpl>(),
       ),
     );
-
 
     // Comment DataSource
     Get.lazyPut<CommentRemoteDataSource>(

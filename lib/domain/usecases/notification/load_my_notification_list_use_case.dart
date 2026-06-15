@@ -1,3 +1,4 @@
+import 'package:ondo/domain/entities/base/listable_wrapper.dart';
 import 'package:ondo/domain/entities/notification/notification_entity.dart';
 import 'package:ondo/domain/repositories/notification/notification_repository.dart';
 
@@ -6,10 +7,10 @@ class LoadMyNotificationListUseCase {
 
   LoadMyNotificationListUseCase({required this.repository});
 
-  Future<List<NotificationEntity>> call({
+  Future<ListableWrapper<NotificationEntity>> call({
     required int size,
     required int page,
-  }) async {
-    return (await repository.loadMyNotificationModel(size, page));
+  }) {
+    return repository.loadMyNotificationModel(size, page);
   }
 }

@@ -24,7 +24,7 @@ class CommunityFilterTagList extends GetView<CommunityController> {
               tags[index].$2,
               isSelect,
             ),
-            tag: tags[index].$2,
+            label: tags[index].$2,
           );
         },
       ),

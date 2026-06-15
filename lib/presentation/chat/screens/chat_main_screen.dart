@@ -41,7 +41,7 @@ class TagList extends GetView<ChatMainController> {
         padding: AppPadding.screenHorizontal,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) => CustomTagCard(
-          tag: tags[index],
+          label: tags[index],
           onTap: (isSelect) => controller.selectTag(tags[index], isSelect),
         ),
         itemCount: tags.length,

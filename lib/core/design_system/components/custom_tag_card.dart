@@ -3,48 +3,50 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 
-class CustomTagCard extends StatelessWidget {
-  final String tag;
-  final Color? color;
-  final void Function(bool isSelect)? onTap;
-  final ValueNotifier<bool> isSelect;
+typedef SelectTag = void Function(bool isSelect);
 
-  CustomTagCard({
+class CustomTagCard extends StatefulWidget {
+  final String label;
+  final SelectTag? onTap;
+
+  const CustomTagCard({
     super.key,
-    required this.tag,
-    this.color,
+    required this.label,
     this.onTap,
-    bool isSelect = false,
-  }) : isSelect = ValueNotifier(isSelect);
+  });
+
+  @override
+  State<CustomTagCard> createState() => _CustomTagCardState();
+}
+
+class _CustomTagCardState extends State<CustomTagCard> {
+  bool isFocus = false;
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: isSelect,
-      builder: (context, value, child) {
-        return GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: () {
-            isSelect.value = !isSelect.value;
-            onTap?.call(isSelect.value);
-          },
-          child: Container(
-            padding: AppPadding.chip,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: isSelect.value
-                  ? AppColors.primary
-                  : color ?? AppColors.white,
-            ),
-            child: Text(
-              tag,
-              style: AppTextStyles.textMedium(
-                textColor: isSelect.value ? AppColors.white : AppColors.gray90,
-              ),
-            ),
-          ),
-        );
+    final foregroundColor = isFocus ? AppColors.white : AppColors.gray90;
+    final backgroundColor = isFocus ? AppColors.primary : AppColors.gray20;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        isFocus = !isFocus;
+        widget.onTap?.call(isFocus);
+        setState(() {});
       },
+      child: Container(
+        padding: AppPadding.chip,
+        decoration: BoxDecoration(
+          borderRadius: AppRadius.baseRadius,
+          color: backgroundColor,
+        ),
+        child: Text(
+          widget.label,
+          style: AppTextStyles.textMedium(
+            textColor: foregroundColor,
+          ),
+        ),
+      ),
     );
   }
 }

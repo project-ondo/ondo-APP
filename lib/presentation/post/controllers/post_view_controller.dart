@@ -364,7 +364,7 @@ class PostViewController extends GetxController {
 
       await _deleteCommentUseCase(comment.id);
 
-      await fetchComments();
+      comments.removeWhere((c) => c.id == comment.id);
 
       commentCount.value = comments.length;
 
@@ -382,6 +382,16 @@ class PostViewController extends GetxController {
       builder: (context) => CustomReportDialog(
         type: ReportType.post,
         targetId: postId.toString(),
+      ),
+    );
+  }
+
+  void reportComment(BuildContext context, CommentEntity comment) {
+    showDialog(
+      context: context,
+      builder: (context) => CustomReportDialog(
+        type: ReportType.comment,
+        targetId: comment.id.toString(),
       ),
     );
   }

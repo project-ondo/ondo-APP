@@ -17,31 +17,64 @@ class PostCommentCard extends GetView<PostViewController> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const CustomProfileCircle(
-          radius: AppSpacing.s24,
-        ),
-        AppGap.h12,
-        Expanded(
-          child: _body(),
-        ),
-        AppGap.h6,
-        if(comment.isMy)
-        GestureDetector(
-          onTap: () {
-            controller.deleteComment(comment);
-          },
-          child: Text(
-            '삭제',
-            style: AppTextStyles.caption(
-              textColor: AppColors.red,
-            ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onLongPressStart: (details) =>
+          _showReportMenu(context, details.globalPosition),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const CustomProfileCircle(
+            radius: AppSpacing.s24,
           ),
+          AppGap.h12,
+          Expanded(
+            child: _body(),
+          ),
+          AppGap.h6,
+          if (comment.isMy)
+            GestureDetector(
+              onTap: () {
+                controller.deleteComment(comment);
+              },
+              child: Text(
+                '삭제',
+                style: AppTextStyles.caption(
+                  textColor: AppColors.red,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showReportMenu(BuildContext context, Offset position) {
+    if (comment.isMy) return;
+
+    showMenu<String>(
+      context: context,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy,
+        position.dx,
+        position.dy,
+      ),
+      color: AppColors.white,
+      shape: const RoundedRectangleBorder(borderRadius: AppRadius.baseRadius),
+      constraints: const BoxConstraints(minWidth: 0),
+      items: [
+        PopupMenuItem(
+          value: 'report',
+          padding: AppPadding.popupManuButton,
+          child: const Center(child: Text('신고하기')),
         ),
       ],
-    );
+    ).then((value) {
+      if (value == 'report' && context.mounted) {
+        controller.reportComment(context, comment);
+      }
+    });
   }
 
   Widget _body() {

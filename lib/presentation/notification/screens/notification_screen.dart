@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/constants/notification_type.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
@@ -9,7 +10,6 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/presentation/notification/controllers/notification_controller.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
-import 'package:ondo/presentation/notification/states/notification_state.dart';
 
 import '../widgets/notification_card.dart';
 import '../widgets/report_notification_card.dart';
@@ -35,12 +35,24 @@ class NotificationScreen extends GetView<NotificationController> {
     itemBuilder: (context) => [
       PopupMenuItem(
         padding: AppPadding.popupManuButton,
-        onTap: controller.deleteAllNotification,
+        onTap: () => controller.deleteAllNotification(context),
         height: double.minPositive,
         child: Align(
           alignment: Alignment.center,
           child: Text(
             "읽은 알림 모두 삭제",
+            style: AppTextStyles.caption(textColor: AppColors.gray90),
+          ),
+        ),
+      ),
+      PopupMenuItem(
+        padding: AppPadding.popupManuButton,
+        onTap: controller.readAll,
+        height: double.minPositive,
+        child: Align(
+          alignment: Alignment.center,
+          child: Text(
+            "전체 알림 모두 읽기",
             style: AppTextStyles.caption(textColor: AppColors.gray90),
           ),
         ),
@@ -57,7 +69,11 @@ class NotificationScreen extends GetView<NotificationController> {
         AppGap.v16,
         Obx(
           () => Expanded(
-            child: controller.viewNotificationList.isNotEmpty
+            child:
+                controller.isLoading.value &&
+                    controller.viewNotificationList.isEmpty
+                ? const Center(child: CircularProgressIndicator())
+                : controller.viewNotificationList.isNotEmpty
                 ? _NotificationPageList()
                 : _noMessageIcon(),
           ),
@@ -100,7 +116,7 @@ class _Title extends GetView<NotificationController> {
             AppGap.h12,
             Obx(
               () => Text(
-                "${controller.viewNotificationList.length}",
+                "${controller.totalElements.value}",
                 style: AppTextStyles.textMedium(textColor: AppColors.gray60),
               ),
             ),
@@ -113,64 +129,69 @@ class _Title extends GetView<NotificationController> {
 
 @immutable
 class _NotificationPageList extends GetView<NotificationController> {
-  final ValueNotifier<int> curIndex = ValueNotifier(0);
-
   @override
   Widget build(BuildContext context) {
     final list = controller.viewNotificationList;
-    final pageCount = (list.length / 11).ceil();
+    final pageTotal = controller.totalPages.value;
     return Column(
       children: [
         Expanded(
           child: PageView.builder(
-            itemCount: pageCount,
-            onPageChanged: (value) => curIndex.value = value,
-            itemBuilder: (context, pageIndex) {
+            itemCount: pageTotal,
+            onPageChanged: (value) {
+              controller.currentPageIndex.value = value;
+            },
+            itemBuilder: (context, pi) {
+              if (pi >= controller.loadedPages.value) {
+                controller.loadMore();
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              final start = pi * NotificationController.pageSize;
               final slice = list.sublist(
-                pageIndex * 11,
-                min((pageIndex + 1) * 11, list.length),
+                start,
+                min(
+                  start + NotificationController.pageSize,
+                  list.length,
+                ),
               );
 
-              return ListView.separated(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemCount: slice.length,
-                separatorBuilder: (context, index) => AppGap.v16,
-                itemBuilder: (context, index) {
-                  final notification = slice[index];
-                  if (notification.type == NotificationState.reported.title) {
-                    return ReportNotificationCard(
-                      notificationInfo: notification,
-                    );
-                  }
-                  return NotificationCard(
-                    notificationInfo: notification,
-                  );
-                },
+              return Column(
+                children: [
+                  for (var index = 0; index < slice.length; index++) ...[
+                    if (index > 0) AppGap.v16,
+                    slice[index].type == NotificationType.reportReceived
+                        ? ReportNotificationCard(
+                            notification: slice[index],
+                            onTap: () => controller.read(slice[index]),
+                          )
+                        : NotificationCard(
+                            notification: slice[index],
+                            onTap: () => controller.read(slice[index]),
+                          ),
+                  ],
+                ],
               );
             },
           ),
         ),
         AppGap.v16,
-        ValueListenableBuilder(
-          valueListenable: curIndex,
-          builder: (_, _, _) {
-            return Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                pageCount,
-                (index) => Padding(
-                  padding: AppPadding.indicatorSpacing,
-                  child: Text(
-                    "${index + 1}",
-                    style: AppTextStyles.pageIndicator(
-                      isCurrent: curIndex.value == index,
-                    ),
+        Obx(
+          () => Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(
+              controller.totalPages.value,
+              (index) => Padding(
+                padding: AppPadding.indicatorSpacing,
+                child: Text(
+                  "${index + 1}",
+                  style: AppTextStyles.pageIndicator(
+                    isCurrent: controller.currentPageIndex.value == index,
                   ),
                 ),
               ),
-            );
-          },
+            ),
+          ),
         ),
         AppGap.v16,
       ],

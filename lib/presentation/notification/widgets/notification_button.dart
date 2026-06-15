@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/core/router/app_router.dart';
 import 'package:ondo/presentation/notification/controllers/notification_controller.dart';
-import 'package:ondo/presentation/notification/screens/notification_screen.dart';
 
 @immutable
 class NotificationButton extends GetView<NotificationController> {
@@ -27,9 +28,7 @@ class NotificationButton extends GetView<NotificationController> {
               minimumSize: Size.square(AppSpacing.s44),
             ),
             onPressed: controller.newNotificationCount.value > 0
-                ? () => Get.to(
-                    NotificationScreen(),
-                  )
+                ? () => context.push(RoutePaths.notification)
                 : null,
             icon: SvgPicture.asset(
               controller.newNotificationCount.value > 0

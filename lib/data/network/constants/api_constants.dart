@@ -33,9 +33,9 @@ class ApiConstants {
 
   static String get loginPassword => Env.loginPassword;
 
-  void serverLog(Map body, {int? stausCode}) {
-    if (stausCode != null) {
-      statusLog(stausCode);
+  void serverLog(Map body, {int? statusCode}) {
+    if (statusCode != null) {
+      statusLog(statusCode);
     }
     successLog(body["success"]);
     messageLog(body["message"]);

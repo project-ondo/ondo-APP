@@ -5,7 +5,10 @@ import 'package:ondo/data/models/comment/response/comment_model.dart';
 
 abstract class CommentRemoteDataSource {
   Future<List<CommentModel>> getComments(int postId);
-  Future<void> createComment({required int postId, required String content});
+  Future<bool> createComment({
+    required int postId,
+    required String content,
+  });
   Future<void> deleteComment(int commentId);
 }
 
@@ -57,7 +60,7 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   }
 
   @override
-  Future<void> createComment({
+  Future<bool> createComment({
     required int postId,
     required String content,
   }) async {
@@ -81,6 +84,8 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       if (body['success'] != true) {
         throw Exception(body['message']);
       }
+
+      return true;
     } catch (e) {
       log.errorLog(e);
       rethrow;

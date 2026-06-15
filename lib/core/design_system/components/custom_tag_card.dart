@@ -5,35 +5,26 @@ import 'package:ondo/core/design_system/app_text_styles.dart';
 
 typedef SelectTag = void Function(bool isSelect);
 
-class CustomTagCard extends StatefulWidget {
+class CustomTagCard extends StatelessWidget {
   final String label;
+  final bool isSelected;
   final SelectTag? onTap;
 
   const CustomTagCard({
     super.key,
     required this.label,
+    this.isSelected = false,
     this.onTap,
   });
 
   @override
-  State<CustomTagCard> createState() => _CustomTagCardState();
-}
-
-class _CustomTagCardState extends State<CustomTagCard> {
-  bool isFocus = false;
-
-  @override
   Widget build(BuildContext context) {
-    final foregroundColor = isFocus ? AppColors.white : AppColors.gray90;
-    final backgroundColor = isFocus ? AppColors.primary : AppColors.gray20;
+    final foregroundColor = isSelected ? AppColors.white : AppColors.gray90;
+    final backgroundColor = isSelected ? AppColors.primary : AppColors.gray20;
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () {
-        isFocus = !isFocus;
-        widget.onTap?.call(isFocus);
-        setState(() {});
-      },
+      onTap: () => onTap?.call(!isSelected),
       child: Container(
         padding: AppPadding.chip,
         decoration: BoxDecoration(
@@ -41,7 +32,7 @@ class _CustomTagCardState extends State<CustomTagCard> {
           color: backgroundColor,
         ),
         child: Text(
-          widget.label,
+          label,
           style: AppTextStyles.textMedium(
             textColor: foregroundColor,
           ),

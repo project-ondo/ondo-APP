@@ -19,12 +19,15 @@ class CommunityFilterTagList extends GetView<CommunityController> {
         itemCount: tags.length,
         separatorBuilder: (context, index) => AppGap.h16,
         itemBuilder: (context, index) {
-          return CustomTagCard(
-            onTap: (isSelect) => controller.filterPostTag(
-              tags[index].$2,
-              isSelect,
+          return Obx(
+            () => CustomTagCard(
+              onTap: (isSelect) => controller.filterPostTag(
+                tags[index].$2,
+                isSelect,
+              ),
+              isSelected: controller.selectTagList.contains(tags[index].$2),
+              label: tags[index].$2,
             ),
-            label: tags[index].$2,
           );
         },
       ),

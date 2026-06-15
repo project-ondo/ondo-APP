@@ -37,15 +37,19 @@ class _CustomReportDialogState extends State<CustomReportDialog> {
   };
 
   bool get _isValid =>
-      _selectedReasons.isNotEmpty && controller.text.trim().isNotEmpty;
+      _selectedReasons.isNotEmpty || controller.text.trim().isNotEmpty;
 
   Future<void> _submitReport() async {
     if (!_isValid) return;
-
     final description = [
-      'tags',
-      ..._selectedReasons.map((e) => e.label),
-      if (controller.text.trim().isNotEmpty) ...['detail', controller.text.trim()],
+      if (_selectedReasons.isNotEmpty) ...[
+        'tags',
+        ..._selectedReasons.map((e) => e.label),
+      ],
+      if (controller.text.trim().isNotEmpty) ...[
+        'detail',
+        controller.text.trim(),
+      ],
     ].join('\n');
 
     await Get.find<ReportUseCase>()(
@@ -93,6 +97,7 @@ class _CustomReportDialogState extends State<CustomReportDialog> {
                     (r) {
                       return CustomTagCard(
                         label: r.label,
+                        isSelected: _selectedReasons.contains(r),
                         onTap: (isSelect) {
                           setState(() {
                             if (isSelect) {

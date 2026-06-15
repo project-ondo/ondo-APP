@@ -40,9 +40,12 @@ class TagList extends GetView<ChatMainController> {
       child: ListView.separated(
         padding: AppPadding.screenHorizontal,
         scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) => CustomTagCard(
-          label: tags[index],
-          onTap: (isSelect) => controller.selectTag(tags[index], isSelect),
+        itemBuilder: (context, index) => Obx(
+          () => CustomTagCard(
+            label: tags[index],
+            isSelected: controller.selectTagList.contains(tags[index]),
+            onTap: (isSelect) => controller.selectTag(tags[index], isSelect),
+          ),
         ),
         itemCount: tags.length,
         separatorBuilder: (context, index) => AppGap.h16,

@@ -18,7 +18,7 @@ void main() {
       expect(vm.messageId, 1);
       expect(vm.messageType, 'TEXT');
       expect(vm.content, '안녕하세요');
-      expect(vm.createdAt, DateTime.parse('2026-03-16T12:00:00'));
+      expect(vm.createdAt, DateTime.parse('2026-03-16T12:00:00Z').toLocal());
       expect(vm.isMe, false);
       expect(vm.profileImageKey, isNull);
     });

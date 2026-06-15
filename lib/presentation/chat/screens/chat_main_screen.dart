@@ -20,7 +20,12 @@ class ChatMainScreen extends GetView<ChatMainController> {
             AppGap.v16,
             TagList(),
             AppGap.v16,
-            Expanded(child: ChatList()),
+            Expanded(
+              child: Padding(
+                padding: AppPadding.screenHorizontal,
+                child: ChatList(),
+              ),
+            ),
             AppGap.v16,
           ],
         ),

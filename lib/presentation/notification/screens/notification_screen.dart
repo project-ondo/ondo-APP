@@ -141,11 +141,16 @@ class _NotificationPageList extends GetView<NotificationController> {
             },
             itemBuilder: (context, pi) {
               if (pi >= controller.loadedPages.value) {
-                controller.loadMore();
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  controller.loadMore();
+                });
                 return const Center(child: CircularProgressIndicator());
               }
 
-              final start = pi * NotificationController.pageSize;
+              final start = min(
+                pi * NotificationController.pageSize,
+                list.length,
+              );
               final slice = list.sublist(
                 start,
                 min(

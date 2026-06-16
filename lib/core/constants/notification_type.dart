@@ -8,7 +8,8 @@ enum NotificationType {
   reportReceived('REPORT_RECEIVED'),
   reportResolved('REPORT_RESOLVED'),
   reportContentDeleted('REPORT_CONTENT_DELETED'),
-  userSuspended('USER_SUSPENDED')
+  userSuspended('USER_SUSPENDED'),
+  unknown('UNKNOWN')
   ;
 
   final String value;

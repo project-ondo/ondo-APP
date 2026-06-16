@@ -50,11 +50,10 @@ class NotificationModel extends BaseModel {
 
   factory NotificationModel.fromJson(Map json) => NotificationModel(
     id: json["id"],
-    type: NotificationType.values
-        .where(
-          (t) => t.value == (json["type"] as String),
-        )
-        .first,
+    type: NotificationType.values.firstWhere(
+      (t) => t.value == json["type"],
+      orElse: () => NotificationType.unknown,
+    ),
     title: json["title"],
     body: json["body"],
     target: json["target"],

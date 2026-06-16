@@ -143,7 +143,7 @@ class NotificationController extends GetxController {
 
           totalElements.value -= removedCount;
         }
-        context.pop();
+        if (context.mounted) context.pop();
       },
       rightActionText: "삭제",
     ),

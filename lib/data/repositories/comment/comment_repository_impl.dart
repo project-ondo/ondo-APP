@@ -19,12 +19,12 @@ class CommentRepositoryImpl implements CommentRepository {
   }
 
   @override
-  Future<void> createComment({
+  Future<bool> createComment({
     required int postId,
     required String content,
   }) async {
     try {
-      await remoteDataSource.createComment(
+      return await remoteDataSource.createComment(
         postId: postId,
         content: content,
       );

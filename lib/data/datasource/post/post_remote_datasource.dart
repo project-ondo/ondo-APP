@@ -17,7 +17,7 @@ class PostRemoteDatasource {
       final res = await _client.get(Uri.parse("${ApiConstants.post}/popular"));
 
       final body = jsonDecode(res.body);
-      log.serverLog(body, stausCode: res.statusCode);
+      log.serverLog(body, statusCode: res.statusCode);
 
       if (res.statusCode == 200 && body["success"] == true) {
         return body["data"];

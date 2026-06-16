@@ -20,7 +20,12 @@ class ChatMainScreen extends GetView<ChatMainController> {
             AppGap.v16,
             TagList(),
             AppGap.v16,
-            Expanded(child: ChatList()),
+            Expanded(
+              child: Padding(
+                padding: AppPadding.screenHorizontal,
+                child: ChatList(),
+              ),
+            ),
             AppGap.v16,
           ],
         ),
@@ -40,9 +45,12 @@ class TagList extends GetView<ChatMainController> {
       child: ListView.separated(
         padding: AppPadding.screenHorizontal,
         scrollDirection: Axis.horizontal,
-        itemBuilder: (context, index) => CustomTagCard(
-          tag: tags[index],
-          onTap: (isSelect) => controller.selectTag(tags[index], isSelect),
+        itemBuilder: (context, index) => Obx(
+          () => CustomTagCard(
+            label: tags[index],
+            isSelected: controller.selectTagList.contains(tags[index]),
+            onTap: (isSelect) => controller.selectTag(tags[index], isSelect),
+          ),
         ),
         itemCount: tags.length,
         separatorBuilder: (context, index) => AppGap.h16,

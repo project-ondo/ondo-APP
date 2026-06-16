@@ -5,12 +5,12 @@ class CreateCommentUseCase {
 
   CreateCommentUseCase(this.repository);
 
-  Future<void> call({
+  Future<bool> call({
     required int postId,
     required String content,
   }) async {
     try {
-      await repository.createComment(
+      return await repository.createComment(
         postId: postId,
         content: content,
       );

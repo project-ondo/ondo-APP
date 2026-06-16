@@ -42,12 +42,13 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   List<Widget> _top() => [
+    //TODO : controller에서 publicId를 받아오면, 분기 처리
     CustomBackButton(
       moreOptions: true,
       itemBuilder: (context) => [
         _topPopupItem("게시물 수정하기", controller.editPost),
         _topPopupItem("게시물 삭제하기", controller.deletePost),
-        _topPopupItem("게시물 신고하기", controller.reportPost),
+        _topPopupItem("게시물 신고하기", () => controller.reportPost(context)),
       ],
     ),
     PostTitle(),

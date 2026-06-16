@@ -15,6 +15,7 @@ class CustomPopupMenuButton extends StatelessWidget {
     return PopupMenuButton(
       offset: const Offset(-6, 13),
       color: AppColors.white,
+
       borderRadius: AppRadius.baseRadius,
       constraints: BoxConstraints(minWidth: 0),
       itemBuilder: itemBuilder,

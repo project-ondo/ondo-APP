@@ -27,9 +27,7 @@ class NotificationButton extends GetView<NotificationController> {
               shape: RoundedRectangleBorder(borderRadius: AppRadius.baseRadius),
               minimumSize: Size.square(AppSpacing.s44),
             ),
-            onPressed: controller.newNotificationCount.value > 0
-                ? () => context.push(RoutePaths.notification)
-                : null,
+            onPressed: () => context.push(RoutePaths.notification),
             icon: SvgPicture.asset(
               controller.newNotificationCount.value > 0
                   ? AppIcon.alarmBrown.path

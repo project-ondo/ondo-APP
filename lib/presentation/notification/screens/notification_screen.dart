@@ -36,7 +36,6 @@ class NotificationScreen extends GetView<NotificationController> {
       PopupMenuItem(
         padding: AppPadding.popupManuButton,
         onTap: () => controller.deleteAllNotification(context),
-        height: double.minPositive,
         child: Align(
           alignment: Alignment.center,
           child: Text(
@@ -48,7 +47,6 @@ class NotificationScreen extends GetView<NotificationController> {
       PopupMenuItem(
         padding: AppPadding.popupManuButton,
         onTap: controller.readAll,
-        height: double.minPositive,
         child: Align(
           alignment: Alignment.center,
           child: Text(

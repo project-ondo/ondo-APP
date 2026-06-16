@@ -69,18 +69,14 @@ class NotificationController extends GetxController {
   }
 
   Future<void> loadMore() async {
-    final page = currentPageIndex.value;
-
-    if (isLoadingMore.value || page >= totalPages.value) return;
-
+    final nextPage = loadedPages.value;
+    if (isLoadingMore.value || nextPage >= totalPages.value) return;
     isLoadingMore.value = true;
-
     try {
       final result = await loadMyNotificationListUseCase.call(
         size: pageSize,
-        page: page,
+        page: nextPage,
       );
-
       viewNotificationList.addAll(result.content);
       loadedPages.value++;
     } finally {
@@ -140,8 +136,15 @@ class NotificationController extends GetxController {
           viewNotificationList.removeWhere(
             (notification) => notification.read == true,
           );
-
           totalElements.value -= removedCount;
+          totalPages.value = (totalElements.value / pageSize).ceil();
+          if (totalPages.value < 1) totalPages.value = 1;
+          if (loadedPages.value > totalPages.value) {
+            loadedPages.value = totalPages.value;
+          }
+          if (currentPageIndex.value >= totalPages.value) {
+            currentPageIndex.value = totalPages.value - 1;
+          }
         }
         if (context.mounted) context.pop();
       },

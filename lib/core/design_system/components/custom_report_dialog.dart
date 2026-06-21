@@ -1,54 +1,71 @@
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ondo/core/constants/report_type.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
+import 'package:ondo/core/design_system/components/custom_tag_card.dart';
 import 'package:ondo/core/design_system/components/custom_textfield.dart';
-import 'package:ondo/presentation/profile/widget/report_reason_chip.dart';
+import 'package:ondo/domain/usecases/report/report_use_case.dart';
 
-class PostReportDialog extends StatefulWidget {
-  const PostReportDialog({
+class CustomReportDialog extends StatefulWidget {
+  const CustomReportDialog({
     super.key,
+    required this.type,
+    required this.targetId,
   });
 
+  final ReportType type;
+  final String targetId;
+
   @override
-  State<PostReportDialog> createState() => _PostReportDialogState();
+  State<CustomReportDialog> createState() => _CustomReportDialogState();
 }
 
-class _PostReportDialogState extends State<PostReportDialog> {
+class _CustomReportDialogState extends State<CustomReportDialog> {
   final TextEditingController controller = TextEditingController();
 
-  final List<String> _reasons = [
-    "욕설이 많아요",
-    "상대를 존중하지 않아요",
-    "불쾌감을 느끼는 발언을 해요",
-    "공격적인 언어를 사용해요",
-    "신분, 장애, 인종에 대해 차별 발언을 일삼아요",
-    "부적절한 이름을 사용해요",
-    "기타",
-  ];
+  final Set<ReportReason> _selectedReasons = {};
 
-  final Set<String> _selectedReasons = {};
+  String get _title => switch (widget.type) {
+    ReportType.post => '게시물 신고',
+    ReportType.comment => '댓글 신고',
+    ReportType.chatRoom => '채팅방 신고',
+    ReportType.user => '유저 신고',
+  };
 
   bool get _isValid =>
       _selectedReasons.isNotEmpty || controller.text.trim().isNotEmpty;
 
-  void _toggleReason(String reason) {
-    setState(() {
-      if (_selectedReasons.contains(reason)) {
-        _selectedReasons.remove(reason);
-      } else {
-        _selectedReasons.add(reason);
-      }
-    });
-  }
-
   Future<void> _submitReport() async {
     if (!_isValid) return;
+    final description = [
+      if (_selectedReasons.isNotEmpty) ...[
+        'tags',
+        ..._selectedReasons.map((e) => e.label),
+      ],
+      if (controller.text.trim().isNotEmpty) ...[
+        'detail',
+        controller.text.trim(),
+      ],
+    ].join('\n');
 
+    await Get.find<ReportUseCase>()(
+      targetType: widget.type,
+      targetId: widget.targetId,
+      description: description,
+    );
+
+    if (!mounted) return;
     Navigator.pop(context);
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -68,7 +85,7 @@ class _PostReportDialogState extends State<PostReportDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Center(child: Text("게시물 신고", style: AppTextStyles.titleBold20())),
+              Center(child: Text(_title, style: AppTextStyles.titleBold20())),
               AppGap.v16,
               SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -76,12 +93,20 @@ class _PostReportDialogState extends State<PostReportDialog> {
                   crossAxisAlignment: WrapCrossAlignment.start,
                   spacing: AppSpacing.s12,
                   runSpacing: AppSpacing.s12,
-                  children: _reasons.map(
-                        (e) {
-                      return ReportReasonChip(
-                        label: e,
-                        isSelected: _selectedReasons.contains(e),
-                        onTap: () => _toggleReason(e),
+                  children: ReportReason.values.map(
+                    (r) {
+                      return CustomTagCard(
+                        label: r.label,
+                        isSelected: _selectedReasons.contains(r),
+                        onTap: (isSelect) {
+                          setState(() {
+                            if (isSelect) {
+                              _selectedReasons.add(r);
+                            } else {
+                              _selectedReasons.remove(r);
+                            }
+                          });
+                        },
                       );
                     },
                   ).toList(),

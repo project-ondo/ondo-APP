@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/constants/report_type.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
+import 'package:ondo/core/design_system/components/custom_report_dialog.dart';
 import 'package:ondo/domain/entities/comment/comment_entity.dart';
 import 'package:ondo/domain/entities/post/post_detail_entity.dart';
 import 'package:ondo/domain/entities/post/post_entity.dart';
@@ -22,7 +24,6 @@ import '../../../domain/usecases/post/unlike_post_usecase.dart';
 import '../../../domain/usecases/post/update_post_usecase.dart';
 import '../../community/controllers/community_post_create_screen_controller.dart';
 import '../../community/screens/community_post_create_screen.dart';
-import '../widgets/post_report_dialog.dart';
 
 class PostViewController extends GetxController {
   final int postId;

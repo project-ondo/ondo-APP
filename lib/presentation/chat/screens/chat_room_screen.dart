@@ -57,17 +57,22 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     ),
   );
 
-  Widget _chatList(int lastReadId, String opponentProfileUrl) => ListView.builder(
-    controller: controller.scrollController,
-    reverse: true,
-    itemBuilder: (context, index) {
-      final chat = controller.viewChatList[index];
-      return _chatBubble(chat, lastReadId, opponentProfileUrl);
-    },
-    itemCount: controller.viewChatList.length,
-  );
+  Widget _chatList(int lastReadId, String opponentProfileUrl) =>
+      ListView.builder(
+        controller: controller.scrollController,
+        reverse: true,
+        itemBuilder: (context, index) {
+          final chat = controller.viewChatList[index];
+          return _chatBubble(chat, lastReadId, opponentProfileUrl);
+        },
+        itemCount: controller.viewChatList.length,
+      );
 
-  Widget _chatBubble(ChatMessageViewModel chat, int lastReadId, String opponentProfileUrl) {
+  Widget _chatBubble(
+    ChatMessageViewModel chat,
+    int lastReadId,
+    String opponentProfileUrl,
+  ) {
     if (chat.isMe) {
       final isRead = chat.messageId != null && chat.messageId! <= lastReadId;
       return Row(
@@ -116,7 +121,7 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
     () => CustomBackButton(
       moreOptions: true,
       useUserProfile: true,
-      backAction: controller.backChatRoom,
+      backAction: controller.back,
       subtitle: controller.isOpponentViewing.value
           ? '채팅 중'
           : controller.isOpponentOnline.value
@@ -136,14 +141,12 @@ class ChatRoomScreen extends GetView<ChatRoomController> {
           "커피챗 종료하기",
 
           ///종료 알림창 표시
-          controller.quitChat,
+          controller.quit,
         ),
         _customPopupMenu(
           "신고하기",
           //신고 기능
-          () {
-            //TODO : 신고 기능
-          },
+          () => controller.report(context),
         ),
       ],
     ),

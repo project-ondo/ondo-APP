@@ -58,19 +58,23 @@ class ChatReviewDialog extends GetView<ChatReviewController> {
 
   Widget _reviewCategoryList() => SizedBox(
     width: double.maxFinite,
-    child: Wrap(
-      direction: Axis.horizontal,
-      spacing: AppSpacing.s12,
-      runSpacing: AppSpacing.s12,
-      children: List.generate(
-        controller.baseCategories.length,
-        (index) => CustomTagCard(
-          onTap: (isSelect) => controller.selectReviewTag(
-            controller.baseCategories[index],
-            isSelect,
+    child: Obx(
+      () => Wrap(
+        direction: Axis.horizontal,
+        spacing: AppSpacing.s12,
+        runSpacing: AppSpacing.s12,
+        children: List.generate(
+          controller.baseCategories.length,
+          (index) => CustomTagCard(
+            onTap: (isSelect) => controller.selectReviewTag(
+              controller.baseCategories[index],
+              isSelect,
+            ),
+            isSelected: controller.reviewTags.contains(
+              controller.baseCategories[index],
+            ),
+            label: controller.baseCategories[index],
           ),
-          tag: controller.baseCategories[index],
-          color: AppColors.gray20,
         ),
       ),
     ),

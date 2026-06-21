@@ -7,6 +7,7 @@ import 'package:ondo/core/router/bindings/home_binding.dart';
 import 'package:ondo/core/router/bindings/notification_binding.dart';
 import 'package:ondo/core/router/bindings/post_binding.dart';
 import 'package:ondo/core/router/bindings/profile_binding.dart';
+import 'package:ondo/core/router/bindings/report_binding.dart';
 import 'package:ondo/core/router/bindings/user_binding.dart';
 import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
@@ -49,6 +50,8 @@ class NavigationBinding extends Bindings {
 
     NotificationBinding().dependencies();
 
+    NotificationBinding().dependencies();
+    ReportBinding().dependencies();
     UserBinding().dependencies();
     PostBinding().dependencies();
 

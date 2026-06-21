@@ -279,8 +279,24 @@ class PostViewController extends GetxController {
   }
 
 
-  void reportPost() {
-    Get.dialog(PostReportDialog());
+  void reportPost(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => CustomReportDialog(
+        type: ReportType.post,
+        targetId: postId.toString(),
+      ),
+    );
+  }
+
+  void reportComment(BuildContext context, CommentEntity comment) {
+    showDialog(
+      context: context,
+      builder: (context) => CustomReportDialog(
+        type: ReportType.comment,
+        targetId: comment.id.toString(),
+      ),
+    );
   }
 
 

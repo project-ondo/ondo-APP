@@ -13,7 +13,6 @@ import 'package:ondo/data/datasource/auth/auth_local_datasource_impl.dart';
 import 'package:ondo/data/datasource/auth/auth_remote_datasource.dart';
 import 'package:ondo/data/datasource/base/auth_local_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
-import 'package:ondo/presentation/community/controllers/like_state_controller.dart';
 import 'package:ondo/presentation/navigation/controllers/navigation_controller.dart';
 
 
@@ -39,9 +38,6 @@ class NavigationBinding extends Bindings {
       ),
       fenix: true,
     );
-
-    /// 전역 LikeStateController 등록
-    Get.put(LikeStateController(), permanent: true);
 
     /// 전 화면 공통 controller 등록
     Get.lazyPut<NavigationController>(

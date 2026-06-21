@@ -31,7 +31,6 @@ class PostItem extends GetView<PostController> {
           context,
           isMy,
           post.postId,
-          isFavorite: post.isFavorite,
         );
       },
       child: Container(

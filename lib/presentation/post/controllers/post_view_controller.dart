@@ -13,7 +13,7 @@ import 'package:ondo/domain/usecases/post/bookmark_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/liked_post_use_case.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unbookmark_post_usecase.dart';
-import 'package:ondo/presentation/community/controllers/like_state_controller.dart';
+import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 import '../../../data/models/post/request/post_update_request_model.dart';
 import '../../../domain/usecases/post/create_post_usecase.dart';
@@ -167,7 +167,7 @@ class PostViewController extends GetxController {
       await _savePostLikeLocalUseCase(postId, isLiked);
 
 
-      Get.find<LikeStateController>().updateLikeState(
+      Get.find<PostController>().updateLikeState(
         postId,
         isLiked,
         heartTotal.value,

@@ -9,8 +9,8 @@ import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
 import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
-import 'package:ondo/presentation/community/controllers/like_state_controller.dart';
 import 'package:ondo/presentation/community/screens/community_post_create_screen.dart';
+import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 class CommunityController extends GetxController {
   final LikePostUseCase _likeUseCase;
@@ -49,7 +49,7 @@ class CommunityController extends GetxController {
     loadRecommendPostList();
 
     ever(
-      Get.find<LikeStateController>().lastEvent,
+      Get.find<PostController>().lastLikeEvent,
           (event) {
         if (event == null) return;
         _syncLike(event.postId, event.isLiked, event.likeCount);

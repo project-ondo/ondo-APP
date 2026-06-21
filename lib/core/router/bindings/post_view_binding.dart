@@ -23,12 +23,8 @@ import '../../../presentation/post/controllers/post_view_controller.dart';
 
 class PostViewBinding extends Bindings {
   final int postId;
-  final bool isFavorite;
 
-  PostViewBinding(
-      this.postId, [
-        this.isFavorite = false,
-      ]);
+  PostViewBinding(this.postId);
 
   @override
   void dependencies() {

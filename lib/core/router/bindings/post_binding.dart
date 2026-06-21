@@ -68,8 +68,7 @@ class PostBinding extends Bindings {
           () => LoadRecentPopularPostListUseCase(Get.find<PostRepositoryImpl>()),
     );
 
-    Get.lazyPut(
-          () => PostController(),
-    );
+    /// 좋아요 상태 동기화 이벤트를 전역으로 유지해야 하므로 permanent 등록
+    Get.put(PostController(), permanent: true);
   }
 }

@@ -12,8 +12,8 @@ import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/user/user_search_use_case.dart';
-import 'package:ondo/presentation/community/controllers/like_state_controller.dart';
 import 'package:ondo/presentation/home/controllers/base_home_controller.dart';
+import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 class HomeController extends GetxController with BaseHomeController {
   final RxList<PostRankEntity> recentPopularPostList = <PostRankEntity>[].obs;
@@ -55,7 +55,7 @@ class HomeController extends GetxController with BaseHomeController {
     loadRecommendUsers();
 
     ever(
-      Get.find<LikeStateController>().lastEvent,
+      Get.find<PostController>().lastLikeEvent,
           (event) {
         if (event == null) return;
         _syncLike(event.postId, event.isLiked, event.likeCount);
@@ -116,7 +116,7 @@ class HomeController extends GetxController with BaseHomeController {
   }
 
   Future<void> toggleLike(int postId, bool isLiked) async {
-    _updatePostLikeInList(postId, isLiked ? 1 : -1, isLiked);
+    _updatePostLikeInList(postId, isLiked);
 
     try {
       if (isLiked) {
@@ -127,15 +127,15 @@ class HomeController extends GetxController with BaseHomeController {
       await savePostLikeLocalUseCase(postId, isLiked);
     } catch (e) {
       debugPrint('[HomeController] 좋아요 토글 실패 - error: $e');
-      _updatePostLikeInList(postId, isLiked ? -1 : 1, !isLiked);
+      _updatePostLikeInList(postId, !isLiked);
     }
   }
 
-  void _updatePostLikeInList(int postId, int delta, bool isFavorite) {
+  void _updatePostLikeInList(int postId, bool isFavorite) {
     final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
     if (cacheIndex != -1) {
       _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
-        likeCount: _cachePostList[cacheIndex].likeCount + delta,
+        likeCount: _cachePostList[cacheIndex].likeCount + (isFavorite ? 1 : -1),
         isFavorite: isFavorite,
       );
     }

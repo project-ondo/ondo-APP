@@ -12,7 +12,7 @@ typedef BookmarkAction = void Function(
     int total,
     );
 
-class CustomIconButton extends StatelessWidget {
+class CustomIconButton extends StatefulWidget {
   const CustomIconButton({
     super.key,
     required this.imagePath,
@@ -36,45 +36,59 @@ class CustomIconButton extends StatelessWidget {
       )? action;
 
   @override
+  State<CustomIconButton> createState() => _CustomIconButtonState();
+}
+
+class _CustomIconButtonState extends State<CustomIconButton> {
+  late bool _isSelected;
+  late int _total;
+
+  @override
+  void initState() {
+    super.initState();
+    _isSelected = widget.initialIsSelected;
+    _total = widget.total;
+  }
+
+  @override
+  void didUpdateWidget(CustomIconButton oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 외부(컨트롤러)에서 갱신된 값이 들어오면 내부 상태에 반영한다.
+    if (oldWidget.initialIsSelected != widget.initialIsSelected) {
+      _isSelected = widget.initialIsSelected;
+    }
+    if (oldWidget.total != widget.total) {
+      _total = widget.total;
+    }
+  }
+
+  void _onTap() {
+    setState(() {
+      _isSelected = !_isSelected;
+      _total += _isSelected ? 1 : -1;
+    });
+
+    widget.action?.call(_isSelected, _total);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
-          onTap: () {
-            final newIsSelected =
-            !initialIsSelected;
-
-            final newTotal =
-            newIsSelected
-                ? total + 1
-                : total - 1;
-
-            action?.call(
-              newIsSelected,
-              newTotal,
-            );
-          },
+          onTap: _onTap,
           child: Image.asset(
-            imagePath,
-            color: initialIsSelected
-                ? activeColor
-                : AppColors.gray50,
-            height: iconSize,
-            width: iconSize,
+            widget.imagePath,
+            color: _isSelected ? widget.activeColor : AppColors.gray50,
+            height: widget.iconSize,
+            width: widget.iconSize,
           ),
         ),
         AppGap.h4,
         Text(
-          "$total",
-          style: TextStyle(
-            fontSize:
-            totalStyle.fontSize,
-            fontWeight:
-            totalStyle.fontWeight,
-            color:
-            AppColors.gray60,
-          ),
+          "$_total",
+          style: widget.totalStyle.copyWith(color: AppColors.gray60),
         ),
       ],
     );

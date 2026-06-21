@@ -17,7 +17,7 @@ class CommunityPostList extends GetView<CommunityController> {
               (index) {
             final post = controller.viewPostList[index];
             return PostItem(
-              key: ValueKey('${post.postId}-${post.likeCount}-${post.isFavorite}'),
+              key: ValueKey(post.postId),
               post: post,
               isMy: true,
               heartAction: (isLiked, total) {

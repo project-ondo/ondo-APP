@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/router/bindings/chat_room_binding.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
@@ -103,6 +104,7 @@ class ChatMainController extends GetxController {
       viewChatRoomList.assignAll(_cacheChatRoomList);
     } catch (e) {
       debugPrint('[ChatMainController] 채팅 목록 추가 로드 실패 - error: $e');
+      AppSnackbar.showError('채팅 목록을 불러오지 못했습니다. 다시 시도해 주세요.');
     } finally {
       isLoadingMore.value = false;
     }

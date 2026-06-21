@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/data/models/auth/request/signup_request_model.dart';
 import 'package:ondo/domain/usecases/auth/signup_usecase.dart';
 
@@ -106,6 +107,7 @@ class SignupFlowController extends GetxController {
       return true;
     } catch (e, s) {
       debugPrint('Failed to signup: $e\n$s');
+      AppSnackbar.showError('회원가입에 실패했습니다. 다시 시도해 주세요.');
       return false;
     } finally {
       isLoading.value = false;

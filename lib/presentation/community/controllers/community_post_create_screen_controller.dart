@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/data/models/post/request/post_create_request_model.dart';
 import 'package:ondo/data/models/post/request/post_update_request_model.dart';
 import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
@@ -85,7 +86,8 @@ class CommunityPostCreateController extends GetxController {
       Get.find<CommunityController>().refreshPosts();
       Get.back();
     } catch (e) {
-      errorMessage.value = e.toString();
+      debugPrint('[CommunityPostCreateController] 게시물 작성 실패 - error: $e');
+      AppSnackbar.showError('게시물 작성에 실패했습니다. 다시 시도해 주세요.');
     } finally {
       isLoading.value = false;
     }
@@ -111,7 +113,8 @@ class CommunityPostCreateController extends GetxController {
       );
       Get.back();
     } catch (e) {
-      errorMessage.value = e.toString();
+      debugPrint('[CommunityPostCreateController] 게시물 수정 실패 - error: $e');
+      AppSnackbar.showError('게시물 수정에 실패했습니다. 다시 시도해 주세요.');
     } finally {
       isLoading.value = false;
     }

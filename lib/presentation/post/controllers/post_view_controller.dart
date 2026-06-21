@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/constants/report_type.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_report_dialog.dart';
 import 'package:ondo/domain/entities/comment/comment_entity.dart';
@@ -303,7 +304,7 @@ class PostViewController extends GetxController {
             Get.back(result: {'postId': postId, 'deleted': true});
           } catch (e) {
             debugPrint('[PostViewController] 게시물 삭제 실패 - error: $e');
-            errorMessage.value = e.toString();
+            AppSnackbar.showError('게시물 삭제에 실패했습니다. 다시 시도해 주세요.');
           } finally {
             isLoading.value = false;
           }
@@ -325,7 +326,7 @@ class PostViewController extends GetxController {
       scrollToLastCommentTrigger.value++;
     } catch (e) {
       debugPrint('[PostViewController] 댓글 작성 실패 - error: $e');
-      errorMessage.value = e.toString();
+      AppSnackbar.showError('댓글 작성에 실패했습니다. 다시 시도해 주세요.');
     }
   }
 
@@ -336,7 +337,7 @@ class PostViewController extends GetxController {
       commentCount.value = comments.length;
     } catch (e) {
       debugPrint('[PostViewController] 댓글 삭제 실패 - error: $e');
-      errorMessage.value = e.toString();
+      AppSnackbar.showError('댓글 삭제에 실패했습니다. 다시 시도해 주세요.');
     }
   }
 

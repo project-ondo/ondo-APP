@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
@@ -54,7 +55,7 @@ class MyProfileController extends GetxController {
       }
     } catch (e, s) {
       debugPrint('Failed to load my profile: $e\n$s');
-      Get.snackbar('오류', '프로필을 불러오지 못했습니다.');
+      AppSnackbar.showError('프로필을 불러오지 못했습니다.');
     } finally {
       isLoading.value = false;
     }
@@ -79,7 +80,7 @@ class MyProfileController extends GetxController {
       return true;
     } catch (e, s) {
       debugPrint('Failed to delete account: $e\n$s');
-      Get.snackbar('오류', '회원탈퇴에 실패했습니다.');
+      AppSnackbar.showError('회원탈퇴에 실패했습니다.');
       return false;
     } finally {
       isLoading.value = false;

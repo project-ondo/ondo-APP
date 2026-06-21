@@ -100,15 +100,34 @@ class PostViewController extends GetxController {
   void onInit() {
     super.onInit();
     commentController = TextEditingController();
-    _initIsFavorite();
-    fetchPostDetail(postId);
+    _initPostState();
     fetchComments();
+  }
+
+  Future<void> _initPostState() async {
+    // 좋아요 여부(로컬 캐시)와 상세 정보(서버)를 함께 받은 뒤,
+    // 상세에서 조회한 최신 좋아요 수를 게시물 목록 화면들에 동기화한다.
+    await Future.wait([
+      _initIsFavorite(),
+      fetchPostDetail(postId),
+    ]);
+    _syncLikeToList();
   }
 
   Future<void> _initIsFavorite() async {
     final liked = await _likedPostUseCase(postId);
     selectHeart.value = liked;
     initialHeartState = liked;
+  }
+
+  /// 상세에서 조회한 최신 좋아요 상태/수를 목록 화면 캐시에 반영한다.
+  /// (토글하지 않고 단순 조회만 한 경우에도 미리보기 count가 상세와 일치하도록)
+  void _syncLikeToList() {
+    Get.find<PostController>().updateLikeState(
+      postId,
+      selectHeart.value,
+      heartTotal.value,
+    );
   }
 
 

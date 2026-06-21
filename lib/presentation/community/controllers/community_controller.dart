@@ -79,7 +79,13 @@ class CommunityController extends GetxController {
         likeCount: likeCount,
         isFavorite: isLiked,
       );
-      viewPostList.assignAll(_cachePostList);
+    }
+    final viewIndex = viewPostList.indexWhere((p) => p.postId == postId);
+    if (viewIndex != -1) {
+      viewPostList[viewIndex] = viewPostList[viewIndex].copyWith(
+        likeCount: likeCount,
+        isFavorite: isLiked,
+      );
     }
   }
 
@@ -149,6 +155,8 @@ class CommunityController extends GetxController {
 
   Future<void> toggleLike(int postId, bool isLiked) async {
     _updatePostLikeInList(postId, isLiked ? 1 : -1, isLiked);
+    // 로컬 캐시를 먼저 저장해야 PostDetail 진입 시 _initIsFavorite()가 최신 상태를 읽는다
+    await _savePostLikeLocalUseCase(postId, isLiked);
 
     try {
       if (isLiked) {
@@ -156,27 +164,25 @@ class CommunityController extends GetxController {
       } else {
         await _unlikeUseCase(postId);
       }
-      await _savePostLikeLocalUseCase(postId, isLiked);
     } catch (e) {
       debugPrint('[CommunityController] 좋아요 토글 실패 - error: $e');
       _updatePostLikeInList(postId, isLiked ? -1 : 1, !isLiked);
+      await _savePostLikeLocalUseCase(postId, !isLiked);
     }
   }
 
   void _updatePostLikeInList(int postId, int delta, bool isFavorite) {
-    final index = viewPostList.indexWhere((p) => p.postId == postId);
-    if (index != -1) {
-      viewPostList[index] = viewPostList[index].copyWith(
-        likeCount: viewPostList[index].likeCount + delta,
-        isFavorite: isFavorite,
-      );
-      viewPostList.refresh();
-    }
-
     final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
     if (cacheIndex != -1) {
       _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
         likeCount: _cachePostList[cacheIndex].likeCount + delta,
+        isFavorite: isFavorite,
+      );
+    }
+    final viewIndex = viewPostList.indexWhere((p) => p.postId == postId);
+    if (viewIndex != -1) {
+      viewPostList[viewIndex] = viewPostList[viewIndex].copyWith(
+        likeCount: viewPostList[viewIndex].likeCount + delta,
         isFavorite: isFavorite,
       );
     }

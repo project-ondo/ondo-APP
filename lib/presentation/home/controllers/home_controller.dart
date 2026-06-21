@@ -96,7 +96,13 @@ class HomeController extends GetxController with BaseHomeController {
         likeCount: likeCount,
         isFavorite: isLiked,
       );
-      viewPostList.assignAll(_cachePostList);
+    }
+    final viewIndex = viewPostList.indexWhere((p) => p.postId == postId);
+    if (viewIndex != -1) {
+      viewPostList[viewIndex] = viewPostList[viewIndex].copyWith(
+        likeCount: likeCount,
+        isFavorite: isLiked,
+      );
     }
   }
 
@@ -180,6 +186,8 @@ class HomeController extends GetxController with BaseHomeController {
 
   Future<void> toggleLike(int postId, bool isLiked) async {
     _updatePostLikeInList(postId, isLiked);
+    // 로컬 캐시를 먼저 저장해야 PostDetail 진입 시 _initIsFavorite()가 최신 상태를 읽는다
+    await savePostLikeLocalUseCase(postId, isLiked);
 
     try {
       if (isLiked) {
@@ -187,10 +195,10 @@ class HomeController extends GetxController with BaseHomeController {
       } else {
         await unlikePostUseCase(postId);
       }
-      await savePostLikeLocalUseCase(postId, isLiked);
     } catch (e) {
       debugPrint('[HomeController] 좋아요 토글 실패 - error: $e');
       _updatePostLikeInList(postId, !isLiked);
+      await savePostLikeLocalUseCase(postId, !isLiked);
     }
   }
 

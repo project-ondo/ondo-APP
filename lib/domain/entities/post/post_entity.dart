@@ -32,7 +32,9 @@ class PostEntity {
     String? title,
     List<String>? tags,
     int? likeCount,
+    int? bookmarkCount,
     bool? isFavorite,
+    bool? isBookmark,
   }) => PostEntity(
     postId: postId,
     title: title ?? this.title,
@@ -41,9 +43,10 @@ class PostEntity {
     viewCount: viewCount,
     likeCount: likeCount ?? this.likeCount,
     commentCount: commentCount,
-    bookmarkCount: bookmarkCount,
+    bookmarkCount: bookmarkCount ?? this.bookmarkCount,
     createAt: createAt,
     isFavorite: isFavorite ?? this.isFavorite,
+    isBookmark: isBookmark ?? this.isBookmark,
   );
 
   PostEntity.fromPostModel(PostModel model)

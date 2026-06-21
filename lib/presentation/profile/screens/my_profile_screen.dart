@@ -91,11 +91,13 @@ class MyProfileScreen extends GetView<MyProfileController> {
                     title: '작성한 게시물 목록',
                     postItemCount: testPostItemList.length,
                     postItemList: testPostItemList,
+                    emptyMessage: '아직 작성한 게시물이 없어요.\n첫 게시물을 올려볼까요?',
                   ),
                   ProfileIndicatorPostPageList(
                     title: '즐겨찾기한 게시물',
                     postItemCount: testPostItemList.length,
                     postItemList: testPostItemList,
+                    emptyMessage: '즐겨찾기한 게시물이 없어요.\n마음에 드는 게시물을 저장해 보세요.',
                   ),
                 ],
               ),

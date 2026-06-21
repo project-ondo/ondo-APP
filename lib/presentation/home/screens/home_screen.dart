@@ -55,24 +55,30 @@ class HomeScreen extends GetView<HomeController> {
           title: "커피챗 추천",
           controller: controller,
           onEndReached: controller.loadMoreUsers,
+          isLoadingMore: controller.isLoadingUsers,
+          emptyMessage: '추천 커피챗 파트너가 없어요.\n프로필을 채우면 더 많은 추천을 받을 수 있어요.',
         ),
 
         AppGap.v16,
 
         Obx(
-              () => PostGridList(
+          () => PostGridList(
             title: "추천 게시물",
+            isLoading: controller.isLoading.value,
+            errorMessage: controller.errorMessage.value,
+            emptyMessage: '아직 추천 게시물이 없어요.\n게시물에 관심을 표현하면 맞춤 추천이 시작돼요.',
+            onRetry: () => controller.refresh(),
             list: controller.viewPostList
                 .map(
                   (post) => PostItem(
-                post: post,
-                isMy: true,
-                heartAction: (isFavorite, total) {
-                  controller.toggleLike(post.postId, isFavorite);
-                },
-                bookmarkAction: (isBookmark, total) {},
-              ),
-            )
+                    post: post,
+                    isMy: true,
+                    heartAction: (isFavorite, total) {
+                      controller.toggleLike(post.postId, isFavorite);
+                    },
+                    bookmarkAction: (isBookmark, total) {},
+                  ),
+                )
                 .toList(),
           ),
         ),

@@ -47,6 +47,10 @@ class HomeController extends GetxController with BaseHomeController {
   bool isLast = false;
   int _currentPage = 0;
   final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
+
+  final RxBool isLoadingRanks = false.obs;
+  final RxString rankErrorMessage = ''.obs;
 
   bool _isUserLast = false;
   int _userCurrentPage = 0;
@@ -81,13 +85,19 @@ class HomeController extends GetxController with BaseHomeController {
   }
 
   Future<void> _loadRecentPopularPostList() async {
+    isLoadingRanks.value = true;
+    rankErrorMessage.value = '';
     try {
       final result = await loadRecentPopularPostListUseCase();
-      if (result.isEmpty) return;
       recentPopularPostList.assignAll(result);
-      recentPopularPostList.sort((a, b) => a.rank - b.rank);
+      if (result.isNotEmpty) {
+        recentPopularPostList.sort((a, b) => a.rank - b.rank);
+      }
     } catch (e) {
       debugPrint('[HomeController] 인기 게시물 조회 실패 - error: $e');
+      rankErrorMessage.value = '인기 게시물을 불러오지 못했어요.';
+    } finally {
+      isLoadingRanks.value = false;
     }
   }
 
@@ -99,6 +109,7 @@ class HomeController extends GetxController with BaseHomeController {
       _currentPage = 0;
       _cachePostList.clear();
       isLast = false;
+      errorMessage.value = '';
     }
 
     if (isLast || isLoading.value) return;
@@ -124,12 +135,15 @@ class HomeController extends GetxController with BaseHomeController {
       _currentPage++;
     } catch (e) {
       debugPrint('[HomeController] 추천 게시물 조회 실패 - error: $e');
+      errorMessage.value = '게시물을 불러오지 못했어요.';
     } finally {
       isLoading.value = false;
     }
   }
 
   Future<void> loadMorePosts() => _loadRecommendPostList();
+
+  Future<void> retryLoadRanks() => _loadRecentPopularPostList();
 
   @override
   Future<void> refresh() async {

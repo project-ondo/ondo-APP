@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/app_icon.dart';
+import 'package:ondo/core/design_system/components/app_empty_state.dart';
+import 'package:ondo/core/design_system/components/app_loading_indicator.dart';
 import 'package:ondo/presentation/home/controllers/base_home_controller.dart';
 import 'package:ondo/presentation/home/widgets/home_profile_card.dart';
 
@@ -11,11 +14,15 @@ class HomeProfileList extends StatelessWidget {
     required this.title,
     required this.controller,
     this.onEndReached,
+    this.isLoadingMore,
+    this.emptyMessage = '추천 유저가 없어요.',
   });
 
   final String title;
   final BaseHomeController controller;
   final VoidCallback? onEndReached;
+  final RxBool? isLoadingMore;
+  final String emptyMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +46,20 @@ class HomeProfileList extends StatelessWidget {
   }
 
   Widget _profileList() {
-    return Obx(
-      () => NotificationListener<ScrollNotification>(
+    return Obx(() {
+      final users = controller.viewUserList;
+      final loadingMore = isLoadingMore?.value ?? false;
+
+      if (loadingMore && users.isEmpty) {
+        return const AppLoadingIndicator();
+      }
+      if (users.isEmpty) {
+        return AppEmptyState(
+          message: emptyMessage,
+          icon: AppIcon.userUnSelect,
+        );
+      }
+      return NotificationListener<ScrollNotification>(
         onNotification: (notification) {
           if (notification.metrics.pixels >=
               notification.metrics.maxScrollExtent - 100) {
@@ -53,8 +72,7 @@ class HomeProfileList extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           separatorBuilder: (context, index) => AppGap.h16,
           itemBuilder: (context, index) {
-            final chat = controller.viewUserList[index];
-
+            final chat = users[index];
             return HomeProfileCard(
               publicId: chat.publicId,
               skill: chat.interests.firstOrNull ?? '',
@@ -62,9 +80,9 @@ class HomeProfileList extends StatelessWidget {
               rating: chat.ratingCount,
             );
           },
-          itemCount: controller.viewUserList.length,
+          itemCount: users.length,
         ),
-      ),
-    );
+      );
+    });
   }
 }

@@ -135,6 +135,7 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
                         title: '작성한 게시물 목록',
                         postItemCount: _testPostItemList.length,
                         postItemList: _testPostItemList,
+                        emptyMessage: '아직 작성한 게시물이 없어요.',
                       ),
                     ],
                   ),

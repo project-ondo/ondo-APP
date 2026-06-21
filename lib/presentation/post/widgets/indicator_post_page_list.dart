@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/app_icon.dart';
+import 'package:ondo/core/design_system/components/app_empty_state.dart';
+import 'package:ondo/core/design_system/components/app_loading_indicator.dart';
 import 'package:ondo/presentation/post/widgets/post_list_indicator.dart';
 
 class IndicatorPostPageList extends StatefulWidget {
@@ -15,6 +18,8 @@ class IndicatorPostPageList extends StatefulWidget {
     this.scrollable = false,
     this.itemHeight = 127,
     this.onLastPage,
+    this.isLoading = false,
+    this.emptyMessage = '게시물이 없어요.',
   });
 
   final double itemHeight;
@@ -23,6 +28,8 @@ class IndicatorPostPageList extends StatefulWidget {
   final int itemFloors;
   final bool scrollable;
   final VoidCallback? onLastPage;
+  final bool isLoading;
+  final String emptyMessage;
 
   @override
   State<IndicatorPostPageList> createState() => _IndicatorPostPageListState();
@@ -43,12 +50,12 @@ class _IndicatorPostPageListState extends State<IndicatorPostPageList> {
     final list = widget.items;
     final pagePerItemCount = widget.itemFloors * 2;
     final pageCount = (list.length / pagePerItemCount).ceil();
+    final listHeight = widget.itemHeight * widget.itemFloors;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppGap.v16,
-        //게시물 리스트 제목(ex 작성한 게시물 목록
         Padding(
           padding: AppPadding.screenHorizontal,
           child: Text(
@@ -57,56 +64,68 @@ class _IndicatorPostPageListState extends State<IndicatorPostPageList> {
           ),
         ),
         AppGap.v16,
-        //게시물 리스트
         SizedBox(
-          height: widget.itemHeight * widget.itemFloors,
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: pageCount,
-            onPageChanged: (value) {
-              setState(() => _currentPage = value);
-              if (value == pageCount - 1) widget.onLastPage?.call();
-            },
-            itemBuilder: (context, int pageIndex) {
-              final start = pageIndex * pagePerItemCount;
-              final last = min((pageIndex + 1) * pagePerItemCount, list.length);
-              final slice = list.sublist(start, last);
-              return Padding(
-                padding: AppPadding.screenHorizontal,
-                child: GridView(
-                  physics: widget.scrollable
-                      ? null
-                      : NeverScrollableScrollPhysics(),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: AppSpacing.s16,
-                    crossAxisSpacing: AppSpacing.s16,
-                    mainAxisExtent: widget.itemHeight,
-                  ),
-                  children: List.generate(
-                    slice.length,
-                    (itemIndex) => slice[itemIndex],
-                  ),
-                ),
+          height: listHeight,
+          child: _listContent(list, pageCount, pagePerItemCount),
+        ),
+        AppGap.v16,
+        if (list.isNotEmpty)
+          PostListIndicator(
+            currentPage: _currentPage,
+            totalPage: pageCount,
+            onTap: (value) {
+              _pageController.animateToPage(
+                value,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.ease,
               );
             },
           ),
-        ),
-        AppGap.v16,
-        //게시물 인디케이터
-        PostListIndicator(
-          currentPage: _currentPage,
-          totalPage: pageCount,
-          onTap: (value) {
-            _pageController.animateToPage(
-              value,
-              duration: Duration(milliseconds: 300),
-              curve: Curves.ease,
-            );
-          },
-        ),
         AppGap.v16,
       ],
+    );
+  }
+
+  Widget _listContent(List<Widget> list, int pageCount, int pagePerItemCount) {
+    if (widget.isLoading && list.isEmpty) {
+      return const AppLoadingIndicator();
+    }
+    if (list.isEmpty) {
+      return AppEmptyState(
+        message: widget.emptyMessage,
+        icon: AppIcon.communityUnSelect,
+      );
+    }
+    return PageView.builder(
+      controller: _pageController,
+      itemCount: pageCount,
+      onPageChanged: (value) {
+        setState(() => _currentPage = value);
+        if (value == pageCount - 1) widget.onLastPage?.call();
+      },
+      itemBuilder: (context, int pageIndex) {
+        final start = pageIndex * pagePerItemCount;
+        final last = min((pageIndex + 1) * pagePerItemCount, list.length);
+        final slice = list.sublist(start, last);
+        return Padding(
+          padding: AppPadding.screenHorizontal,
+          child: GridView(
+            physics: widget.scrollable
+                ? null
+                : const NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              mainAxisSpacing: AppSpacing.s16,
+              crossAxisSpacing: AppSpacing.s16,
+              mainAxisExtent: widget.itemHeight,
+            ),
+            children: List.generate(
+              slice.length,
+              (itemIndex) => slice[itemIndex],
+            ),
+          ),
+        );
+      },
     );
   }
 }

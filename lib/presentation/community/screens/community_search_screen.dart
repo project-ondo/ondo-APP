@@ -21,6 +21,7 @@ class CommunitySearchScreen extends GetView<CommunityResultController> {
             Obx(
               () => PostGridList(
                 title: "게시물 검색 결과",
+                emptyMessage: '검색된 게시물이 없어요.\n다른 키워드로 검색해 보세요.',
                 list: controller.viewPosts
                     .map(
                       (post) => PostItem(

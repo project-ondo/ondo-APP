@@ -36,6 +36,7 @@ class ChatMainController extends GetxController {
 
   int _currentPage = 0;
   bool _hasMore = true;
+  final RxBool isLoading = false.obs;
   final RxBool isLoadingMore = false.obs;
   static const int _pageSize = 20;
 
@@ -66,6 +67,8 @@ class ChatMainController extends GetxController {
   Future<void> _loadChatRooms() async {
     _currentPage = 0;
     _hasMore = true;
+    error.value = '';
+    isLoading.value = true;
     try {
       final result = await loadChatRoomsUseCase.call(page: 0, size: _pageSize);
       _cacheChatRoomList.assignAll(result);
@@ -73,8 +76,13 @@ class ChatMainController extends GetxController {
       if (result.length < _pageSize) _hasMore = false;
     } catch (e) {
       debugPrint('[ChatMainController] 채팅 목록 조회 실패 - error: $e');
+      error.value = '채팅 목록을 불러오지 못했어요.';
+    } finally {
+      isLoading.value = false;
     }
   }
+
+  Future<void> retryLoadChatRooms() => _loadChatRooms();
 
   Future<void> loadMoreChatRooms() async {
     if (!_hasMore || isLoadingMore.value) return;

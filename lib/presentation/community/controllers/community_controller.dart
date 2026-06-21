@@ -39,6 +39,7 @@ class CommunityController extends GetxController {
 
   final RxBool isLoading = false.obs;
   final RxBool isLastPage = false.obs;
+  final RxString errorMessage = ''.obs;
 
   int _currentPage = 0;
 
@@ -80,6 +81,7 @@ class CommunityController extends GetxController {
       _cachePostList.clear();
       viewPostList.clear();
       isLastPage.value = false;
+      errorMessage.value = '';
     }
 
     if (isLastPage.value) return;
@@ -107,6 +109,7 @@ class CommunityController extends GetxController {
       _currentPage++;
     } catch (e) {
       debugPrint('[CommunityController] 게시물 조회 실패 - error: $e');
+      errorMessage.value = '게시물을 불러오지 못했어요.';
     } finally {
       isLoading.value = false;
     }

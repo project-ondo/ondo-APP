@@ -91,6 +91,10 @@ class PostViewController extends GetxController {
   final RxInt commentCount = 0.obs;
 
   final RxList<CommentEntity> comments = <CommentEntity>[].obs;
+  final List<CommentEntity> _commentCache = [];
+  int _commentPage = 0;
+  bool _commentIsLast = false;
+  final RxInt scrollToLastCommentTrigger = 0.obs;
 
   late final TextEditingController commentController;
 
@@ -157,13 +161,43 @@ class PostViewController extends GetxController {
 
 
   Future<void> fetchComments() async {
-    isCommentsLoading.value = true;
+    _commentPage = 0;
+    _commentIsLast = false;
+    _commentCache.clear();
+    await loadMoreComments();
+  }
 
+  /// 작성/삭제 후 전체 재로드: 현재까지 로드된 페이지를 모두 다시 가져옴
+  Future<void> _refetchAllComments() async {
+    final previousPageCount = _commentPage;
+    _commentPage = 0;
+    _commentIsLast = false;
+    _commentCache.clear();
+
+    int loaded = 0;
+    const maxPages = 20;
+    while (!_commentIsLast && loaded < maxPages) {
+      await loadMoreComments();
+      loaded++;
+      // 이전에 로드된 페이지 수를 초과하고 마지막이 아니면 계속, 아니면 중단
+      if (loaded >= previousPageCount && !_commentIsLast) break;
+    }
+    // 새 댓글은 마지막 페이지에 있으므로 마지막까지 로드
+    if (!_commentIsLast) await loadMoreComments();
+  }
+
+  Future<void> loadMoreComments() async {
+    if (_commentIsLast || isCommentsLoading.value) return;
+
+    isCommentsLoading.value = true;
     try {
-      final result = await _getCommentsUseCase(postId);
-      comments.assignAll(
-        result.map((e) => e.toEntity(currentUserId: null)),
+      final result = await _getCommentsUseCase(postId, page: _commentPage, size: 10);
+      _commentCache.addAll(
+        result.content.map((e) => e.toEntity(currentUserId: null)),
       );
+      comments.assignAll(_commentCache);
+      _commentIsLast = result.last ?? true;
+      _commentPage++;
     } catch (e) {
       debugPrint('[PostViewController] 댓글 조회 실패 - error: $e');
       errorMessage.value = e.toString();
@@ -280,20 +314,23 @@ class PostViewController extends GetxController {
     try {
       await _createCommentUseCase(postId: postId, content: content);
       commentController.clear();
-      await fetchComments();
+      await _refetchAllComments();
       commentCount.value = comments.length;
+      scrollToLastCommentTrigger.value++;
     } catch (e) {
       debugPrint('[PostViewController] 댓글 작성 실패 - error: $e');
+      errorMessage.value = e.toString();
     }
   }
 
   Future<void> deleteComment(CommentEntity comment) async {
     try {
       await _deleteCommentUseCase(comment.id);
-      await fetchComments();
+      await _refetchAllComments();
       commentCount.value = comments.length;
     } catch (e) {
       debugPrint('[PostViewController] 댓글 삭제 실패 - error: $e');
+      errorMessage.value = e.toString();
     }
   }
 

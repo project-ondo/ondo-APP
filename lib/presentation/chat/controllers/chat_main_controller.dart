@@ -66,10 +66,14 @@ class ChatMainController extends GetxController {
   Future<void> _loadChatRooms() async {
     _currentPage = 0;
     _hasMore = true;
-    final result = await loadChatRoomsUseCase.call(page: 0, size: _pageSize);
-    _cacheChatRoomList.assignAll(result);
-    viewChatRoomList.assignAll(_cacheChatRoomList);
-    if (result.length < _pageSize) _hasMore = false;
+    try {
+      final result = await loadChatRoomsUseCase.call(page: 0, size: _pageSize);
+      _cacheChatRoomList.assignAll(result);
+      viewChatRoomList.assignAll(_cacheChatRoomList);
+      if (result.length < _pageSize) _hasMore = false;
+    } catch (e) {
+      debugPrint('[ChatMainController] 채팅 목록 조회 실패 - error: $e');
+    }
   }
 
   Future<void> loadMoreChatRooms() async {
@@ -90,7 +94,7 @@ class ChatMainController extends GetxController {
       _cacheChatRoomList.addAll(result);
       viewChatRoomList.assignAll(_cacheChatRoomList);
     } catch (e) {
-      // 페이지 번호 롤백 없이 다음 시도 가능하도록 유지
+      debugPrint('[ChatMainController] 채팅 목록 추가 로드 실패 - error: $e');
     } finally {
       isLoadingMore.value = false;
     }

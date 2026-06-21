@@ -74,22 +74,31 @@ class MyProfileScreen extends GetView<MyProfileController> {
 
           final profile = controller.profile.value;
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildUserIntroductionSession(context, profile),
-                ProfileRatingSession(),
-                ProfileIndicatorPostPageList(
-                  title: '작성한 게시물 목록',
-                  postItemCount: testPostItemList.length,
-                  postItemList: testPostItemList,
-                ),
-                ProfileIndicatorPostPageList(
-                  title: '즐겨찾기한 게시물',
-                  postItemCount: testPostItemList.length,
-                  postItemList: testPostItemList,
-                ),
-              ],
+          return NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification.metrics.pixels >=
+                  notification.metrics.maxScrollExtent - 200) {
+                controller.loadMoreRatings();
+              }
+              return false;
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildUserIntroductionSession(context, profile),
+                  ProfileRatingSession(),
+                  ProfileIndicatorPostPageList(
+                    title: '작성한 게시물 목록',
+                    postItemCount: testPostItemList.length,
+                    postItemList: testPostItemList,
+                  ),
+                  ProfileIndicatorPostPageList(
+                    title: '즐겨찾기한 게시물',
+                    postItemCount: testPostItemList.length,
+                    postItemList: testPostItemList,
+                  ),
+                ],
+              ),
             ),
           );
         }),

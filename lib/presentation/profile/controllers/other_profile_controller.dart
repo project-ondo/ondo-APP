@@ -17,6 +17,9 @@ class OtherProfileController extends GetxController {
 
   final List<RatingEntity> _cacheRatingList = [];
   final RxList<RatingEntity> viewRatingList = RxList();
+  int _ratingCursor = 0;
+  bool _ratingHasNext = true;
+  final RxBool isLoadingRatings = false.obs;
 
   OtherProfileController({
     required this.loadOtherRatingListUseCase,
@@ -89,15 +92,33 @@ class OtherProfileController extends GetxController {
     }
   }
 
-  //TODO : 구조 변경
-  Future loadRatingList(String userPublicId) async {
-    _cacheRatingList.assignAll(
-      await loadOtherRatingListUseCase.call(
-        userPublicId: userPublicId,
-        cursor: 0,
+  Future<void> loadRatingList(String userPublicId) async {
+    _ratingCursor = 0;
+    _ratingHasNext = true;
+    _cacheRatingList.clear();
+    viewRatingList.clear();
+    await loadMoreRatings();
+  }
+
+  Future<void> loadMoreRatings() async {
+    final publicId = userPublicId;
+    if (publicId == null || !_ratingHasNext || isLoadingRatings.value) return;
+
+    isLoadingRatings.value = true;
+    try {
+      final result = await loadOtherRatingListUseCase.call(
+        userPublicId: publicId,
+        cursor: _ratingCursor,
         size: 20,
-      ),
-    );
-    viewRatingList.assignAll(_cacheRatingList);
+      );
+      _cacheRatingList.addAll(result.pages);
+      viewRatingList.assignAll(_cacheRatingList);
+      _ratingHasNext = result.hasNext;
+      _ratingCursor = result.nextCursor ?? _ratingCursor;
+    } catch (e) {
+      debugPrint('[OtherProfileController] 평점 목록 조회 실패 - error: $e');
+    } finally {
+      isLoadingRatings.value = false;
+    }
   }
 }

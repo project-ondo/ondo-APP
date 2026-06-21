@@ -15,6 +15,9 @@ class MyProfileController extends GetxController {
 
   final List<RatingEntity> _cacheRatingList = [];
   final RxList<RatingEntity> viewRatingList = RxList();
+  int _ratingCursor = 0;
+  bool _ratingHasNext = true;
+  final RxBool isLoadingRatings = false.obs;
 
   //TODO : 생성자 객체 할당 방식으로 변경
   final ProfileRemoteDatasource profileRemoteDatasource = Get.find();
@@ -28,7 +31,7 @@ class MyProfileController extends GetxController {
 
   @override
   void onInit() {
-    _initLoadMyRatingList();
+    _resetAndLoadRatings();
     loadProfile();
     super.onInit();
   }
@@ -83,9 +86,27 @@ class MyProfileController extends GetxController {
     }
   }
 
-  //TODO : 구조 변경
-  Future<void> _initLoadMyRatingList() async {
-    _cacheRatingList.assignAll(await loadMyRatingListUseCase.call(0, 20));
-    viewRatingList.assignAll(_cacheRatingList);
+  void _resetAndLoadRatings() {
+    _ratingCursor = 0;
+    _ratingHasNext = true;
+    _cacheRatingList.clear();
+    loadMoreRatings();
+  }
+
+  Future<void> loadMoreRatings() async {
+    if (!_ratingHasNext || isLoadingRatings.value) return;
+
+    isLoadingRatings.value = true;
+    try {
+      final result = await loadMyRatingListUseCase.call(_ratingCursor, 20);
+      _cacheRatingList.addAll(result.pages);
+      viewRatingList.assignAll(_cacheRatingList);
+      _ratingHasNext = result.hasNext;
+      _ratingCursor = result.nextCursor ?? _ratingCursor;
+    } catch (e) {
+      debugPrint('[MyProfileController] 평점 목록 조회 실패 - error: $e');
+    } finally {
+      isLoadingRatings.value = false;
+    }
   }
 }

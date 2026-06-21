@@ -1,7 +1,8 @@
 import 'package:ondo/data/models/user/response/user_model.dart';
+import 'package:ondo/domain/entities/base/listable_wrapper.dart';
 
 abstract class UserRepository {
-  Future<List<UserModel>> search({
+  Future<ListableWrapper<UserModel>> search({
     String? keyword,
     String? major,
     List<String>? interests,
@@ -10,6 +11,5 @@ abstract class UserRepository {
     int? size,
   });
 
-  Future<List<UserModel>> getRecommendUserList({required int page, required int size});
-
+  Future<ListableWrapper<UserModel>> getRecommendUserList({required int page, required int size});
 }

@@ -10,10 +10,12 @@ class HomeProfileList extends StatelessWidget {
     super.key,
     required this.title,
     required this.controller,
+    this.onEndReached,
   });
 
   final String title;
   final BaseHomeController controller;
+  final VoidCallback? onEndReached;
 
   @override
   Widget build(BuildContext context) {
@@ -38,21 +40,30 @@ class HomeProfileList extends StatelessWidget {
 
   Widget _profileList() {
     return Obx(
-      () => ListView.separated(
-        padding: AppPadding.screenHorizontal,
-        scrollDirection: Axis.horizontal,
-        separatorBuilder: (context, index) => AppGap.h16,
-        itemBuilder: (context, index) {
-          final chat = controller.viewUserList[index];
-
-          return HomeProfileCard(
-            publicId: chat.publicId,
-            skill: chat.interests.firstOrNull ?? '',
-            name: chat.displayName,
-            rating: chat.ratingCount,
-          );
+      () => NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification.metrics.pixels >=
+              notification.metrics.maxScrollExtent - 100) {
+            onEndReached?.call();
+          }
+          return false;
         },
-        itemCount: controller.viewUserList.length,
+        child: ListView.separated(
+          padding: AppPadding.screenHorizontal,
+          scrollDirection: Axis.horizontal,
+          separatorBuilder: (context, index) => AppGap.h16,
+          itemBuilder: (context, index) {
+            final chat = controller.viewUserList[index];
+
+            return HomeProfileCard(
+              publicId: chat.publicId,
+              skill: chat.interests.firstOrNull ?? '',
+              name: chat.displayName,
+              rating: chat.ratingCount,
+            );
+          },
+          itemCount: controller.viewUserList.length,
+        ),
       ),
     );
   }

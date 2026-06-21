@@ -56,9 +56,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
           ),
           AppGap.v16,
           Expanded(child: _postList()),
-          AppGap.v16,
           _indicator(),
-          AppGap.v16,
         ],
       ),
     );
@@ -109,19 +107,28 @@ class _HomePostRankListState extends State<HomePostRankList> {
   }
 
   Widget _indicator() {
-    return ValueListenableBuilder(
-      valueListenable: curIndex,
-      builder: (context, value, _) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: AppSpacing.s6,
-          children: List.generate(
-            3,
-            (index) => _indicatorIcon(index == value % 3),
-          ),
-        );
-      },
-    );
+    return Obx(() {
+      final pageCount =
+          (_mainController.recentPopularPostList.length / 3).ceil();
+      if (pageCount <= 1) return const SizedBox.shrink();
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: ValueListenableBuilder(
+          valueListenable: curIndex,
+          builder: (context, value, _) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: AppSpacing.s6,
+              children: List.generate(
+                pageCount,
+                (index) => _indicatorIcon(index == value % pageCount),
+              ),
+            );
+          },
+        ),
+      );
+    });
   }
 
   Widget _indicatorIcon(bool isFocus) {

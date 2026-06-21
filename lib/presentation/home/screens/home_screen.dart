@@ -21,12 +21,24 @@ class HomeScreen extends GetView<HomeController> {
       backgroundColor: AppColors.background,
       body: MainTopSearchBar(
         pageState: SearchPageState.home,
-        mainPage: SingleChildScrollView(
-          child: _body(),
+        mainPage: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification.metrics.pixels >=
+                notification.metrics.maxScrollExtent - 200) {
+              controller.loadMorePosts();
+            }
+            return false;
+          },
+          child: SingleChildScrollView(
+            child: _body(),
+          ),
         ),
         resultPageBuilder: (state) {
           if (state.keyword.isEmpty) return null;
-          controller.search(state.keyword);
+          final keyword = state.keyword;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            controller.search(keyword);
+          });
           return HomeSearchScreen();
         },
       ),
@@ -42,6 +54,7 @@ class HomeScreen extends GetView<HomeController> {
         HomeProfileList(
           title: "커피챗 추천",
           controller: controller,
+          onEndReached: controller.loadMoreUsers,
         ),
 
         AppGap.v16,

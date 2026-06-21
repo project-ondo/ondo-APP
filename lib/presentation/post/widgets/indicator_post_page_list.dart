@@ -14,6 +14,7 @@ class IndicatorPostPageList extends StatefulWidget {
     this.itemFloors = 2,
     this.scrollable = false,
     this.itemHeight = 127,
+    this.onLastPage,
   });
 
   final double itemHeight;
@@ -21,6 +22,7 @@ class IndicatorPostPageList extends StatefulWidget {
   final List<Widget> items;
   final int itemFloors;
   final bool scrollable;
+  final VoidCallback? onLastPage;
 
   @override
   State<IndicatorPostPageList> createState() => _IndicatorPostPageListState();
@@ -61,7 +63,10 @@ class _IndicatorPostPageListState extends State<IndicatorPostPageList> {
           child: PageView.builder(
             controller: _pageController,
             itemCount: pageCount,
-            onPageChanged: (value) => setState(() => _currentPage = value),
+            onPageChanged: (value) {
+              setState(() => _currentPage = value);
+              if (value == pageCount - 1) widget.onLastPage?.call();
+            },
             itemBuilder: (context, int pageIndex) {
               final start = pageIndex * pagePerItemCount;
               final last = min((pageIndex + 1) * pagePerItemCount, list.length);

@@ -32,7 +32,10 @@ class CommunityMainScreen extends GetView<CommunityController> {
         ),
         resultPageBuilder: (state) {
           if (state.keyword.isEmpty) return null;
-          controller.searchPost([state.keyword]);
+          final keyword = state.keyword;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            controller.searchPost([keyword]);
+          });
           return CommunitySearchScreen();
         },
       ),

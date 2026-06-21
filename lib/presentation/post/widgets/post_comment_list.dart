@@ -17,18 +17,33 @@ class PostCommentList extends StatefulWidget {
 
 class _PostCommentListState extends State<PostCommentList> {
   late final PageController _pageController;
+  late final Worker _scrollWorker;
   final PostViewController controller = Get.find<PostViewController>();
 
   final ValueNotifier<int> curIndex = ValueNotifier(0);
 
   @override
   void initState() {
-    _pageController = PageController();
     super.initState();
+    _pageController = PageController();
+    _scrollWorker = ever(controller.scrollToLastCommentTrigger, (_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!_pageController.hasClients) return;
+        final pageCount = (controller.comments.length / 4).ceil();
+        if (pageCount > 0) {
+          _pageController.animateToPage(
+            pageCount - 1,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.ease,
+          );
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
+    _scrollWorker.dispose();
     _pageController.dispose();
     super.dispose();
   }
@@ -60,6 +75,9 @@ class _PostCommentListState extends State<PostCommentList> {
                   controller: _pageController,
                   onPageChanged: (value) {
                     curIndex.value = value;
+                    if (value == pageCount - 1) {
+                      controller.loadMoreComments();
+                    }
                   },
                   itemCount: pageCount,
                   itemBuilder: (context, pIndex) => Column(

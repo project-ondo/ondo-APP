@@ -16,31 +16,39 @@ class HomeSearchScreen extends GetView<HomeSearchResultController> {
   Widget build(BuildContext context) {
     return BaseScaffold(
       backgroundColor: AppColors.background,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            AppGap.v16,
-            HomeProfileList(
-              title: "프로필 검색 결과",
-              controller: controller,
-            ),
-
-            AppGap.v16,
-            Obx(
-              () => PostGridList(
-                title: "게시물 검색 결과",
-                list: controller.viewPostList
-                    .map(
-                      (post) => PostItem(
-                        post: post,
-                        isMy: true,
-                      ),
-                    )
-                    .toList(),
+      body: NotificationListener<ScrollNotification>(
+        onNotification: (notification) {
+          if (notification.metrics.pixels >=
+              notification.metrics.maxScrollExtent - 200) {
+            Get.find<HomeController>().loadMoreSearchResults();
+          }
+          return false;
+        },
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              AppGap.v16,
+              HomeProfileList(
+                title: "프로필 검색 결과",
+                controller: controller,
               ),
-            ),
-            AppGap.v16,
-          ],
+              AppGap.v16,
+              Obx(
+                () => PostGridList(
+                  title: "게시물 검색 결과",
+                  list: controller.viewPostList
+                      .map(
+                        (post) => PostItem(
+                          post: post,
+                          isMy: true,
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+              AppGap.v16,
+            ],
+          ),
         ),
       ),
     );

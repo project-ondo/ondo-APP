@@ -87,6 +87,14 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
           return Column(
             children: [
               Expanded(
+                child: NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  if (notification.metrics.pixels >=
+                      notification.metrics.maxScrollExtent - 200) {
+                    controller.loadMoreRatings();
+                  }
+                  return false;
+                },
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
@@ -132,8 +140,9 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
                   ),
                 ),
               ),
-              _buildCoffeeChatRequestButton(),
-            ],
+            ),
+            _buildCoffeeChatRequestButton(),
+          ],
           );
         }),
       ),

@@ -66,9 +66,25 @@ class HomeController extends GetxController with BaseHomeController {
 
     ever(
       Get.find<PostController>().lastLikeEvent,
-          (event) {
+      (event) {
         if (event == null) return;
         _syncLike(event.postId, event.isLiked, event.likeCount);
+      },
+    );
+    ever(
+      Get.find<PostController>().lastDeleteEvent,
+      (postId) {
+        if (postId == null) return;
+        _removePostFromList(postId);
+        searchResultController._removePostFromList(postId);
+      },
+    );
+    ever(
+      Get.find<PostController>().lastUpdateEvent,
+      (event) {
+        if (event == null) return;
+        _updatePostInList(event.postId, event.title, event.tags);
+        searchResultController._updatePostInList(event.postId, event.title, event.tags);
       },
     );
   }
@@ -144,6 +160,18 @@ class HomeController extends GetxController with BaseHomeController {
   Future<void> loadMorePosts() => _loadRecommendPostList();
 
   Future<void> retryLoadRanks() => _loadRecentPopularPostList();
+
+  void _removePostFromList(int postId) {
+    _cachePostList.removeWhere((p) => p.postId == postId);
+    viewPostList.assignAll(_cachePostList);
+  }
+
+  void _updatePostInList(int postId, String title, List<String> tags) {
+    final index = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (index == -1) return;
+    _cachePostList[index] = _cachePostList[index].copyWith(title: title, tags: tags);
+    viewPostList.assignAll(_cachePostList);
+  }
 
   @override
   Future<void> refresh() async {
@@ -288,5 +316,17 @@ class HomeSearchResultController extends GetxController with BaseHomeController 
     if (users.isNotEmpty) viewUserList.assignAll(users);
     isLastPage.value = isLast;
     _postCurrentPage++;
+  }
+
+  void _removePostFromList(int postId) {
+    _cachePostList.removeWhere((p) => p.postId == postId);
+    viewPostList.assignAll(_cachePostList);
+  }
+
+  void _updatePostInList(int postId, String title, List<String> tags) {
+    final index = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (index == -1) return;
+    _cachePostList[index] = _cachePostList[index].copyWith(title: title, tags: tags);
+    viewPostList.assignAll(_cachePostList);
   }
 }

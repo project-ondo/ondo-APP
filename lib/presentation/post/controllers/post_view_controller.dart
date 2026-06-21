@@ -106,6 +106,11 @@ class PostViewController extends GetxController {
     commentController = TextEditingController();
     _initPostState();
     fetchComments();
+    // 수정 완료 이벤트 수신 → 이 게시물이면 상세 재조회
+    ever(Get.find<PostController>().lastUpdateEvent, (event) {
+      if (event == null || event.postId != postId) return;
+      fetchPostDetail(postId);
+    });
   }
 
   Future<void> _initPostState() async {
@@ -293,6 +298,7 @@ class PostViewController extends GetxController {
           try {
             await _deletePostUseCase(postId);
 
+            Get.find<PostController>().notifyPostDeleted(postId);
             Get.back();
             Get.back(result: {'postId': postId, 'deleted': true});
           } catch (e) {
@@ -359,7 +365,7 @@ class PostViewController extends GetxController {
   void editPost() {
     Get.delete<CommunityPostCreateController>(force: true);
     Get.lazyPut(
-          () => CommunityPostCreateController(
+      () => CommunityPostCreateController(
         createUseCase: Get.find<CreatePostUseCase>(),
         updateUseCase: Get.find<UpdatePostUseCase>(),
         isEditMode: true,

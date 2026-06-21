@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:ondo/core/constants/report_type.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/core/design_system/components/app_loading_indicator.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
@@ -79,7 +80,7 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
         backgroundColor: AppColors.background,
         body: Obx(() {
           if (controller.isLoading.value && controller.profile.value == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoadingIndicator();
           }
 
           final profile = controller.profile.value;

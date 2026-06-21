@@ -5,6 +5,7 @@ import 'package:ondo/data/models/post/request/post_update_request_model.dart';
 import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
 import 'package:ondo/presentation/community/controllers/community_controller.dart';
+import 'package:ondo/presentation/post/controllers/post_controller.dart';
 
 class CommunityPostCreateController extends GetxController {
   final CreatePostUseCase _createUseCase;
@@ -102,6 +103,11 @@ class CommunityPostCreateController extends GetxController {
           content: contentController.text,
           tags: inputTags,
         ),
+      );
+      Get.find<PostController>().notifyPostUpdated(
+        editPostId!,
+        titleController.text.trim(),
+        inputTags,
       );
       Get.back();
     } catch (e) {

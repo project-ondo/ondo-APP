@@ -28,11 +28,16 @@ class PostEntity {
     this.isBookmark = false,
   });
 
-  PostEntity copyWith({int? likeCount, bool? isFavorite}) => PostEntity(
+  PostEntity copyWith({
+    String? title,
+    List<String>? tags,
+    int? likeCount,
+    bool? isFavorite,
+  }) => PostEntity(
     postId: postId,
-    title: title,
+    title: title ?? this.title,
     authorName: authorName,
-    tags: tags,
+    tags: tags ?? this.tags,
     viewCount: viewCount,
     likeCount: likeCount ?? this.likeCount,
     commentCount: commentCount,

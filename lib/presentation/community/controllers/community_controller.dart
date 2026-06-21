@@ -51,9 +51,23 @@ class CommunityController extends GetxController {
 
     ever(
       Get.find<PostController>().lastLikeEvent,
-          (event) {
+      (event) {
         if (event == null) return;
         _syncLike(event.postId, event.isLiked, event.likeCount);
+      },
+    );
+    ever(
+      Get.find<PostController>().lastDeleteEvent,
+      (postId) {
+        if (postId == null) return;
+        removePost(postId);
+      },
+    );
+    ever(
+      Get.find<PostController>().lastUpdateEvent,
+      (event) {
+        if (event == null) return;
+        _updatePostInList(event.postId, event.title, event.tags);
       },
     );
   }
@@ -171,6 +185,13 @@ class CommunityController extends GetxController {
   void removePost(int postId) {
     viewPostList.removeWhere((p) => p.postId == postId);
     _cachePostList.removeWhere((p) => p.postId == postId);
+  }
+
+  void _updatePostInList(int postId, String title, List<String> tags) {
+    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (cacheIndex == -1) return;
+    _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(title: title, tags: tags);
+    viewPostList.assignAll(_cachePostList);
   }
 
   void searchPost(List<String> searchList) {

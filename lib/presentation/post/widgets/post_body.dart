@@ -14,7 +14,7 @@ class PostBody extends GetView<PostViewController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => Column(
+          () => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _top(),
@@ -77,12 +77,7 @@ class PostBody extends GetView<PostViewController> {
   );
 
   Widget _bookmarkButton() => GestureDetector(
-    onTap: () {
-      controller.selectBookMark.value = !controller.selectBookMark.value;
-      controller.selectBookMark.value
-          ? controller.bookMarkTotal.value += 1
-          : controller.bookMarkTotal.value -= 1;
-    },
+    onTap: () => controller.toggleBookmark(!controller.selectBookMark.value), // 수정
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: [

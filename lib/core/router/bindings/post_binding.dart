@@ -4,8 +4,8 @@ import 'package:ondo/data/datasource/post/post_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/post/post_repository_impl.dart';
 import 'package:ondo/domain/usecases/post/bookmark_post_usecase.dart';
-import 'package:ondo/domain/usecases/post/get_cached_liked_post_ids_use_case.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/liked_post_use_case.dart'; // ← 추가
 import 'package:ondo/domain/usecases/post/load_recent_popular_post_list_use_case.dart';
 import 'package:ondo/domain/usecases/post/load_recommend_post_list_use_case.dart';
 import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
@@ -18,68 +18,57 @@ class PostBinding extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<PostRemoteDatasource>(
-      () => PostRemoteDatasource(
-        Get.find<AuthClient>(),
-      ),
+          () => PostRemoteDatasource(Get.find<AuthClient>()),
     );
 
     Get.lazyPut<PostLocalDatasource>(
-      () => PostLocalDatasource(),
+          () => PostLocalDatasource(),
     );
 
-    // Post Repository
     Get.lazyPut<PostRepositoryImpl>(
-      () => PostRepositoryImpl(
+          () => PostRepositoryImpl(
         Get.find<PostRemoteDatasource>(),
         Get.find<PostLocalDatasource>(),
       ),
     );
-    Get.lazyPut<LikePostUseCase>(
-      () => LikePostUseCase(
-        Get.find<PostRepositoryImpl>(),
-      ),
+
+    Get.lazyPut<LikePostUseCase>( // ← 서버 좋아요 요청
+          () => LikePostUseCase(Get.find<PostRepositoryImpl>()),
+    );
+
+    Get.lazyPut<LikedPostUseCase>( // ← 로컬 캐시 확인
+          () => LikedPostUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     Get.lazyPut<UnlikePostUseCase>(
-      () => UnlikePostUseCase(
-        Get.find<PostRepositoryImpl>(),
-      ),
+          () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
     );
 
-    // 추가된 북마크 UseCase
     Get.lazyPut<BookmarkPostUseCase>(
-      () => BookmarkPostUseCase(
-        Get.find<PostRepositoryImpl>(),
-      ),
+          () => BookmarkPostUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     Get.lazyPut<UnbookmarkPostUseCase>(
-      () => UnbookmarkPostUseCase(
-        Get.find<PostRepositoryImpl>(),
-      ),
+          () => UnbookmarkPostUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     Get.lazyPut<PostSearchUseCase>(
-      () => PostSearchUseCase(Get.find<PostRepositoryImpl>()),
+          () => PostSearchUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     Get.lazyPut<SavePostLikeLocalUseCase>(
-      () => SavePostLikeLocalUseCase(Get.find<PostRepositoryImpl>()),
-    );
-    Get.lazyPut<GetCachedLikedPostIdsUseCase>(
-      () => GetCachedLikedPostIdsUseCase(Get.find<PostRepositoryImpl>()),
+          () => SavePostLikeLocalUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     Get.lazyPut(
-      () => LoadRecommendPostListUseCase(Get.find<PostRepositoryImpl>()),
+          () => LoadRecommendPostListUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     Get.lazyPut(
-      () => LoadRecentPopularPostListUseCase(Get.find<PostRepositoryImpl>()),
+          () => LoadRecentPopularPostListUseCase(Get.find<PostRepositoryImpl>()),
     );
 
-    Get.lazyPut(
-      () => PostController(),
-    );
+    /// 좋아요 상태 동기화 이벤트를 전역으로 유지해야 하므로 permanent 등록
+    Get.put(PostController(), permanent: true);
   }
 }

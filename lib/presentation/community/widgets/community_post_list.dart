@@ -10,13 +10,14 @@ class CommunityPostList extends GetView<CommunityController> {
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => IndicatorPostPageList(
+          () => IndicatorPostPageList(
         title: controller.selectTagList.isEmpty ? "게시물 목록" : "태그 분류 결과",
         items: List.generate(
           controller.viewPostList.length,
-          (index) {
+              (index) {
             final post = controller.viewPostList[index];
             return PostItem(
+              key: ValueKey(post.postId),
               post: post,
               isMy: true,
               heartAction: (isLiked, total) {

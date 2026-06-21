@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
@@ -25,17 +26,35 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     controller = Get.find<PostViewController>();
   }
 
+  void _onBack() {
+    final map = {
+      'postId': controller.postId,
+      'isLiked': controller.selectHeart.value,
+      'likeCount': controller.heartTotal.value,
+      'changed': controller.selectHeart.value != controller.initialHeartState,
+      'deleted': false,
+    };
+    debugPrint(' _onBack: $map');
+    context.pop(map);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BaseScaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ..._top(),
-            AppGap.v16,
-            _body(),
-            RelatedPostList(),
-          ],
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _onBack();
+      },
+      child: BaseScaffold(
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              ..._top(),
+              AppGap.v16,
+              _body(),
+              RelatedPostList(),
+            ],
+          ),
         ),
       ),
     );
@@ -44,6 +63,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   List<Widget> _top() => [
     //TODO : controller에서 publicId를 받아오면, 분기 처리
     CustomBackButton(
+      backAction: _onBack,
       moreOptions: true,
       itemBuilder: (context) => [
         _topPopupItem("게시물 수정하기", controller.editPost),

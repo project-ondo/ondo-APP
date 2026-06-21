@@ -137,7 +137,7 @@ final GoRouter appRouter = GoRouter(
           Get.delete<PostViewController>(force: true);
         }
 
-        PostViewBinding(postId, state.extra as bool? ?? false).dependencies();
+        PostViewBinding(postId).dependencies();
 
         return PostDetailScreen();
       },

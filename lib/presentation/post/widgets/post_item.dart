@@ -26,12 +26,11 @@ class PostItem extends GetView<PostController> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        controller.enterPostDetail(
+      onTap: () async {
+        await controller.enterPostDetail(
           context,
           isMy,
           post.postId,
-          isFavorite: post.isFavorite,
         );
       },
       child: Container(

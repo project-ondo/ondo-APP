@@ -2,12 +2,14 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/constants/report_type.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/design_system/components/custom_button.dart';
+import 'package:ondo/core/design_system/components/custom_report_dialog.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/domain/entities/post/post_entity.dart';
 import 'package:ondo/presentation/post/widgets/post_item.dart';
@@ -20,7 +22,6 @@ import 'package:ondo/presentation/profile/widget/user_introduction_text.dart';
 import 'package:ondo/presentation/profile/widget/user_name_and_major.dart';
 import 'package:ondo/presentation/profile/widget/user_profile_image.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
-import 'package:ondo/presentation/profile/widget/user_report_popup.dart';
 
 // TODO: 게시글 API 연동 후 교체
 final List<Map<String, dynamic>> mockPostData = [
@@ -95,7 +96,10 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
                           PopupMenuItem(
                             onTap: () => showDialog(
                               context: context,
-                              builder: (context) => const UserReportPopup(),
+                              builder: (context) => CustomReportDialog(
+                                type: ReportType.user,
+                                targetId: publicId,
+                              ),
                             ),
                             padding: AppPadding.settingSession,
                             child: Text(

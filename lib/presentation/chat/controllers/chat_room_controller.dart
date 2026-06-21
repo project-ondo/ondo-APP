@@ -3,8 +3,9 @@ import 'dart:collection';
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
+import 'package:ondo/core/constants/report_type.dart';
+import 'package:ondo/core/design_system/components/custom_report_dialog.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
@@ -402,7 +403,10 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
         }
       } else {
         // 상대방 메시지 → 리스트 앞에 삽입
-        final viewModel = ChatMessageViewModel.fromJson(json, myPublicId: _myPublicId);
+        final viewModel = ChatMessageViewModel.fromJson(
+          json,
+          myPublicId: _myPublicId,
+        );
         viewChatList.insert(0, viewModel);
         log('[ChatRoom] 메시지 수신: $content');
 
@@ -428,7 +432,7 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
     }
   }
 
-  Future _initLoadChatRoomMessages() async {
+  Future<void> _initLoadChatRoomMessages() async {
     final res = await loadChatRoomMessageUseCase.call(
       chatRoomPublicId: chatRoomId,
       cursor: 0,
@@ -487,7 +491,7 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
   /// - 내가 보낸 메시지 즉시 UI 반영 (isMe: true, messageId: null)
   /// - 서버 echo 수신 시 _onMessageReceived에서 messageId가 업데이트된다
   /// - IMAGE 타입은 추후 구현 예정
-  void sendChat(String content) {
+  void sendMessage(String content) {
     final trimmed = content.trim();
     if (trimmed.isEmpty) return;
 
@@ -517,7 +521,7 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
     textController.clear();
   }
 
-  Future backChatRoom() async {
+  Future<void> back() async {
     // WebSocket 읽음 이벤트 전송
     sendReadEvent();
     // HTTP 읽음 처리 유지
@@ -528,7 +532,7 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
     );
   }
 
-  Future quitChat() async {
+  Future<void> quit() async {
     Get.dialog(
       CustomAlertDialog(
         title: '커피챗 종료',
@@ -543,4 +547,10 @@ class ChatRoomController extends GetxController with WidgetsBindingObserver {
       ),
     );
   }
+
+  void report(BuildContext context) => showDialog(
+    context: context,
+    builder: (context) =>
+        CustomReportDialog(type: ReportType.chatRoom, targetId: chatRoomId),
+  );
 }

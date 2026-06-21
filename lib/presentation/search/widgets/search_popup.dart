@@ -57,8 +57,7 @@ class _Tags extends GetView<SearchPopupController> {
               .map(
                 (tag) => CustomTagCard(
                   onTap: (isSelect) => controller.selectSearchTag(tag),
-                  tag: tag,
-                  color: AppColors.gray20,
+                  label: tag,
                 ),
               )
               .toList(),

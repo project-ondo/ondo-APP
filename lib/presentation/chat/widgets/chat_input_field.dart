@@ -34,7 +34,7 @@ class ChatInputField extends GetView<ChatRoomController> {
               hintText: "메세지 내용을 입력해 주세요",
               maxLines: 2,
               onChanged: controller.onTypingChanged,
-              onSubmitted: controller.sendChat,
+              onSubmitted: controller.sendMessage,
             ),
           ),
           AppGap.h16,
@@ -45,7 +45,7 @@ class ChatInputField extends GetView<ChatRoomController> {
   }
 
   Widget _sendButton() => GestureDetector(
-    onTap: () => controller.sendChat(controller.textController.text),
+    onTap: () => controller.sendMessage(controller.textController.text),
     child: SvgPicture.asset(
       AppIcon.send.path,
       width: AppSpacing.s32,

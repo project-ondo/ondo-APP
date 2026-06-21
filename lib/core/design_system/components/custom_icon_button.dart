@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 
-typedef FavoriteAction = void Function(bool isFavorite, int total);
-typedef BookmarkAction = void Function(bool isBookmark, int total);
+typedef FavoriteAction = void Function(
+    bool isFavorite,
+    int total,
+    );
+
+typedef BookmarkAction = void Function(
+    bool isBookmark,
+    int total,
+    );
 
 class CustomIconButton extends StatefulWidget {
   const CustomIconButton({
@@ -23,32 +30,45 @@ class CustomIconButton extends StatefulWidget {
   final int total;
   final bool initialIsSelected;
   final Color activeColor;
-  final void Function(bool isSelect, int total)? action;
+  final void Function(
+      bool isSelect,
+      int total,
+      )? action;
 
   @override
   State<CustomIconButton> createState() => _CustomIconButtonState();
 }
 
 class _CustomIconButtonState extends State<CustomIconButton> {
-  late int total;
-  late bool isSelect;
+  late bool _isSelected;
+  late int _total;
 
   @override
   void initState() {
     super.initState();
-    total = widget.total;
-    isSelect = widget.initialIsSelected;
+    _isSelected = widget.initialIsSelected;
+    _total = widget.total;
   }
 
   @override
   void didUpdateWidget(CustomIconButton oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.total != widget.total) {
-      total = widget.total;
-    }
+    // 외부(컨트롤러)에서 갱신된 값이 들어오면 내부 상태에 반영한다.
     if (oldWidget.initialIsSelected != widget.initialIsSelected) {
-      isSelect = widget.initialIsSelected;
+      _isSelected = widget.initialIsSelected;
     }
+    if (oldWidget.total != widget.total) {
+      _total = widget.total;
+    }
+  }
+
+  void _onTap() {
+    setState(() {
+      _isSelected = !_isSelected;
+      _total += _isSelected ? 1 : -1;
+    });
+
+    widget.action?.call(_isSelected, _total);
   }
 
   @override
@@ -57,28 +77,18 @@ class _CustomIconButtonState extends State<CustomIconButton> {
       mainAxisSize: MainAxisSize.min,
       children: [
         GestureDetector(
-          onTap: () {
-            setState(() {
-              isSelect = !isSelect;
-              isSelect ? total += 1 : total -= 1;
-            });
-            widget.action?.call(isSelect, total);
-          },
+          onTap: _onTap,
           child: Image.asset(
             widget.imagePath,
-            color: isSelect ? widget.activeColor : AppColors.gray50,
+            color: _isSelected ? widget.activeColor : AppColors.gray50,
             height: widget.iconSize,
             width: widget.iconSize,
           ),
         ),
         AppGap.h4,
         Text(
-          "$total",
-          style: TextStyle(
-            fontSize: widget.totalStyle.fontSize,
-            fontWeight: widget.totalStyle.fontWeight,
-            color: AppColors.gray60,
-          ),
+          "$_total",
+          style: widget.totalStyle.copyWith(color: AppColors.gray60),
         ),
       ],
     );

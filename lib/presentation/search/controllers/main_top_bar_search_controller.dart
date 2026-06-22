@@ -15,6 +15,7 @@ class MainTopBarSearchController extends GetxController {
 
   final RxBool showPopup = false.obs;
   final RxBool showResult = false.obs;
+  final RxInt submitCount = 0.obs;
 
   final RxString queryNotifier = "".obs;
 
@@ -45,8 +46,18 @@ class MainTopBarSearchController extends GetxController {
       showResult.value = false;
       return;
     }
+    submitCount.value++;
     showResult.value = true;
     _saveSearchTag(state.keyword);
+  }
+
+  /// 태그/추천어 클릭 시 검색 필드에 텍스트를 채우고 submit
+  void submitFromSuggestion(String keyword) {
+    searchController.text = keyword;
+    searchController.selection = TextSelection.fromPosition(
+      TextPosition(offset: keyword.length),
+    );
+    submit(query: keyword);
   }
 
   void tapOther() => focusNode.unfocus();

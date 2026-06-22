@@ -12,7 +12,7 @@ class UserRemoteDatasource {
 
   UserRemoteDatasource({required this.client});
 
-  Future<Map?> search(UserSearchRequestModel model) async {
+  Future<Map> search(UserSearchRequestModel model) async {
     final log = ApiConstants(logName: "유저 검색 서버");
 
     try {
@@ -22,21 +22,22 @@ class UserRemoteDatasource {
 
       final body = jsonDecode(res.body);
 
+      log.statusLog(res.statusCode);
       log.successLog(body["success"] == true);
       log.messageLog(body["message"]);
 
-      if (res.statusCode == 200 && body["success"] == true) {
-        return body["data"];
+      if (body["success"] != true) {
+        throw Exception(body["message"]);
       }
-      log.statusLog(res.statusCode);
+
+      return body["data"];
     } catch (e) {
       log.errorLog(e);
+      rethrow;
     }
-
-    return null;
   }
 
-  Future<Map?> loadRecommendUserList(
+  Future<Map> loadRecommendUserList(
     ListRequestModelBasePage model,
   ) async {
     final log = ApiConstants(logName: "홈 추천 사용자 조회");
@@ -47,18 +48,19 @@ class UserRemoteDatasource {
       );
       final body = jsonDecode(res.body);
 
+      log.statusLog(res.statusCode);
       log.successLog(body["success"] == true);
       log.messageLog(body["message"]);
 
-      if (res.statusCode == 200 && body["success"] == true) {
-        return body["data"];
+      if (body["success"] != true) {
+        throw Exception(body["message"]);
       }
 
-      log.statusLog(res.statusCode);
+      return body["data"];
     } catch (e) {
       log.errorLog(e);
+      rethrow;
     }
-    return null;
   }
 
   /// 상대 프로필 조회 GET /users/{publicId}/profile

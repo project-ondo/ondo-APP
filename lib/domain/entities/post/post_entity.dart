@@ -28,17 +28,25 @@ class PostEntity {
     this.isBookmark = false,
   });
 
-  PostEntity copyWith({int? likeCount, bool? isFavorite}) => PostEntity(
+  PostEntity copyWith({
+    String? title,
+    List<String>? tags,
+    int? likeCount,
+    int? bookmarkCount,
+    bool? isFavorite,
+    bool? isBookmark,
+  }) => PostEntity(
     postId: postId,
-    title: title,
+    title: title ?? this.title,
     authorName: authorName,
-    tags: tags,
+    tags: tags ?? this.tags,
     viewCount: viewCount,
     likeCount: likeCount ?? this.likeCount,
     commentCount: commentCount,
-    bookmarkCount: bookmarkCount,
+    bookmarkCount: bookmarkCount ?? this.bookmarkCount,
     createAt: createAt,
     isFavorite: isFavorite ?? this.isFavorite,
+    isBookmark: isBookmark ?? this.isBookmark,
   );
 
   PostEntity.fromPostModel(PostModel model)

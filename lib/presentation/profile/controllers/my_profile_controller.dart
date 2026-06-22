@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
@@ -15,6 +16,9 @@ class MyProfileController extends GetxController {
 
   final List<RatingEntity> _cacheRatingList = [];
   final RxList<RatingEntity> viewRatingList = RxList();
+  int _ratingCursor = 0;
+  bool _ratingHasNext = true;
+  final RxBool isLoadingRatings = false.obs;
 
   //TODO : 생성자 객체 할당 방식으로 변경
   final ProfileRemoteDatasource profileRemoteDatasource = Get.find();
@@ -23,12 +27,15 @@ class MyProfileController extends GetxController {
   final DeleteAccountUseCase deleteAccountUseCase = Get.find();
 
   final isLoading = false.obs;
+  final profileLoadFailed = false.obs;
   final Rxn<UserProfileDataModel> profile = Rxn();
   final profileImageUrl = RxnString();
 
+  int _imageRefreshCount = 0;
+
   @override
   void onInit() {
-    _initLoadMyRatingList();
+    _resetAndLoadRatings();
     loadProfile();
     super.onInit();
   }
@@ -38,22 +45,48 @@ class MyProfileController extends GetxController {
 
     try {
       isLoading.value = true;
+      profileLoadFailed.value = false;
+      _imageRefreshCount = 0;
       profile.value = await profileRemoteDatasource.getMyProfile();
+    } catch (e, s) {
+      debugPrint('Failed to load my profile: $e\n$s');
+      profileLoadFailed.value = true;
+      return;
+    } finally {
+      isLoading.value = false;
+    }
 
-      // 프로필 이미지 URL 변환
-      final imageKey = profile.value?.profileImageKey;
-      if (imageKey != null && imageKey.isNotEmpty) {
+    // 이미지 URL은 별도로 처리 — 실패해도 프로필 화면은 정상 표시
+    final imageKey = profile.value?.profileImageKey;
+    if (imageKey != null && imageKey.isNotEmpty) {
+      try {
         profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
           key: imageKey,
         );
-      } else {
+      } catch (e) {
+        debugPrint('Failed to load profile image URL: $e');
         profileImageUrl.value = null;
       }
-    } catch (e, s) {
-      debugPrint('Failed to load my profile: $e\n$s');
-      Get.snackbar('오류', '프로필을 불러오지 못했습니다.');
-    } finally {
-      isLoading.value = false;
+    } else {
+      profileImageUrl.value = null;
+    }
+  }
+
+  // presign URL 만료 시 재발급 — 최대 1회 재시도
+  void refreshProfileImageUrl() {
+    if (_imageRefreshCount >= 1) return;
+    _imageRefreshCount++;
+    _fetchAndSetImageUrl(profile.value?.profileImageKey);
+  }
+
+  Future<void> _fetchAndSetImageUrl(String? imageKey) async {
+    if (imageKey == null || imageKey.isEmpty) return;
+    try {
+      profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
+        key: imageKey,
+      );
+    } catch (e) {
+      debugPrint('Failed to refresh profile image URL: $e');
     }
   }
 
@@ -76,16 +109,34 @@ class MyProfileController extends GetxController {
       return true;
     } catch (e, s) {
       debugPrint('Failed to delete account: $e\n$s');
-      Get.snackbar('오류', '회원탈퇴에 실패했습니다.');
+      AppSnackbar.showError('회원탈퇴에 실패했습니다.');
       return false;
     } finally {
       isLoading.value = false;
     }
   }
 
-  //TODO : 구조 변경
-  Future<void> _initLoadMyRatingList() async {
-    _cacheRatingList.assignAll(await loadMyRatingListUseCase.call(0, 20));
-    viewRatingList.assignAll(_cacheRatingList);
+  void _resetAndLoadRatings() {
+    _ratingCursor = 0;
+    _ratingHasNext = true;
+    _cacheRatingList.clear();
+    loadMoreRatings();
+  }
+
+  Future<void> loadMoreRatings() async {
+    if (!_ratingHasNext || isLoadingRatings.value) return;
+
+    isLoadingRatings.value = true;
+    try {
+      final result = await loadMyRatingListUseCase.call(_ratingCursor, 20);
+      _cacheRatingList.addAll(result.pages);
+      viewRatingList.assignAll(_cacheRatingList);
+      _ratingHasNext = result.hasNext;
+      _ratingCursor = result.nextCursor ?? _ratingCursor;
+    } catch (e) {
+      debugPrint('[MyProfileController] 평점 목록 조회 실패 - error: $e');
+    } finally {
+      isLoadingRatings.value = false;
+    }
   }
 }

@@ -5,9 +5,10 @@ import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 
 class UserProfileImage extends StatelessWidget {
-  const UserProfileImage({super.key, this.imageUrl});
+  const UserProfileImage({super.key, this.imageUrl, this.onUrlExpired});
 
   final String? imageUrl;
+  final VoidCallback? onUrlExpired;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,10 @@ class UserProfileImage extends StatelessWidget {
                 fit: BoxFit.cover,
                 width: AppSpacing.s80,
                 height: AppSpacing.s80,
-                errorWidget: (_, _, _) => _defaultImage(),
+                errorWidget: (_, _, _) {
+                  onUrlExpired?.call();
+                  return _defaultImage();
+                },
               )
                   : _defaultImage(),
             ),

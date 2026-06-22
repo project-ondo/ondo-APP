@@ -48,6 +48,8 @@ class _MainTopSearchBarState extends State<MainTopSearchBar> {
               GestureDetector(
                 onTap: controller.tapOther,
                 child: Obx(() {
+                  // submitCount를 읽어 재검색 시에도 Obx가 재평가되도록 함
+                  controller.submitCount.value;
                   if (!controller.showResult.value) return widget.mainPage;
                   final resultPage = widget.resultPageBuilder(controller.state);
                   //검색 결과가 없다면 null을 반환해 mainPage 표시

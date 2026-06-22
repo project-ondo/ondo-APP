@@ -1,3 +1,4 @@
+import 'package:ondo/domain/entities/base/pageable_wrapper.dart';
 import 'package:ondo/domain/entities/rating/rating_entity.dart';
 
 abstract class RatingRepository {
@@ -8,13 +9,13 @@ abstract class RatingRepository {
     List<String> tags,
   );
 
-  Future<List<RatingEntity>> loadOtherRatingList(
+  Future<PageableWrapper<RatingEntity>> loadOtherRatingList(
     String userPublicId,
     int cursor,
     int size,
   );
 
-  Future<List<RatingEntity>> loadMyRatingList(
+  Future<PageableWrapper<RatingEntity>> loadMyRatingList(
     int cursor,
     int size,
   );

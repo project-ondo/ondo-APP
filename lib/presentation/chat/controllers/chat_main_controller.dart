@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/router/bindings/chat_room_binding.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/domain/entities/chat/chat_entity.dart';
 import 'package:ondo/domain/usecases/chat/block_chat_room_use_case.dart';
 import 'package:ondo/domain/usecases/chat/cancel_block_chat_room_use_case.dart';
@@ -36,6 +37,7 @@ class ChatMainController extends GetxController {
 
   int _currentPage = 0;
   bool _hasMore = true;
+  final RxBool isLoading = false.obs;
   final RxBool isLoadingMore = false.obs;
   static const int _pageSize = 20;
 
@@ -66,11 +68,22 @@ class ChatMainController extends GetxController {
   Future<void> _loadChatRooms() async {
     _currentPage = 0;
     _hasMore = true;
-    final result = await loadChatRoomsUseCase.call(page: 0, size: _pageSize);
-    _cacheChatRoomList.assignAll(result);
-    viewChatRoomList.assignAll(_cacheChatRoomList);
-    if (result.length < _pageSize) _hasMore = false;
+    error.value = '';
+    isLoading.value = true;
+    try {
+      final result = await loadChatRoomsUseCase.call(page: 0, size: _pageSize);
+      _cacheChatRoomList.assignAll(result);
+      viewChatRoomList.assignAll(_cacheChatRoomList);
+      if (result.length < _pageSize) _hasMore = false;
+    } catch (e) {
+      debugPrint('[ChatMainController] 채팅 목록 조회 실패 - error: $e');
+      error.value = '채팅 목록을 불러오지 못했어요.';
+    } finally {
+      isLoading.value = false;
+    }
   }
+
+  Future<void> retryLoadChatRooms() => _loadChatRooms();
 
   Future<void> loadMoreChatRooms() async {
     if (!_hasMore || isLoadingMore.value) return;
@@ -90,7 +103,8 @@ class ChatMainController extends GetxController {
       _cacheChatRoomList.addAll(result);
       viewChatRoomList.assignAll(_cacheChatRoomList);
     } catch (e) {
-      // 페이지 번호 롤백 없이 다음 시도 가능하도록 유지
+      debugPrint('[ChatMainController] 채팅 목록 추가 로드 실패 - error: $e');
+      AppSnackbar.showError('채팅 목록을 불러오지 못했습니다. 다시 시도해 주세요.');
     } finally {
       isLoadingMore.value = false;
     }

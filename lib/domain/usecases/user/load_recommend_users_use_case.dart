@@ -1,3 +1,4 @@
+import 'package:ondo/domain/entities/base/listable_wrapper.dart';
 import 'package:ondo/domain/entities/user/user_entity.dart';
 import 'package:ondo/domain/repositories/user/user_repository.dart';
 
@@ -6,12 +7,15 @@ class LoadRecommendUsersUseCase {
 
   LoadRecommendUsersUseCase({required this.repository});
 
-  //TODO : 정적 값 임시 삽입
-  Future<List<UserEntity>> call() async {
-    return (await repository.getRecommendUserList(page: 0, size: 10))
-        .map(
-          (e) => UserEntity.fromUserModel(e),
-        )
-        .toList();
+  Future<ListableWrapper<UserEntity>> call({int page = 0, int size = 10}) async {
+    final res = await repository.getRecommendUserList(page: page, size: size);
+    return ListableWrapper<UserEntity>(
+      content: res.content.map(UserEntity.fromUserModel).toList(),
+      page: res.page,
+      size: res.size,
+      totalElements: res.totalElements,
+      totalPages: res.totalPages,
+      last: res.last,
+    );
   }
 }

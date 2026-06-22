@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_strings.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/domain/usecases/auth/send_email_code_usecase.dart';
 import 'package:ondo/presentation/auth/signup/controllers/signup_flow_controller.dart';
 import 'package:ondo/presentation/auth/signup/states/input_validation_state.dart';
@@ -52,11 +53,7 @@ class SignupEmailInputController extends GetxController {
       emailState = InputValidationState.invalid;
       update();
 
-      Get.snackbar(
-        AppStrings.emailSendFail,
-        AppStrings.retryMessage,
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      AppSnackbar.showError('${AppStrings.emailSendFail}: ${AppStrings.retryMessage}');
       return false;
     } finally {
       isLoading = false;

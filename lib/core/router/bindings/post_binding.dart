@@ -4,7 +4,9 @@ import 'package:ondo/data/datasource/post/post_remote_datasource.dart';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/repositories/post/post_repository_impl.dart';
 import 'package:ondo/domain/usecases/post/bookmark_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/liked_post_use_case.dart'; // ← 추가
 import 'package:ondo/domain/usecases/post/load_recent_popular_post_list_use_case.dart';
 import 'package:ondo/domain/usecases/post/load_recommend_post_list_use_case.dart';
@@ -42,6 +44,14 @@ class PostBinding extends Bindings {
 
     Get.lazyPut<UnlikePostUseCase>(
           () => UnlikePostUseCase(Get.find<PostRepositoryImpl>()),
+    );
+
+    Get.lazyPut<CreatePostUseCase>(
+          () => CreatePostUseCase(Get.find<PostRepositoryImpl>()),
+    );
+
+    Get.lazyPut<UpdatePostUseCase>(
+          () => UpdatePostUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     Get.lazyPut<BookmarkPostUseCase>(

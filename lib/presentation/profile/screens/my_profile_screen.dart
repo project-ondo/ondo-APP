@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/core/design_system/components/app_error_state.dart';
+import 'package:ondo/core/design_system/components/app_loading_indicator.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_popup_menu_button.dart';
 import 'package:ondo/core/router/app_router.dart';
@@ -69,27 +71,46 @@ class MyProfileScreen extends GetView<MyProfileController> {
         backgroundColor: AppColors.background,
         body: Obx(() {
           if (controller.isLoading.value && controller.profile.value == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoadingIndicator();
+          }
+
+          if (controller.profileLoadFailed.value) {
+            return AppErrorState(
+              message: '프로필을 불러오지 못했어요.',
+              onRetry: controller.loadProfile,
+            );
           }
 
           final profile = controller.profile.value;
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                _buildUserIntroductionSession(context, profile),
-                ProfileRatingSession(),
-                ProfileIndicatorPostPageList(
-                  title: '작성한 게시물 목록',
-                  postItemCount: testPostItemList.length,
-                  postItemList: testPostItemList,
-                ),
-                ProfileIndicatorPostPageList(
-                  title: '즐겨찾기한 게시물',
-                  postItemCount: testPostItemList.length,
-                  postItemList: testPostItemList,
-                ),
-              ],
+          return NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              if (notification.depth == 0 &&
+                  notification.metrics.pixels >=
+                      notification.metrics.maxScrollExtent - 200) {
+                controller.loadMoreRatings();
+              }
+              return false;
+            },
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildUserIntroductionSession(context, profile),
+                  ProfileRatingSession(),
+                  ProfileIndicatorPostPageList(
+                    title: '작성한 게시물 목록',
+                    postItemCount: testPostItemList.length,
+                    postItemList: testPostItemList,
+                    emptyMessage: '아직 작성한 게시물이 없어요.\n첫 게시물을 올려볼까요?',
+                  ),
+                  ProfileIndicatorPostPageList(
+                    title: '즐겨찾기한 게시물',
+                    postItemCount: testPostItemList.length,
+                    postItemList: testPostItemList,
+                    emptyMessage: '즐겨찾기한 게시물이 없어요.\n마음에 드는 게시물을 저장해 보세요.',
+                  ),
+                ],
+              ),
             ),
           );
         }),
@@ -129,6 +150,7 @@ class MyProfileScreen extends GetView<MyProfileController> {
             Obx(
               () => UserProfileImage(
                 imageUrl: controller.profileImageUrl.value,
+                onUrlExpired: controller.refreshProfileImageUrl,
               ),
             ),
             UserNameAndMajor(

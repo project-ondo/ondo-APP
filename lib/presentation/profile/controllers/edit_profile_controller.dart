@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/profile_remote_datasource.dart';
 import 'package:ondo/data/models/user/request/update_profile_request_model.dart';
@@ -108,11 +109,10 @@ class EditProfileController extends GetxController {
       // 3. MyProfileController 프로필 갱신
       await Get.find<MyProfileController>().loadProfile();
 
-      Get.snackbar('완료', '프로필이 수정되었습니다.');
       return true;
     } catch (e, s) {
       debugPrint('Failed to save profile: $e\n$s');
-      Get.snackbar('오류', '프로필 수정에 실패했습니다.');
+      AppSnackbar.showError('프로필 수정에 실패했습니다.');
       return false;
     } finally {
       isLoading.value = false;

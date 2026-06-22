@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/domain/usecases/notification/load_notification_setting_use_case.dart';
 import 'package:ondo/domain/usecases/notification/update_notification_setting_use_case.dart';
@@ -22,10 +23,14 @@ class SettingController extends GetxController {
   }
 
   Future<void> _loadSettings() async {
-    final settings = await loadNotificationSettingUseCase.call();
-    isPush.value = settings['push'] ?? true;
-    isVibration.value = settings['vibration'] ?? false;
-    isSound.value = settings['sound'] ?? false;
+    try {
+      final settings = await loadNotificationSettingUseCase.call();
+      isPush.value = settings['push'] ?? true;
+      isVibration.value = settings['vibration'] ?? false;
+      isSound.value = settings['sound'] ?? false;
+    } catch (e) {
+      debugPrint('[SettingController] 알림 설정 조회 실패 - error: $e');
+    }
   }
 
   Future<void> togglePush(bool value) async {

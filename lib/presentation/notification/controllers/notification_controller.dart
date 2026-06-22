@@ -10,7 +10,7 @@ import 'package:ondo/domain/usecases/notification/read_all_notification_use_case
 import 'package:ondo/domain/usecases/notification/read_notification_use_case.dart';
 
 class NotificationController extends GetxController {
-  static const pageSize = 11;
+  static const _pageSize = 20;
 
   final RxList<NotificationEntity> viewNotificationList =
       <NotificationEntity>[].obs;
@@ -18,10 +18,11 @@ class NotificationController extends GetxController {
   final RxInt newNotificationCount = 0.obs;
   final RxBool isLoading = false.obs;
   final RxBool isLoadingMore = false.obs;
-  final RxInt currentPageIndex = 0.obs;
-  final RxInt totalPages = 1.obs;
-  final RxInt loadedPages = 0.obs;
+  final RxString errorMessage = ''.obs;
   final RxInt totalElements = 0.obs;
+
+  int _currentPage = 0;
+  bool _isLast = false;
 
   final LoadMyNotificationListUseCase loadMyNotificationListUseCase;
   final LoadUnreadNotificationCountUseCase loadUnreadNotificationCountUseCase;
@@ -45,110 +46,119 @@ class NotificationController extends GetxController {
 
   @override
   Future<void> refresh() async {
-    await _loadMyNotificationList();
-    await _loadUnreadNotificationCount();
+    await Future.wait([
+      _loadMyNotificationList(),
+      _loadUnreadNotificationCount(),
+    ]);
   }
 
   Future<void> _loadMyNotificationList() async {
+    _currentPage = 0;
+    _isLast = false;
+    errorMessage.value = '';
     isLoading.value = true;
-    currentPageIndex.value = 0;
 
     try {
       final result = await loadMyNotificationListUseCase.call(
-        size: pageSize,
+        size: _pageSize,
         page: 0,
       );
-
       viewNotificationList.assignAll(result.content);
-      totalPages.value = result.totalPages > 0 ? result.totalPages : 1;
-      loadedPages.value = 1;
+      _isLast = result.last ?? true;
       totalElements.value = result.totalElements;
+      _currentPage = 1;
+    } catch (e) {
+      debugPrint('[NotificationController] 알림 목록 조회 실패 - error: $e');
+      errorMessage.value = '알림을 불러오지 못했습니다.';
     } finally {
       isLoading.value = false;
     }
   }
 
   Future<void> loadMore() async {
-    final nextPage = loadedPages.value;
-    if (isLoadingMore.value || nextPage >= totalPages.value) return;
+    if (_isLast || isLoadingMore.value) return;
+
     isLoadingMore.value = true;
     try {
       final result = await loadMyNotificationListUseCase.call(
-        size: pageSize,
-        page: nextPage,
+        size: _pageSize,
+        page: _currentPage,
       );
       viewNotificationList.addAll(result.content);
-      loadedPages.value++;
+      _isLast = result.last ?? true;
+      _currentPage++;
+    } catch (e) {
+      debugPrint('[NotificationController] 알림 추가 로드 실패 - error: $e');
     } finally {
       isLoadingMore.value = false;
     }
   }
 
   Future<void> _loadUnreadNotificationCount() async {
-    newNotificationCount.value = await loadUnreadNotificationCountUseCase();
-  }
-
-  Future<void> _readAllNotification() async {
-    await readAllNotificationUseCase();
-  }
-
-  Future<bool> _readNotification(int id) async {
-    return await readNotificationUseCase(id);
-  }
-
-  Future<bool> _deleteAllReadNotification() async {
-    return deleteAllReadNotificationsUseCase();
+    try {
+      newNotificationCount.value = await loadUnreadNotificationCountUseCase();
+    } catch (e) {
+      debugPrint('[NotificationController] 읽지 않은 알림 수 조회 실패 - error: $e');
+    }
   }
 
   Future<void> read(NotificationEntity notification) async {
     if (notification.read) return;
 
-    if (await _readNotification(notification.id)) {
-      final index = viewNotificationList.indexWhere(
-        (e) => e.id == notification.id,
-      );
-      if (index >= 0) {
-        viewNotificationList[index] = notification.copyWith(read: true);
+    try {
+      if (await _readNotification(notification.id)) {
+        final index = viewNotificationList.indexWhere(
+          (e) => e.id == notification.id,
+        );
+        if (index >= 0) {
+          viewNotificationList[index] = notification.copyWith(read: true);
+        }
       }
+    } catch (e) {
+      debugPrint('[NotificationController] 알림 읽음 처리 실패 - error: $e');
     }
   }
 
   Future<void> readAll() async {
-    await _readAllNotification();
-    viewNotificationList.assignAll(
-      viewNotificationList.map((e) => e.copyWith(read: true)).toList(),
-    );
-    newNotificationCount.value = 0;
+    try {
+      await readAllNotificationUseCase();
+      viewNotificationList.assignAll(
+        viewNotificationList.map((e) => e.copyWith(read: true)).toList(),
+      );
+      newNotificationCount.value = 0;
+    } catch (e) {
+      debugPrint('[NotificationController] 전체 읽음 처리 실패 - error: $e');
+    }
   }
 
   Future<void> deleteAllNotification(BuildContext context) async => showDialog(
-    context: context,
-    builder: (context) => CustomAlertDialog(
-      title: "알림",
-      comment: "정말 모든 알림을 삭제하시겠어요?",
-      actionLeft: () => context.pop(),
-      actionRight: () async {
-        if (await _deleteAllReadNotification()) {
-          final removedCount = viewNotificationList
-              .where((notification) => notification.read == true)
-              .length;
+        context: context,
+        builder: (context) => CustomAlertDialog(
+          title: "알림",
+          comment: "정말 모든 알림을 삭제하시겠어요?",
+          actionLeft: () => context.pop(),
+          actionRight: () async {
+            try {
+              if (await _deleteAllReadNotification()) {
+                final removedCount = viewNotificationList
+                    .where((n) => n.read == true)
+                    .length;
+                viewNotificationList.removeWhere((n) => n.read == true);
+                totalElements.value -= removedCount;
+              }
+            } catch (e) {
+              debugPrint('[NotificationController] 알림 삭제 실패 - error: $e');
+            } finally {
+              if (context.mounted) context.pop();
+            }
+          },
+          rightActionText: "삭제",
+        ),
+      );
 
-          viewNotificationList.removeWhere(
-            (notification) => notification.read == true,
-          );
-          totalElements.value -= removedCount;
-          totalPages.value = (totalElements.value / pageSize).ceil();
-          if (totalPages.value < 1) totalPages.value = 1;
-          if (loadedPages.value > totalPages.value) {
-            loadedPages.value = totalPages.value;
-          }
-          if (currentPageIndex.value >= totalPages.value) {
-            currentPageIndex.value = totalPages.value - 1;
-          }
-        }
-        if (context.mounted) context.pop();
-      },
-      rightActionText: "삭제",
-    ),
-  );
+  Future<bool> _readNotification(int id) async =>
+      readNotificationUseCase(id);
+
+  Future<bool> _deleteAllReadNotification() async =>
+      deleteAllReadNotificationsUseCase();
 }

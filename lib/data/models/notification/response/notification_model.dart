@@ -1,3 +1,4 @@
+import 'package:ondo/core/constants/notification_type.dart';
 import 'package:ondo/data/models/base/response/base_model.dart';
 
 import '../../base/response/base_data_model.dart';
@@ -30,7 +31,7 @@ class NotificationDataModel extends BaseDataModel<NotificationModel> {
 
 class NotificationModel extends BaseModel {
   final int id;
-  final String type;
+  final NotificationType type;
   final String title;
   final String body;
   final String target;
@@ -49,7 +50,10 @@ class NotificationModel extends BaseModel {
 
   factory NotificationModel.fromJson(Map json) => NotificationModel(
     id: json["id"],
-    type: json["type"],
+    type: NotificationType.values.firstWhere(
+      (t) => t.value == json["type"],
+      orElse: () => NotificationType.unknown,
+    ),
     title: json["title"],
     body: json["body"],
     target: json["target"],
@@ -60,7 +64,7 @@ class NotificationModel extends BaseModel {
   @override
   Map<String, dynamic> toJson() => {
     "id": id,
-    "type": type,
+    "type": type.value,
     "title": title,
     "body": body,
     "target": target,

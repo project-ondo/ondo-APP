@@ -1,9 +1,10 @@
+import 'package:ondo/core/constants/notification_type.dart';
 import 'package:ondo/core/utils/app_date_utils.dart';
 import 'package:ondo/data/models/notification/response/notification_model.dart';
 
 class NotificationEntity {
   final int id;
-  final String type;
+  final NotificationType type;
   final String title;
   final String body;
   final String target;

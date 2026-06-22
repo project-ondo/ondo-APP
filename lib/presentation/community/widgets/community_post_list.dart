@@ -13,19 +13,13 @@ class CommunityPostList extends GetView<CommunityController> {
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.isLoading.value && controller.viewPostList.isEmpty) {
-        return const SizedBox(
-          height: 260,
-          child: AppLoadingIndicator(),
-        );
+        return const AppLoadingIndicator();
       }
       if (controller.errorMessage.value.isNotEmpty &&
           controller.viewPostList.isEmpty) {
-        return SizedBox(
-          height: 260,
-          child: AppErrorState(
-            message: controller.errorMessage.value,
-            onRetry: () => controller.loadRecommendPostList(refresh: true),
-          ),
+        return AppErrorState(
+          message: controller.errorMessage.value,
+          onRetry: () => controller.loadRecommendPostList(refresh: true),
         );
       }
       return IndicatorPostPageList(

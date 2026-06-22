@@ -21,14 +21,12 @@ class CommunityMainScreen extends GetView<CommunityController> {
       backgroundColor: AppColors.background,
       body: MainTopSearchBar(
         pageState: SearchPageState.community,
-        mainPage: SingleChildScrollView(
-          child: Column(
-            children: [
-              AppGap.v16,
-              CommunityFilterTagList(),
-              CommunityPostList(),
-            ],
-          ),
+        mainPage: Column(
+          children: [
+            AppGap.v16,
+            CommunityFilterTagList(),
+            Expanded(child: CommunityPostList()),
+          ],
         ),
         resultPageBuilder: (state) {
           if (state.keyword.isEmpty) return null;

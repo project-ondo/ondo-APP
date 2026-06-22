@@ -45,6 +45,7 @@ import 'package:ondo/presentation/post/screens/post_detail_screen.dart';
 
 // notification
 import 'package:ondo/core/router/bindings/notification_binding.dart';
+import 'package:ondo/presentation/notification/controllers/notification_controller.dart';
 import 'package:ondo/presentation/notification/screens/notification_screen.dart';
 
 // profile
@@ -196,7 +197,11 @@ final GoRouter appRouter = GoRouter(
       path: RoutePaths.notification,
       name: 'notification',
       builder: (context, state) {
-        NotificationBinding().dependencies();
+        if (Get.isRegistered<NotificationController>()) {
+          Get.find<NotificationController>().refresh();
+        } else {
+          NotificationBinding().dependencies();
+        }
         return const NotificationScreen();
       },
     ),

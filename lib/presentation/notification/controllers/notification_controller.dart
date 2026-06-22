@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/domain/entities/notification/notification_entity.dart';
 import 'package:ondo/domain/usecases/notification/delete_all_read_notifications_use_case.dart';
 import 'package:ondo/domain/usecases/notification/load_my_notification_list_use_case.dart';
@@ -89,6 +90,7 @@ class NotificationController extends GetxController {
       _currentPage++;
     } catch (e) {
       debugPrint('[NotificationController] 알림 추가 로드 실패 - error: $e');
+      AppSnackbar.showError('알림을 불러오지 못했습니다. 다시 시도해 주세요.');
     } finally {
       isLoadingMore.value = false;
     }
@@ -128,6 +130,7 @@ class NotificationController extends GetxController {
       newNotificationCount.value = 0;
     } catch (e) {
       debugPrint('[NotificationController] 전체 읽음 처리 실패 - error: $e');
+      AppSnackbar.showError('알림 읽음 처리에 실패했습니다. 다시 시도해 주세요.');
     }
   }
 
@@ -148,6 +151,7 @@ class NotificationController extends GetxController {
               }
             } catch (e) {
               debugPrint('[NotificationController] 알림 삭제 실패 - error: $e');
+              AppSnackbar.showError('알림 삭제에 실패했습니다. 다시 시도해 주세요.');
             } finally {
               if (context.mounted) context.pop();
             }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/core/design_system/components/app_error_state.dart';
 import 'package:ondo/core/design_system/components/app_loading_indicator.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/components/custom_popup_menu_button.dart';
@@ -71,6 +72,13 @@ class MyProfileScreen extends GetView<MyProfileController> {
         body: Obx(() {
           if (controller.isLoading.value && controller.profile.value == null) {
             return const AppLoadingIndicator();
+          }
+
+          if (controller.profileLoadFailed.value) {
+            return AppErrorState(
+              message: '프로필을 불러오지 못했어요.',
+              onRetry: controller.loadProfile,
+            );
           }
 
           final profile = controller.profile.value;

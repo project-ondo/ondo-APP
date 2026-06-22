@@ -27,6 +27,7 @@ class MyProfileController extends GetxController {
   final DeleteAccountUseCase deleteAccountUseCase = Get.find();
 
   final isLoading = false.obs;
+  final profileLoadFailed = false.obs;
   final Rxn<UserProfileDataModel> profile = Rxn();
   final profileImageUrl = RxnString();
 
@@ -42,6 +43,7 @@ class MyProfileController extends GetxController {
 
     try {
       isLoading.value = true;
+      profileLoadFailed.value = false;
       profile.value = await profileRemoteDatasource.getMyProfile();
 
       // 프로필 이미지 URL 변환
@@ -55,7 +57,7 @@ class MyProfileController extends GetxController {
       }
     } catch (e, s) {
       debugPrint('Failed to load my profile: $e\n$s');
-      AppSnackbar.showError('프로필을 불러오지 못했습니다.');
+      profileLoadFailed.value = true;
     } finally {
       isLoading.value = false;
     }

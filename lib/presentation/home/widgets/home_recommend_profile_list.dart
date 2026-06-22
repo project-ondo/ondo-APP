@@ -4,6 +4,7 @@ import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/components/app_empty_state.dart';
+import 'package:ondo/core/design_system/components/app_error_state.dart';
 import 'package:ondo/core/design_system/components/app_loading_indicator.dart';
 import 'package:ondo/presentation/home/controllers/base_home_controller.dart';
 import 'package:ondo/presentation/home/widgets/home_profile_card.dart';
@@ -16,6 +17,8 @@ class HomeProfileList extends StatelessWidget {
     this.onEndReached,
     this.isLoadingMore,
     this.emptyMessage = '추천 유저가 없어요.',
+    this.errorMessage,
+    this.onRetry,
   });
 
   final String title;
@@ -23,6 +26,8 @@ class HomeProfileList extends StatelessWidget {
   final VoidCallback? onEndReached;
   final RxBool? isLoadingMore;
   final String emptyMessage;
+  final RxString? errorMessage;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +54,13 @@ class HomeProfileList extends StatelessWidget {
     return Obx(() {
       final users = controller.viewUserList;
       final loadingMore = isLoadingMore?.value ?? false;
+      final error = errorMessage?.value ?? '';
 
       if (loadingMore && users.isEmpty) {
         return const AppLoadingIndicator();
+      }
+      if (error.isNotEmpty && users.isEmpty) {
+        return AppErrorState(message: error, onRetry: onRetry);
       }
       if (users.isEmpty) {
         return AppEmptyState(

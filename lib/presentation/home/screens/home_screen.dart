@@ -58,6 +58,8 @@ class HomeScreen extends GetView<HomeController> {
           onEndReached: controller.loadMoreUsers,
           isLoadingMore: controller.isLoadingUsers,
           emptyMessage: '추천 커피챗 파트너가 없어요.\n프로필을 채우면 더 많은 추천을 받을 수 있어요.',
+          errorMessage: controller.userErrorMessage,
+          onRetry: controller.loadRecommendUsers,
         ),
 
         AppGap.v16,

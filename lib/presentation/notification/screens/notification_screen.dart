@@ -5,6 +5,7 @@ import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/components/app_error_state.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/notification/controllers/notification_controller.dart';
@@ -183,25 +184,6 @@ class _ErrorView extends StatelessWidget {
   const _ErrorView({required this.message, required this.onRetry});
 
   @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            message,
-            style: AppTextStyles.textMedium(textColor: AppColors.gray60),
-          ),
-          AppGap.v16,
-          TextButton(
-            onPressed: onRetry,
-            child: Text(
-              '다시 시도',
-              style: AppTextStyles.textMedium(textColor: AppColors.primary),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) =>
+      AppErrorState(message: message, onRetry: onRetry);
 }

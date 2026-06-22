@@ -27,6 +27,7 @@ class OtherProfileController extends GetxController {
   });
 
   final isLoading = false.obs;
+  final profileLoadFailed = false.obs;
   final Rxn<UserProfileDataModel> profile = Rxn();
   final profileImageUrl = RxnString();
 
@@ -40,6 +41,7 @@ class OtherProfileController extends GetxController {
 
     try {
       isLoading.value = true;
+      profileLoadFailed.value = false;
       // 새 프로필 로딩 시 기존 데이터 초기화
       profile.value = null;
       profileImageUrl.value = null;
@@ -57,7 +59,7 @@ class OtherProfileController extends GetxController {
       }
     } catch (e, s) {
       debugPrint('Failed to load other profile: $e\n$s');
-      AppSnackbar.showError('프로필을 불러오지 못했습니다.');
+      profileLoadFailed.value = true;
     } finally {
       isLoading.value = false;
     }

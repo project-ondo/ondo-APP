@@ -55,6 +55,7 @@ class HomeController extends GetxController with BaseHomeController {
   bool _isUserLast = false;
   int _userCurrentPage = 0;
   final RxBool isLoadingUsers = false.obs;
+  final RxString userErrorMessage = ''.obs;
 
   @override
   void onInit() {
@@ -217,6 +218,7 @@ class HomeController extends GetxController with BaseHomeController {
     _userCurrentPage = 0;
     _isUserLast = false;
     _cacheProfileList.clear();
+    userErrorMessage.value = '';
     await _fetchRecommendUsers();
   }
 
@@ -235,6 +237,7 @@ class HomeController extends GetxController with BaseHomeController {
       _userCurrentPage++;
     } catch (e) {
       debugPrint('[HomeController] 추천 유저 조회 실패 - error: $e');
+      userErrorMessage.value = '추천 커피챗 파트너를 불러오지 못했어요.';
     } finally {
       isLoadingUsers.value = false;
     }

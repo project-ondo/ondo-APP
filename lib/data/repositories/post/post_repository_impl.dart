@@ -23,7 +23,7 @@ class PostRepositoryImpl implements PostRepository {
   @override
   Future<List<PostRankEntity>> loadRecentPopularPostList() async {
     final json = await _remoteDatasource.getRecentPopularPostList();
-    final data = json?.map((e) => PostRankModel.fromJson(e)).toList() ?? [];
+    final data = json.map((e) => PostRankModel.fromJson(e)).toList();
     return data.map((e) => PostRankEntity.fromPostRankModel(e)).toList();
   }
 

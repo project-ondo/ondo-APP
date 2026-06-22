@@ -9,7 +9,7 @@ class NotificationRemoteDatasource {
 
   NotificationRemoteDatasource({required this.client});
 
-  Future<Map?> loadMyNotificationList(ListRequestModelBasePage model) async {
+  Future<Map> loadMyNotificationList(ListRequestModelBasePage model) async {
     final log = ApiConstants(logName: "내 알림 목록");
 
     try {
@@ -19,17 +19,19 @@ class NotificationRemoteDatasource {
 
       final body = jsonDecode(res.body);
 
+      log.statusLog(res.statusCode);
       log.successLog(body["success"] == true);
       log.messageLog(body["message"]);
 
-      if (res.statusCode == 200 && body["success"] == true) {
-        return body["data"];
+      if (body["success"] != true) {
+        throw Exception(body["message"]);
       }
-      log.statusLog(res.statusCode);
+
+      return body["data"];
     } catch (e) {
       log.errorLog(e);
+      rethrow;
     }
-    return null;
   }
 
   Future<int?> loadUnreadNotificationCount() async {

@@ -11,23 +11,22 @@ class PostRemoteDatasource {
 
   PostRemoteDatasource(this._client);
 
-  Future<List?> getRecentPopularPostList() async {
+  Future<List> getRecentPopularPostList() async {
     final log = ApiConstants(logName: "인기 게시글 Top 10 조회 서버");
     try {
       final res = await _client.get(Uri.parse("${ApiConstants.post}/popular"));
-
       final body = jsonDecode(res.body);
-      log.serverLog(body, statusCode: res.statusCode);
-
-      if (res.statusCode == 200 && body["success"] == true) {
-        return body["data"];
+      log.statusLog(res.statusCode);
+      log.successLog(body["success"] ?? false);
+      log.messageLog(body["message"]);
+      if (body["success"] != true) {
+        throw Exception(body["message"]);
       }
-
+      return body["data"] as List? ?? [];
     } catch (e) {
       log.errorLog(e);
+      rethrow;
     }
-
-    return null;
   }
 
   Future<Map> getRecommendPostList(ListRequestModelBasePage model) async {

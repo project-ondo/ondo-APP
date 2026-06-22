@@ -52,8 +52,6 @@ class UserRepositoryImpl extends UserRepository {
     final model = ListRequestModelBasePage(size: size, page: page);
 
     final json = await remoteDatasource.loadRecommendUserList(model);
-    if (json == null) return ListableWrapper.none();
-
     final res = UserDataModel.fromJson(json);
     return ListableWrapper<UserModel>(
       content: res.content,

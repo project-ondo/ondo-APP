@@ -19,9 +19,6 @@ class ChatRepositoryImpl extends ChatRepository {
     final model = ListRequestModelBasePage(size: size, page: page);
 
     final json = await remoteDatasource.loadMyChatRoomList(model);
-
-    if (json == null) return [];
-
     final res = ChatDataModel.fromJson(json);
 
     return res.content

@@ -28,9 +28,6 @@ class NotificationRepositoryImpl extends NotificationRepository {
     );
 
     final json = await remoteDatasource.loadMyNotificationList(model);
-
-    if (json == null) return ListableWrapper.none();
-
     final res = NotificationDataModel.fromJson(json);
 
     return ListableWrapper(

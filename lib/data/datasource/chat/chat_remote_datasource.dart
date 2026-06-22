@@ -10,7 +10,7 @@ class ChatRemoteDatasource {
 
   ChatRemoteDatasource({required this.client});
 
-  Future<Map?> loadMyChatRoomList(ListRequestModelBasePage model) async {
+  Future<Map> loadMyChatRoomList(ListRequestModelBasePage model) async {
     final log = ApiConstants(logName: "내 채팅 목록");
 
     try {
@@ -20,18 +20,19 @@ class ChatRemoteDatasource {
 
       final body = jsonDecode(res.body);
 
+      log.statusLog(res.statusCode);
       log.successLog(body["success"] == true);
       log.messageLog(body["message"]);
 
-      if (res.statusCode == 200 && body["success"] == true) {
-        return body["data"];
+      if (body["success"] != true) {
+        throw Exception(body["message"]);
       }
-      log.statusLog(res.statusCode);
+
+      return body["data"];
     } catch (e) {
       log.errorLog(e);
+      rethrow;
     }
-
-    return null;
   }
 
   Future<Map?> createChatRoom(String usersPublicId) async {

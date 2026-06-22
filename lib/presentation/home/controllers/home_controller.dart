@@ -283,6 +283,7 @@ class HomeController extends GetxController with BaseHomeController {
       );
     } catch (e) {
       debugPrint('[HomeController] 검색 실패 - error: $e');
+      searchResultController.errorMessage.value = '검색에 실패했어요.';
     } finally {
       searchResultController.isLoading.value = false;
     }
@@ -318,6 +319,7 @@ class HomeSearchResultController extends GetxController with BaseHomeController 
   int _postCurrentPage = 0;
   final RxBool isLastPage = false.obs;
   final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
 
   String get currentQuery => _currentQuery;
   int get nextPostPage => _postCurrentPage;
@@ -327,6 +329,7 @@ class HomeSearchResultController extends GetxController with BaseHomeController 
     _currentQuery = query;
     _postCurrentPage = 0;
     isLastPage.value = false;
+    errorMessage.value = '';
     _cachePostList.clear();
     viewPostList.clear();
     viewUserList.clear();

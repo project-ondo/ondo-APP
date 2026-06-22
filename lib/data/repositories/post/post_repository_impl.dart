@@ -121,7 +121,6 @@ class PostRepositoryImpl implements PostRepository {
       size: size,
     );
     final json = await _remoteDatasource.search(model);
-    if (json == null) return ListableWrapper.none();
 
     final data = PostDataModel.fromJson(json);
     return ListableWrapper<PostEntity>(

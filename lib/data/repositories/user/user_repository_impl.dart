@@ -31,8 +31,6 @@ class UserRepositoryImpl extends UserRepository {
 
     final json = await remoteDatasource.search(model);
 
-    if (json == null) return ListableWrapper.none();
-
     final res = UserDataModel.fromJson(json);
     return ListableWrapper<UserModel>(
       content: res.content,

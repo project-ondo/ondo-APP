@@ -217,7 +217,7 @@ class PostRemoteDatasource {
     }
   }
 
-  Future<Map?> search(PostSearchRequestModel model) async {
+  Future<Map> search(PostSearchRequestModel model) async {
     final log = ApiConstants(logName: "게시글 검색 서버");
 
     try {
@@ -229,18 +229,18 @@ class PostRemoteDatasource {
 
       final body = jsonDecode(res.body);
 
+      log.statusLog(res.statusCode);
       log.successLog(body["success"]);
       log.messageLog(body["message"]);
 
-      if (res.statusCode == 200 && body["success"] == true) {
-        return body["data"];
+      if (body["success"] != true) {
+        throw Exception(body["message"]);
       }
 
-      log.statusLog(res.statusCode);
+      return body["data"];
     } catch (e) {
       log.errorLog(e);
+      rethrow;
     }
-
-    return null;
   }
 }

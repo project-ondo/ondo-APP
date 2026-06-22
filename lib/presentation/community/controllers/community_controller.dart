@@ -5,6 +5,7 @@ import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/load_recommend_post_list_use_case.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/liked_post_use_case.dart';
+import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
@@ -18,6 +19,7 @@ class CommunityController extends GetxController {
   final LoadRecommendPostListUseCase _getRecommendPostsUseCase;
   final SavePostLikeLocalUseCase _savePostLikeLocalUseCase;
   final LikedPostUseCase _likedPostUseCase;
+  final PostSearchUseCase _postSearchUseCase;
 
   CommunityController({
     required LikePostUseCase likeUseCase,
@@ -25,11 +27,13 @@ class CommunityController extends GetxController {
     required LoadRecommendPostListUseCase getRecommendPostsUseCase,
     required SavePostLikeLocalUseCase savePostLikeLocalUseCase,
     required LikedPostUseCase likedPostUseCase,
+    required PostSearchUseCase postSearchUseCase,
   })  : _likeUseCase = likeUseCase,
         _unlikeUseCase = unlikeUseCase,
         _getRecommendPostsUseCase = getRecommendPostsUseCase,
         _savePostLikeLocalUseCase = savePostLikeLocalUseCase,
-        _likedPostUseCase = likedPostUseCase;
+        _likedPostUseCase = likedPostUseCase,
+        _postSearchUseCase = postSearchUseCase;
 
   final RxSet<String> viewTagList = <String>{}.obs;
   final RxSet<String> selectTagList = <String>{}.obs;
@@ -204,20 +208,43 @@ class CommunityController extends GetxController {
     }
   }
 
-  void searchPost(List<String> searchList) {
-    final Set<PostEntity> result = {};
-    result.addAllIf(
-      searchList.isNotEmpty,
-      _cachePostList.where(
-            (post) =>
-        searchList.any((search) => post.title.contains(search)) ||
-            searchList.any((search) => post.authorName.contains(search)) ||
-            searchList.any(
-                  (search) => post.tags.any((tag) => tag.contains(search)),
-            ),
-      ),
-    );
-    Get.find<CommunityResultController>().updateResult(result);
+  Future<void> search(String keyword) async {
+    final resultController = Get.find<CommunityResultController>();
+    resultController._prepareNewSearch(keyword);
+    resultController.isLoading.value = true;
+    try {
+      final result = await _postSearchUseCase(
+        keyword: keyword,
+        sort: 'latest',
+        page: 0,
+        size: 20,
+      );
+      resultController._appendResults(result.content, result.last ?? true);
+    } catch (e) {
+      debugPrint('[CommunityController] 검색 실패 - error: $e');
+      resultController.errorMessage.value = '검색에 실패했어요.';
+    } finally {
+      resultController.isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreSearchResults() async {
+    final resultController = Get.find<CommunityResultController>();
+    if (!resultController.canLoadMore) return;
+    resultController.isLoading.value = true;
+    try {
+      final result = await _postSearchUseCase(
+        keyword: resultController.currentQuery,
+        sort: 'latest',
+        page: resultController.nextPage,
+        size: 20,
+      );
+      resultController._appendResults(result.content, result.last ?? true);
+    } catch (e) {
+      debugPrint('[CommunityController] 검색 추가 로드 실패 - error: $e');
+    } finally {
+      resultController.isLoading.value = false;
+    }
   }
 
   void filterPostTag(String tag, bool isSelect) {
@@ -245,9 +272,29 @@ class CommunityController extends GetxController {
 
 class CommunityResultController extends GetxController {
   final RxList<PostEntity> viewPosts = <PostEntity>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
+  final RxBool isLastPage = false.obs;
 
-  void updateResult(Iterable<PostEntity> results) {
-    viewPosts.assignAll(results);
+  String _currentQuery = '';
+  int _currentPage = 0;
+
+  String get currentQuery => _currentQuery;
+  int get nextPage => _currentPage;
+  bool get canLoadMore => !isLastPage.value && !isLoading.value;
+
+  void _prepareNewSearch(String query) {
+    _currentQuery = query;
+    _currentPage = 0;
+    isLastPage.value = false;
+    errorMessage.value = '';
+    viewPosts.clear();
+  }
+
+  void _appendResults(List<PostEntity> posts, bool isLast) {
+    viewPosts.addAll(posts);
+    isLastPage.value = isLast;
+    _currentPage++;
   }
 }
 

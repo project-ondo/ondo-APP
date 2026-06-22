@@ -61,8 +61,9 @@ class HomeProfileList extends StatelessWidget {
       }
       return NotificationListener<ScrollNotification>(
         onNotification: (notification) {
-          if (notification.metrics.pixels >=
-              notification.metrics.maxScrollExtent - 100) {
+          if (notification.depth == 0 &&
+              notification.metrics.pixels >=
+                  notification.metrics.maxScrollExtent - 100) {
             onEndReached?.call();
           }
           return false;

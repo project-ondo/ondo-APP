@@ -195,9 +195,13 @@ class CommunityController extends GetxController {
 
   void _updatePostInList(int postId, String title, List<String> tags) {
     final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
-    if (cacheIndex == -1) return;
-    _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(title: title, tags: tags);
-    viewPostList.assignAll(_cachePostList);
+    if (cacheIndex != -1) {
+      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(title: title, tags: tags);
+    }
+    final viewIndex = viewPostList.indexWhere((p) => p.postId == postId);
+    if (viewIndex != -1) {
+      viewPostList[viewIndex] = viewPostList[viewIndex].copyWith(title: title, tags: tags);
+    }
   }
 
   void searchPost(List<String> searchList) {

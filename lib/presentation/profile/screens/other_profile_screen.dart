@@ -90,8 +90,9 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
               Expanded(
                 child: NotificationListener<ScrollNotification>(
                 onNotification: (notification) {
-                  if (notification.metrics.pixels >=
-                      notification.metrics.maxScrollExtent - 200) {
+                  if (notification.depth == 0 &&
+                      notification.metrics.pixels >=
+                          notification.metrics.maxScrollExtent - 200) {
                     controller.loadMoreRatings();
                   }
                   return false;

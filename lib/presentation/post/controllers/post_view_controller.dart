@@ -173,23 +173,27 @@ class PostViewController extends GetxController {
     await loadMoreComments();
   }
 
-  /// 작성/삭제 후 전체 재로드: 현재까지 로드된 페이지를 모두 다시 가져옴
+  /// 작성/삭제 후 전체 재로드: 단일 요청으로 기존 + 신규 댓글까지 한 번에 가져옴
   Future<void> _refetchAllComments() async {
-    final previousPageCount = _commentPage;
+    final pagesToFetch = _commentPage + 1;
     _commentPage = 0;
     _commentIsLast = false;
     _commentCache.clear();
 
-    int loaded = 0;
-    const maxPages = 20;
-    while (!_commentIsLast && loaded < maxPages) {
-      await loadMoreComments();
-      loaded++;
-      // 이전에 로드된 페이지 수를 초과하고 마지막이 아니면 계속, 아니면 중단
-      if (loaded >= previousPageCount && !_commentIsLast) break;
+    isCommentsLoading.value = true;
+    try {
+      final result = await _getCommentsUseCase(postId, page: 0, size: pagesToFetch * 10);
+      _commentCache.addAll(
+        result.content.map((e) => e.toEntity(currentUserId: null)),
+      );
+      comments.assignAll(_commentCache);
+      _commentIsLast = result.last ?? true;
+      _commentPage = pagesToFetch;
+    } catch (e) {
+      debugPrint('[PostViewController] 댓글 재조회 실패 - error: $e');
+    } finally {
+      isCommentsLoading.value = false;
     }
-    // 새 댓글은 마지막 페이지에 있으므로 마지막까지 로드
-    if (!_commentIsLast) await loadMoreComments();
   }
 
   Future<void> loadMoreComments() async {

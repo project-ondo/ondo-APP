@@ -23,8 +23,9 @@ class HomeScreen extends GetView<HomeController> {
         pageState: SearchPageState.home,
         mainPage: NotificationListener<ScrollNotification>(
           onNotification: (notification) {
-            if (notification.metrics.pixels >=
-                notification.metrics.maxScrollExtent - 200) {
+            if (notification.depth == 0 &&
+                notification.metrics.pixels >=
+                    notification.metrics.maxScrollExtent - 200) {
               controller.loadMorePosts();
             }
             return false;

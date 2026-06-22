@@ -94,6 +94,7 @@ class OtherProfileController extends GetxController {
   }
 
   Future<void> loadRatingList(String userPublicId) async {
+    this.userPublicId = userPublicId;
     _ratingCursor = 0;
     _ratingHasNext = true;
     _cacheRatingList.clear();

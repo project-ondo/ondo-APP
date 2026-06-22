@@ -18,8 +18,9 @@ class HomeSearchScreen extends GetView<HomeSearchResultController> {
       backgroundColor: AppColors.background,
       body: NotificationListener<ScrollNotification>(
         onNotification: (notification) {
-          if (notification.metrics.pixels >=
-              notification.metrics.maxScrollExtent - 200) {
+          if (notification.depth == 0 &&
+              notification.metrics.pixels >=
+                  notification.metrics.maxScrollExtent - 200) {
             Get.find<HomeController>().loadMoreSearchResults();
           }
           return false;

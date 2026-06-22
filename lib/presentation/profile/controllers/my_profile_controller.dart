@@ -45,21 +45,27 @@ class MyProfileController extends GetxController {
       isLoading.value = true;
       profileLoadFailed.value = false;
       profile.value = await profileRemoteDatasource.getMyProfile();
-
-      // 프로필 이미지 URL 변환
-      final imageKey = profile.value?.profileImageKey;
-      if (imageKey != null && imageKey.isNotEmpty) {
-        profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
-          key: imageKey,
-        );
-      } else {
-        profileImageUrl.value = null;
-      }
     } catch (e, s) {
       debugPrint('Failed to load my profile: $e\n$s');
       profileLoadFailed.value = true;
+      return;
     } finally {
       isLoading.value = false;
+    }
+
+    // 이미지 URL은 별도로 처리 — 실패해도 프로필 화면은 정상 표시
+    final imageKey = profile.value?.profileImageKey;
+    if (imageKey != null && imageKey.isNotEmpty) {
+      try {
+        profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
+          key: imageKey,
+        );
+      } catch (e) {
+        debugPrint('Failed to load profile image URL: $e');
+        profileImageUrl.value = null;
+      }
+    } else {
+      profileImageUrl.value = null;
     }
   }
 

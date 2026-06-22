@@ -48,20 +48,27 @@ class OtherProfileController extends GetxController {
       userPublicId = publicId;
 
       profile.value = await userRemoteDatasource.getOtherProfile(publicId);
-
-      final imageKey = profile.value?.profileImageKey;
-      if (imageKey != null && imageKey.isNotEmpty) {
-        profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
-          key: imageKey,
-        );
-      } else {
-        profileImageUrl.value = null;
-      }
     } catch (e, s) {
       debugPrint('Failed to load other profile: $e\n$s');
       profileLoadFailed.value = true;
+      return;
     } finally {
       isLoading.value = false;
+    }
+
+    // 이미지 URL은 별도로 처리 — 실패해도 프로필 화면은 정상 표시
+    final imageKey = profile.value?.profileImageKey;
+    if (imageKey != null && imageKey.isNotEmpty) {
+      try {
+        profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
+          key: imageKey,
+        );
+      } catch (e) {
+        debugPrint('Failed to load other profile image URL: $e');
+        profileImageUrl.value = null;
+      }
+    } else {
+      profileImageUrl.value = null;
     }
   }
 

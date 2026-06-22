@@ -31,6 +31,8 @@ class OtherProfileController extends GetxController {
   final Rxn<UserProfileDataModel> profile = Rxn();
   final profileImageUrl = RxnString();
 
+  int _imageRefreshCount = 0;
+
   //TODO : userPublicId 생성자로 할당
   String? userPublicId;
 
@@ -42,6 +44,7 @@ class OtherProfileController extends GetxController {
     try {
       isLoading.value = true;
       profileLoadFailed.value = false;
+      _imageRefreshCount = 0;
       // 새 프로필 로딩 시 기존 데이터 초기화
       profile.value = null;
       profileImageUrl.value = null;
@@ -99,6 +102,24 @@ class OtherProfileController extends GetxController {
       AppSnackbar.showError('채팅방 생성 중 오류가 발생했습니다.');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // presign URL 만료 시 재발급 — 최대 1회 재시도
+  void refreshProfileImageUrl() {
+    if (_imageRefreshCount >= 1) return;
+    _imageRefreshCount++;
+    _fetchAndSetImageUrl(profile.value?.profileImageKey);
+  }
+
+  Future<void> _fetchAndSetImageUrl(String? imageKey) async {
+    if (imageKey == null || imageKey.isEmpty) return;
+    try {
+      profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
+        key: imageKey,
+      );
+    } catch (e) {
+      debugPrint('Failed to refresh other profile image URL: $e');
     }
   }
 

@@ -191,6 +191,7 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
         Obx(
           () => UserProfileImage(
             imageUrl: controller.profileImageUrl.value,
+            onUrlExpired: controller.refreshProfileImageUrl,
           ),
         ),
         UserNameAndMajor(

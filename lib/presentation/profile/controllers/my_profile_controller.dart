@@ -31,6 +31,8 @@ class MyProfileController extends GetxController {
   final Rxn<UserProfileDataModel> profile = Rxn();
   final profileImageUrl = RxnString();
 
+  int _imageRefreshCount = 0;
+
   @override
   void onInit() {
     _resetAndLoadRatings();
@@ -44,6 +46,7 @@ class MyProfileController extends GetxController {
     try {
       isLoading.value = true;
       profileLoadFailed.value = false;
+      _imageRefreshCount = 0;
       profile.value = await profileRemoteDatasource.getMyProfile();
     } catch (e, s) {
       debugPrint('Failed to load my profile: $e\n$s');
@@ -66,6 +69,24 @@ class MyProfileController extends GetxController {
       }
     } else {
       profileImageUrl.value = null;
+    }
+  }
+
+  // presign URL 만료 시 재발급 — 최대 1회 재시도
+  void refreshProfileImageUrl() {
+    if (_imageRefreshCount >= 1) return;
+    _imageRefreshCount++;
+    _fetchAndSetImageUrl(profile.value?.profileImageKey);
+  }
+
+  Future<void> _fetchAndSetImageUrl(String? imageKey) async {
+    if (imageKey == null || imageKey.isEmpty) return;
+    try {
+      profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
+        key: imageKey,
+      );
+    } catch (e) {
+      debugPrint('Failed to refresh profile image URL: $e');
     }
   }
 

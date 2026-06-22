@@ -150,6 +150,7 @@ class MyProfileScreen extends GetView<MyProfileController> {
             Obx(
               () => UserProfileImage(
                 imageUrl: controller.profileImageUrl.value,
+                onUrlExpired: controller.refreshProfileImageUrl,
               ),
             ),
             UserNameAndMajor(

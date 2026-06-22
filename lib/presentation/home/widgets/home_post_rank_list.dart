@@ -114,7 +114,10 @@ class _HomePostRankListState extends State<HomePostRankList> {
                           );
                         },
                         heartAction: (isFavorite, total) {
-                          //TODO : model 정의되면 setter 적용
+                          _mainController.toggleLike(
+                            ranks[currentItemIndex].postId,
+                            isFavorite,
+                          );
                         },
                       ),
                     )

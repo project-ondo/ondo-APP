@@ -36,6 +36,7 @@ class HomePostRankItem extends StatelessWidget {
             total: post.likeCount,
             activeColor: AppColors.red,
             action: heartAction,
+            initialIsSelected: post.isFavorite,
             iconSize: AppSpacing.s16,
             totalStyle: AppTextStyles.caption(),
           ),

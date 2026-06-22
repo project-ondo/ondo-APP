@@ -105,6 +105,7 @@ class HomeController extends GetxController with BaseHomeController {
         isFavorite: isLiked,
       );
     }
+    _updateRankPostLikeInList(postId, isLiked, likeCount: likeCount);
   }
 
   Future<void> _loadRecentPopularPostList() async {
@@ -112,10 +113,13 @@ class HomeController extends GetxController with BaseHomeController {
     rankErrorMessage.value = '';
     try {
       final result = await loadRecentPopularPostListUseCase();
-      recentPopularPostList.assignAll(result);
-      if (result.isNotEmpty) {
-        recentPopularPostList.sort((a, b) => a.rank - b.rank);
-      }
+      if (result.isNotEmpty) result.sort((a, b) => a.rank - b.rank);
+      final applied = await Future.wait(
+        result.map((post) async => post.copyWith(
+          isFavorite: await likedPostUseCase(post.postId),
+        )),
+      );
+      recentPopularPostList.assignAll(applied);
     } catch (e) {
       debugPrint('[HomeController] 인기 게시물 조회 실패 - error: $e');
       rankErrorMessage.value = '인기 게시물을 불러오지 못했어요.';
@@ -187,6 +191,7 @@ class HomeController extends GetxController with BaseHomeController {
 
   Future<void> toggleLike(int postId, bool isLiked) async {
     _updatePostLikeInList(postId, isLiked);
+    _updateRankPostLikeInList(postId, isLiked);
     // 로컬 캐시를 먼저 저장해야 PostDetail 진입 시 _initIsFavorite()가 최신 상태를 읽는다
     await savePostLikeLocalUseCase(postId, isLiked);
 
@@ -199,6 +204,7 @@ class HomeController extends GetxController with BaseHomeController {
     } catch (e) {
       debugPrint('[HomeController] 좋아요 토글 실패 - error: $e');
       _updatePostLikeInList(postId, !isLiked);
+      _updateRankPostLikeInList(postId, !isLiked);
       await savePostLikeLocalUseCase(postId, !isLiked);
     }
   }
@@ -212,6 +218,16 @@ class HomeController extends GetxController with BaseHomeController {
       );
     }
     viewPostList.assignAll(_cachePostList);
+  }
+
+  void _updateRankPostLikeInList(int postId, bool isFavorite, {int? likeCount}) {
+    final index = recentPopularPostList.indexWhere((p) => p.postId == postId);
+    if (index == -1) return;
+    final current = recentPopularPostList[index];
+    recentPopularPostList[index] = current.copyWith(
+      likeCount: likeCount ?? (current.likeCount + (isFavorite ? 1 : -1)),
+      isFavorite: isFavorite,
+    );
   }
 
   Future<void> loadRecommendUsers() async {

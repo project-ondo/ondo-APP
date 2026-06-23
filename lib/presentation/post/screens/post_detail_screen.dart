@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/core/design_system/components/app_loading_indicator.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
 import 'package:ondo/presentation/post/controllers/post_view_controller.dart';
@@ -46,16 +47,21 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         if (!didPop) _onBack();
       },
       child: BaseScaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              ..._top(),
-              AppGap.v16,
-              _body(),
-              RelatedPostList(),
-            ],
-          ),
-        ),
+        body: Obx(() {
+          if (controller.isLoading.value && controller.post.value == null) {
+            return const AppLoadingIndicator();
+          }
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                ..._top(),
+                AppGap.v16,
+                _body(),
+                RelatedPostList(),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/constants/report_type.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/core/design_system/components/custom_alert_dialog.dart';
 import 'package:ondo/core/design_system/components/custom_report_dialog.dart';
 import 'package:ondo/domain/entities/comment/comment_entity.dart';
@@ -99,6 +100,10 @@ class PostViewController extends GetxController {
   final RxInt commentCount = 0.obs;
 
   final RxList<CommentEntity> comments = <CommentEntity>[].obs;
+  final List<CommentEntity> _commentCache = [];
+  int _commentPage = 0;
+  bool _commentIsLast = false;
+  final RxInt scrollToLastCommentTrigger = 0.obs;
 
   late final TextEditingController commentController;
 
@@ -110,6 +115,11 @@ class PostViewController extends GetxController {
     commentController = TextEditingController();
     _initPostState();
     fetchComments();
+    // 수정 완료 이벤트 수신 → 이 게시물이면 상세 재조회
+    ever(Get.find<PostController>().lastUpdateEvent, (event) {
+      if (event == null || event.postId != postId) return;
+      fetchPostDetail(postId);
+    });
   }
 
   Future<void> _initPostState() async {
@@ -182,13 +192,47 @@ class PostViewController extends GetxController {
 
 
   Future<void> fetchComments() async {
-    isCommentsLoading.value = true;
+    _commentPage = 0;
+    _commentIsLast = false;
+    _commentCache.clear();
+    await loadMoreComments();
+  }
 
+  /// 작성/삭제 후 전체 재로드: 단일 요청으로 기존 + 신규 댓글까지 한 번에 가져옴
+  Future<void> _refetchAllComments() async {
+    final pagesToFetch = _commentPage + 1;
+    _commentPage = 0;
+    _commentIsLast = false;
+    _commentCache.clear();
+
+    isCommentsLoading.value = true;
     try {
-      final result = await _getCommentsUseCase(postId);
-      comments.assignAll(
-        result.map((e) => e.toEntity(currentUserId: null)),
+      final result = await _getCommentsUseCase(postId, page: 0, size: pagesToFetch * 10);
+      _commentCache.addAll(
+        result.content.map((e) => e.toEntity(currentUserId: null)),
       );
+      comments.assignAll(_commentCache);
+      _commentIsLast = result.last ?? true;
+      _commentPage = pagesToFetch;
+    } catch (e) {
+      debugPrint('[PostViewController] 댓글 재조회 실패 - error: $e');
+    } finally {
+      isCommentsLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreComments() async {
+    if (_commentIsLast || isCommentsLoading.value) return;
+
+    isCommentsLoading.value = true;
+    try {
+      final result = await _getCommentsUseCase(postId, page: _commentPage, size: 10);
+      _commentCache.addAll(
+        result.content.map((e) => e.toEntity(currentUserId: null)),
+      );
+      comments.assignAll(_commentCache);
+      _commentIsLast = result.last ?? true;
+      _commentPage++;
     } catch (e) {
       debugPrint('[PostViewController] 댓글 조회 실패 - error: $e');
       errorMessage.value = e.toString();
@@ -291,11 +335,12 @@ class PostViewController extends GetxController {
           try {
             await _deletePostUseCase(postId);
 
+            Get.find<PostController>().notifyPostDeleted(postId);
             Get.back();
             Get.back(result: {'postId': postId, 'deleted': true});
           } catch (e) {
             debugPrint('[PostViewController] 게시물 삭제 실패 - error: $e');
-            errorMessage.value = e.toString();
+            AppSnackbar.showError('게시물 삭제에 실패했습니다. 다시 시도해 주세요.');
           } finally {
             isLoading.value = false;
           }
@@ -312,20 +357,23 @@ class PostViewController extends GetxController {
     try {
       await _createCommentUseCase(postId: postId, content: content);
       commentController.clear();
-      await fetchComments();
+      await _refetchAllComments();
       commentCount.value = comments.length;
+      scrollToLastCommentTrigger.value++;
     } catch (e) {
       debugPrint('[PostViewController] 댓글 작성 실패 - error: $e');
+      AppSnackbar.showError('댓글 작성에 실패했습니다. 다시 시도해 주세요.');
     }
   }
 
   Future<void> deleteComment(CommentEntity comment) async {
     try {
       await _deleteCommentUseCase(comment.id);
-      await fetchComments();
+      await _refetchAllComments();
       commentCount.value = comments.length;
     } catch (e) {
       debugPrint('[PostViewController] 댓글 삭제 실패 - error: $e');
+      AppSnackbar.showError('댓글 삭제에 실패했습니다. 다시 시도해 주세요.');
     }
   }
 
@@ -354,7 +402,7 @@ class PostViewController extends GetxController {
   void editPost() {
     Get.delete<CommunityPostCreateController>(force: true);
     Get.lazyPut(
-          () => CommunityPostCreateController(
+      () => CommunityPostCreateController(
         createUseCase: Get.find<CreatePostUseCase>(),
         updateUseCase: Get.find<UpdatePostUseCase>(),
         isEditMode: true,

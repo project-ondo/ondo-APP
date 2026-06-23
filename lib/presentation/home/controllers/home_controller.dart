@@ -57,9 +57,20 @@ class HomeController extends GetxController with BaseHomeController {
   });
 
   bool isLast = false;
+  int _currentPage = 0;
+  final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
+
+  final RxBool isLoadingRanks = false.obs;
+  final RxString rankErrorMessage = ''.obs;
+
+  bool _isUserLast = false;
+  int _userCurrentPage = 0;
+  final RxBool isLoadingUsers = false.obs;
+  final RxString userErrorMessage = ''.obs;
 
   @override
-  void onInit() async {
+  void onInit() {
     super.onInit();
     Get.put(searchResultController);
     _loadRecentPopularPostList();
@@ -68,7 +79,7 @@ class HomeController extends GetxController with BaseHomeController {
 
     ever(
       Get.find<PostController>().lastLikeEvent,
-          (event) {
+      (event) {
         if (event == null) return;
         _syncLike(event.postId, event.isLiked, event.likeCount);
       },
@@ -76,9 +87,26 @@ class HomeController extends GetxController with BaseHomeController {
 
     ever(
       Get.find<PostController>().lastBookmarkEvent,
-          (event) {
+      (event) {
         if (event == null) return;
         _syncBookmark(event.postId, event.isBookmarked, event.bookmarkCount);
+      },
+    );
+
+    ever(
+      Get.find<PostController>().lastDeleteEvent,
+      (postId) {
+        if (postId == null) return;
+        _removePostFromList(postId);
+        searchResultController._removePostFromList(postId);
+      },
+    );
+    ever(
+      Get.find<PostController>().lastUpdateEvent,
+      (event) {
+        if (event == null) return;
+        _updatePostInList(event.postId, event.title, event.tags);
+        searchResultController._updatePostInList(event.postId, event.title, event.tags);
       },
     );
   }
@@ -90,8 +118,15 @@ class HomeController extends GetxController with BaseHomeController {
         likeCount: likeCount,
         isFavorite: isLiked,
       );
-      viewPostList.assignAll(_cachePostList);
     }
+    final viewIndex = viewPostList.indexWhere((p) => p.postId == postId);
+    if (viewIndex != -1) {
+      viewPostList[viewIndex] = viewPostList[viewIndex].copyWith(
+        likeCount: likeCount,
+        isFavorite: isLiked,
+      );
+    }
+    _updateRankPostLikeInList(postId, isLiked, likeCount: likeCount);
   }
 
   void _syncBookmark(int postId, bool isBookmarked, int bookmarkCount) {
@@ -106,10 +141,23 @@ class HomeController extends GetxController with BaseHomeController {
   }
 
   Future<void> _loadRecentPopularPostList() async {
-    final result = await loadRecentPopularPostListUseCase();
-    if (result.isEmpty) return;
-    recentPopularPostList.assignAll(result);
-    recentPopularPostList.sort((a, b) => a.rank - b.rank);
+    isLoadingRanks.value = true;
+    rankErrorMessage.value = '';
+    try {
+      final result = await loadRecentPopularPostListUseCase();
+      if (result.isNotEmpty) result.sort((a, b) => a.rank - b.rank);
+      final applied = await Future.wait(
+        result.map((post) async => post.copyWith(
+          isFavorite: await likedPostUseCase(post.postId),
+        )),
+      );
+      recentPopularPostList.assignAll(applied);
+    } catch (e) {
+      debugPrint('[HomeController] 인기 게시물 조회 실패 - error: $e');
+      rankErrorMessage.value = '인기 게시물을 불러오지 못했어요.';
+    } finally {
+      isLoadingRanks.value = false;
+    }
   }
 
   Future<void> _loadRecommendPostList({
@@ -117,28 +165,55 @@ class HomeController extends GetxController with BaseHomeController {
     int size = 20,
   }) async {
     if (refresh) {
+      _currentPage = 0;
       _cachePostList.clear();
       isLast = false;
+      errorMessage.value = '';
     }
 
-    if (isLast) return;
+    if (isLast || isLoading.value) return;
 
-    final result = await loadRecommendPostsUseCase.call(
-      page: _cachePostList.length ~/ size,
-      size: size,
-    );
-    isLast = result.last ?? true;
+    isLoading.value = true;
+    try {
+      final result = await loadRecommendPostsUseCase.call(
+        page: _currentPage,
+        size: size,
+      );
 
-    final applied = await Future.wait(
-      result.content.map((post) async {
-        return post.copyWith(
-          isFavorite: await likedPostUseCase(post.postId),
-          isBookmark: await bookmarkedPostUseCase(post.postId),
-        );
-      }),
-    );
+      final applied = await Future.wait(
+        result.content.map((post) async {
+          return post.copyWith(
+            isFavorite: await likedPostUseCase(post.postId),
+            isBookmark: await bookmarkedPostUseCase(post.postId),
+          );
+        }),
+      );
 
-    _cachePostList.addAll(applied);
+      _cachePostList.addAll(applied);
+      viewPostList.assignAll(_cachePostList);
+      isLast = result.last ?? true;
+      _currentPage++;
+    } catch (e) {
+      debugPrint('[HomeController] 추천 게시물 조회 실패 - error: $e');
+      errorMessage.value = '게시물을 불러오지 못했어요.';
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMorePosts() => _loadRecommendPostList();
+
+  Future<void> retryLoadRanks() => _loadRecentPopularPostList();
+
+  void _removePostFromList(int postId) {
+    _cachePostList.removeWhere((p) => p.postId == postId);
+    viewPostList.assignAll(_cachePostList);
+  }
+
+  void _updatePostInList(int postId, String title, List<String> tags) {
+    final index = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (index == -1) return;
+    _cachePostList[index] = _cachePostList[index].copyWith(title: title, tags: tags);
     viewPostList.assignAll(_cachePostList);
   }
 
@@ -149,6 +224,9 @@ class HomeController extends GetxController with BaseHomeController {
 
   Future<void> toggleLike(int postId, bool isLiked) async {
     _updatePostLikeInList(postId, isLiked);
+    _updateRankPostLikeInList(postId, isLiked);
+    // 로컬 캐시를 먼저 저장해야 PostDetail 진입 시 _initIsFavorite()가 최신 상태를 읽는다
+    await savePostLikeLocalUseCase(postId, isLiked);
 
     try {
       if (isLiked) {
@@ -156,10 +234,11 @@ class HomeController extends GetxController with BaseHomeController {
       } else {
         await unlikePostUseCase(postId);
       }
-      await savePostLikeLocalUseCase(postId, isLiked);
     } catch (e) {
       debugPrint('[HomeController] 좋아요 토글 실패 - error: $e');
       _updatePostLikeInList(postId, !isLiked);
+      _updateRankPostLikeInList(postId, !isLiked);
+      await savePostLikeLocalUseCase(postId, !isLiked);
     }
   }
 
@@ -202,38 +281,143 @@ class HomeController extends GetxController with BaseHomeController {
     viewPostList.assignAll(_cachePostList);
   }
 
-  Future<void> loadRecommendUsers() async {
-    _cacheProfileList.clear();
-    _cacheProfileList.addAll(await loadRecommendUsersUseCase.call());
-    viewUserList.assignAll(_cacheProfileList);
+  void _updateRankPostLikeInList(int postId, bool isFavorite, {int? likeCount}) {
+    final index = recentPopularPostList.indexWhere((p) => p.postId == postId);
+    if (index == -1) return;
+    final current = recentPopularPostList[index];
+    recentPopularPostList[index] = current.copyWith(
+      likeCount: likeCount ?? (current.likeCount + (isFavorite ? 1 : -1)),
+      isFavorite: isFavorite,
+    );
   }
 
-  void search(String query) async {
-    final Set<UserEntity> userRes = {};
+  Future<void> loadRecommendUsers() async {
+    _userCurrentPage = 0;
+    _isUserLast = false;
+    _cacheProfileList.clear();
+    userErrorMessage.value = '';
+    await _fetchRecommendUsers();
+  }
 
-    userRes.addAll(
-      await userSearchUseCase.call(keyword: query),
-    );
+  Future<void> _fetchRecommendUsers() async {
+    if (_isUserLast || isLoadingUsers.value) return;
 
-    final postResult = await postSearchUseCase(
-      keyword: query,
-      sort: "latest",
-    );
+    isLoadingUsers.value = true;
+    try {
+      final result = await loadRecommendUsersUseCase.call(
+        page: _userCurrentPage,
+        size: 10,
+      );
+      _cacheProfileList.addAll(result.content);
+      viewUserList.assignAll(_cacheProfileList);
+      _isUserLast = result.last ?? true;
+      _userCurrentPage++;
+    } catch (e) {
+      debugPrint('[HomeController] 추천 유저 조회 실패 - error: $e');
+      userErrorMessage.value = '추천 커피챗 파트너를 불러오지 못했어요.';
+    } finally {
+      isLoadingUsers.value = false;
+    }
+  }
 
-    searchResultController.updateResult(
-      postResult.content,
-      userRes,
-    );
+  Future<void> loadMoreUsers() => _fetchRecommendUsers();
+
+  Future<void> search(String query) async {
+    searchResultController._prepareNewSearch(query);
+    searchResultController.isLoading.value = true;
+    try {
+      final userResult = await userSearchUseCase.call(
+        keyword: query,
+        page: 0,
+        size: 20,
+      );
+      final postResult = await postSearchUseCase(
+        keyword: query,
+        sort: "latest",
+        page: 0,
+        size: 20,
+      );
+      searchResultController._appendResults(
+        posts: postResult.content,
+        users: userResult.content,
+        isLast: postResult.last ?? true,
+      );
+    } catch (e) {
+      debugPrint('[HomeController] 검색 실패 - error: $e');
+      searchResultController.errorMessage.value = '검색에 실패했어요.';
+    } finally {
+      searchResultController.isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreSearchResults() async {
+    if (!searchResultController.canLoadMore) return;
+
+    searchResultController.isLoading.value = true;
+    try {
+      final postResult = await postSearchUseCase(
+        keyword: searchResultController.currentQuery,
+        sort: "latest",
+        page: searchResultController.nextPostPage,
+        size: 20,
+      );
+      searchResultController._appendResults(
+        posts: postResult.content,
+        users: const [],
+        isLast: postResult.last ?? true,
+      );
+    } catch (e) {
+      debugPrint('[HomeController] 검색 추가 로드 실패 - error: $e');
+    } finally {
+      searchResultController.isLoading.value = false;
+    }
   }
 }
 
-class HomeSearchResultController extends GetxController
-    with BaseHomeController {
-  void updateResult(
-      Iterable<PostEntity> posts,
-      Iterable<UserEntity> profiles,
-      ) {
-    viewUserList.assignAll(profiles);
-    viewPostList.assignAll(posts);
+class HomeSearchResultController extends GetxController with BaseHomeController {
+  final List<PostEntity> _cachePostList = [];
+  String _currentQuery = '';
+  int _postCurrentPage = 0;
+  final RxBool isLastPage = false.obs;
+  final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
+
+  String get currentQuery => _currentQuery;
+  int get nextPostPage => _postCurrentPage;
+  bool get canLoadMore => !isLastPage.value && !isLoading.value;
+
+  void _prepareNewSearch(String query) {
+    _currentQuery = query;
+    _postCurrentPage = 0;
+    isLastPage.value = false;
+    errorMessage.value = '';
+    _cachePostList.clear();
+    viewPostList.clear();
+    viewUserList.clear();
+  }
+
+
+  void _appendResults({
+    required List<PostEntity> posts,
+    required List<UserEntity> users,
+    required bool isLast,
+  }) {
+    _cachePostList.addAll(posts);
+    viewPostList.assignAll(_cachePostList);
+    if (users.isNotEmpty) viewUserList.assignAll(users);
+    isLastPage.value = isLast;
+    _postCurrentPage++;
+  }
+
+  void _removePostFromList(int postId) {
+    _cachePostList.removeWhere((p) => p.postId == postId);
+    viewPostList.assignAll(_cachePostList);
+  }
+
+  void _updatePostInList(int postId, String title, List<String> tags) {
+    final index = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (index == -1) return;
+    _cachePostList[index] = _cachePostList[index].copyWith(title: title, tags: tags);
+    viewPostList.assignAll(_cachePostList);
   }
 }

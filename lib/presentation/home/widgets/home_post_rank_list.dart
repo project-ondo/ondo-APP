@@ -3,6 +3,10 @@ import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
+import 'package:ondo/core/design_system/app_icon.dart';
+import 'package:ondo/core/design_system/components/app_empty_state.dart';
+import 'package:ondo/core/design_system/components/app_error_state.dart';
+import 'package:ondo/core/design_system/components/app_loading_indicator.dart';
 import 'package:ondo/presentation/home/controllers/home_controller.dart';
 import 'package:ondo/presentation/home/widgets/home_post_rank_item.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
@@ -56,9 +60,7 @@ class _HomePostRankListState extends State<HomePostRankList> {
           ),
           AppGap.v16,
           Expanded(child: _postList()),
-          AppGap.v16,
           _indicator(),
-          AppGap.v16,
         ],
       ),
     );
@@ -66,7 +68,24 @@ class _HomePostRankListState extends State<HomePostRankList> {
 
   Widget _postList() {
     return Obx(() {
+      if (_mainController.isLoadingRanks.value) {
+        return const AppLoadingIndicator();
+      }
+      if (_mainController.rankErrorMessage.value.isNotEmpty) {
+        return AppErrorState(
+          message: _mainController.rankErrorMessage.value,
+          onRetry: () => _mainController.retryLoadRanks(),
+        );
+      }
+
       final ranks = _mainController.recentPopularPostList;
+      if (ranks.isEmpty) {
+        return const AppEmptyState(
+          message: '현재 집계된 인기 게시물이 없어요.',
+          icon: AppIcon.homeUnSelect,
+        );
+      }
+
       final pageCount = (ranks.length / 3).ceil();
       return PageView.builder(
         controller: _pageController,
@@ -95,7 +114,10 @@ class _HomePostRankListState extends State<HomePostRankList> {
                           );
                         },
                         heartAction: (isFavorite, total) {
-                          //TODO : model 정의되면 setter 적용
+                          _mainController.toggleLike(
+                            ranks[currentItemIndex].postId,
+                            isFavorite,
+                          );
                         },
                       ),
                     )
@@ -109,19 +131,28 @@ class _HomePostRankListState extends State<HomePostRankList> {
   }
 
   Widget _indicator() {
-    return ValueListenableBuilder(
-      valueListenable: curIndex,
-      builder: (context, value, _) {
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: AppSpacing.s6,
-          children: List.generate(
-            3,
-            (index) => _indicatorIcon(index == value % 3),
-          ),
-        );
-      },
-    );
+    return Obx(() {
+      final pageCount =
+          (_mainController.recentPopularPostList.length / 3).ceil();
+      if (pageCount <= 1) return const SizedBox.shrink();
+
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: ValueListenableBuilder(
+          valueListenable: curIndex,
+          builder: (context, value, _) {
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              spacing: AppSpacing.s6,
+              children: List.generate(
+                pageCount,
+                (index) => _indicatorIcon(index == value % pageCount),
+              ),
+            );
+          },
+        ),
+      );
+    });
   }
 
   Widget _indicatorIcon(bool isFocus) {

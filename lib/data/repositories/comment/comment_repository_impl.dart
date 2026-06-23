@@ -1,5 +1,6 @@
 import 'package:ondo/data/datasource/comment/comment_remote_datasource.dart';
 import 'package:ondo/data/models/comment/response/comment_model.dart';
+import 'package:ondo/domain/entities/base/listable_wrapper.dart';
 import 'package:ondo/domain/repositories/comment/comment_repository.dart';
 
 class CommentRepositoryImpl implements CommentRepository {
@@ -10,9 +11,9 @@ class CommentRepositoryImpl implements CommentRepository {
   });
 
   @override
-  Future<List<CommentModel>> getComments(int postId) async {
+  Future<ListableWrapper<CommentModel>> getComments(int postId, {int page = 0, int size = 10}) async {
     try {
-      return await remoteDataSource.getComments(postId);
+      return await remoteDataSource.getComments(postId, page: page, size: size);
     } catch (e) {
       throw Exception('댓글 조회 실패: $e');
     }

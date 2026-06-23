@@ -13,7 +13,6 @@ import '../../../data/repositories/comment/comment_repository_impl.dart';
 import '../../../data/repositories/post/post_repository_impl.dart';
 
 import '../../../domain/usecases/post/bookmark_post_usecase.dart';
-import '../../../domain/usecases/post/create_post_usecase.dart';
 import '../../../domain/usecases/post/delete_post_usecase.dart';
 import '../../../domain/usecases/post/get_post_detail_usecase.dart';
 import '../../../domain/usecases/post/like_post_usecase.dart';
@@ -33,14 +32,6 @@ class PostViewBinding extends Bindings {
     // Post UseCases
     Get.lazyPut<GetPostDetailUseCase>(
           () => GetPostDetailUseCase(Get.find<PostRepositoryImpl>()),
-    );
-
-    Get.lazyPut<CreatePostUseCase>(
-          () => CreatePostUseCase(Get.find<PostRepositoryImpl>()),
-    );
-
-    Get.lazyPut<UpdatePostUseCase>(
-          () => UpdatePostUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     Get.lazyPut<DeletePostUseCase>(

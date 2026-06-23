@@ -2,6 +2,7 @@ import 'package:ondo/data/datasource/notification/notification_local_datasource.
 import 'package:ondo/data/datasource/notification/notification_remote_datasource.dart';
 import 'package:ondo/data/models/base/request/base_list_request_model.dart';
 import 'package:ondo/data/models/notification/response/notification_model.dart';
+import 'package:ondo/domain/entities/base/listable_wrapper.dart';
 import 'package:ondo/domain/entities/notification/notification_entity.dart';
 import 'package:ondo/domain/repositories/notification/notification_repository.dart';
 
@@ -17,7 +18,7 @@ class NotificationRepositoryImpl extends NotificationRepository {
   // ─── 서버 알림 ─────────────────────────────────────────────────
 
   @override
-  Future<List<NotificationEntity>> loadMyNotificationModel(
+  Future<ListableWrapper<NotificationEntity>> loadMyNotificationModel(
     int size,
     int page,
   ) async {
@@ -27,16 +28,20 @@ class NotificationRepositoryImpl extends NotificationRepository {
     );
 
     final json = await remoteDatasource.loadMyNotificationList(model);
-
-    if (json == null) return [];
-
     final res = NotificationDataModel.fromJson(json);
 
-    return res.content
-        .map(
-          (e) => NotificationEntity.fromNotificationModel(e),
-        )
-        .toList();
+    return ListableWrapper(
+      page: res.page,
+      size: res.size,
+      totalElements: res.totalElements,
+      totalPages: res.totalPages,
+      last: res.last,
+      content: res.content
+          .map(
+            (e) => NotificationEntity.fromNotificationModel(e),
+          )
+          .toList(),
+    );
   }
 
   @override

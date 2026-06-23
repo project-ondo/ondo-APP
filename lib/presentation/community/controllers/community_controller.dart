@@ -5,6 +5,7 @@ import 'package:ondo/domain/usecases/post/create_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/load_recommend_post_list_use_case.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/liked_post_use_case.dart';
+import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
@@ -26,6 +27,7 @@ class CommunityController extends GetxController {
   final UnbookmarkPostUseCase _unbookmarkUseCase;
   final SavePostBookmarkLocalUseCase _savePostBookmarkLocalUseCase;
   final BookmarkedPostUseCase _bookmarkedPostUseCase;
+  final PostSearchUseCase _postSearchUseCase;
 
   CommunityController({
     required LikePostUseCase likeUseCase,
@@ -37,6 +39,7 @@ class CommunityController extends GetxController {
     required UnbookmarkPostUseCase unbookmarkUseCase,
     required SavePostBookmarkLocalUseCase savePostBookmarkLocalUseCase,
     required BookmarkedPostUseCase bookmarkedPostUseCase,
+    required PostSearchUseCase postSearchUseCase,
   })  : _likeUseCase = likeUseCase,
         _unlikeUseCase = unlikeUseCase,
         _getRecommendPostsUseCase = getRecommendPostsUseCase,
@@ -45,7 +48,8 @@ class CommunityController extends GetxController {
         _bookmarkUseCase = bookmarkUseCase,
         _unbookmarkUseCase = unbookmarkUseCase,
         _savePostBookmarkLocalUseCase = savePostBookmarkLocalUseCase,
-        _bookmarkedPostUseCase = bookmarkedPostUseCase;
+        _bookmarkedPostUseCase = bookmarkedPostUseCase,
+        _postSearchUseCase = postSearchUseCase;
 
   final RxSet<String> viewTagList = <String>{}.obs;
   final RxSet<String> selectTagList = <String>{}.obs;
@@ -55,6 +59,7 @@ class CommunityController extends GetxController {
 
   final RxBool isLoading = false.obs;
   final RxBool isLastPage = false.obs;
+  final RxString errorMessage = ''.obs;
 
   int _currentPage = 0;
 
@@ -66,7 +71,7 @@ class CommunityController extends GetxController {
 
     ever(
       Get.find<PostController>().lastLikeEvent,
-          (event) {
+      (event) {
         if (event == null) return;
         _syncLike(event.postId, event.isLiked, event.likeCount);
       },
@@ -74,9 +79,24 @@ class CommunityController extends GetxController {
 
     ever(
       Get.find<PostController>().lastBookmarkEvent,
-          (event) {
+      (event) {
         if (event == null) return;
         _syncBookmark(event.postId, event.isBookmarked, event.bookmarkCount);
+      },
+    );
+
+    ever(
+      Get.find<PostController>().lastDeleteEvent,
+      (postId) {
+        if (postId == null) return;
+        removePost(postId);
+      },
+    );
+    ever(
+      Get.find<PostController>().lastUpdateEvent,
+      (event) {
+        if (event == null) return;
+        _updatePostInList(event.postId, event.title, event.tags);
       },
     );
   }
@@ -88,7 +108,13 @@ class CommunityController extends GetxController {
         likeCount: likeCount,
         isFavorite: isLiked,
       );
-      viewPostList.assignAll(_cachePostList);
+    }
+    final viewIndex = viewPostList.indexWhere((p) => p.postId == postId);
+    if (viewIndex != -1) {
+      viewPostList[viewIndex] = viewPostList[viewIndex].copyWith(
+        likeCount: likeCount,
+        isFavorite: isLiked,
+      );
     }
   }
 
@@ -123,6 +149,7 @@ class CommunityController extends GetxController {
       _cachePostList.clear();
       viewPostList.clear();
       isLastPage.value = false;
+      errorMessage.value = '';
     }
 
     if (isLastPage.value) return;
@@ -151,6 +178,7 @@ class CommunityController extends GetxController {
       _currentPage++;
     } catch (e) {
       debugPrint('[CommunityController] 게시물 조회 실패 - error: $e');
+      errorMessage.value = '게시물을 불러오지 못했어요.';
     } finally {
       isLoading.value = false;
     }
@@ -176,6 +204,8 @@ class CommunityController extends GetxController {
 
   Future<void> toggleLike(int postId, bool isLiked) async {
     _updatePostLikeInList(postId, isLiked ? 1 : -1, isLiked);
+    // 로컬 캐시를 먼저 저장해야 PostDetail 진입 시 _initIsFavorite()가 최신 상태를 읽는다
+    await _savePostLikeLocalUseCase(postId, isLiked);
 
     try {
       if (isLiked) {
@@ -183,27 +213,25 @@ class CommunityController extends GetxController {
       } else {
         await _unlikeUseCase(postId);
       }
-      await _savePostLikeLocalUseCase(postId, isLiked);
     } catch (e) {
       debugPrint('[CommunityController] 좋아요 토글 실패 - error: $e');
       _updatePostLikeInList(postId, isLiked ? -1 : 1, !isLiked);
+      await _savePostLikeLocalUseCase(postId, !isLiked);
     }
   }
 
   void _updatePostLikeInList(int postId, int delta, bool isFavorite) {
-    final index = viewPostList.indexWhere((p) => p.postId == postId);
-    if (index != -1) {
-      viewPostList[index] = viewPostList[index].copyWith(
-        likeCount: viewPostList[index].likeCount + delta,
-        isFavorite: isFavorite,
-      );
-      viewPostList.refresh();
-    }
-
     final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
     if (cacheIndex != -1) {
       _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
         likeCount: _cachePostList[cacheIndex].likeCount + delta,
+        isFavorite: isFavorite,
+      );
+    }
+    final viewIndex = viewPostList.indexWhere((p) => p.postId == postId);
+    if (viewIndex != -1) {
+      viewPostList[viewIndex] = viewPostList[viewIndex].copyWith(
+        likeCount: viewPostList[viewIndex].likeCount + delta,
         isFavorite: isFavorite,
       );
     }
@@ -249,20 +277,54 @@ class CommunityController extends GetxController {
     _cachePostList.removeWhere((p) => p.postId == postId);
   }
 
-  void searchPost(List<String> searchList) {
-    final Set<PostEntity> result = {};
-    result.addAllIf(
-      searchList.isNotEmpty,
-      _cachePostList.where(
-            (post) =>
-        searchList.any((search) => post.title.contains(search)) ||
-            searchList.any((search) => post.authorName.contains(search)) ||
-            searchList.any(
-                  (search) => post.tags.any((tag) => tag.contains(search)),
-            ),
-      ),
-    );
-    Get.find<CommunityResultController>().updateResult(result);
+  void _updatePostInList(int postId, String title, List<String> tags) {
+    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (cacheIndex != -1) {
+      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(title: title, tags: tags);
+    }
+    final viewIndex = viewPostList.indexWhere((p) => p.postId == postId);
+    if (viewIndex != -1) {
+      viewPostList[viewIndex] = viewPostList[viewIndex].copyWith(title: title, tags: tags);
+    }
+  }
+
+  Future<void> search(String keyword) async {
+    final resultController = Get.find<CommunityResultController>();
+    resultController._prepareNewSearch(keyword);
+    resultController.isLoading.value = true;
+    try {
+      final result = await _postSearchUseCase(
+        keyword: keyword,
+        sort: 'latest',
+        page: 0,
+        size: 20,
+      );
+      resultController._appendResults(result.content, result.last ?? true);
+    } catch (e) {
+      debugPrint('[CommunityController] 검색 실패 - error: $e');
+      resultController.errorMessage.value = '검색에 실패했어요.';
+    } finally {
+      resultController.isLoading.value = false;
+    }
+  }
+
+  Future<void> loadMoreSearchResults() async {
+    final resultController = Get.find<CommunityResultController>();
+    if (!resultController.canLoadMore) return;
+    resultController.isLoading.value = true;
+    try {
+      final result = await _postSearchUseCase(
+        keyword: resultController.currentQuery,
+        sort: 'latest',
+        page: resultController.nextPage,
+        size: 20,
+      );
+      resultController._appendResults(result.content, result.last ?? true);
+    } catch (e) {
+      debugPrint('[CommunityController] 검색 추가 로드 실패 - error: $e');
+    } finally {
+      resultController.isLoading.value = false;
+    }
   }
 
   void filterPostTag(String tag, bool isSelect) {
@@ -290,9 +352,29 @@ class CommunityController extends GetxController {
 
 class CommunityResultController extends GetxController {
   final RxList<PostEntity> viewPosts = <PostEntity>[].obs;
+  final RxBool isLoading = false.obs;
+  final RxString errorMessage = ''.obs;
+  final RxBool isLastPage = false.obs;
 
-  void updateResult(Iterable<PostEntity> results) {
-    viewPosts.assignAll(results);
+  String _currentQuery = '';
+  int _currentPage = 0;
+
+  String get currentQuery => _currentQuery;
+  int get nextPage => _currentPage;
+  bool get canLoadMore => !isLastPage.value && !isLoading.value;
+
+  void _prepareNewSearch(String query) {
+    _currentQuery = query;
+    _currentPage = 0;
+    isLastPage.value = false;
+    errorMessage.value = '';
+    viewPosts.clear();
+  }
+
+  void _appendResults(List<PostEntity> posts, bool isLast) {
+    viewPosts.addAll(posts);
+    isLastPage.value = isLast;
+    _currentPage++;
   }
 }
 

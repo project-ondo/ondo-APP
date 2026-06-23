@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:ondo/data/network/clients/auth_client.dart';
 import 'package:ondo/data/network/constants/api_constants.dart';
 import 'package:ondo/data/models/comment/response/comment_model.dart';
+import 'package:ondo/domain/entities/base/listable_wrapper.dart';
 
 abstract class CommentRemoteDataSource {
-  Future<List<CommentModel>> getComments(int postId);
+  Future<ListableWrapper<CommentModel>> getComments(int postId, {int page = 0, int size = 10});
   Future<bool> createComment({
     required int postId,
     required String content,
@@ -28,11 +29,11 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
   }
 
   @override
-  Future<List<CommentModel>> getComments(int postId) async {
+  Future<ListableWrapper<CommentModel>> getComments(int postId, {int page = 0, int size = 10}) async {
     final log = ApiConstants(logName: '댓글 조회');
     try {
       final response = await _client.get(
-        Uri.parse('${ApiConstants.comment}/$postId'),
+        Uri.parse('${ApiConstants.comment}/$postId?page=$page&size=$size'),
       );
       log.statusLog(response.statusCode);
 
@@ -49,10 +50,17 @@ class CommentRemoteDataSourceImpl implements CommentRemoteDataSource {
       }
 
       final data = body['data'];
-      if (data == null) return [];
+      if (data == null) return ListableWrapper.none();
 
       final list = (data['content'] as List?) ?? [];
-      return list.map((e) => CommentModel.fromJson(e)).toList();
+      return ListableWrapper<CommentModel>(
+        content: list.map((e) => CommentModel.fromJson(e)).toList(),
+        page: data['page'] ?? 0,
+        size: data['size'] ?? size,
+        totalElements: data['totalElements'] ?? 0,
+        totalPages: data['totalPages'] ?? 0,
+        last: data['last'],
+      );
     } catch (e) {
       log.errorLog(e);
       rethrow;

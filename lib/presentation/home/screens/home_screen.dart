@@ -21,12 +21,25 @@ class HomeScreen extends GetView<HomeController> {
       backgroundColor: AppColors.background,
       body: MainTopSearchBar(
         pageState: SearchPageState.home,
-        mainPage: SingleChildScrollView(
-          child: _body(),
+        mainPage: NotificationListener<ScrollNotification>(
+          onNotification: (notification) {
+            if (notification.depth == 0 &&
+                notification.metrics.pixels >=
+                    notification.metrics.maxScrollExtent - 200) {
+              controller.loadMorePosts();
+            }
+            return false;
+          },
+          child: SingleChildScrollView(
+            child: _body(),
+          ),
         ),
         resultPageBuilder: (state) {
           if (state.keyword.isEmpty) return null;
-          controller.search(state.keyword);
+          final keyword = state.keyword;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            controller.search(keyword);
+          });
           return HomeSearchScreen();
         },
       ),
@@ -42,26 +55,35 @@ class HomeScreen extends GetView<HomeController> {
         HomeProfileList(
           title: "커피챗 추천",
           controller: controller,
+          onEndReached: controller.loadMoreUsers,
+          isLoadingMore: controller.isLoadingUsers,
+          emptyMessage: '추천 커피챗 파트너가 없어요.\n프로필을 채우면 더 많은 추천을 받을 수 있어요.',
+          errorMessage: controller.userErrorMessage,
+          onRetry: controller.loadRecommendUsers,
         ),
 
         AppGap.v16,
 
         Obx(
-              () => PostGridList(
+          () => PostGridList(
             title: "추천 게시물",
+            isLoading: controller.isLoading.value,
+            errorMessage: controller.errorMessage.value,
+            emptyMessage: '아직 추천 게시물이 없어요.\n게시물에 관심을 표현하면 맞춤 추천이 시작돼요.',
+            onRetry: () => controller.refresh(),
             list: controller.viewPostList
                 .map(
                   (post) => PostItem(
-                post: post,
-                isMy: true,
-                heartAction: (isFavorite, total) {
-                  controller.toggleLike(post.postId, isFavorite);
-                },
-                bookmarkAction: (isBookmark, total) {
-                  controller.toggleBookmark(post.postId, isBookmark);
-                },
-              ),
-            )
+                    post: post,
+                    isMy: true,
+                    heartAction: (isFavorite, total) {
+                      controller.toggleLike(post.postId, isFavorite);
+                    },
+                    bookmarkAction: (isBookmark, total) {
+                      controller.toggleBookmark(post.postId, isBookmark);
+                    },
+                  ),
+                )
                 .toList(),
           ),
         ),

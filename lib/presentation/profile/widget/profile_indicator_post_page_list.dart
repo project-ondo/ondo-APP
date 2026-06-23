@@ -8,11 +8,13 @@ class ProfileIndicatorPostPageList extends StatelessWidget {
     required this.title,
     required this.postItemCount,
     required this.postItemList,
+    this.emptyMessage = '게시물이 없어요.',
   });
 
   final String title;
   final int postItemCount;
   final List<PostItem> postItemList;
+  final String emptyMessage;
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +22,7 @@ class ProfileIndicatorPostPageList extends StatelessWidget {
       title: title,
       itemFloors: 2,
       items: postItemList,
+      emptyMessage: emptyMessage,
     );
   }
 }

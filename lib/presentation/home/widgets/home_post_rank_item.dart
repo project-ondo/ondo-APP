@@ -23,6 +23,7 @@ class HomePostRankItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: onTap,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -35,6 +36,7 @@ class HomePostRankItem extends StatelessWidget {
             total: post.likeCount,
             activeColor: AppColors.red,
             action: heartAction,
+            initialIsSelected: post.isFavorite,
             iconSize: AppSpacing.s16,
             totalStyle: AppTextStyles.caption(),
           ),

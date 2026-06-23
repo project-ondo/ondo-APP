@@ -24,6 +24,10 @@ class SearchPopupController extends GetxController {
   late final Worker typingWorker;
   late final Worker showPopupWorker;
 
+  // submit이 발생한 횟수 기준으로 마지막 태그 로드 시점 추적
+  // -1: 아직 한 번도 로드 안 함 → onInit에서 무조건 1회 로드
+  int _lastLoadedAtSubmitCount = -1;
+
   @override
   void onInit() {
     //TODO 삭제
@@ -33,14 +37,18 @@ class SearchPopupController extends GetxController {
     //TODO : 서버로부터 추천 키워드 받기
     viewSearchTipList.assignAll(_cacheSearchTipList.take(20));
 
+    // 초기 1회 로드
+    _loadTagsIfNeeded();
+
     /// worker 등록
     typingWorker = ever(
       mainTopBarSearchController.queryNotifier,
       _update,
     );
+    // 팝업이 열릴 때 새 검색어가 저장된 경우에만 재로드
     showPopupWorker = ever(
       mainTopBarSearchController.showPopup,
-      _loadSearchTagList,
+      (bool show) { if (show) _loadTagsIfNeeded(); },
     );
 
     super.onInit();
@@ -53,20 +61,23 @@ class SearchPopupController extends GetxController {
     super.onClose();
   }
 
-  Future<void> _loadSearchTagList(bool showPopup) async {
-    if (!showPopup) return;
+  /// submit 이후 새 태그가 저장됐을 때만 로컬 스토리지 재조회
+  Future<void> _loadTagsIfNeeded() async {
+    final currentSubmitCount = mainTopBarSearchController.submitCount.value;
+    if (currentSubmitCount == _lastLoadedAtSubmitCount) return;
 
+    _lastLoadedAtSubmitCount = currentSubmitCount;
     final result = await loadSearchKeywordListUseCase.call();
     viewSearchTagList.assignAll(result);
     debugPrint("로컬, 최근 검색 태그 불러오기 성공");
   }
 
-  Future<void> selectSearchTag(String tag) async {
-    mainTopBarSearchController.submit(tag: tag);
+  void selectSearchTag(String tag) {
+    mainTopBarSearchController.submitFromSuggestion(tag);
   }
 
   void selectSearchTip(String tip) {
-    mainTopBarSearchController.submit(tip: tip);
+    mainTopBarSearchController.submitFromSuggestion(tip);
   }
 
   void _update(String text) {

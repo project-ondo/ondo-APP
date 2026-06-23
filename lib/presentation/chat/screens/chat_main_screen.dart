@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
+import 'package:ondo/core/design_system/app_icon.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/core/design_system/components/app_empty_state.dart';
+import 'package:ondo/core/design_system/components/app_error_state.dart';
+import 'package:ondo/core/design_system/components/app_loading_indicator.dart';
 import 'package:ondo/core/design_system/components/custom_tag_card.dart';
 import 'package:ondo/presentation/chat/controllers/chat_main_controller.dart';
 import 'package:ondo/core/ui/base/base_scaffold.dart';
@@ -64,28 +68,41 @@ class ChatList extends GetView<ChatMainController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(
-      () {
-        final list = controller.viewChatRoomList;
-        final isLoadingMore = controller.isLoadingMore.value;
-        return ListView.separated(
-          controller: controller.scrollController,
-          itemCount: list.length + (isLoadingMore ? 1 : 0),
-          separatorBuilder: (context, index) => AppGap.v4,
-          itemBuilder: (context, index) {
-            if (index == list.length) {
-              return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-            return ChatRoomCard(
-              onTap: () => controller.enterChatRoom(index),
-              chat: list[index],
-            );
-          },
+    return Obx(() {
+      final list = controller.viewChatRoomList;
+      final isLoading = controller.isLoading.value;
+      final isLoadingMore = controller.isLoadingMore.value;
+      final errorMsg = controller.error.value;
+
+      if (isLoading && list.isEmpty) {
+        return const AppLoadingIndicator();
+      }
+      if (errorMsg.isNotEmpty && list.isEmpty) {
+        return AppErrorState(
+          message: errorMsg,
+          onRetry: controller.retryLoadChatRooms,
         );
-      },
-    );
+      }
+      if (list.isEmpty) {
+        return const AppEmptyState(
+          message: '아직 채팅이 없어요.\n관심 있는 유저에게 먼저 메시지를 보내보세요!',
+          icon: AppIcon.chatUnSelect,
+        );
+      }
+      return ListView.separated(
+        controller: controller.scrollController,
+        itemCount: list.length + (isLoadingMore ? 1 : 0),
+        separatorBuilder: (context, index) => AppGap.v4,
+        itemBuilder: (context, index) {
+          if (index == list.length) {
+            return const AppBottomLoadingIndicator();
+          }
+          return ChatRoomCard(
+            onTap: () => controller.enterChatRoom(index),
+            chat: list[index],
+          );
+        },
+      );
+    });
   }
 }

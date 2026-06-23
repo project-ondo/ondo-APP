@@ -1,3 +1,4 @@
+import 'package:ondo/domain/entities/base/listable_wrapper.dart';
 import 'package:ondo/domain/entities/user/user_entity.dart';
 import 'package:ondo/domain/repositories/user/user_repository.dart';
 
@@ -6,7 +7,7 @@ class UserSearchUseCase {
 
   UserSearchUseCase({required this.repository});
 
-  Future<List<UserEntity>> call({
+  Future<ListableWrapper<UserEntity>> call({
     String? keyword,
     String? major,
     List<String>? interests,
@@ -22,6 +23,13 @@ class UserSearchUseCase {
       major: major,
       sort: sort,
     );
-    return res.map((e) => UserEntity.fromUserModel(e)).toList();
+    return ListableWrapper<UserEntity>(
+      content: res.content.map((e) => UserEntity.fromUserModel(e)).toList(),
+      page: res.page,
+      size: res.size,
+      totalElements: res.totalElements,
+      totalPages: res.totalPages,
+      last: res.last,
+    );
   }
 }

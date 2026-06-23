@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:ondo/core/constants/report_type.dart';
 import 'package:ondo/core/design_system/app_colors.dart';
 import 'package:ondo/core/design_system/app_layout.dart';
+import 'package:ondo/core/design_system/components/app_error_state.dart';
+import 'package:ondo/core/design_system/components/app_loading_indicator.dart';
 import 'package:ondo/core/design_system/app_text_styles.dart';
 import 'package:ondo/core/design_system/component_variants.dart';
 import 'package:ondo/core/design_system/components/custom_back_button.dart';
@@ -79,7 +81,14 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
         backgroundColor: AppColors.background,
         body: Obx(() {
           if (controller.isLoading.value && controller.profile.value == null) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoadingIndicator();
+          }
+
+          if (controller.profileLoadFailed.value) {
+            return AppErrorState(
+              message: '프로필을 불러오지 못했어요.',
+              onRetry: () => controller.loadProfile(publicId),
+            );
           }
 
           final profile = controller.profile.value;
@@ -87,6 +96,15 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
           return Column(
             children: [
               Expanded(
+                child: NotificationListener<ScrollNotification>(
+                onNotification: (notification) {
+                  if (notification.depth == 0 &&
+                      notification.metrics.pixels >=
+                          notification.metrics.maxScrollExtent - 200) {
+                    controller.loadMoreRatings();
+                  }
+                  return false;
+                },
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
@@ -127,13 +145,15 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
                         title: '작성한 게시물 목록',
                         postItemCount: _testPostItemList.length,
                         postItemList: _testPostItemList,
+                        emptyMessage: '아직 작성한 게시물이 없어요.',
                       ),
                     ],
                   ),
                 ),
               ),
-              _buildCoffeeChatRequestButton(),
-            ],
+            ),
+            _buildCoffeeChatRequestButton(),
+          ],
           );
         }),
       ),
@@ -171,6 +191,7 @@ class OtherProfileScreen extends GetView<OtherProfileController> {
         Obx(
           () => UserProfileImage(
             imageUrl: controller.profileImageUrl.value,
+            onUrlExpired: controller.refreshProfileImageUrl,
           ),
         ),
         UserNameAndMajor(

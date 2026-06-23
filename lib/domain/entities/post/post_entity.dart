@@ -29,24 +29,25 @@ class PostEntity {
   });
 
   PostEntity copyWith({
+    String? title,
+    List<String>? tags,
     int? likeCount,
-    bool? isFavorite,
     int? bookmarkCount,
+    bool? isFavorite,
     bool? isBookmark,
-  }) =>
-      PostEntity(
-        postId: postId,
-        title: title,
-        authorName: authorName,
-        tags: tags,
-        viewCount: viewCount,
-        likeCount: likeCount ?? this.likeCount,
-        commentCount: commentCount,
-        bookmarkCount: bookmarkCount ?? this.bookmarkCount,
-        createAt: createAt,
-        isFavorite: isFavorite ?? this.isFavorite,
-        isBookmark: isBookmark ?? this.isBookmark,
-      );
+  }) => PostEntity(
+    postId: postId,
+    title: title ?? this.title,
+    authorName: authorName,
+    tags: tags ?? this.tags,
+    viewCount: viewCount,
+    likeCount: likeCount ?? this.likeCount,
+    commentCount: commentCount,
+    bookmarkCount: bookmarkCount ?? this.bookmarkCount,
+    createAt: createAt,
+    isFavorite: isFavorite ?? this.isFavorite,
+    isBookmark: isBookmark ?? this.isBookmark,
+  );
 
   PostEntity.fromPostModel(PostModel model)
     : postId = model.postId,

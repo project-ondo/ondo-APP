@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:ondo/core/router/bindings/chat_room_binding.dart';
+import 'package:ondo/core/utils/app_snackbar.dart';
 import 'package:ondo/data/datasource/media/media_remote_datasource.dart';
 import 'package:ondo/data/datasource/user/user_remote_datasource.dart';
 import 'package:ondo/data/models/user/response/user_profile_response_model.dart';
@@ -17,14 +18,20 @@ class OtherProfileController extends GetxController {
 
   final List<RatingEntity> _cacheRatingList = [];
   final RxList<RatingEntity> viewRatingList = RxList();
+  int _ratingCursor = 0;
+  bool _ratingHasNext = true;
+  final RxBool isLoadingRatings = false.obs;
 
   OtherProfileController({
     required this.loadOtherRatingListUseCase,
   });
 
   final isLoading = false.obs;
+  final profileLoadFailed = false.obs;
   final Rxn<UserProfileDataModel> profile = Rxn();
   final profileImageUrl = RxnString();
+
+  int _imageRefreshCount = 0;
 
   //TODO : userPublicId 생성자로 할당
   String? userPublicId;
@@ -36,33 +43,42 @@ class OtherProfileController extends GetxController {
 
     try {
       isLoading.value = true;
+      profileLoadFailed.value = false;
+      _imageRefreshCount = 0;
       // 새 프로필 로딩 시 기존 데이터 초기화
       profile.value = null;
       profileImageUrl.value = null;
       userPublicId = publicId;
 
       profile.value = await userRemoteDatasource.getOtherProfile(publicId);
+    } catch (e, s) {
+      debugPrint('Failed to load other profile: $e\n$s');
+      profileLoadFailed.value = true;
+      return;
+    } finally {
+      isLoading.value = false;
+    }
 
-      final imageKey = profile.value?.profileImageKey;
-      if (imageKey != null && imageKey.isNotEmpty) {
+    // 이미지 URL은 별도로 처리 — 실패해도 프로필 화면은 정상 표시
+    final imageKey = profile.value?.profileImageKey;
+    if (imageKey != null && imageKey.isNotEmpty) {
+      try {
         profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
           key: imageKey,
         );
-      } else {
+      } catch (e) {
+        debugPrint('Failed to load other profile image URL: $e');
         profileImageUrl.value = null;
       }
-    } catch (e, s) {
-      debugPrint('Failed to load other profile: $e\n$s');
-      Get.snackbar('오류', '프로필을 불러오지 못했습니다.');
-    } finally {
-      isLoading.value = false;
+    } else {
+      profileImageUrl.value = null;
     }
   }
 
   Future<void> createChatRoom(String publicId) async {
     if (isLoading.value) return;
     if (profile.value == null) {
-      Get.snackbar('오류', '상대방 프로필 정보를 불러오는 중입니다.');
+      AppSnackbar.showError('상대방 프로필 정보를 불러오는 중입니다.');
       return;
     }
 
@@ -70,7 +86,7 @@ class OtherProfileController extends GetxController {
       isLoading.value = true;
       final roomId = await createChatRoomUseCase(publicId);
       if (roomId.isEmpty) {
-        Get.snackbar('오류', '채팅방을 생성하지 못했습니다.');
+        AppSnackbar.showError('채팅방을 생성하지 못했습니다.');
         return;
       }
       await Get.to(
@@ -83,21 +99,58 @@ class OtherProfileController extends GetxController {
       );
     } catch (e, s) {
       debugPrint('Failed to create chat room: $e\n$s');
-      Get.snackbar('오류', '채팅방 생성 중 오류가 발생했습니다.');
+      AppSnackbar.showError('채팅방 생성 중 오류가 발생했습니다.');
     } finally {
       isLoading.value = false;
     }
   }
 
-  //TODO : 구조 변경
-  Future loadRatingList(String userPublicId) async {
-    _cacheRatingList.assignAll(
-      await loadOtherRatingListUseCase.call(
-        userPublicId: userPublicId,
-        cursor: 0,
+  // presign URL 만료 시 재발급 — 최대 1회 재시도
+  void refreshProfileImageUrl() {
+    if (_imageRefreshCount >= 1) return;
+    _imageRefreshCount++;
+    _fetchAndSetImageUrl(profile.value?.profileImageKey);
+  }
+
+  Future<void> _fetchAndSetImageUrl(String? imageKey) async {
+    if (imageKey == null || imageKey.isEmpty) return;
+    try {
+      profileImageUrl.value = await mediaRemoteDatasource.getDownloadUrl(
+        key: imageKey,
+      );
+    } catch (e) {
+      debugPrint('Failed to refresh other profile image URL: $e');
+    }
+  }
+
+  Future<void> loadRatingList(String userPublicId) async {
+    this.userPublicId = userPublicId;
+    _ratingCursor = 0;
+    _ratingHasNext = true;
+    _cacheRatingList.clear();
+    viewRatingList.clear();
+    await loadMoreRatings();
+  }
+
+  Future<void> loadMoreRatings() async {
+    final publicId = userPublicId;
+    if (publicId == null || !_ratingHasNext || isLoadingRatings.value) return;
+
+    isLoadingRatings.value = true;
+    try {
+      final result = await loadOtherRatingListUseCase.call(
+        userPublicId: publicId,
+        cursor: _ratingCursor,
         size: 20,
-      ),
-    );
-    viewRatingList.assignAll(_cacheRatingList);
+      );
+      _cacheRatingList.addAll(result.pages);
+      viewRatingList.assignAll(_cacheRatingList);
+      _ratingHasNext = result.hasNext;
+      _ratingCursor = result.nextCursor ?? _ratingCursor;
+    } catch (e) {
+      debugPrint('[OtherProfileController] 평점 목록 조회 실패 - error: $e');
+    } finally {
+      isLoadingRatings.value = false;
+    }
   }
 }

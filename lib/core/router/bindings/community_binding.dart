@@ -3,6 +3,7 @@ import 'package:ondo/core/router/bindings/search_binding.dart';
 import 'package:ondo/domain/usecases/post/like_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/liked_post_use_case.dart';
 import 'package:ondo/domain/usecases/post/load_recommend_post_list_use_case.dart';
+import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/bookmark_post_usecase.dart';
@@ -28,6 +29,7 @@ class CommunityBinding extends Bindings {
         unbookmarkUseCase: Get.find<UnbookmarkPostUseCase>(),
         savePostBookmarkLocalUseCase: Get.find<SavePostBookmarkLocalUseCase>(),
         bookmarkedPostUseCase: Get.find<BookmarkedPostUseCase>(),
+        postSearchUseCase: Get.find<PostSearchUseCase>(),
       ),
     );
   }

@@ -2,7 +2,9 @@ import 'package:get/get.dart';
 import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
+import 'package:ondo/domain/usecases/post/bookmarked_post_use_case.dart';
 import 'package:ondo/domain/usecases/post/liked_post_use_case.dart';
+import 'package:ondo/domain/usecases/post/save_post_bookmark_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 
 import '../../../data/datasource/comment/comment_remote_datasource.dart';
@@ -38,6 +40,10 @@ class PostViewBinding extends Bindings {
 
     Get.lazyPut<SavePostLikeLocalUseCase>(
           () => SavePostLikeLocalUseCase(Get.find<PostRepositoryImpl>()),
+    );
+
+    Get.lazyPut<SavePostBookmarkLocalUseCase>(
+          () => SavePostBookmarkLocalUseCase(Get.find<PostRepositoryImpl>()),
     );
 
     // Comment DataSource
@@ -81,6 +87,8 @@ class PostViewBinding extends Bindings {
         deleteCommentUseCase: Get.find<DeleteCommentUseCase>(),
         likedPostUseCase: Get.find<LikedPostUseCase>(),
         savePostLikeLocalUseCase: Get.find<SavePostLikeLocalUseCase>(),
+        bookmarkedPostUseCase: Get.find<BookmarkedPostUseCase>(),
+        savePostBookmarkLocalUseCase: Get.find<SavePostBookmarkLocalUseCase>(),
       ),
     );
   }

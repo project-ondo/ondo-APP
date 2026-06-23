@@ -9,6 +9,10 @@ import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
 import 'package:ondo/domain/usecases/post/update_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/bookmark_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/unbookmark_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/bookmarked_post_use_case.dart';
+import 'package:ondo/domain/usecases/post/save_post_bookmark_local_use_case.dart';
 import 'package:ondo/presentation/community/controllers/community_post_create_screen_controller.dart';
 import 'package:ondo/presentation/community/screens/community_post_create_screen.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
@@ -19,6 +23,10 @@ class CommunityController extends GetxController {
   final LoadRecommendPostListUseCase _getRecommendPostsUseCase;
   final SavePostLikeLocalUseCase _savePostLikeLocalUseCase;
   final LikedPostUseCase _likedPostUseCase;
+  final BookmarkPostUseCase _bookmarkUseCase;
+  final UnbookmarkPostUseCase _unbookmarkUseCase;
+  final SavePostBookmarkLocalUseCase _savePostBookmarkLocalUseCase;
+  final BookmarkedPostUseCase _bookmarkedPostUseCase;
   final PostSearchUseCase _postSearchUseCase;
 
   CommunityController({
@@ -27,12 +35,20 @@ class CommunityController extends GetxController {
     required LoadRecommendPostListUseCase getRecommendPostsUseCase,
     required SavePostLikeLocalUseCase savePostLikeLocalUseCase,
     required LikedPostUseCase likedPostUseCase,
+    required BookmarkPostUseCase bookmarkUseCase,
+    required UnbookmarkPostUseCase unbookmarkUseCase,
+    required SavePostBookmarkLocalUseCase savePostBookmarkLocalUseCase,
+    required BookmarkedPostUseCase bookmarkedPostUseCase,
     required PostSearchUseCase postSearchUseCase,
   })  : _likeUseCase = likeUseCase,
         _unlikeUseCase = unlikeUseCase,
         _getRecommendPostsUseCase = getRecommendPostsUseCase,
         _savePostLikeLocalUseCase = savePostLikeLocalUseCase,
         _likedPostUseCase = likedPostUseCase,
+        _bookmarkUseCase = bookmarkUseCase,
+        _unbookmarkUseCase = unbookmarkUseCase,
+        _savePostBookmarkLocalUseCase = savePostBookmarkLocalUseCase,
+        _bookmarkedPostUseCase = bookmarkedPostUseCase,
         _postSearchUseCase = postSearchUseCase;
 
   final RxSet<String> viewTagList = <String>{}.obs;
@@ -60,6 +76,15 @@ class CommunityController extends GetxController {
         _syncLike(event.postId, event.isLiked, event.likeCount);
       },
     );
+
+    ever(
+      Get.find<PostController>().lastBookmarkEvent,
+      (event) {
+        if (event == null) return;
+        _syncBookmark(event.postId, event.isBookmarked, event.bookmarkCount);
+      },
+    );
+
     ever(
       Get.find<PostController>().lastDeleteEvent,
       (postId) {
@@ -93,6 +118,25 @@ class CommunityController extends GetxController {
     }
   }
 
+  void _syncBookmark(int postId, bool isBookmarked, int bookmarkCount) {
+    final index = viewPostList.indexWhere((p) => p.postId == postId);
+    if (index != -1) {
+      viewPostList[index] = viewPostList[index].copyWith(
+        bookmarkCount: bookmarkCount,
+        isBookmark: isBookmarked,
+      );
+      viewPostList.refresh();
+    }
+
+    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (cacheIndex != -1) {
+      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
+        bookmarkCount: bookmarkCount,
+        isBookmark: isBookmarked,
+      );
+    }
+  }
+
   @override
   void onReady() {
     Get.put(CommunityResultController());
@@ -122,6 +166,7 @@ class CommunityController extends GetxController {
         result.content.map((post) async {
           return post.copyWith(
             isFavorite: await _likedPostUseCase(post.postId),
+            isBookmark: await _bookmarkedPostUseCase(post.postId),
           );
         }),
       );
@@ -188,6 +233,41 @@ class CommunityController extends GetxController {
       viewPostList[viewIndex] = viewPostList[viewIndex].copyWith(
         likeCount: viewPostList[viewIndex].likeCount + delta,
         isFavorite: isFavorite,
+      );
+    }
+  }
+
+  Future<void> toggleBookmark(int postId, bool isBookmarked) async {
+    _updatePostBookmarkInList(postId, isBookmarked ? 1 : -1, isBookmarked);
+
+    try {
+      if (isBookmarked) {
+        await _bookmarkUseCase(postId);
+      } else {
+        await _unbookmarkUseCase(postId);
+      }
+      await _savePostBookmarkLocalUseCase(postId, isBookmarked);
+    } catch (e) {
+      debugPrint('[CommunityController] 북마크 토글 실패 - error: $e');
+      _updatePostBookmarkInList(postId, isBookmarked ? -1 : 1, !isBookmarked);
+    }
+  }
+
+  void _updatePostBookmarkInList(int postId, int delta, bool isBookmark) {
+    final index = viewPostList.indexWhere((p) => p.postId == postId);
+    if (index != -1) {
+      viewPostList[index] = viewPostList[index].copyWith(
+        bookmarkCount: viewPostList[index].bookmarkCount + delta,
+        isBookmark: isBookmark,
+      );
+      viewPostList.refresh();
+    }
+
+    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (cacheIndex != -1) {
+      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
+        bookmarkCount: _cachePostList[cacheIndex].bookmarkCount + delta,
+        isBookmark: isBookmark,
       );
     }
   }

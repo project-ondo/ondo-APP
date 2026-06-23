@@ -11,7 +11,9 @@ import 'package:ondo/domain/usecases/comment/create_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/delete_comment_usecase.dart';
 import 'package:ondo/domain/usecases/comment/get_comments_usecase.dart';
 import 'package:ondo/domain/usecases/post/bookmark_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/bookmarked_post_use_case.dart';
 import 'package:ondo/domain/usecases/post/liked_post_use_case.dart';
+import 'package:ondo/domain/usecases/post/save_post_bookmark_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/unbookmark_post_usecase.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
@@ -42,6 +44,8 @@ class PostViewController extends GetxController {
   final DeleteCommentUseCase _deleteCommentUseCase;
   final LikedPostUseCase _likedPostUseCase;
   final SavePostLikeLocalUseCase _savePostLikeLocalUseCase;
+  final BookmarkedPostUseCase _bookmarkedPostUseCase;
+  final SavePostBookmarkLocalUseCase _savePostBookmarkLocalUseCase;
 
   PostViewController({
     required this.postId,
@@ -58,6 +62,8 @@ class PostViewController extends GetxController {
     required DeleteCommentUseCase deleteCommentUseCase,
     required LikedPostUseCase likedPostUseCase,
     required SavePostLikeLocalUseCase savePostLikeLocalUseCase,
+    required BookmarkedPostUseCase bookmarkedPostUseCase,
+    required SavePostBookmarkLocalUseCase savePostBookmarkLocalUseCase,
   })  : _getPostDetailUseCase = getPostDetailUseCase,
         _updatePostUseCase = updatePostUseCase,
         _deletePostUseCase = deletePostUseCase,
@@ -69,7 +75,9 @@ class PostViewController extends GetxController {
         _createCommentUseCase = createCommentUseCase,
         _deleteCommentUseCase = deleteCommentUseCase,
         _likedPostUseCase = likedPostUseCase,
-        _savePostLikeLocalUseCase = savePostLikeLocalUseCase;
+        _savePostLikeLocalUseCase = savePostLikeLocalUseCase,
+        _bookmarkedPostUseCase = bookmarkedPostUseCase,
+        _savePostBookmarkLocalUseCase = savePostBookmarkLocalUseCase;
 
   final Rx<PostDetailEntity?> post = Rx<PostDetailEntity?>(null);
   final RxList<PostEntity> relatedPostList = <PostEntity>[].obs;
@@ -115,19 +123,27 @@ class PostViewController extends GetxController {
   }
 
   Future<void> _initPostState() async {
-    // 좋아요 여부(로컬 캐시)와 상세 정보(서버)를 함께 받은 뒤,
-    // 상세에서 조회한 최신 좋아요 수를 게시물 목록 화면들에 동기화한다.
+    // 좋아요·북마크 여부(로컬 캐시)와 상세 정보(서버)를 함께 받은 뒤,
+    // 상세에서 조회한 최신 좋아요/북마크 수를 게시물 목록 화면들에 동기화한다.
     await Future.wait([
       _initIsFavorite(),
+      _initIsBookmark(),
       fetchPostDetail(postId),
     ]);
-    _syncLikeToList();
+    if (post.value != null) {
+      _syncLikeToList();
+      _syncBookmarkToList();
+    }
   }
 
   Future<void> _initIsFavorite() async {
     final liked = await _likedPostUseCase(postId);
     selectHeart.value = liked;
     initialHeartState = liked;
+  }
+
+  Future<void> _initIsBookmark() async {
+    selectBookMark.value = await _bookmarkedPostUseCase(postId);
   }
 
   /// 상세에서 조회한 최신 좋아요 상태/수를 목록 화면 캐시에 반영한다.
@@ -137,6 +153,15 @@ class PostViewController extends GetxController {
       postId,
       selectHeart.value,
       heartTotal.value,
+    );
+  }
+
+  /// 좋아요와 동일하게, 상세에서의 북마크 상태/수를 목록 화면 캐시에 반영한다.
+  void _syncBookmarkToList() {
+    Get.find<PostController>().updateBookmarkState(
+      postId,
+      selectBookMark.value,
+      bookMarkTotal.value,
     );
   }
 
@@ -254,6 +279,13 @@ class PostViewController extends GetxController {
       } else {
         await _unbookmarkPostUseCase(postId);
       }
+      await _savePostBookmarkLocalUseCase(postId, isBookmarked);
+
+      Get.find<PostController>().updateBookmarkState(
+        postId,
+        isBookmarked,
+        bookMarkTotal.value,
+      );
     } catch (e) {
       debugPrint('[PostViewController] 북마크 토글 실패 - error: $e');
       selectBookMark.value = !isBookmarked;

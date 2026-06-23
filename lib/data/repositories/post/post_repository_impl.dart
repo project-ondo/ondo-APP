@@ -104,6 +104,16 @@ class PostRepositoryImpl implements PostRepository {
   }
 
   @override
+  Future<void> saveBookmarkState(int postId, bool isBookmarked) {
+    return _localDatasource.saveBookmarkState(postId, isBookmarked);
+  }
+
+  @override
+  Future<bool> bookmarkedPost(int postId) {
+    return _localDatasource.bookmarkedPost(postId);
+  }
+
+  @override
   Future<ListableWrapper<PostEntity>> search(
       String keyword,
       List<String>? tags,

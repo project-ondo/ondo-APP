@@ -79,7 +79,9 @@ class HomeScreen extends GetView<HomeController> {
                     heartAction: (isFavorite, total) {
                       controller.toggleLike(post.postId, isFavorite);
                     },
-                    bookmarkAction: (isBookmark, total) {},
+                    bookmarkAction: (isBookmark, total) {
+                      controller.toggleBookmark(post.postId, isBookmark);
+                    },
                   ),
                 )
                 .toList(),

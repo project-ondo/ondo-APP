@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ondo/domain/entities/post/bookmark_changed_event.dart';
 import 'package:ondo/domain/entities/post/like_changed_event.dart';
 import 'package:ondo/domain/entities/post/post_updated_event.dart';
 
 class PostController extends GetxController {
   /// 상세 화면에서 변경된 좋아요 상태를 게시물 목록 화면들에 전파
   final Rx<LikeChangedEvent?> lastLikeEvent = Rx<LikeChangedEvent?>(null);
+
+  /// 좋아요와 동일하게, 상세 화면에서 변경된 북마크 상태를 목록 화면들에 전파한다.
+  final Rx<BookmarkChangedEvent?> lastBookmarkEvent =
+      Rx<BookmarkChangedEvent?>(null);
 
   /// 게시물 삭제 이벤트 — postId
   final Rx<int?> lastDeleteEvent = Rx<int?>(null);
@@ -19,6 +24,14 @@ class PostController extends GetxController {
       postId: postId,
       isLiked: isLiked,
       likeCount: likeCount,
+    );
+  }
+
+  void updateBookmarkState(int postId, bool isBookmarked, int bookmarkCount) {
+    lastBookmarkEvent.value = BookmarkChangedEvent(
+      postId: postId,
+      isBookmarked: isBookmarked,
+      bookmarkCount: bookmarkCount,
     );
   }
 

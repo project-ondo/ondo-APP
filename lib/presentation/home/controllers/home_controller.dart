@@ -11,6 +11,10 @@ import 'package:ondo/domain/usecases/post/load_recent_popular_post_list_use_case
 import 'package:ondo/domain/usecases/post/save_post_like_local_use_case.dart';
 import 'package:ondo/domain/usecases/post/post_search_use_case.dart';
 import 'package:ondo/domain/usecases/post/unlike_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/bookmark_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/unbookmark_post_usecase.dart';
+import 'package:ondo/domain/usecases/post/bookmarked_post_use_case.dart';
+import 'package:ondo/domain/usecases/post/save_post_bookmark_local_use_case.dart';
 import 'package:ondo/domain/usecases/user/user_search_use_case.dart';
 import 'package:ondo/presentation/home/controllers/base_home_controller.dart';
 import 'package:ondo/presentation/post/controllers/post_controller.dart';
@@ -28,6 +32,10 @@ class HomeController extends GetxController with BaseHomeController {
   final UnlikePostUseCase unlikePostUseCase;
   final SavePostLikeLocalUseCase savePostLikeLocalUseCase;
   final LikedPostUseCase likedPostUseCase;
+  final BookmarkPostUseCase bookmarkPostUseCase;
+  final UnbookmarkPostUseCase unbookmarkPostUseCase;
+  final SavePostBookmarkLocalUseCase savePostBookmarkLocalUseCase;
+  final BookmarkedPostUseCase bookmarkedPostUseCase;
   final LoadRecentPopularPostListUseCase loadRecentPopularPostListUseCase;
 
   final searchResultController = HomeSearchResultController();
@@ -40,6 +48,10 @@ class HomeController extends GetxController with BaseHomeController {
     required this.unlikePostUseCase,
     required this.savePostLikeLocalUseCase,
     required this.likedPostUseCase,
+    required this.bookmarkPostUseCase,
+    required this.unbookmarkPostUseCase,
+    required this.savePostBookmarkLocalUseCase,
+    required this.bookmarkedPostUseCase,
     required this.postSearchUseCase,
     required this.loadRecentPopularPostListUseCase,
   });
@@ -72,6 +84,15 @@ class HomeController extends GetxController with BaseHomeController {
         _syncLike(event.postId, event.isLiked, event.likeCount);
       },
     );
+
+    ever(
+      Get.find<PostController>().lastBookmarkEvent,
+      (event) {
+        if (event == null) return;
+        _syncBookmark(event.postId, event.isBookmarked, event.bookmarkCount);
+      },
+    );
+
     ever(
       Get.find<PostController>().lastDeleteEvent,
       (postId) {
@@ -106,6 +127,17 @@ class HomeController extends GetxController with BaseHomeController {
       );
     }
     _updateRankPostLikeInList(postId, isLiked, likeCount: likeCount);
+  }
+
+  void _syncBookmark(int postId, bool isBookmarked, int bookmarkCount) {
+    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (cacheIndex != -1) {
+      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
+        bookmarkCount: bookmarkCount,
+        isBookmark: isBookmarked,
+      );
+      viewPostList.assignAll(_cachePostList);
+    }
   }
 
   Future<void> _loadRecentPopularPostList() async {
@@ -152,6 +184,7 @@ class HomeController extends GetxController with BaseHomeController {
         result.content.map((post) async {
           return post.copyWith(
             isFavorite: await likedPostUseCase(post.postId),
+            isBookmark: await bookmarkedPostUseCase(post.postId),
           );
         }),
       );
@@ -215,6 +248,34 @@ class HomeController extends GetxController with BaseHomeController {
       _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
         likeCount: _cachePostList[cacheIndex].likeCount + (isFavorite ? 1 : -1),
         isFavorite: isFavorite,
+      );
+    }
+    viewPostList.assignAll(_cachePostList);
+  }
+
+  Future<void> toggleBookmark(int postId, bool isBookmarked) async {
+    _updatePostBookmarkInList(postId, isBookmarked);
+
+    try {
+      if (isBookmarked) {
+        await bookmarkPostUseCase(postId);
+      } else {
+        await unbookmarkPostUseCase(postId);
+      }
+      await savePostBookmarkLocalUseCase(postId, isBookmarked);
+    } catch (e) {
+      debugPrint('[HomeController] 북마크 토글 실패 - error: $e');
+      _updatePostBookmarkInList(postId, !isBookmarked);
+    }
+  }
+
+  void _updatePostBookmarkInList(int postId, bool isBookmark) {
+    final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
+    if (cacheIndex != -1) {
+      _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
+        bookmarkCount:
+            _cachePostList[cacheIndex].bookmarkCount + (isBookmark ? 1 : -1),
+        isBookmark: isBookmark,
       );
     }
     viewPostList.assignAll(_cachePostList);

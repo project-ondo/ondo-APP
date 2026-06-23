@@ -58,6 +58,7 @@ class PostItem extends GetView<PostController> {
     final visibleSkills = post.tags.take(2).toList();
     final remainCount = post.tags.length - 2;
 
+
     return Row(
       children: [
         Expanded(

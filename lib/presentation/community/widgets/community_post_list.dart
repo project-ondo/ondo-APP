@@ -37,6 +37,9 @@ class CommunityPostList extends GetView<CommunityController> {
               heartAction: (isLiked, total) {
                 controller.toggleLike(post.postId, isLiked);
               },
+              bookmarkAction: (isBookmark, total) {
+                controller.toggleBookmark(post.postId, isBookmark);
+              },
             );
           },
         ),

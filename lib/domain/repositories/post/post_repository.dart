@@ -33,6 +33,10 @@ abstract class PostRepository {
 
   Future<bool> likedPost(int postId);
 
+  Future<void> saveBookmarkState(int postId, bool isBookmarked);
+
+  Future<bool> bookmarkedPost(int postId);
+
   Future<ListableWrapper<PostEntity>> search(
       String keyword,
       List<String>? tags,

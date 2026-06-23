@@ -93,13 +93,21 @@ class CommunityController extends GetxController {
   }
 
   void _syncBookmark(int postId, bool isBookmarked, int bookmarkCount) {
+    final index = viewPostList.indexWhere((p) => p.postId == postId);
+    if (index != -1) {
+      viewPostList[index] = viewPostList[index].copyWith(
+        bookmarkCount: bookmarkCount,
+        isBookmark: isBookmarked,
+      );
+      viewPostList.refresh();
+    }
+
     final cacheIndex = _cachePostList.indexWhere((p) => p.postId == postId);
     if (cacheIndex != -1) {
       _cachePostList[cacheIndex] = _cachePostList[cacheIndex].copyWith(
         bookmarkCount: bookmarkCount,
         isBookmark: isBookmarked,
       );
-      viewPostList.assignAll(_cachePostList);
     }
   }
 

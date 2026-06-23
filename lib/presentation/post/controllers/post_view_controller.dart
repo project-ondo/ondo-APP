@@ -120,8 +120,10 @@ class PostViewController extends GetxController {
       _initIsBookmark(),
       fetchPostDetail(postId),
     ]);
-    _syncLikeToList();
-    _syncBookmarkToList();
+    if (post.value != null) {
+      _syncLikeToList();
+      _syncBookmarkToList();
+    }
   }
 
   Future<void> _initIsFavorite() async {
